@@ -1,33 +1,30 @@
+from typing import Tuple, Union
+
 from torchtext._internal.module_utils import is_module_available
-from typing import Union, Tuple
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
 
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
-
 import os
 
-URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU'
+from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
 
-MD5 = 'f3f9899b997a42beb24157e62e3eea8d'
+URL = "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU"
+
+MD5 = "f3f9899b997a42beb24157e62e3eea8d"
 
 NUM_LINES = {
-    'train': 1400000,
-    'test': 60000,
+    "train": 1400000,
+    "test": 60000,
 }
 
-_PATH = 'yahoo_answers_csv.tar.gz'
+_PATH = "yahoo_answers_csv.tar.gz"
 
 DATASET_NAME = "YahooAnswers"
 
 _EXTRACTED_FILES = {
-    'train': os.path.join('yahoo_answers_csv', 'train.csv'),
-    'test': os.path.join('yahoo_answers_csv', 'test.csv'),
+    "train": os.path.join("yahoo_answers_csv", "train.csv"),
+    "test": os.path.join("yahoo_answers_csv", "test.csv"),
 }
 
 
@@ -36,14 +33,14 @@ _EXTRACTED_FILES = {
 @_wrap_split_argument(("train", "test"))
 def YahooAnswers(root: str, split: Union[Tuple[str], str]):
     if not is_module_available("torchdata"):
-        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+        )
 
     url_dp = IterableWrapper([URL])
 
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _PATH),
-        hash_dict={os.path.join(root, _PATH): MD5},
-        hash_type="md5"
+        filepath_fn=lambda x: os.path.join(root, _PATH), hash_dict={os.path.join(root, _PATH): MD5}, hash_type="md5"
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 

@@ -1,23 +1,15 @@
+from .vectors import CharNGram, FastText, GloVe, pretrained_aliases, Vectors
 from .vocab import Vocab
 
-from .vectors import (
-    GloVe,
-    FastText,
-    CharNGram,
-    pretrained_aliases,
-    Vectors,
-)
+from .vocab_factory import build_vocab_from_iterator, vocab
 
-from .vocab_factory import (
-    vocab,
-    build_vocab_from_iterator,
-)
-
-__all__ = ["Vocab",
-           "vocab",
-           "build_vocab_from_iterator",
-           "GloVe",
-           "FastText",
-           "CharNGram",
-           "pretrained_aliases",
-           "Vectors"]
+__all__ = [
+    "Vocab",
+    "vocab",
+    "build_vocab_from_iterator",
+    "GloVe",
+    "FastText",
+    "CharNGram",
+    "pretrained_aliases",
+    "Vectors",
+]

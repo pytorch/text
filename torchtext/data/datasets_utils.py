@@ -1,24 +1,22 @@
+import codecs
 import functools
 import inspect
-import os
 import io
 import json
+import os
+
 import torch
-from torchtext.utils import (
-    validate_file,
-    download_from_url,
-    extract_archive,
-    unicode_csv_reader,
-)
 from torch.utils.data import functional_datapipe, IterDataPipe
 from torch.utils.data.datapipes.utils.common import StreamWrapper
-import codecs
+from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader, validate_file
+
 try:
     import defusedxml.ElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
 from torchtext import _CACHE_DIR
+
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
@@ -27,11 +25,11 @@ for public consumption yet.
 
 def _clean_xml_file(f_xml):
     f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+    with codecs.open(f_txt, mode="w", encoding="utf-8") as fd_txt:
         root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
+        for doc in root.findall("doc"):
+            for e in doc.findall("seg"):
+                fd_txt.write(e.text.strip() + "\n")
 
 
 def _clean_inner_xml_file(outfile, stream):
@@ -45,29 +43,38 @@ def _clean_inner_xml_file(outfile, stream):
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
-    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
+    with codecs.open(outfile, mode="w", encoding="utf-8") as fd_txt:
         root = ET.fromstring(stream.read().decode("utf-8"))[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
+        for doc in root.findall("doc"):
+            for e in doc.findall("seg"):
+                fd_txt.write(e.text.strip() + "\n")
     return outfile, StreamWrapper(open(outfile, "rb"))
 
 
 def _clean_tags_file(f_orig):
     xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
+        "<url",
+        "<keywords",
+        "<talkid",
+        "<description",
+        "<reviewer",
+        "<translator",
+        "<title",
+        "<speaker",
+        "<doc",
+        "</doc",
     ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
+    f_txt = f_orig.replace(".tags", "")
+    with codecs.open(f_txt, mode="w", encoding="utf-8") as fd_txt, io.open(
+        f_orig, mode="r", encoding="utf-8"
+    ) as fd_orig:
         for line in fd_orig:
             if not any(tag in line for tag in xml_tags):
                 # TODO: Fix utf-8 next line mark
                 #                fd_txt.write(l.strip() + '\n')
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.strip() + '\n')
+                fd_txt.write(line.strip() + "\n")
 
 
 def _clean_inner_tags_file(outfile, stream):
@@ -81,18 +88,26 @@ def _clean_inner_tags_file(outfile, stream):
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
+        "<url",
+        "<keywords",
+        "<talkid",
+        "<description",
+        "<reviewer",
+        "<translator",
+        "<title",
+        "<speaker",
+        "<doc",
+        "</doc",
     ]
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
-    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
+    with codecs.open(outfile, mode="w", encoding="utf-8") as fd_txt:
         for line in stream.readlines():
             if not any(tag in line.decode("utf-8") for tag in xml_tags):
                 # TODO: Fix utf-8 next line mark
                 #                fd_txt.write(l.strip() + '\n')
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.decode("utf-8").strip() + '\n')
+                fd_txt.write(line.decode("utf-8").strip() + "\n")
     return outfile, StreamWrapper(open(outfile, "rb"))
 
 
@@ -107,14 +122,14 @@ def _rewrite_text_file(outfile, stream):
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
-    with open(outfile, 'w', encoding='utf-8') as f:
+    with open(outfile, "w", encoding="utf-8") as f:
         for line in stream.readlines():
             f.write(line.decode("utf-8") + "\n")
     return outfile, StreamWrapper(open(outfile, "rb"))
 
 
 def _clean_files(outfile, fname, stream):
-    if 'xml' in fname:
+    if "xml" in fname:
         return _clean_inner_xml_file(outfile, stream)
     elif "tags" in fname:
         return _clean_inner_tags_file(outfile, stream)
@@ -123,13 +138,13 @@ def _clean_files(outfile, fname, stream):
 
 def _create_data_from_json(data_path):
     with open(data_path) as json_file:
-        raw_json_data = json.load(json_file)['data']
+        raw_json_data = json.load(json_file)["data"]
         for layer1 in raw_json_data:
-            for layer2 in layer1['paragraphs']:
-                for layer3 in layer2['qas']:
-                    _context, _question = layer2['context'], layer3['question']
-                    _answers = [item['text'] for item in layer3['answers']]
-                    _answer_start = [item['answer_start'] for item in layer3['answers']]
+            for layer2 in layer1["paragraphs"]:
+                for layer3 in layer2["qas"]:
+                    _context, _question = layer2["context"], layer3["question"]
+                    _answers = [item["text"] for item in layer3["answers"]]
+                    _answer_start = [item["answer_start"] for item in layer3["answers"]]
                     if len(_answers) == 0:
                         _answers = [""]
                         _answer_start = [-1]
@@ -137,7 +152,7 @@ def _create_data_from_json(data_path):
                     yield (_context, _question, _answers, _answer_start)
 
 
-def _create_data_from_iob(data_path, separator='\t'):
+def _create_data_from_iob(data_path, separator="\t"):
     with open(data_path, encoding="utf-8") as input_file:
         columns = []
         for line in input_file:
@@ -165,7 +180,7 @@ def _create_data_from_csv(data_path):
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
-            yield int(row[0]), ' '.join(row[1:])
+            yield int(row[0]), " ".join(row[1:])
 
 
 def _check_default_set(split, target_select, dataset_name):
@@ -179,8 +194,11 @@ def _check_default_set(split, target_select, dataset_name):
     if not isinstance(split, tuple):
         raise ValueError("Internal error: Expected split to be of type tuple.")
     if not set(split).issubset(set(target_select)):
-        raise TypeError('Given selection {} of splits is not supported for dataset {}. Please choose from {}.'.format(
-            split, dataset_name, target_select))
+        raise TypeError(
+            "Given selection {} of splits is not supported for dataset {}. Please choose from {}.".format(
+                split, dataset_name, target_select
+            )
+        )
     return split
 
 
@@ -212,8 +230,7 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
     Assumes function signature of form (root='.data', split=<some tuple of strings>, **kwargs)
     """
     argspec = inspect.getfullargspec(fn)
-    if not (argspec.args[0] == "root" and
-            argspec.args[1] == "split"):
+    if not (argspec.args[0] == "root" and argspec.args[1] == "split"):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
     default_split = argspec.defaults[1]
 
@@ -243,7 +260,7 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
 
     if isinstance(default_split, tuple):
         args_s += "\n    split: split or splits to be returned. Can be a string or tuple of strings."
-        args_s += "\n        Default: {}""".format(str(default_split))
+        args_s += "\n        Default: {}" "".format(str(default_split))
 
     if isinstance(default_split, str):
         args_s += "\n     split: Only {default_split} is available."
@@ -261,6 +278,7 @@ def _add_docstring_header(docstring=None, num_lines=None, num_classes=None):
         if old_doc is not None:
             fn.__doc__ += old_doc
         return fn
+
     return docstring_decorator
 
 
@@ -277,12 +295,13 @@ def _wrap_split_argument_with_fn(fn, splits):
     train, valid = AG_NEWS(split=('train', 'valid'))
     """
     argspec = inspect.getfullargspec(fn)
-    if not (argspec.args[0] == "root" and
-            argspec.args[1] == "split" and
-            argspec.varargs is None and
-            argspec.varkw is None and
-            len(argspec.kwonlyargs) == 0
-            ):
+    if not (
+        argspec.args[0] == "root"
+        and argspec.args[1] == "split"
+        and argspec.varargs is None
+        and argspec.varkw is None
+        and len(argspec.kwonlyargs) == 0
+    ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
     @functools.wraps(fn)
@@ -295,8 +314,8 @@ def _wrap_split_argument_with_fn(fn, splits):
     new_sig = inspect.signature(new_fn)
     new_sig_params = new_sig.parameters
     new_params = []
-    new_params.append(new_sig_params['root'].replace(default='.data'))
-    new_params.append(new_sig_params['split'].replace(default=splits))
+    new_params.append(new_sig_params["root"].replace(default=".data"))
+    new_params.append(new_sig_params["split"].replace(default=splits))
     new_params += [entry[1] for entry in list(new_sig_params.items())[2:]]
     new_sig = new_sig.replace(parameters=tuple(new_params))
     new_fn.__signature__ = new_sig
@@ -307,18 +326,20 @@ def _wrap_split_argument_with_fn(fn, splits):
 def _wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument_with_fn(fn, splits)
+
     return new_fn
 
 
 def _create_dataset_directory(dataset_name):
     def decorator(fn):
         argspec = inspect.getfullargspec(fn)
-        if not (argspec.args[0] == "root" and
-                argspec.args[1] == "split" and
-                argspec.varargs is None and
-                argspec.varkw is None and
-                len(argspec.kwonlyargs) == 0
-                ):
+        if not (
+            argspec.args[0] == "root"
+            and argspec.args[1] == "split"
+            and argspec.varargs is None
+            and argspec.varkw is None
+            and len(argspec.kwonlyargs) == 0
+        ):
             raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
         @functools.wraps(fn)
@@ -333,31 +354,33 @@ def _create_dataset_directory(dataset_name):
     return decorator
 
 
-def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
-                               hash_type="sha256"):
+def _download_extract_validate(
+    root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5, hash_type="sha256"
+):
     root = os.path.abspath(root)
     downloaded_file = os.path.abspath(downloaded_file)
     extracted_file = os.path.abspath(extracted_file)
     if os.path.exists(extracted_file):
-        with open(os.path.join(root, extracted_file), 'rb') as f:
+        with open(os.path.join(root, extracted_file), "rb") as f:
             if validate_file(f, extracted_file_md5, hash_type):
                 return extracted_file
 
-    dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
-                                    hash_value=url_md5, hash_type=hash_type)
+    dataset_tar = download_from_url(
+        url, path=os.path.join(root, downloaded_file), hash_value=url_md5, hash_type=hash_type
+    )
     extracted_files = extract_archive(dataset_tar)
-    assert os.path.exists(extracted_file), "extracted_file [{}] was not found in the archive [{}]".format(extracted_file, extracted_files)
+    assert os.path.exists(extracted_file), "extracted_file [{}] was not found in the archive [{}]".format(
+        extracted_file, extracted_files
+    )
 
     return extracted_file
 
 
 class _RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
+    """Defines an abstraction for raw text iterable datasets."""
 
     def __init__(self, description, full_num_lines, iterator):
-        """Initiate the dataset abstraction.
-        """
+        """Initiate the dataset abstraction."""
         super(_RawTextIterableDataset, self).__init__()
         self.description = description
         self.full_num_lines = full_num_lines
@@ -395,15 +418,15 @@ class _RawTextIterableDataset(torch.utils.data.IterableDataset):
 def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, valid_set, test_set):
     train_filenames = (
         "train.{}-{}.{}".format(src_language, tgt_language, src_language),
-        "train.{}-{}.{}".format(src_language, tgt_language, tgt_language)
+        "train.{}-{}.{}".format(src_language, tgt_language, tgt_language),
     )
     valid_filenames = (
         "IWSLT{}.TED.{}.{}-{}.{}".format(year, valid_set, src_language, tgt_language, src_language),
-        "IWSLT{}.TED.{}.{}-{}.{}".format(year, valid_set, src_language, tgt_language, tgt_language)
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, valid_set, src_language, tgt_language, tgt_language),
     )
     test_filenames = (
         "IWSLT{}.TED.{}.{}-{}.{}".format(year, test_set, src_language, tgt_language, src_language),
-        "IWSLT{}.TED.{}.{}-{}.{}".format(year, test_set, src_language, tgt_language, tgt_language)
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, test_set, src_language, tgt_language, tgt_language),
     )
 
     src_train, tgt_train = train_filenames
@@ -412,15 +435,15 @@ def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, v
 
     uncleaned_train_filenames = (
         "train.tags.{}-{}.{}".format(src_language, tgt_language, src_language),
-        "train.tags.{}-{}.{}".format(src_language, tgt_language, tgt_language)
+        "train.tags.{}-{}.{}".format(src_language, tgt_language, tgt_language),
     )
     uncleaned_valid_filenames = (
         "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, src_language),
-        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, tgt_language)
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, tgt_language),
     )
     uncleaned_test_filenames = (
         "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, test_set, src_language, tgt_language, src_language),
-        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, test_set, src_language, tgt_language, tgt_language)
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, test_set, src_language, tgt_language, tgt_language),
     )
 
     uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
@@ -437,7 +460,7 @@ def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, v
             "train": tgt_train,
             "valid": tgt_eval,
             "test": tgt_test,
-        }
+        },
     }
 
     uncleaned_filenames_by_lang_and_split = {
@@ -450,7 +473,7 @@ def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, v
             "train": uncleaned_tgt_train,
             "valid": uncleaned_tgt_eval,
             "test": uncleaned_tgt_test,
-        }
+        },
     }
 
     return file_path_by_lang_and_split, uncleaned_filenames_by_lang_and_split
@@ -461,6 +484,7 @@ class _ParseSQuADQAData(IterDataPipe):
     r"""Iterable DataPipe to parse the contents of a stream of JSON objects
     as provided by SQuAD QA. Used in SQuAD1 and SQuAD2.
     """
+
     def __init__(self, source_datapipe) -> None:
         self.source_datapipe = source_datapipe
 
@@ -484,6 +508,7 @@ class _ParseIOBData(IterDataPipe):
     """A datapipe responsible for reading sep-delimited IOB data from a stream.
 
     Used for CONLL 2000 and UDPOS."""
+
     def __init__(self, dp, sep: str = "\t") -> None:
         self.dp = dp
         self.sep = sep

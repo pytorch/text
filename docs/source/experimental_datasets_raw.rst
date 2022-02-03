@@ -13,10 +13,10 @@ General use cases are as follows: ::
 
     def tokenize(label, line):
         return line.split()
-     
+
     tokens_src = []
     tokens_tgt = []
-    
+
     for line in train_iter:
         src, tgt = line
         tokens_src += tokenize(src)
@@ -36,11 +36,11 @@ WMT14
 
 .. autofunction:: WMT14
 
-    
+
 Language Modeling
 ^^^^^^^^^^^^^^^^^
 
 WMTNewsCrawl
-~~~~~~~~~~~~    
+~~~~~~~~~~~~
 
 .. autofunction:: WMTNewsCrawl

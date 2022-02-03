@@ -1,17 +1,17 @@
+import logging
 import math
 
-from dataclasses import dataclass, asdict
-from typing import Optional, List
+from dataclasses import asdict, dataclass
+from typing import List, Optional
+
+import torch
+import torch.nn as nn
+from torch import Tensor
 
 from torch.nn import Module
-import torch
-from torch import Tensor
-import torch.nn as nn
 
-from .modules import (
-    TransformerEncoder,
-)
-import logging
+from .modules import TransformerEncoder
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,7 +79,9 @@ class RobertaEncoder(Module):
 
 # TODO: Add Missing quant noise and spectral norm from latest Roberta head in fairseq repo
 class RobertaClassificationHead(nn.Module):
-    def __init__(self, num_classes, input_dim, inner_dim: Optional[int] = None, dropout: float = 0.1, activation=nn.ReLU):
+    def __init__(
+        self, num_classes, input_dim, inner_dim: Optional[int] = None, dropout: float = 0.1, activation=nn.ReLU
+    ):
         super().__init__()
         if not inner_dim:
             inner_dim = input_dim
@@ -109,10 +111,7 @@ class RobertaModel(Module):
         >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
     """
 
-    def __init__(self,
-                 encoder_conf: RobertaEncoderConf,
-                 head: Optional[Module] = None,
-                 freeze_encoder: bool = False):
+    def __init__(self, encoder_conf: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
         super().__init__()
         assert isinstance(encoder_conf, RobertaEncoderConf)
 

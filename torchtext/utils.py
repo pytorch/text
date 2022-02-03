@@ -1,14 +1,16 @@
-import torch
 import csv
-import hashlib
-import os
-import tarfile
-import logging
-import sys
-import zipfile
 import gzip
-from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
+import hashlib
+import logging
+import os
+import sys
+import tarfile
+import zipfile
+
+import torch
 from torchtext import _CACHE_DIR
+
+from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
 
 def reporthook(t):
@@ -30,6 +32,7 @@ def reporthook(t):
             t.total = tsize
         t.update((b - last_b[0]) * bsize)
         last_b[0] = b
+
     return inner
 
 
@@ -62,14 +65,15 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
 
 def _check_hash(path, hash_value, hash_type):
-    logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
+    logging.info("Validating hash {} matches hash of {}".format(hash_value, path))
     with open(path, "rb") as file_obj:
         if not validate_file(file_obj, hash_value, hash_type):
-            raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
+            raise RuntimeError(
+                "The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path))
+            )
 
 
-def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
-                      hash_type="sha256"):
+def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
 
@@ -100,7 +104,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
 
     # skip download if path exists and overwrite is not True
     if os.path.exists(path):
-        logging.info('File %s already exists.' % path)
+        logging.info("File %s already exists." % path)
         if not overwrite:
             if hash_value:
                 _check_hash(path, hash_value, hash_type)
@@ -116,7 +120,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     # download data and move to path
     _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    logging.info('File {} downloaded.'.format(path))
+    logging.info("File {} downloaded.".format(path))
 
     # validate
     if hash_value:
@@ -160,7 +164,7 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
 
 def utf_8_encoder(unicode_csv_data):
     for line in unicode_csv_data:
-        yield line.encode('utf-8')
+        yield line.encode("utf-8")
 
 
 def extract_archive(from_path, to_path=None, overwrite=False):
@@ -190,46 +194,45 @@ def extract_archive(from_path, to_path=None, overwrite=False):
     if to_path is None:
         to_path = os.path.dirname(from_path)
 
-    if from_path.endswith(('.tar.gz', '.tgz')):
-        logging.info('Opening tar file {}.'.format(from_path))
-        with tarfile.open(from_path, 'r') as tar:
+    if from_path.endswith((".tar.gz", ".tgz")):
+        logging.info("Opening tar file {}.".format(from_path))
+        with tarfile.open(from_path, "r") as tar:
             files = []
             for file_ in tar:
                 file_path = os.path.join(to_path, file_.name)
                 if file_.isfile():
                     files.append(file_path)
                     if os.path.exists(file_path):
-                        logging.info('{} already extracted.'.format(file_path))
+                        logging.info("{} already extracted.".format(file_path))
                         if not overwrite:
                             continue
                 tar.extract(file_, to_path)
-            logging.info('Finished extracting tar file {}.'.format(from_path))
+            logging.info("Finished extracting tar file {}.".format(from_path))
             return files
 
-    elif from_path.endswith('.zip'):
+    elif from_path.endswith(".zip"):
         assert zipfile.is_zipfile(from_path), from_path
-        logging.info('Opening zip file {}.'.format(from_path))
-        with zipfile.ZipFile(from_path, 'r') as zfile:
+        logging.info("Opening zip file {}.".format(from_path))
+        with zipfile.ZipFile(from_path, "r") as zfile:
             files = []
             for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
                 files.append(file_path)
                 if os.path.exists(file_path):
-                    logging.info('{} already extracted.'.format(file_path))
+                    logging.info("{} already extracted.".format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
         files = [f for f in files if os.path.isfile(f)]
-        logging.info('Finished extracting zip file {}.'.format(from_path))
+        logging.info("Finished extracting zip file {}.".format(from_path))
         return files
 
-    elif from_path.endswith('.gz'):
-        logging.info('Opening gz file {}.'.format(from_path))
+    elif from_path.endswith(".gz"):
+        logging.info("Opening gz file {}.".format(from_path))
         default_block_size = 65536
         filename = from_path[:-3]
         files = [filename]
-        with gzip.open(from_path, 'rb') as gzfile, \
-                open(filename, 'wb') as d_file:
+        with gzip.open(from_path, "rb") as gzfile, open(filename, "wb") as d_file:
             while True:
                 block = gzfile.read(default_block_size)
                 if not block:
@@ -237,12 +240,11 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                 else:
                     d_file.write(block)
             d_file.write(block)
-        logging.info('Finished extracting gz file {}.'.format(from_path))
+        logging.info("Finished extracting gz file {}.".format(from_path))
         return files
 
     else:
-        raise NotImplementedError(
-            "We currently only support tar.gz, .tgz, .gz and zip achives.")
+        raise NotImplementedError("We currently only support tar.gz, .tgz, .gz and zip achives.")
 
 
 def _log_class_usage(klass):

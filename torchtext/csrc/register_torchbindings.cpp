@@ -140,7 +140,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
               -> c10::intrusive_ptr<GPT2BPEEncoder> {
             return _deserialize_gpt2_bpe_encoder_torchbind(states);
           });
-  
+
   m.class_<CLIPEncoder>("CLIPEncoder")
       .def(torch::init<c10::Dict<std::string, int64_t>,
                        c10::Dict<std::string, int64_t>, std::string,

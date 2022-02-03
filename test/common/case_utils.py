@@ -38,9 +38,7 @@ class TempDirMixin:
 
 def skipIfNoModule(module, display_name=None):
     display_name = display_name or module
-    return unittest.skipIf(
-        not is_module_available(module), f'"{display_name}" is not available'
-    )
+    return unittest.skipIf(not is_module_available(module), f'"{display_name}" is not available')
 
 
 def zip_equal(*iterables):

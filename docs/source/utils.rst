@@ -20,7 +20,7 @@ torchtext.utils
 :hidden:`unicode_csv_reader`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: unicode_csv_reader 
+.. autofunction:: unicode_csv_reader
 
 :hidden:`extract_archive`
 ~~~~~~~~~~~~~~~~~~~~~~~~~

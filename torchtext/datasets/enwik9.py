@@ -2,11 +2,7 @@ import os
 from typing import Tuple, Union
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
+from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
@@ -37,17 +33,13 @@ def EnWik9(root: str, split: Union[Tuple[str], str]):
         hash_dict={os.path.join(root, _PATH): MD5},
         hash_type="md5",
     )
-    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.splitext(_PATH)[0])
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip()
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, mode="b")
     return data_dp.readlines(decode=True, return_path=False)

@@ -1,10 +1,11 @@
+from typing import Optional, Tuple
+
 import torch
-from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
     def __init__(self, nhead, in_proj_container, attention_layer, out_proj, batch_first=False):
-        r""" A multi-head attention container
+        r"""A multi-head attention container
 
         Args:
             nhead: the number of heads in the multiheadattention model
@@ -42,10 +43,15 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.out_proj = out_proj
         self.batch_first = batch_first
 
-    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
-                attn_mask: Optional[torch.Tensor] = None,
-                bias_k: Optional[torch.Tensor] = None,
-                bias_v: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(
+        self,
+        query: torch.Tensor,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        attn_mask: Optional[torch.Tensor] = None,
+        bias_k: Optional[torch.Tensor] = None,
+        bias_v: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
 
         Args:
@@ -100,8 +106,9 @@ class MultiheadAttentionContainer(torch.nn.Module):
         head_dim = v.size(-1) // self.nhead
         v = v.reshape(src_len, bsz * self.nhead, head_dim)
 
-        attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask,
-                                                                bias_k=bias_k, bias_v=bias_v)
+        attn_output, attn_output_weights = self.attention_layer(
+            q, k, v, attn_mask=attn_mask, bias_k=bias_k, bias_v=bias_v
+        )
         attn_output = attn_output.reshape(tgt_len, bsz, embed_dim)
         attn_output = self.out_proj(attn_output)
 
@@ -112,7 +119,6 @@ class MultiheadAttentionContainer(torch.nn.Module):
 
 
 class ScaledDotProduct(torch.nn.Module):
-
     def __init__(self, dropout=0.0, batch_first=False):
         r"""Processes a projected query and key-value pair to apply
         scaled dot product attention.
@@ -135,10 +141,15 @@ class ScaledDotProduct(torch.nn.Module):
         self.dropout = dropout
         self.batch_first = batch_first
 
-    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
-                attn_mask: Optional[torch.Tensor] = None,
-                bias_k: Optional[torch.Tensor] = None,
-                bias_v: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(
+        self,
+        query: torch.Tensor,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        attn_mask: Optional[torch.Tensor] = None,
+        bias_k: Optional[torch.Tensor] = None,
+        bias_v: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 
@@ -175,10 +186,12 @@ class ScaledDotProduct(torch.nn.Module):
             query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
 
         if bias_k is not None and bias_v is not None:
-            assert key.size(-1) == bias_k.size(-1) and key.size(-2) == bias_k.size(-2) and bias_k.size(-3) == 1, \
-                "Shape of bias_k is not supported"
-            assert value.size(-1) == bias_v.size(-1) and value.size(-2) == bias_v.size(-2) and bias_v.size(-3) == 1, \
-                "Shape of bias_v is not supported"
+            assert (
+                key.size(-1) == bias_k.size(-1) and key.size(-2) == bias_k.size(-2) and bias_k.size(-3) == 1
+            ), "Shape of bias_k is not supported"
+            assert (
+                value.size(-1) == bias_v.size(-1) and value.size(-2) == bias_v.size(-2) and bias_v.size(-3) == 1
+            ), "Shape of bias_v is not supported"
             key = torch.cat([key, bias_k])
             value = torch.cat([value, bias_v])
             if attn_mask is not None:
@@ -195,17 +208,23 @@ class ScaledDotProduct(torch.nn.Module):
         query = query * (float(head_dim) ** -0.5)
         if attn_mask is not None:
             if attn_mask.dim() != 3:
-                raise RuntimeError('attn_mask must be a 3D tensor.')
-            if (attn_mask.size(-1) != src_len) or (attn_mask.size(-2) != tgt_len) or \
-               (attn_mask.size(-3) != 1 and attn_mask.size(-3) != batch_heads):
-                raise RuntimeError('The size of the attn_mask is not correct.')
+                raise RuntimeError("attn_mask must be a 3D tensor.")
+            if (
+                (attn_mask.size(-1) != src_len)
+                or (attn_mask.size(-2) != tgt_len)
+                or (attn_mask.size(-3) != 1 and attn_mask.size(-3) != batch_heads)
+            ):
+                raise RuntimeError("The size of the attn_mask is not correct.")
             if attn_mask.dtype != torch.bool:
-                raise RuntimeError('Only bool tensor is supported for attn_mask')
+                raise RuntimeError("Only bool tensor is supported for attn_mask")
 
         # Dot product of q, k
         attn_output_weights = torch.matmul(query, key.transpose(-2, -1))
         if attn_mask is not None:
-            attn_output_weights.masked_fill_(attn_mask, -1e8,)
+            attn_output_weights.masked_fill_(
+                attn_mask,
+                -1e8,
+            )
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
@@ -234,10 +253,9 @@ class InProjContainer(torch.nn.Module):
         self.key_proj = key_proj
         self.value_proj = value_proj
 
-    def forward(self,
-                query: torch.Tensor,
-                key: torch.Tensor,
-                value: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(
+        self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         r"""Projects the input sequences using in-proj layers. query/key/value are simply passed to
         the forward func of query/key/value_proj, respectively.
 

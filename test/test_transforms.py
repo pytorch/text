@@ -1,11 +1,13 @@
 import os
+from collections import OrderedDict
+
 import torch
 from torchtext import transforms
 from torchtext.vocab import vocab
-from collections import OrderedDict
+
+from .common.assets import get_asset_path
 
 from .common.torchtext_test_case import TorchtextTestCase
-from .common.assets import get_asset_path
 
 
 class TestTransforms(TorchtextTestCase):
@@ -17,11 +19,11 @@ class TestTransforms(TorchtextTestCase):
             transform = torch.jit.script(transform)
 
         actual = transform(["Hello World!, how are you?"])
-        expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
+        expected = [["▁Hello", "▁World", "!", ",", "▁how", "▁are", "▁you", "?"]]
         self.assertEqual(actual, expected)
 
         actual = transform("Hello World!, how are you?")
-        expected = ['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']
+        expected = ["▁Hello", "▁World", "!", ",", "▁how", "▁are", "▁you", "?"]
         self.assertEqual(actual, expected)
 
     def test_spmtokenizer(self):
@@ -33,15 +35,15 @@ class TestTransforms(TorchtextTestCase):
         self._spmtokenizer(test_scripting=True)
 
     def _vocab_transform(self, test_scripting):
-        vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
+        vocab_obj = vocab(OrderedDict([("a", 1), ("b", 1), ("c", 1)]))
         transform = transforms.VocabTransform(vocab_obj)
         if test_scripting:
             transform = torch.jit.script(transform)
-        actual = transform([['a', 'b', 'c']])
+        actual = transform([["a", "b", "c"]])
         expected = [[0, 1, 2]]
         self.assertEqual(actual, expected)
 
-        actual = transform(['a', 'b', 'c'])
+        actual = transform(["a", "b", "c"])
         expected = [0, 1, 2]
         self.assertEqual(actual, expected)
 
@@ -78,7 +80,7 @@ class TestTransforms(TorchtextTestCase):
         self._totensor(test_scripting=True)
 
     def _labeltoindex(self, test_scripting):
-        label_names = ['test', 'label', 'indices']
+        label_names = ["test", "label", "indices"]
         transform = transforms.LabelToIndex(label_names=label_names)
         if test_scripting:
             transform = torch.jit.script(transform)
@@ -87,7 +89,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
         with self.assertRaises(RuntimeError):
-            transform(['OOV'])
+            transform(["OOV"])
 
         transform = transforms.LabelToIndex(label_names=label_names, sort_names=True)
         if test_scripting:
@@ -175,14 +177,14 @@ class TestTransforms(TorchtextTestCase):
         expected = [1, 2, 0]
         self.assertEqual(actual, expected)
 
-        token_id = '0'
+        token_id = "0"
         transform = transforms.AddToken(token_id, begin=True)
         if test_scripting:
             transform = torch.jit.script(transform)
-        input = [['1', '2'], ['1', '2', '3']]
+        input = [["1", "2"], ["1", "2", "3"]]
 
         actual = transform(input)
-        expected = [['0', '1', '2'], ['0', '1', '2', '3']]
+        expected = [["0", "1", "2"], ["0", "1", "2", "3"]]
         self.assertEqual(actual, expected)
 
         transform = transforms.AddToken(token_id, begin=False)
@@ -190,12 +192,12 @@ class TestTransforms(TorchtextTestCase):
             transform = torch.jit.script(transform)
 
         actual = transform(input)
-        expected = [['1', '2', '0'], ['1', '2', '3', '0']]
+        expected = [["1", "2", "0"], ["1", "2", "3", "0"]]
         self.assertEqual(actual, expected)
 
-        input = ['1', '2']
+        input = ["1", "2"]
         actual = transform(input)
-        expected = ['1', '2', '0']
+        expected = ["1", "2", "0"]
         self.assertEqual(actual, expected)
 
     def test_add_token(self):
@@ -211,7 +213,7 @@ class TestSequential(TorchtextTestCase):
         padding_val = 0
         transform = transforms.Sequential(
             transforms.Truncate(max_seq_len=max_seq_len),
-            transforms.ToTensor(padding_value=padding_val, dtype=torch.long)
+            transforms.ToTensor(padding_value=padding_val, dtype=torch.long),
         )
 
         if test_scripting:
@@ -250,15 +252,13 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             "Hélló  WoŕlḊ¿",
             "Respublica superiorem",
             "Avdija Vršajević în",
-
         ]
 
         expected_token_ids = [
-            ['15496', '2159', '28265', '703', '389', '345', '30'],
-            ['39', '2634', '297', '10205', '220', '22173', '129', '243', '75', '41585', '232', '126', '123'],
-            ['4965', '11377', '64', '2208', '72', '29625'],
-            ['7355', '67', '34655', '569', '81', '32790', '1228', '1990', '72', '38325', '6184', '106', '77'],
-
+            ["15496", "2159", "28265", "703", "389", "345", "30"],
+            ["39", "2634", "297", "10205", "220", "22173", "129", "243", "75", "41585", "232", "126", "123"],
+            ["4965", "11377", "64", "2208", "72", "29625"],
+            ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
         ]
 
         # test batch of sentences
@@ -278,14 +278,14 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
 
     def test_gpt2_bpe_tokenizer_save_load_pybind(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
-        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_pybind.pt')
+        tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._gpt2_bpe_tokenizer((loaded_tokenizer))
 
     def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
-        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_torchscript.pt')
+        tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
@@ -308,12 +308,12 @@ class TestCLIPTokenizer(TorchtextTestCase):
     def _clip_tokenizer(self, tokenizer):
         sample_texts = [
             "Hello World!, how are you?",
-            "<|startoftext|> the quick brown fox jumped over the lazy dog <|endoftext|>"
+            "<|startoftext|> the quick brown fox jumped over the lazy dog <|endoftext|>",
         ]
 
         expected_token_ids = [
-            ['3306', '1002', '29325', '829', '631', '592', '286'],
-            ['49406', '518', '3712', '2866', '3240', '16901', '962', '518', '10753', '1929', '49407'],
+            ["3306", "1002", "29325", "829", "631", "592", "286"],
+            ["49406", "518", "3712", "2866", "3240", "16901", "962", "518", "10753", "1929", "49407"],
         ]
 
         # test batch of sentences
@@ -333,14 +333,14 @@ class TestCLIPTokenizer(TorchtextTestCase):
 
     def test_clip_tokenizer_save_load_pybind(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
-        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_pybind.pt')
+        tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._clip_tokenizer((loaded_tokenizer))
 
     def test_clip_tokenizer_save_load_torchscript(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
-        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_torchscript.pt')
+        tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)

@@ -1,12 +1,8 @@
 import os
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
+from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper

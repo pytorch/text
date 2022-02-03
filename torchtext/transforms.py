@@ -1,26 +1,28 @@
-from . import functional as F
-from torch.nn import Module
-from torch import Tensor
+import json
+from copy import deepcopy
+from functools import lru_cache
+from typing import Any, List, Optional, Union
+
 import torch
+import torchtext  # noqa: F401
+from torch import Tensor
+from torch.nn import Module
+from torchtext._torchtext import CLIPEncoder as CLIPEncoderPyBind, GPT2BPEEncoder as GPT2BPEEncoderPyBind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
-from torchtext._torchtext import GPT2BPEEncoder as GPT2BPEEncoderPyBind, CLIPEncoder as CLIPEncoderPyBind
-from typing import List, Optional, Any, Union
-import json
-from functools import lru_cache
-from copy import deepcopy
-import torchtext    # noqa: F401
+
+from . import functional as F
 
 __all__ = [
-    'SentencePieceTokenizer',
-    'VocabTransform',
-    'ToTensor',
-    'LabelToIndex',
-    'Truncate',
-    'AddToken',
-    'GPT2BPETokenizer',
-    'Sequential',
+    "SentencePieceTokenizer",
+    "VocabTransform",
+    "ToTensor",
+    "LabelToIndex",
+    "Truncate",
+    "AddToken",
+    "GPT2BPETokenizer",
+    "Sequential",
 ]
 
 
@@ -137,7 +139,10 @@ class LabelToIndex(Module):
     """
 
     def __init__(
-        self, label_names: Optional[List[str]] = None, label_path: Optional[str] = None, sort_names=False,
+        self,
+        label_names: Optional[List[str]] = None,
+        label_path: Optional[str] = None,
+        sort_names=False,
     ):
         assert label_names or label_path, "label_names or label_path is required"
         assert not (label_names and label_path), "label_names and label_path are mutually exclusive"
@@ -245,12 +250,10 @@ class GPT2BPETokenizer(Module):
         with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
             bpe_vocab = f.read()
         bpe_merge_ranks = {
-            self._seperator.join(merge_pair.split()): i
-            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+            self._seperator.join(merge_pair.split()): i for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
         }
         # Caching is enabled in Eager mode
-        self.bpe = GPT2BPEEncoderPyBind(bpe_encoder, bpe_merge_ranks,
-                                        self._seperator, bytes_to_unicode(), True)
+        self.bpe = GPT2BPEEncoderPyBind(bpe_encoder, bpe_merge_ranks, self._seperator, bytes_to_unicode(), True)
 
     @property
     def is_jitable(self):
@@ -296,15 +299,13 @@ class GPT2BPETokenizer(Module):
             raise TypeError("Input type not supported")
 
     def __prepare_scriptable__(self):
-        r"""Return a JITable tokenizer.
-        """
+        r"""Return a JITable tokenizer."""
         if not self.is_jitable:
             tokenizer_copy = deepcopy(self)
             # Disable caching in script mode
-            tokenizer_copy.bpe = torch.classes.torchtext.GPT2BPEEncoder(self.bpe.bpe_encoder_,
-                                                                        self.bpe.bpe_merge_ranks_,
-                                                                        self.bpe.seperator_,
-                                                                        self.bpe.byte_encoder_, False)
+            tokenizer_copy.bpe = torch.classes.torchtext.GPT2BPEEncoder(
+                self.bpe.bpe_encoder_, self.bpe.bpe_merge_ranks_, self.bpe.seperator_, self.bpe.byte_encoder_, False
+            )
             return tokenizer_copy
         return self
 
@@ -343,12 +344,10 @@ class CLIPTokenizer(Module):
         with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
             bpe_vocab = f.read()
         bpe_merge_ranks = {
-            self._seperator.join(merge_pair.split()): i
-            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+            self._seperator.join(merge_pair.split()): i for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
         }
         # Caching is enabled in Eager mode
-        self.bpe = CLIPEncoderPyBind(bpe_encoder, bpe_merge_ranks,
-                                     self._seperator, bytes_to_unicode(), True)
+        self.bpe = CLIPEncoderPyBind(bpe_encoder, bpe_merge_ranks, self._seperator, bytes_to_unicode(), True)
 
     @property
     def is_jitable(self):
@@ -395,15 +394,13 @@ class CLIPTokenizer(Module):
             raise TypeError("Input type not supported")
 
     def __prepare_scriptable__(self):
-        r"""Return a JITable tokenizer.
-        """
+        r"""Return a JITable tokenizer."""
         if not self.is_jitable:
             tokenizer_copy = deepcopy(self)
             # Disable caching in script mode
-            tokenizer_copy.bpe = torch.classes.torchtext.CLIPEncoder(self.bpe.bpe_encoder_,
-                                                                     self.bpe.bpe_merge_ranks_,
-                                                                     self.bpe.seperator_,
-                                                                     self.bpe.byte_encoder_, False)
+            tokenizer_copy.bpe = torch.classes.torchtext.CLIPEncoder(
+                self.bpe.bpe_encoder_, self.bpe.bpe_merge_ranks_, self.bpe.seperator_, self.bpe.byte_encoder_, False
+            )
             return tokenizer_copy
         return self
 
@@ -421,11 +418,7 @@ def bytes_to_unicode():
     To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
     And avoids mapping to whitespace/control characters the bpe code barfs on.
     """
-    bs = (
-        list(range(ord("!"), ord("~") + 1))
-        + list(range(ord("¡"), ord("¬") + 1))
-        + list(range(ord("®"), ord("ÿ") + 1))
-    )
+    bs = list(range(ord("!"), ord("~") + 1)) + list(range(ord("¡"), ord("¬") + 1)) + list(range(ord("®"), ord("ÿ") + 1))
     cs = bs[:]
     n = 0
     for b in range(2 ** 8):
@@ -438,8 +431,7 @@ def bytes_to_unicode():
 
 
 class Sequential(torch.nn.Sequential):
-    r"""A container to host a sequence of text transforms.
-    """
+    r"""A container to host a sequence of text transforms."""
 
     def forward(self, input: Any) -> Any:
         """

@@ -20,9 +20,9 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import pytorch_sphinx_theme
 import torch
 import torchtext
-import pytorch_sphinx_theme
 
 # -- General configuration ------------------------------------------------
 
@@ -34,15 +34,15 @@ import pytorch_sphinx_theme
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
 ]
 
 napoleon_use_ivar = True
@@ -50,21 +50,21 @@ napoleon_numpy_docstring = False
 napoleon_google_docstring = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'torchtext'
-copyright = '2017, Torch Contributors'
-author = 'Torch Contributors'
+project = "torchtext"
+copyright = "2017, Torch Contributors"
+author = "Torch Contributors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -88,7 +88,7 @@ language = None
 exclude_patterns = ["experimental_*"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -99,7 +99,7 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'pytorch_sphinx_theme'
+html_theme = "pytorch_sphinx_theme"
 html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -107,32 +107,32 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 # documentation.
 #
 html_theme_options = {
-    'pytorch_project': 'docs',    
-    'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
-    'analytics_id': 'UA-117752657-2',
+    "pytorch_project": "docs",
+    "collapse_navigation": False,
+    "display_version": True,
+    "logo_only": True,
+    "analytics_id": "UA-117752657-2",
 }
 
-html_logo = '_static/img/pytorch-logo-dark.svg'
+html_logo = "_static/img/pytorch-logo-dark.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'torch': ('http://pytorch.org/docs/0.3.0/', None)
+    "python": ("https://docs.python.org/", None),
+    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "torch": ("http://pytorch.org/docs/0.3.0/", None),
 }
 
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PyTorchdoc'
+htmlhelp_basename = "PyTorchdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -141,15 +141,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -159,8 +156,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pytorch.tex', 'torchtext Documentation',
-     'Torch Contributors', 'manual'),
+    (master_doc, "pytorch.tex", "torchtext Documentation", "Torch Contributors", "manual"),
 ]
 
 
@@ -168,10 +164,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'torchtext', 'torchtext Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "torchtext", "torchtext Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -180,9 +173,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'torchtext', 'torchtext Documentation',
-     author, 'torchtext', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "torchtext",
+        "torchtext Documentation",
+        author,
+        "torchtext",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 
@@ -190,8 +189,8 @@ texinfo_documents = [
 # See http://stackoverflow.com/a/41184353/3343043
 
 from docutils import nodes
-from sphinx.util.docfields import TypedField
 from sphinx import addnodes
+from sphinx.util.docfields import TypedField
 
 
 def patched_make_field(self, types, domain, items, **kw):
@@ -201,40 +200,39 @@ def patched_make_field(self, types, domain, items, **kw):
     # type: (List, unicode, Tuple) -> nodes.field
     def handle_item(fieldarg, content):
         par = nodes.paragraph()
-        par += addnodes.literal_strong('', fieldarg)  # Patch: this line added
+        par += addnodes.literal_strong("", fieldarg)  # Patch: this line added
         # par.extend(self.make_xrefs(self.rolename, domain, fieldarg,
         #                           addnodes.literal_strong))
         if fieldarg in types:
-            par += nodes.Text(' (')
+            par += nodes.Text(" (")
             # NOTE: using .pop() here to prevent a single type node to be
             # inserted twice into the doctree, which leads to
             # inconsistencies later when references are resolved
             fieldtype = types.pop(fieldarg)
             if len(fieldtype) == 1 and isinstance(fieldtype[0], nodes.Text):
-                typename = u''.join(n.astext() for n in fieldtype)
-                typename = typename.replace('int', 'python:int')
-                typename = typename.replace('long', 'python:long')
-                typename = typename.replace('float', 'python:float')
-                typename = typename.replace('type', 'python:type')
-                par.extend(self.make_xrefs(self.typerolename, domain, typename,
-                                           addnodes.literal_emphasis, **kw))
+                typename = "".join(n.astext() for n in fieldtype)
+                typename = typename.replace("int", "python:int")
+                typename = typename.replace("long", "python:long")
+                typename = typename.replace("float", "python:float")
+                typename = typename.replace("type", "python:type")
+                par.extend(self.make_xrefs(self.typerolename, domain, typename, addnodes.literal_emphasis, **kw))
             else:
                 par += fieldtype
-            par += nodes.Text(')')
-        par += nodes.Text(' -- ')
+            par += nodes.Text(")")
+        par += nodes.Text(" -- ")
         par += content
         return par
 
-    fieldname = nodes.field_name('', self.label)
+    fieldname = nodes.field_name("", self.label)
     if len(items) == 1 and self.can_collapse:
         fieldarg, content = items[0]
         bodynode = handle_item(fieldarg, content)
     else:
         bodynode = self.list_type()
         for fieldarg, content in items:
-            bodynode += nodes.list_item('', handle_item(fieldarg, content))
-    fieldbody = nodes.field_body('', bodynode)
-    return nodes.field('', fieldname, fieldbody)
+            bodynode += nodes.list_item("", handle_item(fieldarg, content))
+    fieldbody = nodes.field_body("", bodynode)
+    return nodes.field("", fieldname, fieldbody)
 
 
 TypedField.make_field = patched_make_field

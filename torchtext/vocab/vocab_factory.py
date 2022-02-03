@@ -1,14 +1,14 @@
-from .vocab import Vocab
-from typing import Dict, Iterable, Optional, List
 from collections import Counter, OrderedDict
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
+from typing import Dict, Iterable, List, Optional
+
+from torchtext._torchtext import Vocab as VocabPybind
+
+from .vocab import Vocab
 
 
-def vocab(ordered_dict: Dict, min_freq: int = 1,
-          specials: Optional[List[str]] = None,
-          special_first: bool = True) -> Vocab:
+def vocab(
+    ordered_dict: Dict, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True
+) -> Vocab:
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
@@ -62,7 +62,13 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
     return Vocab(VocabPybind(tokens, None))
 
 
-def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True, max_tokens: Optional[int] = None) -> Vocab:
+def build_vocab_from_iterator(
+    iterator: Iterable,
+    min_freq: int = 1,
+    specials: Optional[List[str]] = None,
+    special_first: bool = True,
+    max_tokens: Optional[int] = None,
+) -> Vocab:
     """
     Build a Vocab from an iterator.
 
@@ -101,7 +107,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         ordered_dict = OrderedDict(sorted_by_freq_tuples)
     else:
         assert len(specials) < max_tokens, "len(specials) >= max_tokens, so the vocab will be entirely special tokens."
-        ordered_dict = OrderedDict(sorted_by_freq_tuples[:max_tokens - len(specials)])
+        ordered_dict = OrderedDict(sorted_by_freq_tuples[: max_tokens - len(specials)])
 
     word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials, special_first=special_first)
     return word_vocab

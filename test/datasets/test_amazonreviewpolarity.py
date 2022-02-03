@@ -27,18 +27,14 @@ def _get_mock_dataset(root_dir):
         with open(txt_file, "w") as f:
             for i in range(5):
                 label = seed % 2 + 1
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = " ".join(random.choice(string.ascii_letters) for i in range(seed))
                 dataset_line = (label, f"{rand_string} {rand_string}")
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
                 f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
+    compressed_dataset_path = os.path.join(base_dir, "amazon_review_polarity_csv.tar.gz")
     # create tar file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
         tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
@@ -55,9 +51,7 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
