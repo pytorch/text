@@ -22,28 +22,28 @@ def _get_mock_dataset(root_dir):
 
     seed = 1
     mocked_data = defaultdict(list)
-    file_name = "train"
+    file_name = "enwik9"
     txt_file = os.path.join(temp_dataset_dir, file_name)
-    mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
+    mocked_lines = mocked_data["train"]
     with open(txt_file, "w") as f:
         for i in range(5):
-            label = seed % 2
             rand_string = "<" + " ".join(
                 random.choice(string.ascii_letters) for i in range(seed)
             ) + ">"
-            dataset_line = (rand_string)
-            f.write(f"{rand_string}\n")
+            dataset_line = (f"'{rand_string}'")
+            f.write(f"'{rand_string}'\n")
 
             # append line to correct dataset split
             mocked_lines.append(dataset_line)
             seed += 1
 
+    print("base_dir=")
+    print(base_dir)
     compressed_dataset_path = os.path.join(base_dir, "enwik9.zip")
     # create zip file from dataset folder
     with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
-        file_name = "train"
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        zip_file.write(txt_file, arcname=os.path.join("EnWik9", file_name))
+        zip_file.write(txt_file, arcname="enwik9")
 
     return mocked_data
 
@@ -56,6 +56,8 @@ class TestEnWik9(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
+        print("cls.root_dir:")
+        print(cls.root_dir)
         cls.samples = _get_mock_dataset(cls.root_dir)
         cls.patcher = patch(
             "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
