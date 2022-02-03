@@ -37,13 +37,11 @@ def _get_mock_dataset(root_dir):
             mocked_lines.append(dataset_line)
             seed += 1
 
-    print("base_dir=")
-    print(base_dir)
     compressed_dataset_path = os.path.join(base_dir, "enwik9.zip")
     # create zip file from dataset folder
     with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        zip_file.write(txt_file, arcname="enwik9")
+        zip_file.write(txt_file, arcname=file_name)
 
     return mocked_data
 
@@ -56,8 +54,6 @@ class TestEnWik9(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        print("cls.root_dir:")
-        print(cls.root_dir)
         cls.samples = _get_mock_dataset(cls.root_dir)
         cls.patcher = patch(
             "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
