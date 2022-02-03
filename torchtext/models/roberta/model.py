@@ -1,13 +1,11 @@
 import logging
 import math
-
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
 import torch
 import torch.nn as nn
 from torch import Tensor
-
 from torch.nn import Module
 
 from .modules import TransformerEncoder

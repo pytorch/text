@@ -15,7 +15,6 @@ from torchtext.data.functional import (
 )
 
 from ..common.assets import get_asset_path
-
 from ..common.torchtext_test_case import TorchtextTestCase
 
 

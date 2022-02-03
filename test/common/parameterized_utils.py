@@ -38,9 +38,7 @@ def nested_params(*params_set):
 
     # Parameters to be nested are given as list of `parameterized.param`
     if not all(isinstance(p, param) for p in flatten):
-        raise TypeError(
-            "When using ``parameterized.param``, all the parameters have to be of the ``param`` type."
-        )
+        raise TypeError("When using ``parameterized.param``, all the parameters have to be of the ``param`` type.")
     if any(p.args for p in flatten):
         raise ValueError(
             "When using ``parameterized.param``, all the parameters have to be provided as keyword argument."

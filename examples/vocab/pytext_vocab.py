@@ -2,7 +2,6 @@ from collections import OrderedDict
 from typing import Dict, List, Optional
 
 import torch
-
 from fairseq.data.dictionary import Dictionary
 from torchtext.vocab import vocab, Vocab
 

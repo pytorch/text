@@ -6,7 +6,6 @@ from torchtext import transforms
 from torchtext.vocab import vocab
 
 from .common.assets import get_asset_path
-
 from .common.torchtext_test_case import TorchtextTestCase
 
 

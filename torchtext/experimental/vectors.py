@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torchtext._torchtext import _load_token_and_vectors_from_file, Vectors as VectorsPybind
-
 from torchtext.utils import download_from_url, extract_archive
 
 __all__ = ["FastText", "GloVe", "load_vectors_from_file_path", "build_vectors", "Vectors"]
