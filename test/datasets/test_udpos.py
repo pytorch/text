@@ -27,8 +27,7 @@ def _get_mock_dataset(root_dir):
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(txt_file, "w") as f:
             for i in range(5):
-                label = seed % 2
-                rand_strings = [random.choice(string.ascii_letters) for i in range(seed)]
+                rand_strings = ["".join(random.sample(string.ascii_letters, random.randint(1, 10))) for i in range(seed)]
                 rand_label_1 = [random.choice(string.ascii_letters) for i in range(seed)]
                 rand_label_2 = [random.choice(string.ascii_letters) for i in range(seed)]
                 # one token per line (each sample ends with an extra \n)
