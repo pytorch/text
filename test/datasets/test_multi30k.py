@@ -5,10 +5,10 @@ import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from ..common.parameterized_utils import nested_params
 from torchtext.datasets import Multi30k
 
 from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -26,9 +26,7 @@ def _get_mock_dataset(root_dir):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w") as f:
             for i in range(5):
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = " ".join(random.choice(string.ascii_letters) for i in range(seed))
                 content = f"{rand_string}\n"
                 f.write(content)
                 mocked_data[file_name].append(content)
@@ -53,9 +51,7 @@ class TestMulti30k(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -69,7 +65,10 @@ class TestMulti30k(TempDirMixin, TorchtextTestCase):
         if split == "valid":
             split = "val"
         samples = list(dataset)
-        expected_samples = [(d1, d2) for d1, d2 in zip(self.samples[f'{split}.{language_pair[0]}'], self.samples[f'{split}.{language_pair[1]}'])]
+        expected_samples = [
+            (d1, d2)
+            for d1, d2 in zip(self.samples[f"{split}.{language_pair[0]}"], self.samples[f"{split}.{language_pair[1]}"])
+        ]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 

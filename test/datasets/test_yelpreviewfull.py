@@ -28,9 +28,7 @@ def _get_mock_dataset(root_dir):
         with open(csv_file, "w") as f:
             for i in range(5):
                 label = seed % 5 + 1
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = " ".join(random.choice(string.ascii_letters) for i in range(seed))
                 dataset_line = (label, f"{rand_string}")
                 f.write(f'"{label}","{rand_string}"\n')
 
@@ -55,9 +53,7 @@ class TestYelpReviewFull(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
