@@ -90,7 +90,7 @@ setup_info = dict(
     install_requires=[
         'tqdm', 'requests', pytorch_package_dep, 'numpy'
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.7',
     classifiers=[
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
