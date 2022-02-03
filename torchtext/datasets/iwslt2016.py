@@ -8,125 +8,128 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _clean_files,
     _create_dataset_directory,
+    _generate_iwslt_files_for_lang_and_split,
 )
 
-URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
+URL = "https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8"
 
-_PATH = '2016-01.tgz'
+_PATH = "2016-01.tgz"
 
-MD5 = 'c393ed3fc2a1b0f004b3331043f615ae'
+MD5 = "c393ed3fc2a1b0f004b3331043f615ae"
 
 SUPPORTED_DATASETS = {
-    'valid_test': ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014'],
-    'language_pair': {
-        'en': ['ar', 'de', 'fr', 'cs'],
-        'ar': ['en'],
-        'fr': ['en'],
-        'de': ['en'],
-        'cs': ['en'],
+    "valid_test": ["dev2010", "tst2010", "tst2011", "tst2012", "tst2013", "tst2014"],
+    "language_pair": {
+        "en": ["ar", "de", "fr", "cs"],
+        "ar": ["en"],
+        "fr": ["en"],
+        "de": ["en"],
+        "cs": ["en"],
     },
-    'year': 16,
+    "year": 16,
 }
 
 NUM_LINES = {
-    'train': {
-        'train': {
-            ('ar', 'en'): 224126,
-            ('de', 'en'): 196884,
-            ('en', 'fr'): 220400,
-            ('cs', 'en'): 114390
+    "train": {
+        "train": {
+            ("ar", "en"): 224126,
+            ("de", "en"): 196884,
+            ("en", "fr"): 220400,
+            ("cs", "en"): 114390
         }
     },
-    'valid': {
-        'dev2010': {
-            ('ar', 'en'): 887,
-            ('de', 'en'): 887,
-            ('en', 'fr'): 887,
-            ('cs', 'en'): 480
+    "valid": {
+        "dev2010": {
+            ("ar", "en"): 887,
+            ("de", "en"): 887,
+            ("en", "fr"): 887,
+            ("cs", "en"): 480
         },
-        'tst2010': {
-            ('ar', 'en'): 1569,
-            ('de', 'en'): 1565,
-            ('en', 'fr'): 1664,
-            ('cs', 'en'): 1511
+        "tst2010": {
+            ("ar", "en"): 1569,
+            ("de", "en"): 1565,
+            ("en", "fr"): 1664,
+            ("cs", "en"): 1511
         },
-        'tst2011': {
-            ('ar', 'en'): 1199,
-            ('de', 'en'): 1433,
-            ('en', 'fr'): 818,
-            ('cs', 'en'): 1013
+        "tst2011": {
+            ("ar", "en"): 1199,
+            ("de", "en"): 1433,
+            ("en", "fr"): 818,
+            ("cs", "en"): 1013
         },
-        'tst2012': {
-            ('ar', 'en'): 1702,
-            ('de', 'en'): 1700,
-            ('en', 'fr'): 1124,
-            ('cs', 'en'): 1385
+        "tst2012": {
+            ("ar", "en"): 1702,
+            ("de", "en"): 1700,
+            ("en", "fr"): 1124,
+            ("cs", "en"): 1385
         },
-        'tst2013': {
-            ('ar', 'en'): 1169,
-            ('de', 'en'): 993,
-            ('en', 'fr'): 1026,
-            ('cs', 'en'): 1327
+        "tst2013": {
+            ("ar", "en"): 1169,
+            ("de", "en"): 993,
+            ("en", "fr"): 1026,
+            ("cs", "en"): 1327
         },
-        'tst2014': {
-            ('ar', 'en'): 1107,
-            ('de', 'en'): 1305,
-            ('en', 'fr'): 1305
+        "tst2014": {
+            ("ar", "en"): 1107,
+            ("de", "en"): 1305,
+            ("en", "fr"): 1305
         }
     },
-    'test': {
-        'dev2010': {
-            ('ar', 'en'): 887,
-            ('de', 'en'): 887,
-            ('en', 'fr'): 887,
-            ('cs', 'en'): 480
+    "test": {
+        "dev2010": {
+            ("ar", "en"): 887,
+            ("de", "en"): 887,
+            ("en", "fr"): 887,
+            ("cs", "en"): 480
         },
-        'tst2010': {
-            ('ar', 'en'): 1569,
-            ('de', 'en'): 1565,
-            ('en', 'fr'): 1664,
-            ('cs', 'en'): 1511
+        "tst2010": {
+            ("ar", "en"): 1569,
+            ("de", "en"): 1565,
+            ("en", "fr"): 1664,
+            ("cs", "en"): 1511
         },
-        'tst2011': {
-            ('ar', 'en'): 1199,
-            ('de', 'en'): 1433,
-            ('en', 'fr'): 818,
-            ('cs', 'en'): 1013
+        "tst2011": {
+            ("ar", "en"): 1199,
+            ("de", "en"): 1433,
+            ("en", "fr"): 818,
+            ("cs", "en"): 1013
         },
-        'tst2012': {
-            ('ar', 'en'): 1702,
-            ('de', 'en'): 1700,
-            ('en', 'fr'): 1124,
-            ('cs', 'en'): 1385
+        "tst2012": {
+            ("ar", "en"): 1702,
+            ("de", "en"): 1700,
+            ("en", "fr"): 1124,
+            ("cs", "en"): 1385
         },
-        'tst2013': {
-            ('ar', 'en'): 1169,
-            ('de', 'en'): 993,
-            ('en', 'fr'): 1026,
-            ('cs', 'en'): 1327
+        "tst2013": {
+            ("ar", "en"): 1169,
+            ("de", "en"): 993,
+            ("en", "fr"): 1026,
+            ("cs", "en"): 1327
         },
-        'tst2014': {
-            ('ar', 'en'): 1107,
-            ('de', 'en'): 1305,
-            ('en', 'fr'): 1305
+        "tst2014": {
+            ("ar", "en"): 1107,
+            ("de", "en"): 1305,
+            ("en", "fr"): 1305
         }
     }
 }
 
 SET_NOT_EXISTS = {
-    ('en', 'ar'): [],
-    ('en', 'de'): [],
-    ('en', 'fr'): [],
-    ('en', 'cs'): ['tst2014'],
-    ('ar', 'en'): [],
-    ('fr', 'en'): [],
-    ('de', 'en'): [],
-    ('cs', 'en'): ['tst2014']
+    ("en", "ar"): [],
+    ("en", "de"): [],
+    ("en", "fr"): [],
+    ("en", "cs"): ["tst2014"],
+    ("ar", "en"): [],
+    ("fr", "en"): [],
+    ("de", "en"): [],
+    ("cs", "en"): ["tst2014"]
 }
 
 DATASET_NAME = "IWSLT2016"
 
 
+# TODO: migrate this to dataset_utils.py once torchdata is a hard dependency to
+# avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
     cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_filepath)
     cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").read_from_tar()
@@ -140,7 +143,7 @@ def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
-def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
+def IWSLT2016(root=".data", split=("train", "valid", "test"), language_pair=("de", "en"), valid_set="tst2013", test_set="tst2014"):
     """IWSLT2016 dataset
 
     The available datasets include following:
@@ -148,20 +151,20 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     **Language pairs**:
 
     +-----+-----+-----+-----+-----+-----+
-    |     |'en' |'fr' |'de' |'cs' |'ar' |
+    |     |"en" |"fr" |"de" |"cs" |"ar" |
     +-----+-----+-----+-----+-----+-----+
-    |'en' |     |   x |  x  |  x  |  x  |
+    |"en" |     |   x |  x  |  x  |  x  |
     +-----+-----+-----+-----+-----+-----+
-    |'fr' |  x  |     |     |     |     |
+    |"fr" |  x  |     |     |     |     |
     +-----+-----+-----+-----+-----+-----+
-    |'de' |  x  |     |     |     |     |
+    |"de" |  x  |     |     |     |     |
     +-----+-----+-----+-----+-----+-----+
-    |'cs' |  x  |     |     |     |     |
+    |"cs" |  x  |     |     |     |     |
     +-----+-----+-----+-----+-----+-----+
-    |'ar' |  x  |     |     |     |     |
+    |"ar" |  x  |     |     |     |     |
     +-----+-----+-----+-----+-----+-----+
 
-    **valid/test sets**: ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
+    **valid/test sets**: ["dev2010", "tst2010", "tst2011", "tst2012", "tst2013", "tst2014"]
 
     For additional details refer to source website: https://wit3.fbk.eu/2016-01
 
@@ -184,59 +187,29 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple but got {} instead".format(type(language_pair)))
 
-    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements: src and tgt language respectively'
+    assert (len(language_pair) == 2), "language_pair must contain only 2 elements: src and tgt language respectively"
 
     src_language, tgt_language = language_pair[0], language_pair[1]
 
-    if src_language not in SUPPORTED_DATASETS['language_pair']:
+    if src_language not in SUPPORTED_DATASETS["language_pair"]:
         raise ValueError("src_language '{}' is not valid. Supported source languages are {}".
-                         format(src_language, list(SUPPORTED_DATASETS['language_pair'])))
+                         format(src_language, list(SUPPORTED_DATASETS["language_pair"])))
 
-    if tgt_language not in SUPPORTED_DATASETS['language_pair'][src_language]:
+    if tgt_language not in SUPPORTED_DATASETS["language_pair"][src_language]:
         raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".
-                         format(tgt_language, src_language, SUPPORTED_DATASETS['language_pair'][src_language]))
+                         format(tgt_language, src_language, SUPPORTED_DATASETS["language_pair"][src_language]))
 
-    if valid_set not in SUPPORTED_DATASETS['valid_test'] or valid_set in SET_NOT_EXISTS[language_pair]:
+    if valid_set not in SUPPORTED_DATASETS["valid_test"] or valid_set in SET_NOT_EXISTS[language_pair]:
         raise ValueError("valid_set '{}' is not valid for given language pair {}. Supported validation sets are {}".
-                         format(valid_set, language_pair, [s for s in SUPPORTED_DATASETS['valid_test'] if s not in SET_NOT_EXISTS[language_pair]]))
+                         format(valid_set, language_pair, [s for s in SUPPORTED_DATASETS["valid_test"] if s not in SET_NOT_EXISTS[language_pair]]))
 
-    if test_set not in SUPPORTED_DATASETS['valid_test'] or test_set in SET_NOT_EXISTS[language_pair]:
+    if test_set not in SUPPORTED_DATASETS["valid_test"] or test_set in SET_NOT_EXISTS[language_pair]:
         raise ValueError("test_set '{}' is not valid for give language pair {}. Supported test sets are {}".
-                         format(valid_set, language_pair, [s for s in SUPPORTED_DATASETS['valid_test'] if s not in SET_NOT_EXISTS[language_pair]]))
+                         format(valid_set, language_pair, [s for s in SUPPORTED_DATASETS["valid_test"] if s not in SET_NOT_EXISTS[language_pair]]))
 
-    train_filenames = (
-        'train.{}-{}.{}'.format(src_language, tgt_language, src_language),
-        'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    file_path_by_lang_and_split, uncleaned_filenames_by_lang_and_split = _generate_iwslt_files_for_lang_and_split(
+        SUPPORTED_DATASETS["year"], src_language, tgt_language, valid_set, test_set
     )
-    valid_filenames = (
-        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
-        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
-    )
-    test_filenames = (
-        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
-        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
-    )
-
-    src_train, tgt_train = train_filenames
-    src_eval, tgt_eval = valid_filenames
-    src_test, tgt_test = test_filenames
-
-    uncleaned_train_filenames = (
-        'train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
-        'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    )
-    uncleaed_valid_filenames = (
-        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
-        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
-    )
-    uncleaned_test_filenames = (
-        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
-        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
-    )
-
-    uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
-    uncleaned_src_eval, uncleaned_tgt_eval = uncleaed_valid_filenames
-    uncleaned_src_test, uncleaned_tgt_test = uncleaned_test_filenames
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
@@ -258,34 +231,8 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(lambda x: os.path.basename(inner_iwslt_tar) in x[0])
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    file_path_by_lang_and_split = {
-        src_language: {
-            "train": src_train,
-            "valid": src_eval,
-            "test": src_test,
-        },
-        tgt_language: {
-            "train": tgt_train,
-            "valid": tgt_eval,
-            "test": tgt_test,
-        }
-    }
-
-    uncleaned_filenames = {
-        src_language: {
-            "train": uncleaned_src_train,
-            "valid": uncleaned_src_eval,
-            "test": uncleaned_src_test,
-        },
-        tgt_language: {
-            "train": uncleaned_tgt_train,
-            "valid": uncleaned_tgt_eval,
-            "test": uncleaned_tgt_test,
-        }
-    }
-
     src_filename = file_path_by_lang_and_split[src_language][split]
-    uncleaned_src_filename = uncleaned_filenames[src_language][split]
+    uncleaned_src_filename = uncleaned_filenames_by_lang_and_split[src_language][split]
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile.
@@ -294,7 +241,7 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_inner_src_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_src_filepath, uncleaned_src_filename)
 
     tgt_filename = file_path_by_lang_and_split[tgt_language][split]
-    uncleaned_tgt_filename = uncleaned_filenames[tgt_language][split]
+    uncleaned_tgt_filename = uncleaned_filenames_by_lang_and_split[tgt_language][split]
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile.
