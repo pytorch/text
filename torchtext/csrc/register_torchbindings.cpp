@@ -1,3 +1,4 @@
+#include <clip_tokenizer.h>  // @manual
 #include <gpt2_bpe_tokenizer.h>  // @manual
 #include <regex.h>
 #include <regex_tokenizer.h>  // @manual
@@ -138,6 +139,23 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           [](GPT2BPEEncoderStatesTorchbind states)
               -> c10::intrusive_ptr<GPT2BPEEncoder> {
             return _deserialize_gpt2_bpe_encoder_torchbind(states);
+          });
+  
+  m.class_<CLIPEncoder>("CLIPEncoder")
+      .def(torch::init<c10::Dict<std::string, int64_t>,
+                       c10::Dict<std::string, int64_t>, std::string,
+                       c10::Dict<int64_t, std::string>, bool>())
+      .def("encode", &CLIPEncoder::Encode)
+      .def_pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<CLIPEncoder> &self)
+              -> CLIPEncoderStatesTorchbind {
+            return _serialize_clip_encoder_torchbind(self);
+          },
+          // __setstate__
+          [](CLIPEncoderStatesTorchbind states)
+              -> c10::intrusive_ptr<CLIPEncoder> {
+            return _deserialize_clip_encoder_torchbind(states);
           });
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);
