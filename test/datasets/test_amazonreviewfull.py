@@ -26,7 +26,7 @@ def _get_mock_dataset(root_dir):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w") as f:
             for i in range(5):
-                label = seed % 2 + 1
+                label = seed % 5 + 1
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
