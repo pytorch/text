@@ -1,15 +1,47 @@
+import json
 import os
 import random
 import string
-import tarfile
+import uuid
 from collections import defaultdict
+from random import randint
 from unittest.mock import patch
 
 from parameterized import parameterized
+from torchtext.data.datasets_utils import _ParseSQuADQAData
 from torchtext.datasets.squad1 import SQuAD1
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
+
+
+def _get_mock_json_data():
+    rand_string = " ".join(random.choice(string.ascii_letters) for i in range(10))
+    mock_json_data = {
+        "data": [
+            {
+                "title": rand_string,
+                "paragraphs": [
+                    {
+                        "context": rand_string,
+                        "qas": [
+                            {
+                                "answers": [
+                                    {
+                                        "answer_start": randint(1, 1000),
+                                        "text": rand_string,
+                                    }
+                                ],
+                                "question": rand_string,
+                                "id": uuid.uuid1().hex,
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    return mock_json_data
 
 
 def _get_mock_dataset(root_dir):
@@ -17,31 +49,20 @@ def _get_mock_dataset(root_dir):
     root_dir: directory to the mocked dataset
     """
     base_dir = os.path.join(root_dir, "SQuAD1")
-    temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
-    os.makedirs(temp_dataset_dir, exist_ok=True)
+    os.makedirs(base_dir, exist_ok=True)
 
-    seed = 1
     mocked_data = defaultdict(list)
-    for file_name in ("train.csv", "test.csv"):
-        txt_file = os.path.join(temp_dataset_dir, file_name)
+    for file_name in ("train-v1.1.json", "dev-v1.1.json"):
+        txt_file = os.path.join(base_dir, file_name)
         with open(txt_file, "w") as f:
-            for i in range(5):
-                label = seed % 2 + 1
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
-                dataset_line = (label, f"{rand_string} {rand_string}")
-                # append line to correct dataset split
-                mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
-                f.write(f'"{label}","{rand_string}","{rand_string}"\n')
-                seed += 1
+            mock_json_data = _get_mock_json_data()
+            f.write(json.dumps(mock_json_data))
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
-    # create tar file from dataset folder
-    with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
+            split = "train" if "train" in file_name else "dev"
+            dataset_line = next(
+                iter(_ParseSQuADQAData([("file_handle", mock_json_data)]))
+            )
+            mocked_data[split].append(dataset_line)
 
     return mocked_data
 
