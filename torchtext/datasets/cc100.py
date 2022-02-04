@@ -33,7 +33,7 @@ DATASET_NAME = "CC100"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train",))
-def CC100(root: str = ".data", split: Union[Tuple[str], str] = ("train",), language_code: str = "en"):
+def CC100(root: str, split: Union[Tuple[str], str], language_code: str = "en"):
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
