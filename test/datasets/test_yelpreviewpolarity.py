@@ -17,17 +17,17 @@ def _get_mock_dataset(root_dir):
     root_dir: directory to the mocked dataset
     """
     base_dir = os.path.join(root_dir, "YelpReviewPolarity")
-    temp_dataset_dir = os.path.join(base_dir, "yelp_review_polarity_csv")
+    temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name in ["train.csv", "test.csv"]:
+    for file_name in ("train.csv", "test.csv"):
         csv_file = os.path.join(temp_dataset_dir, file_name)
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(csv_file, "w") as f:
             for i in range(5):
-                label = seed % 11
+                label = seed % 2 + 1
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
@@ -41,9 +41,7 @@ def _get_mock_dataset(root_dir):
     compressed_dataset_path = os.path.join(base_dir, "yelp_review_polarity_csv.tar.gz")
     # create gz file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        for file_name in ("train.csv", "test.csv"):
-            csv_file = os.path.join(temp_dataset_dir, file_name)
-            tar.add(csv_file)
+        tar.add(temp_dataset_dir, arcname="yelp_review_polarity_csv")
 
     return mocked_data
 
