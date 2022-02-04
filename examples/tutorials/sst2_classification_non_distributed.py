@@ -64,8 +64,6 @@ max_seq_len = 256
 xlmr_vocab_path = r"https://download.pytorch.org/models/text/xlmr.vocab.pt"
 xlmr_spm_model_path = r"https://download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 
-label_transform = T.LabelToIndex(label_names=['0', '1'])
-
 text_transform = T.Sequential(
     T.SentencePieceTokenizer(xlmr_spm_model_path),
     T.VocabTransform(load_state_dict_from_url(xlmr_vocab_path)),
@@ -94,20 +92,23 @@ text_transform = T.Sequential(
 #
 #
 
-from torchtext.experimental.datasets.sst2 import SST2
+from torchtext.datasets import SST2
+from torch.utils.data import DataLoader
 batch_size = 16
 
 train_datapipe = SST2(split='train')
 dev_datapipe = SST2(split='dev')
 
 # Transform the raw dataset using non-batched API (i.e apply transformation line by line)
-train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), label_transform(x[1])))
+train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
 train_datapipe = train_datapipe.batch(batch_size)
 train_datapipe = train_datapipe.rows2columnar(["token_ids", "target"])
+train_dataloader = DataLoader(train_datapipe)
 
-dev_datapipe = dev_datapipe.map(lambda x: (text_transform(x[0]), label_transform(x[1])))
+dev_datapipe = dev_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
 dev_datapipe = dev_datapipe.batch(batch_size)
 dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
+dev_dataloader = DataLoader(dev_datapipe)
 
 
 #######################################################################
@@ -178,8 +179,10 @@ def evaluate():
     correct_predictions = 0
     total_predictions = 0
     counter = 0
+    import pdb
+    pdb.set_trace()
     with torch.no_grad():
-        for batch in dev_datapipe:
+        for batch in dev_dataloader:
             input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
             target = torch.tensor(batch['target']).to(DEVICE)
             loss, predictions = eval_step(input, target)
@@ -207,7 +210,7 @@ for e in range(num_epochs):
     loss, accuracy = evaluate()
     print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
     model.train()
-    for batch in train_datapipe:
+    for batch in train_dataloader:
         input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
         target = torch.tensor(batch['target']).to(DEVICE)
         train_step(input, target)
