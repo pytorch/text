@@ -72,7 +72,7 @@ class TestIMDB(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity(self, split):
+    def test_imdb(self, split):
         dataset = IMDB(root=self.root_dir, split=split)
 
         samples = list(dataset)
@@ -81,7 +81,7 @@ class TestIMDB(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity_split_argument(self, split):
+    def test_imdb_split_argument(self, split):
         dataset1 = IMDB(root=self.root_dir, split=split)
         (dataset2,) = IMDB(root=self.root_dir, split=(split,))
 
