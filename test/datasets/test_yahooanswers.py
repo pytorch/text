@@ -64,7 +64,7 @@ class TestYahooAnswers(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity(self, split):
+    def test_yahoo_answers(self, split):
         dataset = YahooAnswers(root=self.root_dir, split=split)
 
         samples = list(dataset)
@@ -73,7 +73,7 @@ class TestYahooAnswers(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity_split_argument(self, split):
+    def test_yahoo_answers_split_argument(self, split):
         dataset1 = YahooAnswers(root=self.root_dir, split=split)
         (dataset2,) = YahooAnswers(root=self.root_dir, split=(split,))
 
