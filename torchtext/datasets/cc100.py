@@ -33,7 +33,7 @@ DATASET_NAME = "CC100"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train",))
-def CC100(root: str, split: Union[Tuple[str], str] = ("train",), language_code: str = "en"):
+def CC100(root: str = ".data", split: Union[Tuple[str], str] = ("train",), language_code: str = "en"):
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
@@ -46,16 +46,11 @@ def CC100(root: str, split: Union[Tuple[str], str] = ("train",), language_code: 
     cache_compressed_dp = HttpReader(cache_compressed_dp)
     cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_compressed_dp = FileOpener(cache_compressed_dp, mode="b").map(lambda x: x[0])
-
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.basename(x).rstrip(".xz"))
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_xz()
-    cache_decompressed_dp = cache_decompressed_dp.filter(lambda x: os.path.basename(x).rstrip(".xz") in x[0])
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="r")
-
-    units_dp = data_dp.readlines().map(lambda x: (language_code, x[1]))
-    return units_dp
+    data_dp = FileOpener(cache_decompressed_dp, mode="r").readlines(return_path=False)
+    return data_dp.map(lambda x: (language_code, x))
