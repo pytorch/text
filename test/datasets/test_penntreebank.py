@@ -58,7 +58,7 @@ class TestPennTreebank(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand(["train", "valid", "test"])
-    def test_amazon_review_polarity(self, split):
+    def test_penn_treebank_polarity(self, split):
         dataset = PennTreebank(root=self.root_dir, split=split)
 
         samples = list(dataset)
@@ -67,7 +67,7 @@ class TestPennTreebank(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "valid", "test"])
-    def test_amazon_review_polarity_split_argument(self, split):
+    def test_penn_treebank_split_argument(self, split):
         dataset1 = PennTreebank(root=self.root_dir, split=split)
         (dataset2,) = PennTreebank(root=self.root_dir, split=(split,))
 
