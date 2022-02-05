@@ -1,7 +1,6 @@
 import os
 import random
 import string
-import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
