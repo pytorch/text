@@ -70,10 +70,11 @@ def _get_mock_dataset(root_dir, split, src, tgt):
     """
     root_dir: directory to the mocked dataset
     """
-    inner_temp_dataset_dir = f"{src}-{tgt}"
     outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/")
-    os.makedirs(inner_temp_dataset_dir, exist_ok=True)
+    inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
+
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
+    os.makedirs(inner_temp_dataset_dir, exist_ok=True)
 
     mocked_data = defaultdict(lambda: defaultdict(list))
     valid_set = "tst2013"
@@ -126,7 +127,11 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand([("train", "de", "en"), ("valid", "de", "en")])
+    @parameterized.expand([
+        ("train", "de", "en"),
+        ("valid", "de", "en"),
+        ("test", "de", "en"),
+    ])
     def test_iwslt2016(self, split, src, tgt):
         expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt)
 
@@ -137,7 +142,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
-    @parameterized.expand(["train", "valid"])
+    @parameterized.expand(["train", "valid", "test"])
     def test_iwslt2016_split_argument(self, split):
         dataset1 = IWSLT2016(root=self.root_dir, split=split)
         (dataset2,) = IWSLT2016(root=self.root_dir, split=(split,))
