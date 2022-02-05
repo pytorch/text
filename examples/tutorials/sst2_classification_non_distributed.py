@@ -103,12 +103,12 @@ dev_datapipe = SST2(split='dev')
 train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
 train_datapipe = train_datapipe.batch(batch_size)
 train_datapipe = train_datapipe.rows2columnar(["token_ids", "target"])
-train_dataloader = DataLoader(train_datapipe)
+train_dataloader = DataLoader(train_datapipe, batch_size=None)
 
 dev_datapipe = dev_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
 dev_datapipe = dev_datapipe.batch(batch_size)
 dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
-dev_dataloader = DataLoader(dev_datapipe)
+dev_dataloader = DataLoader(dev_datapipe, batch_size=None)
 
 
 #######################################################################
@@ -179,8 +179,6 @@ def evaluate():
     correct_predictions = 0
     total_predictions = 0
     counter = 0
-    import pdb
-    pdb.set_trace()
     with torch.no_grad():
         for batch in dev_dataloader:
             input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
