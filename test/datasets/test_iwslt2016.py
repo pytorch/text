@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -12,35 +13,97 @@ from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
+def _generate_uncleaned_train():
+    """Generate tags files"""
+    file_contents = []
+    examples = []
+    xml_tags = [
+        '<url', '<keywords', '<talkid', '<description', '<reviewer',
+        '<translator', '<title', '<speaker', '<doc', '</doc'
+    ]
+    for i in range(100):
+        # Write one of the XML tags randomly to make sure we clean appropriately
+        rand_string = " ".join(
+            random.choice(string.ascii_letters) for i in range(10)
+        )
+        if random.random() < 0.1:
+            open_tag = random.choice(xml_tags) + ">"
+            close_tag = "</" + open_tag[1:] + ">"
+            file_contents.append(open_tag + rand_string + close_tag)
+        else:
+            examples.append(rand_string + "\n")
+            file_contents.append(rand_string)
+    return examples, "\n".join(file_contents)
+
+
+def _generate_uncleaned_valid():
+    file_contents = ["<root>"]
+    examples = []
+
+    for doc_id in range(5):
+        file_contents.append(f'<doc docid="{doc_id}" genre="lectures">')
+        for seg_id in range(100):
+            # Write one of the XML tags randomly to make sure we clean appropriately
+            rand_string = " ".join(
+                random.choice(string.ascii_letters) for i in range(10)
+            )
+            examples.append(rand_string)
+            file_contents.append(f"<seg>{rand_string} </seg>" + "\n")
+        file_contents.append("</doc>")
+    file_contents.append("</root>")
+    return examples, " ".join(file_contents)
+
+
+def _generate_uncleaned_test():
+    return _generate_uncleaned_valid()
+
+
+def _generate_uncleaned_contents(split):
+    return {
+        "train": _generate_uncleaned_train(),
+        "valid": _generate_uncleaned_valid(),
+        "test": _generate_uncleaned_test(),
+    }[split]
+
+
 def _get_mock_dataset(root_dir, split, src, tgt):
     """
     root_dir: directory to the mocked dataset
     """
-    temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/{src}-{tgt}/")
-    os.makedirs(temp_dataset_dir, exist_ok=True)
+    inner_temp_dataset_dir = f"{src}-{tgt}"
+    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/")
+    os.makedirs(inner_temp_dataset_dir, exist_ok=True)
+    os.makedirs(outer_temp_dataset_dir, exist_ok=True)
 
-    seed = 1
     mocked_data = defaultdict(lambda: defaultdict(list))
     valid_set = "tst2013"
     test_set = "tst2014"
 
-    files_for_split, _ = _generate_iwslt_files_for_lang_and_split(16, src, tgt, valid_set, test_set)
-    src_file = files_for_split[src][split]
-    tgt_file = files_for_split[tgt][split]
+    _, uncleaned_file_names = _generate_iwslt_files_for_lang_and_split(16, src, tgt, valid_set, test_set)
+    src_file = uncleaned_file_names[src][split]
+    tgt_file = uncleaned_file_names[tgt][split]
     for file_name in (src_file, tgt_file):
-        txt_file = os.path.join(temp_dataset_dir, file_name)
-        with open(txt_file, "w") as f:
+        out_file = os.path.join(inner_temp_dataset_dir, file_name)
+        with open(out_file, "w") as f:
             # Get file extension (i.e., the language) without the . prefix (.en -> en)
             lang = os.path.splitext(file_name)[1][1:]
-            for i in range(5):
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
-                dataset_line = f"{rand_string} {rand_string}\n"
-                # append line to correct dataset split
-                mocked_data[split][lang].append(dataset_line)
-                f.write(f'{rand_string} {rand_string}\n')
-                seed += 1
+            mocked_data_for_split, file_contents = _generate_uncleaned_contents(split)
+            mocked_data[split][lang] = mocked_data_for_split
+            f.write(file_contents)
+
+    inner_compressed_dataset_path = os.path.join(
+        outer_temp_dataset_dir, f"{src}-{tgt}.tgz"
+    )
+
+    # create tar file from dataset folder
+    with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
+        tar.add(inner_temp_dataset_dir, arcname=f"{src}-{tgt}")
+
+    outer_temp_dataset_path = os.path.join(
+        root_dir, "2016-01.tgz"
+    )
+    with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
+        tar.add(outer_temp_dataset_dir, arcname="2016-01")
 
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
@@ -54,7 +117,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder.OnDiskCacheHolderIterDataPipe._cache_check_fn", return_value=True
+            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
         )
         cls.patcher.start()
 
