@@ -22,10 +22,11 @@ def _generate_uncleaned_train():
         '<translator', '<title', '<speaker', '<doc', '</doc'
     ]
     for i in range(100):
-        # Write one of the XML tags randomly to make sure we clean appropriately
         rand_string = " ".join(
             random.choice(string.ascii_letters) for i in range(10)
         )
+        # With a 10% change, add one of the XML tags which is cleaned
+        # to ensure cleaning happens appropriately
         if random.random() < 0.1:
             open_tag = random.choice(xml_tags) + ">"
             close_tag = "</" + open_tag[1:] + ">"
@@ -43,7 +44,6 @@ def _generate_uncleaned_valid():
     for doc_id in range(5):
         file_contents.append(f'<doc docid="{doc_id}" genre="lectures">')
         for seg_id in range(100):
-            # Write one of the XML tags randomly to make sure we clean appropriately
             rand_string = " ".join(
                 random.choice(string.ascii_letters) for i in range(10)
             )
