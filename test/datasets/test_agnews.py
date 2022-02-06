@@ -15,13 +15,13 @@ def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
-    temp_dataset_dir = os.path.join(root_dir, "AG_NEWS")
-    os.makedirs(temp_dataset_dir, exist_ok=True)
+    base_dir = os.path.join(root_dir, "AG_NEWS")
+    os.makedirs(base_dir, exist_ok=True)
 
     seed = 1
     mocked_data = defaultdict(list)
     for file_name in ("train.csv", "test.csv"):
-        txt_file = os.path.join(temp_dataset_dir, file_name)
+        txt_file = os.path.join(base_dir, file_name)
         with open(txt_file, "w") as f:
             for i in range(5):
                 label = seed % 4 + 1
