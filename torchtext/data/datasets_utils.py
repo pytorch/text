@@ -314,7 +314,6 @@ def _create_dataset_directory(dataset_name):
     def decorator(fn):
         argspec = inspect.getfullargspec(fn)
         if not (argspec.args[0] == "root" and
-                argspec.args[1] == "split" and
                 argspec.varargs is None and
                 argspec.varkw is None and
                 len(argspec.kwonlyargs) == 0

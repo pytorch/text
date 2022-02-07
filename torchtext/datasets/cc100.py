@@ -1,6 +1,5 @@
 import os.path
 
-from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
 
@@ -9,7 +8,6 @@ if is_module_available("torchdata"):
 
 from torchtext.data.datasets_utils import (
     _create_dataset_directory,
-    _wrap_split_argument
 )
 
 URL = "http://data.statmt.org/cc-100/%s.txt.xz"
@@ -32,8 +30,7 @@ DATASET_NAME = "CC100"
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(("train",))
-def CC100(root: str, split: Union[Tuple[str], str], language_code: str = "en"):
+def CC100(root: str, language_code: str = "en"):
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
