@@ -6,12 +6,13 @@ from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.iwslt2016 import IWSLT2016
+from torchtext.datasets.iwslt2016 import IWSLT2016, SUPPORTED_DATASETS
 from torchtext.data.datasets_utils import _generate_iwslt_files_for_lang_and_split
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
+SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
 
 def _generate_uncleaned_train():
     """Generate tags files"""
@@ -70,7 +71,7 @@ def _get_mock_dataset(root_dir, split, src, tgt):
     """
     root_dir: directory to the mocked dataset
     """
-    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/temp_dataset_dir/2016-01/texts/{src}/{tgt}/")
+    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/")
     inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
@@ -128,10 +129,10 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand([
-        ("train", "de", "en"),
-        ("valid", "de", "en"),
-        ("test", "de", "en"),
-    ])
+        ("train", src, tgt),
+        ("valid", src, tgt),
+        ("test", src, tgt),
+    ] for src, tgt in SUPPORTED_LANGPAIRS)
     def test_iwslt2016(self, split, src, tgt):
         expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt)
 
