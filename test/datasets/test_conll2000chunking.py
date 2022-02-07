@@ -22,7 +22,7 @@ def _get_mock_dataset(root_dir):
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name in ["train.txt", "test.txt"]:
+    for file_name in ("train.txt", "test.txt"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(txt_file, "w") as f:
@@ -41,13 +41,10 @@ def _get_mock_dataset(root_dir):
                 seed += 1
 
 
-    # create gz file from dataset folder
-    for file_name in ("train.txt", "test.txt"):
+        # create gz file from dataset folder
         compressed_dataset_path = os.path.join(temp_dataset_dir, f"{file_name}.gz")
-        with gzip.open(compressed_dataset_path, "wb") as gz_file:
-            txt_file = os.path.join(temp_dataset_dir, file_name)
-            with open(txt_file, "rb") as file_in:
-                gz_file.writelines(file_in)
+        with gzip.open(compressed_dataset_path, "wb") as gz_file, open(txt_file, "rb") as file_in:
+            gz_file.writelines(file_in)
 
     return mocked_data
 
