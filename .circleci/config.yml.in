@@ -361,44 +361,6 @@ jobs:
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
 
-  cachesetup_linux:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - generate_cachekey
-      - restore_cache:
-          keys:
-          {% raw %}
-            - v1-linux-cache-index-{{ checksum ".cachekey" }}
-          {% endraw %}
-      - run:
-          name: Generate cache
-          no_output_timeout: 30m
-          command: |
-            if [ ! -f /root/.torchtext/cache/cache_status_file.json ] ; then
-              .circleci/unittest/linux/scripts/setup_env.sh
-              .circleci/unittest/linux/scripts/install.sh
-              .circleci/unittest/linux/scripts/generate_cache.sh
-            fi
-            cat /root/.torchtext/cache/cache_status_file.json
-      - save_cache:
-          {% raw %}
-          key: v1-linux-dataset-{{ checksum ".cachekey" }}
-          {% endraw %}
-          paths:
-            - /root/.torchtext/cache
-      - save_cache:
-          {% raw %}
-          key: v1-linux-cache-index-{{ checksum ".cachekey" }}
-          {% endraw %}
-          paths:
-            - /root/.torchtext/cache/cache_status_file.json
-
   unittest_linux:
     <<: *binary_common
     docker:
@@ -419,7 +381,6 @@ jobs:
           keys:
           {% raw %}
             - v1-linux-dataset-vector-{{ checksum ".cachekey" }}
-            - v1-linux-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -432,49 +393,11 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - /root/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
       - store_test_results:
           path: test-results
-
-  cachesetup_windows:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - generate_cachekey
-      - restore_cache:
-          keys:
-          {% raw %}
-            - v1-windows-cache-index-{{ checksum ".cachekey" }}
-          {% endraw %}
-      - run:
-          name: Generate daily data Cache
-          no_output_timeout: 30m
-          command: |
-            if [ ! -f C:/Users/circleci/.torchtext/cache/cache_status_file.json ] ; then
-              .circleci/unittest/windows/scripts/setup_env.sh
-              .circleci/unittest/windows/scripts/install.sh
-              .circleci/unittest/windows/scripts/generate_cache.sh
-            fi
-            cat C:/Users/circleci/.torchtext/cache/cache_status_file.json
-      - save_cache:
-          {% raw %}
-          key: v1-windows-dataset-{{ checksum ".cachekey" }}
-          {% endraw %}
-          paths:
-            - C:/Users/circleci/.torchtext/cache
-      - save_cache:
-          {% raw %}
-          key: v1-windows-cache-index-{{ checksum ".cachekey" }}
-          {% endraw %}
-          paths:
-            - C:/Users/circleci/.torchtext/cache/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
@@ -495,7 +418,6 @@ jobs:
           keys:
           {% raw %}
             - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
-            - v1-windows-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
 
       - run:
@@ -509,7 +431,6 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - C:/Users/circleci/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
