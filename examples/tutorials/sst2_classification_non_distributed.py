@@ -202,16 +202,13 @@ def evaluate():
 # take care of data-sharding.
 #
 
-num_epochs = 3
+num_epochs = 1
 
 for e in range(num_epochs):
-    loss, accuracy = evaluate()
-    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
-    model.train()
     for batch in train_dataloader:
         input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
         target = torch.tensor(batch['target']).to(DEVICE)
         train_step(input, target)
 
-loss, accuracy = evaluate()
-print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs, loss, accuracy))
+    loss, accuracy = evaluate()
+    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs, loss, accuracy))
