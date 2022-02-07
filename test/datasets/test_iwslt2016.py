@@ -14,6 +14,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
 
+
 def _generate_uncleaned_train():
     """Generate tags files"""
     file_contents = []
