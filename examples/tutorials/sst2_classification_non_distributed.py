@@ -211,4 +211,19 @@ for e in range(num_epochs):
         train_step(input, target)
 
     loss, accuracy = evaluate()
-    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs, loss, accuracy))
+    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
+
+
+#######################################################################
+# Output
+# ------
+#
+# ::
+#
+#   100%|██████████|5.07M/5.07M [00:00<00:00, 40.8MB/s]
+#   Downloading: "https://download.pytorch.org/models/text/xlmr.vocab.pt" to /root/.cache/torch/hub/checkpoints/xlmr.vocab.pt
+#   100%|██████████|4.85M/4.85M [00:00<00:00, 16.8MB/s]
+#   Downloading: "https://download.pytorch.org/models/text/xlmr.base.encoder.pt" to /root/.cache/torch/hub/checkpoints/xlmr.base.encoder.pt
+#   100%|██████████|1.03G/1.03G [00:26<00:00, 47.1MB/s]
+#   Epoch = [0], loss = [0.2629831412637776], accuracy = [0.9105504587155964]
+#
