@@ -70,7 +70,7 @@ def _get_mock_dataset(root_dir, split, src, tgt):
     """
     root_dir: directory to the mocked dataset
     """
-    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/")
+    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/temp_dataset_dir/2016-01/texts/{src}/{tgt}/")
     inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
