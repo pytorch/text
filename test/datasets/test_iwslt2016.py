@@ -102,12 +102,12 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
         # new random strings. Otherwise generate new files and clean when read.
         if os.path.exists(expected_clean_filename):
             with open(expected_clean_filename, encoding="utf-8") as f:
-                mocked_data[(split, valid_set, test_set)][lang] = f.readlines()
+                mocked_data[split][lang] = f.readlines()
         else:
             out_file = os.path.join(inner_temp_dataset_dir, unclean_file_name)
             with open(out_file, "w") as f:
                 mocked_data_for_split, file_contents = _generate_uncleaned_contents(split)
-                mocked_data[(split, valid_set, test_set)][lang] = mocked_data_for_split
+                mocked_data[split][lang] = mocked_data_for_split
                 f.write(file_contents)
 
     inner_compressed_dataset_path = os.path.join(
@@ -124,7 +124,7 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
         tar.add(outer_temp_dataset_dir, arcname="2016-01")
 
-    return list(zip(mocked_data[(split, valid_set, test_set)][src], mocked_data[(split, valid_set, test_set)][tgt]))
+    return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
 
 class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
