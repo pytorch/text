@@ -17,7 +17,7 @@ def _get_mock_dataset(root_dir):
     root_dir: directory to the mocked dataset
     """
     base_dir = os.path.join(root_dir, "CoNLL2000Chunking")
-    temp_dataset_dir = os.path.join(base_dir, "conll2000chunking")
+    temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
     seed = 1
