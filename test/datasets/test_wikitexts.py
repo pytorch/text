@@ -33,7 +33,7 @@ def _get_mock_dataset(root_dir, base_dir_name):
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                dataset_line = (rand_string,)
+                dataset_line = rand_string
                 f.write(f'{rand_string}\n')
 
                 # append line to correct dataset split
