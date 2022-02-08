@@ -77,7 +77,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         lambda x: f"{_PREFIX[split]}.{language_pair[1]}" in x[0])
     tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    src_data_dp = FileOpener(src_cache_decompressed_dp, mode="b").readlines(decode=True, return_path=False, strip_newline=False)
-    tgt_data_dp = FileOpener(tgt_cache_decompressed_dp, mode="b").readlines(decode=True, return_path=False, strip_newline=False)
+    src_data_dp = FileOpener(src_cache_decompressed_dp, mode="b").readlines(decode=True, return_path=False, strip_newline=True)
+    tgt_data_dp = FileOpener(tgt_cache_decompressed_dp, mode="b").readlines(decode=True, return_path=False, strip_newline=True)
 
     return src_data_dp.zip(tgt_data_dp)

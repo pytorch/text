@@ -1,47 +1,46 @@
 import os
 import random
 import string
+import lzma
+from parameterized import parameterized
 from collections import defaultdict
 from unittest.mock import patch
 
-from parameterized import parameterized
-from torchtext.datasets.ag_news import AG_NEWS
+from torchtext.datasets import CC100
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
+
+from torchtext.datasets.cc100 import VALID_CODES
 
 
 def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
-    base_dir = os.path.join(root_dir, "AG_NEWS")
+    base_dir = os.path.join(root_dir, "CC100")
     os.makedirs(base_dir, exist_ok=True)
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name in ("train.csv", "test.csv"):
-        txt_file = os.path.join(base_dir, file_name)
-        with open(txt_file, "w") as f:
+
+    for language_code in VALID_CODES:
+        file_name = f"{language_code}.txt.xz"
+        compressed_file = os.path.join(base_dir, file_name)
+        with lzma.open(compressed_file, "wt") as f:
             for i in range(5):
-                label = seed % 4 + 1
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                dataset_line = (label, f"{rand_string} {rand_string}")
-                # append line to correct dataset split
-                mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
-                f.write(f'"{label}","{rand_string}","{rand_string}"\n')
+                content = f"{rand_string}\n"
+                f.write(content)
+                mocked_data[language_code].append((language_code, rand_string))
                 seed += 1
 
     return mocked_data
 
 
-class TestAGNews(TempDirMixin, TorchtextTestCase):
-    root_dir = None
-    samples = []
-    patcher = None
-
+class TestCC100(TempDirMixin, TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -57,19 +56,11 @@ class TestAGNews(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand(["train", "test"])
-    def test_agnews(self, split):
-        dataset = AG_NEWS(root=self.root_dir, split=split)
+    @parameterized.expand(VALID_CODES)
+    def test_cc100(self, language_code):
+        dataset = CC100(root=self.root_dir, split="train", language_code=language_code)
 
         samples = list(dataset)
-        expected_samples = self.samples[split]
+        expected_samples = self.samples[language_code]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
-
-    @parameterized.expand(["train", "test"])
-    def test_agnews_split_argument(self, split):
-        dataset1 = AG_NEWS(root=self.root_dir, split=split)
-        (dataset2,) = AG_NEWS(root=self.root_dir, split=(split,))
-
-        for d1, d2 in zip_equal(dataset1, dataset2):
-            self.assertEqual(d1, d2)
