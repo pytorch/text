@@ -2,18 +2,20 @@ import os
 import random
 import string
 import tarfile
+import itertools
 from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.iwslt2016 import IWSLT2016, SUPPORTED_DATASETS
+from torchtext.datasets.iwslt2016 import IWSLT2016, SUPPORTED_DATASETS, SET_NOT_EXISTS
 from torchtext.data.datasets_utils import _generate_iwslt_files_for_lang_and_split
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
 SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
-
+SUPPORTED_DEVTEST_SPLITS = SUPPORTED_DATASETS["valid_test"]
+DEV_TEST_SPLITS = [(dev, test) for dev, test in itertools.product(SUPPORTED_DEVTEST_SPLITS, repeat=2) if dev != test]
 
 def _generate_uncleaned_train():
     """Generate tags files"""
@@ -68,7 +70,7 @@ def _generate_uncleaned_contents(split):
     }[split]
 
 
-def _get_mock_dataset(root_dir, split, src, tgt):
+def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     """
     root_dir: directory to the mocked dataset
     """
@@ -79,12 +81,11 @@ def _get_mock_dataset(root_dir, split, src, tgt):
     os.makedirs(inner_temp_dataset_dir, exist_ok=True)
 
     mocked_data = defaultdict(lambda: defaultdict(list))
-    valid_set = "tst2013"
-    test_set = "tst2014"
 
     _, uncleaned_file_names = _generate_iwslt_files_for_lang_and_split(16, src, tgt, valid_set, test_set)
     src_file = uncleaned_file_names[src][split]
     tgt_file = uncleaned_file_names[tgt][split]
+
     for file_name in (src_file, tgt_file):
         out_file = os.path.join(inner_temp_dataset_dir, file_name)
         with open(out_file, "w") as f:
@@ -130,14 +131,18 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand([
-        (split, src, tgt)
+        (split, src, tgt, dev_set, test_set)
         for split in ("train", "valid", "test")
+        for dev_set, test_set in DEV_TEST_SPLITS
         for src, tgt in SUPPORTED_LANGPAIRS
+        if (dev_set not in SET_NOT_EXISTS[(src, tgt)] and test_set not in SET_NOT_EXISTS[(src, tgt)])
     ])
-    def test_iwslt2016(self, split, src, tgt):
-        expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt)
+    def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
+        expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt, dev_set, test_set)
 
-        dataset = IWSLT2016(root=self.root_dir, split=split, language_pair=(src, tgt))
+        dataset = IWSLT2016(
+            root=self.root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
+        )
 
         samples = list(dataset)
 
