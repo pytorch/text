@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.functional &mdash; torchtext 0.12.0.dev20220205 documentation</title>
+  <title>torchtext.functional &mdash; torchtext 0.12.0.dev20220208 documentation</title>
   
 
   
@@ -27,6 +27,10 @@
 
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="torchtext.models" href="models.html" />
@@ -97,7 +101,7 @@
             <a href="https://pytorch.org/tutorials">Tutorials</a>
           </li>
 
-          <li class="active docs-active">
+          <li>
             <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
               <a class="resource-option with-down-orange-arrow">
                 Docs
@@ -192,7 +196,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220205 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220208 &#x25BC</a>
     </div>
     
 
@@ -229,6 +233,10 @@
 <li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -305,6 +313,8 @@
         <div class="pytorch-content-left">
 
         
+    
+    
           
           <div class="rst-content">
           
@@ -317,7 +327,7 @@
 <h2>to_tensor<a class="headerlink" href="#to-tensor" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="torchtext.functional.to_tensor">
-<code class="sig-prename descclassname"><span class="pre">torchtext.functional.</span></code><code class="sig-name descname"><span class="pre">to_tensor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.dtype</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">torch.int64</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/functional.html#to_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.functional.to_tensor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.functional.</span></code><code class="sig-name descname"><span class="pre">to_tensor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.dtype</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">torch.int64</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.10.0)"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/functional.html#to_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.functional.to_tensor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert input to torch tensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -330,6 +340,13 @@
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Tensor</p>
 </dd>
+</dl>
+<dl>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">to_tensor</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id1">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
 </dl>
 </dd></dl>
 
@@ -420,6 +437,8 @@
 </footer>
 
           </div>
+
+
         </div>
 
         <div class="pytorch-content-right" id="pytorch-content-right">
@@ -463,7 +482,25 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+     
+    <script type="text/javascript">
+      $(document).ready(function() {
+	  var downloadNote = $(".sphx-glr-download-link-note.admonition.note");
+	  if (downloadNote.length >= 1) {
+	      var tutorialUrl = $("#tutorial-type").text();
+	      var githubLink = "https://github.com/pytorch/text/blob/main/examples/"  + tutorialUrl + ".py",
+		  notebookLink = $(".reference.download")[1].href,
+		  notebookDownloadPath = notebookLink.split('_downloads')[1],
+		  colabLink = "https://colab.research.google.com/github/pytorch/text/blob/gh-pages/main/_downloads" + notebookDownloadPath;
+
+	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
+	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
+	  }
+      });
+    </script>
+
 
   <!-- Begin Footer -->
 
@@ -614,7 +651,7 @@
             <a href="https://pytorch.org/tutorials">Tutorials</a>
           </li>
 
-          <li class="resources-mobile-menu-title" class="active">
+          <li class="resources-mobile-menu-title">
             Docs
           </li>
 

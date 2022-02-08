@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220205 documentation</title>
+  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220208 documentation</title>
   
 
   
@@ -27,6 +27,10 @@
 
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="torchtext.functional" href="functional.html" />
@@ -97,7 +101,7 @@
             <a href="https://pytorch.org/tutorials">Tutorials</a>
           </li>
 
-          <li class="active docs-active">
+          <li>
             <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
               <a class="resource-option with-down-orange-arrow">
                 Docs
@@ -192,7 +196,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220205 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220208 &#x25BC</a>
     </div>
     
 
@@ -229,6 +233,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -305,6 +313,8 @@
         <div class="pytorch-content-left">
 
         
+    
+    
           
           <div class="rst-content">
           
@@ -313,7 +323,7 @@
               
   <div class="section" id="module-torchtext.transforms">
 <span id="torchtext-transforms"></span><h1>torchtext.transforms<a class="headerlink" href="#module-torchtext.transforms" title="Permalink to this headline">¶</a></h1>
-<p>Transforms are common text transforms. They can be chained together using <a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Sequential" title="(in PyTorch vmaster (0.3.0.post4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code></a> or using <a class="reference internal" href="#torchtext.transforms.Sequential" title="torchtext.transforms.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.transforms.Sequential</span></code></a> to support torch-scriptability.</p>
+<p>Transforms are common text transforms. They can be chained together using <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="(in PyTorch v1.10.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code></a> or using <a class="reference internal" href="#torchtext.transforms.Sequential" title="torchtext.transforms.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.transforms.Sequential</span></code></a> to support torch-scriptability.</p>
 <div class="section" id="sentencepiecetokenizer">
 <h2>SentencePieceTokenizer<a class="headerlink" href="#sentencepiecetokenizer" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -333,6 +343,11 @@
 </pre></div>
 </div>
 </dd>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">SentencePieceTokenizer</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id1">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
 </dl>
 <dl class="py method">
 <dt id="torchtext.transforms.SentencePieceTokenizer.forward">
@@ -423,6 +438,13 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vocab_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vocab_transform</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">VocabTransform</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id2">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
+</dl>
 <dl class="py method">
 <dt id="torchtext.transforms.VocabTransform.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#VocabTransform.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.VocabTransform.forward" title="Permalink to this definition">¶</a></dt>
@@ -458,7 +480,7 @@
 </dl>
 <dl class="py method">
 <dt id="torchtext.transforms.ToTensor.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/transforms.html#ToTensor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.ToTensor.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.10.0)"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/transforms.html#ToTensor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.ToTensor.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>input</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>]</em><em>, </em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>]</em><em>]</em><em>]</em>) – Sequence or batch of token ids</p>
@@ -514,6 +536,13 @@ but not both.</p></li>
 <dd class="field-odd"><p><strong>max_seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The maximum allowable length for input sequence</p>
 </dd>
 </dl>
+<dl>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">Truncate</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id3">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
+</dl>
 <dl class="py method">
 <dt id="torchtext.transforms.Truncate.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#Truncate.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.Truncate.forward" title="Permalink to this definition">¶</a></dt>
@@ -547,6 +576,13 @@ but not both.</p></li>
 </ul>
 </dd>
 </dl>
+<dl>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">AddToken</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id4">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
+</dl>
 <dl class="py method">
 <dt id="torchtext.transforms.AddToken.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#AddToken.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.AddToken.forward" title="Permalink to this definition">¶</a></dt>
@@ -568,6 +604,13 @@ but not both.</p></li>
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">Sequential</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Module</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>A container to host a sequence of text transforms.</p>
+<dl>
+<dt>Tutorials using <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>:</dt><dd><div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Parmeet Bhatia &lt;parmeetbhatia@fb.com&gt;`__"><div class="figure align-default" id="id5">
+<img alt="SST-2 Binary text classification with XLM-RoBERTa model" src="_images/sphx_glr_sst2_classification_non_distributed_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html#sphx-glr-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">SST-2 Binary text classification with XLM-RoBERTa model</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></dd>
+</dl>
 <dl class="py method">
 <dt id="torchtext.transforms.Sequential.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#Sequential.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.Sequential.forward" title="Permalink to this definition">¶</a></dt>
@@ -620,6 +663,8 @@ but not both.</p></li>
 </footer>
 
           </div>
+
+
         </div>
 
         <div class="pytorch-content-right" id="pytorch-content-right">
@@ -669,7 +714,25 @@ but not both.</p></li>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+     
+    <script type="text/javascript">
+      $(document).ready(function() {
+	  var downloadNote = $(".sphx-glr-download-link-note.admonition.note");
+	  if (downloadNote.length >= 1) {
+	      var tutorialUrl = $("#tutorial-type").text();
+	      var githubLink = "https://github.com/pytorch/text/blob/main/examples/"  + tutorialUrl + ".py",
+		  notebookLink = $(".reference.download")[1].href,
+		  notebookDownloadPath = notebookLink.split('_downloads')[1],
+		  colabLink = "https://colab.research.google.com/github/pytorch/text/blob/gh-pages/main/_downloads" + notebookDownloadPath;
+
+	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
+	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
+	  }
+      });
+    </script>
+
 
   <!-- Begin Footer -->
 
@@ -820,7 +883,7 @@ but not both.</p></li>
             <a href="https://pytorch.org/tutorials">Tutorials</a>
           </li>
 
-          <li class="resources-mobile-menu-title" class="active">
+          <li class="resources-mobile-menu-title">
             Docs
           </li>
 
