@@ -473,7 +473,7 @@ jobs:
             set -x
             pushd docs
             pip install -r requirements.txt
-            make html
+            BUILD_GALLERY=1 make 'SPHINXOPTS=-W' html
             popd
       - persist_to_workspace:
           root: ./
