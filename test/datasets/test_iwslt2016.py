@@ -17,6 +17,7 @@ SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].it
 SUPPORTED_DEVTEST_SPLITS = SUPPORTED_DATASETS["valid_test"]
 DEV_TEST_SPLITS = [(dev, test) for dev, test in itertools.product(SUPPORTED_DEVTEST_SPLITS, repeat=2) if dev != test]
 
+
 def _generate_uncleaned_train():
     """Generate tags files"""
     file_contents = []
@@ -138,6 +139,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         if (dev_set not in SET_NOT_EXISTS[(src, tgt)] and test_set not in SET_NOT_EXISTS[(src, tgt)])
     ])
     def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
+
         expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt, dev_set, test_set)
 
         dataset = IWSLT2016(
