@@ -130,10 +130,10 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand([
-        ("train", src, tgt),
-        ("valid", src, tgt),
-        ("test", src, tgt),
-    ] for src, tgt in SUPPORTED_LANGPAIRS)
+        (split, src, tgt)
+        for split in ("train", "valid", "test")
+        for src, tgt in SUPPORTED_LANGPAIRS
+    ])
     def test_iwslt2016(self, split, src, tgt):
         expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt)
 
