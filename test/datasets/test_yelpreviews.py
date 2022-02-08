@@ -88,8 +88,8 @@ class TestYelpReviews(TempDirMixin, TorchtextTestCase):
         # call `_get_mock_dataset` to create mock dataset files
         _ = _get_mock_dataset(self.root_dir, yelp_dataset.__name__)
 
-        dataset1 = YelpReviewPolarity(root=self.root_dir, split=split)
-        (dataset2,) = YelpReviewPolarity(root=self.root_dir, split=(split,))
+        dataset1 = yelp_dataset(root=self.root_dir, split=split)
+        (dataset2,) = yelp_dataset(root=self.root_dir, split=(split,))
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
