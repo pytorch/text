@@ -58,10 +58,8 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
     )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b")
-        .extract(file_type="gzip")
-        .filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").extract(
+        file_type="gzip"
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(
         mode="wb", same_filepath_fn=True
