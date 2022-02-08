@@ -137,7 +137,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     def test_iwslt2016(self, split, src, tgt):
         expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt)
 
-        dataset = IWSLT2016(root=self.root_dir, split=split)
+        dataset = IWSLT2016(root=self.root_dir, split=split, language_pair=(src, tgt))
 
         samples = list(dataset)
 
