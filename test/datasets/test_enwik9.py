@@ -73,11 +73,3 @@ class TestEnWik9(TempDirMixin, TorchtextTestCase):
         expected_samples = self.samples[split]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
-
-    @parameterized.expand(["train"])
-    def test_enwik9_split_argument(self, split):
-        dataset1 = EnWik9(root=self.root_dir, split=split)
-        (dataset2,) = EnWik9(root=self.root_dir, split=(split,))
-
-        for d1, d2 in zip_equal(dataset1, dataset2):
-            self.assertEqual(d1, d2)
