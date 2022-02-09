@@ -116,17 +116,18 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
         tar.add(inner_temp_dataset_dir, arcname=f"{src}-{tgt}")
 
+    # this is necessary so that the outer tarball only includes the inner tarball
     shutil.rmtree(inner_temp_dataset_dir)
+
     outer_temp_dataset_path = os.path.join(base_dir, "2016-01.tgz")
 
     with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
         tar.add(temp_dataset_dir, arcname="2016-01")
 
-    shutil.rmtree(temp_dataset_dir)
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
 
-class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
+class TestIWSLT2016(TorchtextTestCase):
     root_dir = None
     patcher = None
 
@@ -152,27 +153,27 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     ])
     def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
 
-        root_dir = tempfile.TemporaryDirectory().name
-        expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
+        with tempfile.TemporaryDirectory() as root_dir:
+            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
 
-        dataset = IWSLT2016(
-            root=root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
-        )
+            dataset = IWSLT2016(
+                root=root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
+            )
 
-        samples = list(dataset)
+            samples = list(dataset)
 
-        for sample, expected_sample in zip_equal(samples, expected_samples):
-            self.assertEqual(sample, expected_sample)
+            for sample, expected_sample in zip_equal(samples, expected_samples):
+                self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "valid", "test"])
     def test_iwslt2016_split_argument(self, split):
-        root_dir = tempfile.TemporaryDirectory().name
-        language_pair = ("de", "en")
-        valid_set = "tst2013"
-        test_set = "tst2014"
-        _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
-        dataset1 = IWSLT2016(root=root_dir, split=split, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
-        (dataset2,) = IWSLT2016(root=root_dir, split=(split,), language_pair=language_pair, valid_set=valid_set, test_set=test_set)
+        with tempfile.TemporaryDirectory() as root_dir:
+            language_pair = ("de", "en")
+            valid_set = "tst2013"
+            test_set = "tst2014"
+            _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
+            dataset1 = IWSLT2016(root=root_dir, split=split, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
+            (dataset2,) = IWSLT2016(root=root_dir, split=(split,), language_pair=language_pair, valid_set=valid_set, test_set=test_set)
 
-        for d1, d2 in zip_equal(dataset1, dataset2):
-            self.assertEqual(d1, d2)
+            for d1, d2 in zip_equal(dataset1, dataset2):
+                self.assertEqual(d1, d2)
