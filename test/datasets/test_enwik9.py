@@ -5,7 +5,6 @@ import zipfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from parameterized import parameterized
 from torchtext.datasets.enwik9 import EnWik9
 
 from ..common.case_utils import TempDirMixin, zip_equal
@@ -21,10 +20,9 @@ def _get_mock_dataset(root_dir):
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
     seed = 1
-    mocked_data = defaultdict(list)
     file_name = "enwik9"
     txt_file = os.path.join(temp_dataset_dir, file_name)
-    mocked_lines = mocked_data["train"]
+    mocked_data = []
     with open(txt_file, "w") as f:
         for i in range(5):
             rand_string = "<" + " ".join(
@@ -34,7 +32,7 @@ def _get_mock_dataset(root_dir):
             f.write(f"'{rand_string}'\n")
 
             # append line to correct dataset split
-            mocked_lines.append(dataset_line)
+            mocked_data.append(dataset_line)
             seed += 1
 
     compressed_dataset_path = os.path.join(base_dir, "enwik9.zip")
@@ -65,11 +63,10 @@ class TestEnWik9(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand(["train"])
-    def test_enwik9(self, split):
-        dataset = EnWik9(root=self.root_dir, split=split)
+    def test_enwik9(self):
+        dataset = EnWik9(root=self.root_dir)
 
         samples = list(dataset)
-        expected_samples = self.samples[split]
+        expected_samples = self.samples
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
