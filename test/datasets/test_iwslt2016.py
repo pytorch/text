@@ -4,6 +4,7 @@ import shutil
 import string
 import tarfile
 import itertools
+import tempfile
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -78,7 +79,8 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     """
 
     base_dir = os.path.join(root_dir, DATASET_NAME)
-    outer_temp_dataset_dir = os.path.join(base_dir, f"2016-01/texts/{src}/{tgt}/")
+    temp_dataset_dir = os.path.join(base_dir, 'temp_dataset_dir')
+    outer_temp_dataset_dir = os.path.join(temp_dataset_dir, f"texts/{src}/{tgt}/")
     inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
@@ -118,9 +120,9 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     outer_temp_dataset_path = os.path.join(base_dir, "2016-01.tgz")
 
     with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
-        tar.add(outer_temp_dataset_dir, arcname="2016-01")
+        tar.add(temp_dataset_dir, arcname="2016-01")
 
-    shutil.rmtree(outer_temp_dataset_dir)
+    shutil.rmtree(temp_dataset_dir)
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
 
@@ -150,7 +152,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     ])
     def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
 
-        root_dir = self.get_base_temp_dir()
+        root_dir = tempfile.TemporaryDirectory().name
         expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
 
         dataset = IWSLT2016(
@@ -165,8 +167,12 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     @parameterized.expand(["train", "valid", "test"])
     def test_iwslt2016_split_argument(self, split):
         root_dir = self.get_base_temp_dir()
-        dataset1 = IWSLT2016(root=root_dir, split=split)
-        (dataset2,) = IWSLT2016(root=root_dir, split=(split,))
+        language_pair = ("de", "en")
+        valid_set = "tst2013"
+        test_set = "tst2014"
+        _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
+        dataset1 = IWSLT2016(root=root_dir, split=split, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
+        (dataset2,) = IWSLT2016(root=root_dir, split=(split,), language_pair=language_pair, valid_set=valid_set, test_set=test_set)
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
