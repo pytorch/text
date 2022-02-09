@@ -39,7 +39,6 @@ def _get_mock_dataset(root_dir):
                 mocked_lines.append(dataset_line)
                 seed += 1
 
-
         # create gz file from dataset folder
         compressed_dataset_path = os.path.join(base_dir, f"{file_name}.gz")
         with gzip.open(compressed_dataset_path, "wb") as gz_file, open(txt_file, "rb") as file_in:
