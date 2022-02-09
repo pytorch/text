@@ -77,7 +77,7 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
 
     base_dir = os.path.join(root_dir, DATASET_NAME)
     temp_dataset_dir = os.path.join(base_dir, 'temp_dataset_dir')
-    outer_temp_dataset_dir = os.path.join(temp_dataset_dir, f"texts/DeEnItNlRo/DeEnItNlRo")
+    outer_temp_dataset_dir = os.path.join(temp_dataset_dir, "texts/DeEnItNlRo/DeEnItNlRo")
     inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
@@ -106,12 +106,12 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
             f.write(file_contents)
 
     inner_compressed_dataset_path = os.path.join(
-        outer_temp_dataset_dir, f"DeEnItNlRo-DeEnItNlRo.tgz"
+        outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo.tgz"
     )
 
     # create tar file from dataset folder
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
-        tar.add(inner_temp_dataset_dir, arcname=f"DeEnItNlRo-DeEnItNlRo")
+        tar.add(inner_temp_dataset_dir, arcname="DeEnItNlRo-DeEnItNlRo")
 
     # this is necessary so that the outer tarball only includes the inner tarball
     shutil.rmtree(inner_temp_dataset_dir)
