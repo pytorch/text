@@ -194,8 +194,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
     )
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: inner_iwslt_tar)
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(
-        lambda x: os.path.basename(inner_iwslt_tar) in x[0])
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     src_filename = file_path_by_lang_and_split[src_language][split]
@@ -203,7 +202,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile.
-    full_src_filepath = os.path.join(root, "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", src_filename)
+    full_src_filepath = os.path.join(root, os.path.splitext(_PATH)[0], "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", src_filename)
 
     cache_inner_src_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_src_filepath,
                                                           uncleaned_src_filename)
@@ -213,7 +212,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile.
-    full_tgt_filepath = os.path.join(root, "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", tgt_filename)
+    full_tgt_filepath = os.path.join(root, os.path.splitext(_PATH)[0], "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", tgt_filename)
 
     cache_inner_tgt_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_tgt_filepath,
                                                           uncleaned_tgt_filename)
