@@ -166,7 +166,7 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
 
     @parameterized.expand(["train", "valid", "test"])
     def test_iwslt2016_split_argument(self, split):
-        root_dir = self.get_base_temp_dir()
+        root_dir = tempfile.TemporaryDirectory().name
         language_pair = ("de", "en")
         valid_set = "tst2013"
         test_set = "tst2014"
