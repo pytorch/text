@@ -12,7 +12,7 @@ from parameterized import parameterized
 from torchtext.datasets.iwslt2016 import DATASET_NAME, IWSLT2016, SUPPORTED_DATASETS, SET_NOT_EXISTS
 from torchtext.data.datasets_utils import _generate_iwslt_files_for_lang_and_split
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
 SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
