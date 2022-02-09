@@ -3,7 +3,6 @@ import random
 import shutil
 import string
 import tarfile
-import itertools
 import tempfile
 from collections import defaultdict
 from unittest.mock import patch
@@ -147,14 +146,12 @@ class TestIWSLT2017(TorchtextTestCase):
         for split in ("train", "valid", "test")
         for src, tgt in SUPPORTED_LANGPAIRS
     ])
-    def test_iwslt2017(self, split, src, tgt, dev_set, test_set):
+    def test_iwslt2017(self, split, src, tgt):
 
         with tempfile.TemporaryDirectory() as root_dir:
-            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
+            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, "dev2010", "tst2010")
 
-            dataset = IWSLT2017(
-                root=root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
-            )
+            dataset = IWSLT2017(root=root_dir, split=split, language_pair=(src, tgt))
 
             samples = list(dataset)
 
