@@ -27,7 +27,6 @@ def _get_mock_dataset(root_dir):
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(txt_file, "w") as f:
             for i in range(5):
-                label = seed % 2
                 rand_strings = [random.choice(string.ascii_letters) for i in range(seed)]
                 rand_label_1 = [random.choice(string.ascii_letters) for i in range(seed)]
                 rand_label_2 = [random.choice(string.ascii_letters) for i in range(seed)]
@@ -40,9 +39,8 @@ def _get_mock_dataset(root_dir):
                 mocked_lines.append(dataset_line)
                 seed += 1
 
-
         # create gz file from dataset folder
-        compressed_dataset_path = os.path.join(temp_dataset_dir, f"{file_name}.gz")
+        compressed_dataset_path = os.path.join(base_dir, f"{file_name}.gz")
         with gzip.open(compressed_dataset_path, "wb") as gz_file, open(txt_file, "rb") as file_in:
             gz_file.writelines(file_in)
 
