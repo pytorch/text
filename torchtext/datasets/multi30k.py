@@ -48,6 +48,9 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         root: Directory where the datasets are saved. Default: ".data"
         split: split or splits to be returned. Can be a string or tuple of strings. Default: ('train', 'valid', 'test')
         language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
+
+    :return: Datapipe that yeilds tuple of source and target sentence
+    :rtype: (str, str)
     """
 
     assert (len(language_pair) == 2), 'language_pair must contain only 2 elements: src and tgt language respectively'
