@@ -1,12 +1,7 @@
 import os
-from typing import Tuple, Union
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
@@ -22,10 +17,15 @@ NUM_LINES = {"train": 13147026}
 DATASET_NAME = "EnWik9"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(("train",))
-def EnWik9(root: str, split: Union[Tuple[str], str]):
+def EnWik9(root: str):
+    """EnWik9 dataset
+
+    Number of lines in dataset: 13147026
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"

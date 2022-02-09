@@ -58,7 +58,7 @@ class TestCC100(TempDirMixin, TorchtextTestCase):
 
     @parameterized.expand(VALID_CODES)
     def test_cc100(self, language_code):
-        dataset = CC100(root=self.root_dir, split="train", language_code=language_code)
+        dataset = CC100(root=self.root_dir, language_code=language_code)
 
         samples = list(dataset)
         expected_samples = self.samples[language_code]
