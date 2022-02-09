@@ -1,5 +1,6 @@
 import os
 import random
+import shutil
 import string
 import tarfile
 import itertools
@@ -7,7 +8,7 @@ from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.iwslt2016 import IWSLT2016, SUPPORTED_DATASETS, SET_NOT_EXISTS
+from torchtext.datasets.iwslt2016 import DATASET_NAME, IWSLT2016, SUPPORTED_DATASETS, SET_NOT_EXISTS
 from torchtext.data.datasets_utils import _generate_iwslt_files_for_lang_and_split
 
 from ..common.case_utils import TempDirMixin, zip_equal
@@ -75,7 +76,9 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     """
     root_dir: directory to the mocked dataset
     """
-    outer_temp_dataset_dir = os.path.join(root_dir, f"IWSLT2016/2016-01/texts/{src}/{tgt}/")
+
+    base_dir = os.path.join(root_dir, DATASET_NAME)
+    outer_temp_dataset_dir = os.path.join(base_dir, f"2016-01/texts/{src}/{tgt}/")
     inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
@@ -96,19 +99,12 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     ]:
         # Get file extension (i.e., the language) without the . prefix (.en -> en)
         lang = os.path.splitext(unclean_file_name)[1][1:]
-        expected_clean_filename = os.path.join(inner_temp_dataset_dir, clean_file_name)
 
-        # If we've already written a clean file, read it, so we don't generate
-        # new random strings. Otherwise generate new files and clean when read.
-        if os.path.exists(expected_clean_filename):
-            with open(expected_clean_filename, encoding="utf-8") as f:
-                mocked_data[split][lang] = f.readlines()
-        else:
-            out_file = os.path.join(inner_temp_dataset_dir, unclean_file_name)
-            with open(out_file, "w") as f:
-                mocked_data_for_split, file_contents = _generate_uncleaned_contents(split)
-                mocked_data[split][lang] = mocked_data_for_split
-                f.write(file_contents)
+        out_file = os.path.join(inner_temp_dataset_dir, unclean_file_name)
+        with open(out_file, "w") as f:
+            mocked_data_for_split, file_contents = _generate_uncleaned_contents(split)
+            mocked_data[split][lang] = mocked_data_for_split
+            f.write(file_contents)
 
     inner_compressed_dataset_path = os.path.join(
         outer_temp_dataset_dir, f"{src}-{tgt}.tgz"
@@ -118,12 +114,13 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
         tar.add(inner_temp_dataset_dir, arcname=f"{src}-{tgt}")
 
-    outer_temp_dataset_path = os.path.join(
-        root_dir, "IWSLT2016", "2016-01.tgz"
-    )
+    shutil.rmtree(inner_temp_dataset_dir)
+    outer_temp_dataset_path = os.path.join(base_dir, "2016-01.tgz")
+
     with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
         tar.add(outer_temp_dataset_dir, arcname="2016-01")
 
+    shutil.rmtree(outer_temp_dataset_dir)
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
 
@@ -134,7 +131,6 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.root_dir = cls.get_base_temp_dir()
         cls.patcher = patch(
             "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
         )
@@ -154,10 +150,11 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
     ])
     def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
 
-        expected_samples = _get_mock_dataset(self.root_dir, split, src, tgt, dev_set, test_set)
+        root_dir = self.get_base_temp_dir()
+        expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
 
         dataset = IWSLT2016(
-            root=self.root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
+            root=root_dir, split=split, language_pair=(src, tgt), valid_set=dev_set, test_set=test_set
         )
 
         samples = list(dataset)
@@ -167,8 +164,9 @@ class TestIWSLT2016(TempDirMixin, TorchtextTestCase):
 
     @parameterized.expand(["train", "valid", "test"])
     def test_iwslt2016_split_argument(self, split):
-        dataset1 = IWSLT2016(root=self.root_dir, split=split)
-        (dataset2,) = IWSLT2016(root=self.root_dir, split=(split,))
+        root_dir = self.get_base_temp_dir()
+        dataset1 = IWSLT2016(root=root_dir, split=split)
+        (dataset2,) = IWSLT2016(root=root_dir, split=(split,))
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
