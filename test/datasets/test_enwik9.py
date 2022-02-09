@@ -2,7 +2,6 @@ import os
 import random
 import string
 import zipfile
-from collections import defaultdict
 from unittest.mock import patch
 
 from torchtext.datasets.enwik9 import EnWik9
