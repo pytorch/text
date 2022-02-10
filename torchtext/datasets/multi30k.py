@@ -49,7 +49,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         split: split or splits to be returned. Can be a string or tuple of strings. Default: ('train', 'valid', 'test')
         language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
 
-    :return: Datapipe that yeilds tuple of source and target sentence
+    :return: DataPipe that yields tuple of source and target sentences
     :rtype: (str, str)
     """
 

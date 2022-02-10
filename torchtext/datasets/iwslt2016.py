@@ -175,6 +175,9 @@ def IWSLT2016(root=".data", split=("train", "valid", "test"), language_pair=("de
         valid_set: a string to identify validation set.
         test_set: a string to identify test set.
 
+    :return: DataPipe that yields tuple of source and target sentences
+    :rtype: (str, str)
+
     Examples:
         >>> from torchtext.datasets import IWSLT2016
         >>> train_iter, valid_iter, test_iter = IWSLT2016()

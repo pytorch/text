@@ -143,10 +143,13 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
         language_pair: tuple or list containing src and tgt language
 
+    :return: DataPipe that yields tuple of source and target sentences
+    :rtype: (str, str)
+
     Examples:
         >>> from torchtext.datasets import IWSLT2017
         >>> train_iter, valid_iter, test_iter = IWSLT2017()
-        >>> src_sentence, tgt_sentence = next(train_iter)
+        >>> src_sentence, tgt_sentence = next(iter(train_iter))
 
     """
     if not is_module_available("torchdata"):

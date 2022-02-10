@@ -35,10 +35,26 @@ _EXTRACTED_FILES = {
 DATASET_NAME = "CoNLL2000Chunking"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
+    """CoNLL2000Chunking Dataset
+
+    Additional details can be found on this page: https://www.clips.uantwerpen.be/conll2000/chunking/
+    
+    Number of lines per split:
+        train: 8936
+
+        test: 2012
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `valid`, `test`)
+
+    :returns: DataPipe that yields list of words along with corresponding Parts-of-speech tag and chunk tag
+    :rtype: [list(str), list(str), list(str)]
+    """
+
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
