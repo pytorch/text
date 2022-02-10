@@ -73,7 +73,7 @@ def _get_mock_dataset(root_dir, base_dir_name):
     return mocked_data
 
 
-class TestSQuAD(TempDirMixin, TorchtextTestCase):
+class TestSQuADs(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
@@ -92,7 +92,7 @@ class TestSQuAD(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @nested_params([SQuAD1, SQuAD2], ["train", "dev"])
-    def test_squad(self, squad_dataset, split):
+    def test_squads(self, squad_dataset, split):
         expected_samples = _get_mock_dataset(self.root_dir, squad_dataset.__name__)[
             split
         ]
@@ -103,7 +103,7 @@ class TestSQuAD(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @nested_params([SQuAD1, SQuAD2], ["train", "dev"])
-    def test_squad_split_argument(self, squad_dataset, split):
+    def test_squads_split_argument(self, squad_dataset, split):
         # call `_get_mock_dataset` to create mock dataset files
         _ = _get_mock_dataset(self.root_dir, squad_dataset.__name__)
 

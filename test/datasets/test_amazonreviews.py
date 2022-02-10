@@ -5,18 +5,20 @@ import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from parameterized import parameterized
+from torchtext.datasets.amazonreviewfull import AmazonReviewFull
 from torchtext.datasets.amazonreviewpolarity import AmazonReviewPolarity
 
 from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
-def _get_mock_dataset(root_dir):
+def _get_mock_dataset(root_dir, base_dir_name):
     """
     root_dir: directory to the mocked dataset
+    base_dir_name: AmazonReviewFull or AmazonReviewPolarity
     """
-    base_dir = os.path.join(root_dir, "AmazonReviewPolarity")
+    base_dir = os.path.join(root_dir, base_dir_name)
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
@@ -26,7 +28,10 @@ def _get_mock_dataset(root_dir):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w") as f:
             for i in range(5):
-                label = seed % 2 + 1
+                if base_dir_name == AmazonReviewFull.__name__:
+                    label = seed % 5 + 1
+                else:
+                    label = seed % 2 + 1
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
@@ -36,17 +41,20 @@ def _get_mock_dataset(root_dir):
                 f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
+    if base_dir_name == AmazonReviewFull.__name__:
+        archive_file_name = "amazon_review_full_csv"
+    else:
+        archive_file_name = "amazon_review_polarity_csv"
+
+    compressed_dataset_path = os.path.join(base_dir, f"{archive_file_name}.tar.gz")
     # create tar file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
+        tar.add(temp_dataset_dir, arcname=archive_file_name)
 
     return mocked_data
 
 
-class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
+class TestAmazonReviews(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
@@ -54,7 +62,6 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.samples = _get_mock_dataset(cls.root_dir)
         cls.patcher = patch(
             "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
         )
@@ -65,19 +72,24 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity(self, split):
-        dataset = AmazonReviewPolarity(root=self.root_dir, split=split)
-
+    @nested_params([AmazonReviewFull, AmazonReviewPolarity], ["train", "test"])
+    def test_amazon_reviews(self, amazon_review_dataset, split):
+        expected_samples = _get_mock_dataset(
+            self.root_dir, amazon_review_dataset.__name__
+        )[split]
+        dataset = amazon_review_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
-        expected_samples = self.samples[split]
+
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
-    @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity_split_argument(self, split):
-        dataset1 = AmazonReviewPolarity(root=self.root_dir, split=split)
-        (dataset2,) = AmazonReviewPolarity(root=self.root_dir, split=(split,))
+    @nested_params([AmazonReviewFull, AmazonReviewPolarity], ["train", "test"])
+    def test_amazon_reviews_split_argument(self, amazon_review_dataset, split):
+        # call `_get_mock_dataset` to create mock dataset files
+        _ = _get_mock_dataset(self.root_dir, amazon_review_dataset.__name__)
+
+        dataset1 = amazon_review_dataset(root=self.root_dir, split=split)
+        (dataset2,) = amazon_review_dataset(root=self.root_dir, split=(split,))
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
