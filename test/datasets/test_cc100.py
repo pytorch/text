@@ -1,7 +1,5 @@
-import lzma
 import os
 import lzma
-from parameterized import parameterized
 from collections import defaultdict
 from unittest.mock import patch
 
