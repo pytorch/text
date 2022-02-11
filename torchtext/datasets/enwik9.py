@@ -21,6 +21,8 @@ DATASET_NAME = "EnWik9"
 def EnWik9(root: str):
     """EnWik9 dataset
 
+    For additional details refer to http://mattmahoney.net/dc/textdata.html
+
     Number of lines in dataset: 13147026
 
     Args:

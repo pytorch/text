@@ -42,7 +42,7 @@ DATASET_NAME = "Multi30k"
 def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str] = ('de', 'en')):
     """Multi30k dataset
 
-    Reference: http://www.statmt.org/wmt16/multimodal-task.html#task1
+    For additional details refer to https://www.statmt.org/wmt16/multimodal-task.html#task1
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
