@@ -5,11 +5,11 @@ import zipfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from ..common.parameterized_utils import nested_params
 from torchtext.datasets.wikitext103 import WikiText103
 from torchtext.datasets.wikitext2 import WikiText2
 
 from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -34,7 +34,7 @@ def _get_mock_dataset(root_dir, base_dir_name):
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
                 dataset_line = rand_string
-                f.write(f'{rand_string}\n')
+                f.write(f"{rand_string}\n")
 
                 # append line to correct dataset split
                 mocked_lines.append(dataset_line)
@@ -75,7 +75,9 @@ class TestWikiTexts(TempDirMixin, TorchtextTestCase):
 
     @nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
     def test_wikitexts(self, wikitext_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=wikitext_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(
+            self.root_dir, base_dir_name=wikitext_dataset.__name__
+        )[split]
 
         dataset = wikitext_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
