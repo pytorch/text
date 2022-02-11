@@ -6,6 +6,7 @@ from torchtext.data.datasets_utils import _create_dataset_directory
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
+
 URL = "http://mattmahoney.net/dc/enwik9.zip"
 
 MD5 = "3e773f8a1577fda2e27f871ca17f31fd"

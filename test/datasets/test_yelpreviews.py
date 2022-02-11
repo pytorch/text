@@ -5,11 +5,11 @@ import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from ..common.parameterized_utils import nested_params
-from torchtext.datasets.yelpreviewpolarity import YelpReviewPolarity
 from torchtext.datasets.yelpreviewfull import YelpReviewFull
+from torchtext.datasets.yelpreviewpolarity import YelpReviewPolarity
 
 from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -76,7 +76,9 @@ class TestYelpReviews(TempDirMixin, TorchtextTestCase):
 
     @nested_params([YelpReviewPolarity, YelpReviewFull], ["train", "test"])
     def test_yelpreviews(self, yelp_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=yelp_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(
+            self.root_dir, base_dir_name=yelp_dataset.__name__
+        )[split]
 
         dataset = yelp_dataset(root=self.root_dir, split=split)
         samples = list(dataset)

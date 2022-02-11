@@ -36,9 +36,7 @@ def _get_mock_dataset(root_dir):
                 f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "sogou_news_csv.tar.gz"
-    )
+    compressed_dataset_path = os.path.join(base_dir, "sogou_news_csv.tar.gz")
     # create tar file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
         tar.add(temp_dataset_dir, arcname="sogou_news_csv")

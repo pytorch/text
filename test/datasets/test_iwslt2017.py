@@ -1,4 +1,3 @@
-import itertools
 import os
 import random
 import shutil
@@ -10,11 +9,11 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 from torchtext.data.datasets_utils import _generate_iwslt_files_for_lang_and_split
-from torchtext.datasets.iwslt2016 import (
+from torchtext.datasets.iwslt2017 import (
     DATASET_NAME,
-    IWSLT2016,
+    IWSLT2017,
     SUPPORTED_DATASETS,
-    SET_NOT_EXISTS,
+    _PATH,
 )
 
 from ..common.case_utils import zip_equal
@@ -22,12 +21,6 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 SUPPORTED_LANGPAIRS = [
     (k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v
-]
-SUPPORTED_DEVTEST_SPLITS = SUPPORTED_DATASETS["valid_test"]
-DEV_TEST_SPLITS = [
-    (dev, test)
-    for dev, test in itertools.product(SUPPORTED_DEVTEST_SPLITS, repeat=2)
-    if dev != test
 ]
 
 
@@ -97,8 +90,12 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
 
     base_dir = os.path.join(root_dir, DATASET_NAME)
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
-    outer_temp_dataset_dir = os.path.join(temp_dataset_dir, f"texts/{src}/{tgt}/")
-    inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}")
+    outer_temp_dataset_dir = os.path.join(
+        temp_dataset_dir, "texts/DeEnItNlRo/DeEnItNlRo"
+    )
+    inner_temp_dataset_dir = os.path.join(
+        outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo"
+    )
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
     os.makedirs(inner_temp_dataset_dir, exist_ok=True)
@@ -106,7 +103,7 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
     mocked_data = defaultdict(lambda: defaultdict(list))
 
     cleaned_file_names, uncleaned_file_names = _generate_iwslt_files_for_lang_and_split(
-        16, src, tgt, valid_set, test_set
+        17, src, tgt, valid_set, test_set
     )
     uncleaned_src_file = uncleaned_file_names[src][split]
     uncleaned_tgt_file = uncleaned_file_names[tgt][split]
@@ -128,25 +125,25 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
             f.write(file_contents)
 
     inner_compressed_dataset_path = os.path.join(
-        outer_temp_dataset_dir, f"{src}-{tgt}.tgz"
+        outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo.tgz"
     )
 
     # create tar file from dataset folder
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
-        tar.add(inner_temp_dataset_dir, arcname=f"{src}-{tgt}")
+        tar.add(inner_temp_dataset_dir, arcname="DeEnItNlRo-DeEnItNlRo")
 
     # this is necessary so that the outer tarball only includes the inner tarball
     shutil.rmtree(inner_temp_dataset_dir)
 
-    outer_temp_dataset_path = os.path.join(base_dir, "2016-01.tgz")
+    outer_temp_dataset_path = os.path.join(base_dir, _PATH)
 
     with tarfile.open(outer_temp_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="2016-01")
+        tar.add(temp_dataset_dir, arcname=os.path.splitext(_PATH)[0])
 
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
 
 
-class TestIWSLT2016(TorchtextTestCase):
+class TestIWSLT2017(TorchtextTestCase):
     root_dir = None
     patcher = None
 
@@ -165,30 +162,19 @@ class TestIWSLT2016(TorchtextTestCase):
 
     @parameterized.expand(
         [
-            (split, src, tgt, dev_set, test_set)
+            (split, src, tgt)
             for split in ("train", "valid", "test")
-            for dev_set, test_set in DEV_TEST_SPLITS
             for src, tgt in SUPPORTED_LANGPAIRS
-            if (
-                dev_set not in SET_NOT_EXISTS[(src, tgt)]
-                and test_set not in SET_NOT_EXISTS[(src, tgt)]
-            )
         ]
     )
-    def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
+    def test_iwslt2017(self, split, src, tgt):
 
         with tempfile.TemporaryDirectory() as root_dir:
             expected_samples = _get_mock_dataset(
-                root_dir, split, src, tgt, dev_set, test_set
+                root_dir, split, src, tgt, "dev2010", "tst2010"
             )
 
-            dataset = IWSLT2016(
-                root=root_dir,
-                split=split,
-                language_pair=(src, tgt),
-                valid_set=dev_set,
-                test_set=test_set,
-            )
+            dataset = IWSLT2017(root=root_dir, split=split, language_pair=(src, tgt))
 
             samples = list(dataset)
 
@@ -196,27 +182,19 @@ class TestIWSLT2016(TorchtextTestCase):
                 self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "valid", "test"])
-    def test_iwslt2016_split_argument(self, split):
+    def test_iwslt2017_split_argument(self, split):
         with tempfile.TemporaryDirectory() as root_dir:
             language_pair = ("de", "en")
-            valid_set = "tst2013"
-            test_set = "tst2014"
+            valid_set = "dev2010"
+            test_set = "tst2010"
             _ = _get_mock_dataset(
                 root_dir, split, language_pair[0], language_pair[1], valid_set, test_set
             )
-            dataset1 = IWSLT2016(
-                root=root_dir,
-                split=split,
-                language_pair=language_pair,
-                valid_set=valid_set,
-                test_set=test_set,
+            dataset1 = IWSLT2017(
+                root=root_dir, split=split, language_pair=language_pair
             )
-            (dataset2,) = IWSLT2016(
-                root=root_dir,
-                split=(split,),
-                language_pair=language_pair,
-                valid_set=valid_set,
-                test_set=test_set,
+            (dataset2,) = IWSLT2017(
+                root=root_dir, split=(split,), language_pair=language_pair
             )
 
             for d1, d2 in zip_equal(dataset1, dataset2):
