@@ -50,6 +50,7 @@ def SogouNews(root: str, split: Union[Tuple[str], str]):
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+
     :returns: DataPipe that yields tuple of label (1 to 5) and text containing the news title and contents
     :rtype: (int, str)
     """
