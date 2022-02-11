@@ -1,14 +1,13 @@
 import os.path
 
-
 from torchtext._internal.module_utils import is_module_available
+from torchtext.data.datasets_utils import (
+    _create_dataset_directory,
+)
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
-from torchtext.data.datasets_utils import (
-    _create_dataset_directory,
-)
 
 URL = "http://data.statmt.org/cc-100/%s.txt.xz"
 
@@ -41,7 +40,9 @@ def CC100(root: str, language_code: str = "en"):
     )
 
     cache_compressed_dp = HttpReader(cache_compressed_dp)
-    cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    cache_compressed_dp = cache_compressed_dp.end_caching(
+        mode="wb", same_filepath_fn=True
+    )
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.basename(x).rstrip(".xz"))

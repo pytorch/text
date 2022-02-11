@@ -1,7 +1,7 @@
+import gzip
 import os
 import random
 import string
-import gzip
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -27,11 +27,19 @@ def _get_mock_dataset(root_dir):
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(txt_file, "w") as f:
             for i in range(5):
-                rand_strings = [random.choice(string.ascii_letters) for i in range(seed)]
-                rand_label_1 = [random.choice(string.ascii_letters) for i in range(seed)]
-                rand_label_2 = [random.choice(string.ascii_letters) for i in range(seed)]
+                rand_strings = [
+                    random.choice(string.ascii_letters) for i in range(seed)
+                ]
+                rand_label_1 = [
+                    random.choice(string.ascii_letters) for i in range(seed)
+                ]
+                rand_label_2 = [
+                    random.choice(string.ascii_letters) for i in range(seed)
+                ]
                 # one token per line (each sample ends with an extra \n)
-                for rand_string, label_1, label_2 in zip(rand_strings, rand_label_1, rand_label_2):
+                for rand_string, label_1, label_2 in zip(
+                    rand_strings, rand_label_1, rand_label_2
+                ):
                     f.write(f"{rand_string} {label_1} {label_2}\n")
                 f.write("\n")
                 dataset_line = (rand_strings, rand_label_1, rand_label_2)
@@ -41,7 +49,9 @@ def _get_mock_dataset(root_dir):
 
         # create gz file from dataset folder
         compressed_dataset_path = os.path.join(base_dir, f"{file_name}.gz")
-        with gzip.open(compressed_dataset_path, "wb") as gz_file, open(txt_file, "rb") as file_in:
+        with gzip.open(compressed_dataset_path, "wb") as gz_file, open(
+            txt_file, "rb"
+        ) as file_in:
             gz_file.writelines(file_in)
 
     return mocked_data

@@ -1,16 +1,15 @@
+import os
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
-
-import os
-
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _create_dataset_directory,
 )
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
+
 
 URL = "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k"
 

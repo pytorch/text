@@ -1,46 +1,60 @@
-from torchtext._internal.module_utils import is_module_available
+import os
 from typing import Union, Tuple
+
+from torchtext._internal.module_utils import is_module_available
+from torchtext.data.datasets_utils import (
+    _wrap_split_argument,
+    _create_dataset_directory,
+)
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
-
-import os
 
 URL = {
-    'train': "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
-    'test': "https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz",
+    "train": "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
+    "test": "https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz",
 }
 
 MD5 = {
-    'train': "6969c2903a1f19a83569db643e43dcc8",
-    'test': "a916e1c2d83eb3004b38fc6fcd628939",
+    "train": "6969c2903a1f19a83569db643e43dcc8",
+    "test": "a916e1c2d83eb3004b38fc6fcd628939",
 }
 
 NUM_LINES = {
-    'train': 8936,
-    'test': 2012,
+    "train": 8936,
+    "test": 2012,
 }
 
-_EXTRACTED_FILES = {
-    'train': 'train.txt',
-    'test': 'test.txt'
-}
+_EXTRACTED_FILES = {"train": "train.txt", "test": "test.txt"}
 
 DATASET_NAME = "CoNLL2000Chunking"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
+    """CoNLL2000Chunking Dataset
+
+    For additional details refer to https://www.clips.uantwerpen.be/conll2000/chunking/
+
+    Number of lines per split:
+        train: 8936
+
+        test: 2012
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+
+    :returns: DataPipe that yields list of words along with corresponding Parts-of-speech tag and chunk tag
+    :rtype: [list(str), list(str), list(str)]
+    """
+
     if not is_module_available("torchdata"):
-        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+        )
 
     url_dp = IterableWrapper([URL[split]])
 

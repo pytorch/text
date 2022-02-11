@@ -10,6 +10,7 @@ from torchtext.data.datasets_utils import (
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
+
 URL = {
     "train": "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt",
     "test": "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt",

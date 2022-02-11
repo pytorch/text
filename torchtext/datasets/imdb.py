@@ -10,22 +10,22 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper, HttpReader
 
 
-URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
+URL = "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
 
-MD5 = '7c2ac02c03563afcf9b574c7e56c153a'
+MD5 = "7c2ac02c03563afcf9b574c7e56c153a"
 
 NUM_LINES = {
-    'train': 25000,
-    'test': 25000,
+    "train": 25000,
+    "test": 25000,
 }
 
-_PATH = 'aclImdb_v1.tar.gz'
+_PATH = "aclImdb_v1.tar.gz"
 
 DATASET_NAME = "IMDB"
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
+@_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
     """IMDB Dataset
 
@@ -43,20 +43,27 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     :rtype: (int, str)
     """
     if not is_module_available("torchdata"):
-        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+        )
 
     url_dp = IterableWrapper([URL])
 
     cache_compressed_dp = url_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _PATH),
-        hash_dict={os.path.join(root, _PATH): MD5}, hash_type="md5"
+        hash_dict={os.path.join(root, _PATH): MD5},
+        hash_type="md5",
     )
-    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(
+        mode="wb", same_filepath_fn=True
+    )
 
     labels = {"neg", "pos"}
     decompressed_folder = "aclImdb_v1"
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: [os.path.join(root, decompressed_folder, split, label) for label in labels]
+        filepath_fn=lambda x: [
+            os.path.join(root, decompressed_folder, split, label) for label in labels
+        ]
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
     cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
@@ -66,14 +73,21 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
         *_, split, label, file = Path(fname).parts
         return key == split and label in labels
 
-    cache_decompressed_dp = cache_decompressed_dp.filter(lambda t: filter_imdb_data(split, t[0]))
+    cache_decompressed_dp = cache_decompressed_dp.filter(
+        lambda t: filter_imdb_data(split, t[0])
+    )
 
     # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"
-    cache_decompressed_dp = cache_decompressed_dp.map(lambda t: (Path(t[0]).parts[-2], t[1]))
+    cache_decompressed_dp = cache_decompressed_dp.map(
+        lambda t: (Path(t[0]).parts[-2], t[1])
+    )
     cache_decompressed_dp = cache_decompressed_dp.readlines(decode=True)
-    cache_decompressed_dp = cache_decompressed_dp.lines_to_paragraphs()  # group by label in cache file
+    cache_decompressed_dp = (
+        cache_decompressed_dp.lines_to_paragraphs()
+    )  # group by label in cache file
     cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wt", filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x)
+        mode="wt",
+        filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x),
     )
 
     data_dp = FileOpener(cache_decompressed_dp, mode="t")

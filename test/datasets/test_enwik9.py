@@ -24,10 +24,12 @@ def _get_mock_dataset(root_dir):
     mocked_data = []
     with open(txt_file, "w") as f:
         for i in range(5):
-            rand_string = "<" + " ".join(
-                random.choice(string.ascii_letters) for i in range(seed)
-            ) + ">"
-            dataset_line = (f"'{rand_string}'")
+            rand_string = (
+                "<"
+                + " ".join(random.choice(string.ascii_letters) for i in range(seed))
+                + ">"
+            )
+            dataset_line = f"'{rand_string}'"
             f.write(f"'{rand_string}'\n")
 
             # append line to correct dataset split

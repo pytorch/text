@@ -1,42 +1,59 @@
-from torchtext._internal.module_utils import is_module_available
+import os
 from typing import Union, Tuple
+
+from torchtext._internal.module_utils import is_module_available
+from torchtext.data.datasets_utils import (
+    _wrap_split_argument,
+    _create_dataset_directory,
+)
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _add_docstring_header,
-    _create_dataset_directory,
-)
-
-import os
 
 URL = {
-    'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
-    'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
+    "train": "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
+    "dev": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
 }
 
 MD5 = {
-    'train': "62108c273c268d70893182d5cf8df740",
-    'dev': "246adae8b7002f8679c027697b0b7cf8",
+    "train": "62108c273c268d70893182d5cf8df740",
+    "dev": "246adae8b7002f8679c027697b0b7cf8",
 }
 
 NUM_LINES = {
-    'train': 130319,
-    'dev': 11873,
+    "train": 130319,
+    "dev": 11873,
 }
 
 
 DATASET_NAME = "SQuAD2"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'dev'))
+@_wrap_split_argument(("train", "dev"))
 def SQuAD2(root: str, split: Union[Tuple[str], str]):
+    """SQuAD2 Dataset
+
+    For additional details refer to https://rajpurkar.github.io/SQuAD-explorer/
+
+    Number of lines per split:
+        train: 130319
+
+        Dev: 11873
+
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`)
+
+    :returns: DataPipe that yields data points from SQuaAD1 dataset which consist of context, question, list of answers and corresponding index in context
+    :rtype: (str, str, list(str), list(int))
+    """
     if not is_module_available("torchdata"):
-        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+        )
 
     url_dp = IterableWrapper([URL[split]])
     # cache data on-disk with sanity check

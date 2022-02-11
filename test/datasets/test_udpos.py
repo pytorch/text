@@ -27,11 +27,20 @@ def _get_mock_dataset(root_dir):
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
         with open(txt_file, "w") as f:
             for i in range(5):
-                rand_strings = ["".join(random.sample(string.ascii_letters, random.randint(1, 10))) for i in range(seed)]
-                rand_label_1 = [random.choice(string.ascii_letters) for i in range(seed)]
-                rand_label_2 = [random.choice(string.ascii_letters) for i in range(seed)]
+                rand_strings = [
+                    "".join(random.sample(string.ascii_letters, random.randint(1, 10)))
+                    for i in range(seed)
+                ]
+                rand_label_1 = [
+                    random.choice(string.ascii_letters) for i in range(seed)
+                ]
+                rand_label_2 = [
+                    random.choice(string.ascii_letters) for i in range(seed)
+                ]
                 # one token per line (each sample ends with an extra \n)
-                for rand_string, label_1, label_2 in zip(rand_strings, rand_label_1, rand_label_2):
+                for rand_string, label_1, label_2 in zip(
+                    rand_strings, rand_label_1, rand_label_2
+                ):
                     f.write(f"{rand_string}\t{label_1}\t{label_2}\n")
                 f.write("\n")
                 dataset_line = (rand_strings, rand_label_1, rand_label_2)
@@ -73,7 +82,9 @@ class TestUDPOS(TempDirMixin, TorchtextTestCase):
     def test_udpos(self, split):
         dataset = UDPOS(root=self.root_dir, split=split)
         samples = list(dataset)
-        expected_samples = self.samples[split] if split != "valid" else self.samples["dev"]
+        expected_samples = (
+            self.samples[split] if split != "valid" else self.samples["dev"]
+        )
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
