@@ -6,7 +6,6 @@ if is_module_available("torchdata"):
 
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 import os
@@ -29,10 +28,23 @@ NUM_LINES = {
 DATASET_NAME = "AG_NEWS"
 
 
-@_add_docstring_header(num_lines=NUM_LINES, num_classes=4)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def AG_NEWS(root: str, split: Union[Tuple[str], str]):
+    """AG_NEWS Dataset
+
+    For additional details refer to https://paperswithcode.com/dataset/ag-news
+
+    Number of lines per split:
+        train: 120000
+        test: 7600
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+    :returns: DataPipe that yields tuple of label (1 to 4) and text
+    :rtype: (int, str)
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
