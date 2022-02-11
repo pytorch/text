@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _create_dataset_directory
 from torchtext.data.datasets_utils import _wrap_split_argument
 
@@ -25,10 +24,24 @@ _PATH = "aclImdb_v1.tar.gz"
 DATASET_NAME = "IMDB"
 
 
-@_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
+    """IMDB Dataset
+
+    For additional details refer to http://ai.stanford.edu/~amaas/data/sentiment/
+
+    Number of lines per split:
+        - train: 25000
+        - test: 25000
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+
+    :returns: DataPipe that yields tuple of label (1 to 2) and text containing the movie review
+    :rtype: (int, str)
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
