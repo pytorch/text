@@ -40,8 +40,8 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://arxiv.org/abs/1509.01626
 
     Number of lines per split:
-        train: 3600000
-        test: 400000
+        - train: 3600000
+        - test: 400000
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

@@ -39,8 +39,8 @@ def DBpedia(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://www.dbpedia.org/resources/latest-core/
 
     Number of lines per split:
-        train: 560000
-        test: 70000
+        - train: 560000
+        - test: 70000
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

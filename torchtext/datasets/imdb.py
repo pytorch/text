@@ -32,8 +32,8 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     For additional details refer to http://ai.stanford.edu/~amaas/data/sentiment/
 
     Number of lines per split:
-        train: 25000
-        test: 25000
+        - train: 25000
+        - test: 25000
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

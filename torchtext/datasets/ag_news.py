@@ -36,8 +36,8 @@ def AG_NEWS(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://paperswithcode.com/dataset/ag-news
 
     Number of lines per split:
-        train: 120000
-        test: 7600
+        - train: 120000
+        - test: 7600
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

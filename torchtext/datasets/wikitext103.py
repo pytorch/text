@@ -37,9 +37,9 @@ def WikiText103(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://blog.salesforceairesearch.com/the-wikitext-long-term-dependency-language-modeling-dataset/
 
     Number of lines per split:
-        train: 1801350
-        valid: 3760
-        test: 4358
+        - train: 1801350
+        - valid: 3760
+        - test: 4358
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

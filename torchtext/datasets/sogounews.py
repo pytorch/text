@@ -44,8 +44,8 @@ def SogouNews(root: str, split: Union[Tuple[str], str]):
    For additional details refer to https://arxiv.org/abs/1509.01626
 
     Number of lines per split:
-        train: 450000
-        test: 60000
+        - train: 450000
+        - test: 60000
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
