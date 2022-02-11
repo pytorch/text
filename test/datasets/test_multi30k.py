@@ -1,14 +1,12 @@
 import os
-import random
-import string
 import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
 from torchtext.datasets import Multi30k
 
-from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.parameterized_utils import nested_params
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -24,11 +22,9 @@ def _get_mock_dataset(root_dir):
     mocked_data = defaultdict(list)
     for file_name in ("train.de", "train.en", "val.de", "val.en", "test.de", "test.en"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = get_random_unicode(seed)
                 f.write(rand_string + "\n")
                 mocked_data[file_name].append(rand_string)
                 seed += 1

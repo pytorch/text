@@ -1,14 +1,13 @@
 import gzip
 import os
-import random
-import string
+import gzip
 from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
 from torchtext.datasets.conll2000chunking import CoNLL2000Chunking
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -25,17 +24,11 @@ def _get_mock_dataset(root_dir):
     for file_name in ("train.txt", "test.txt"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
-                rand_strings = [
-                    random.choice(string.ascii_letters) for i in range(seed)
-                ]
-                rand_label_1 = [
-                    random.choice(string.ascii_letters) for i in range(seed)
-                ]
-                rand_label_2 = [
-                    random.choice(string.ascii_letters) for i in range(seed)
-                ]
+                rand_strings = [get_random_unicode(seed)]
+                rand_label_1 = [get_random_unicode(seed)]
+                rand_label_2 = [get_random_unicode(seed)]
                 # one token per line (each sample ends with an extra \n)
                 for rand_string, label_1, label_2 in zip(
                     rand_strings, rand_label_1, rand_label_2

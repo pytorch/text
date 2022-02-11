@@ -4,7 +4,7 @@ from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.sogounews import SogouNews
+from torchtext.datasets.amazonreviewfull import AmazonReviewFull
 
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -14,7 +14,7 @@ def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
-    base_dir = os.path.join(root_dir, "SogouNews")
+    base_dir = os.path.join(root_dir, "AmazonReviewFull")
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
@@ -32,15 +32,17 @@ def _get_mock_dataset(root_dir):
                 f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
 
-    compressed_dataset_path = os.path.join(base_dir, "sogou_news_csv.tar.gz")
+    compressed_dataset_path = os.path.join(
+        base_dir, "amazon_review_full_csv.tar.gz"
+    )
     # create tar file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="sogou_news_csv")
+        tar.add(temp_dataset_dir, arcname="amazon_review_full_csv")
 
     return mocked_data
 
 
-class TestSogouNews(TempDirMixin, TorchtextTestCase):
+class TestAmazonReviewFull(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
@@ -60,8 +62,8 @@ class TestSogouNews(TempDirMixin, TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand(["train", "test"])
-    def test_sogou_news_polarity(self, split):
-        dataset = SogouNews(root=self.root_dir, split=split)
+    def test_amazon_review_full(self, split):
+        dataset = AmazonReviewFull(root=self.root_dir, split=split)
 
         samples = list(dataset)
         expected_samples = self.samples[split]
@@ -69,9 +71,9 @@ class TestSogouNews(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test"])
-    def test_sogou_news_split_argument(self, split):
-        dataset1 = SogouNews(root=self.root_dir, split=split)
-        (dataset2,) = SogouNews(root=self.root_dir, split=(split,))
+    def test_amazon_review_full_split_argument(self, split):
+        dataset1 = AmazonReviewFull(root=self.root_dir, split=split)
+        (dataset2,) = AmazonReviewFull(root=self.root_dir, split=(split,))
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
