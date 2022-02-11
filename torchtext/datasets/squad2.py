@@ -6,7 +6,6 @@ if is_module_available("torchdata"):
 
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
@@ -31,10 +30,24 @@ NUM_LINES = {
 DATASET_NAME = "SQuAD2"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'dev'))
 def SQuAD2(root: str, split: Union[Tuple[str], str]):
+    """SQuAD2 Dataset
+
+    Number of lines per split:
+        train: 130319
+
+        Dev: 11873
+
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `valid`, `test`)
+
+    :returns: DataPipe that yields data points from SQuaAD1 dataset which consist of context, question, list of answers and corresponding index in context
+    :rtype: (str, str, list(str), list(int))
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 

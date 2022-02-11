@@ -25,6 +25,9 @@ def EnWik9(root: str):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
+
+    :returns: DataPipe that yields rows from WnWik9 dataset
+    :rtype: str
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(

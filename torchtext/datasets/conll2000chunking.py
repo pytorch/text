@@ -6,7 +6,6 @@ if is_module_available("torchdata"):
 
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
@@ -41,7 +40,7 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     """CoNLL2000Chunking Dataset
 
     Additional details can be found on this page: https://www.clips.uantwerpen.be/conll2000/chunking/
-    
+
     Number of lines per split:
         train: 8936
 

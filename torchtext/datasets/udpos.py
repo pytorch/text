@@ -6,7 +6,6 @@ if is_module_available("torchdata"):
 
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
