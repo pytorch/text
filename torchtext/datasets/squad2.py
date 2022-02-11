@@ -35,6 +35,8 @@ DATASET_NAME = "SQuAD2"
 def SQuAD2(root: str, split: Union[Tuple[str], str]):
     """SQuAD2 Dataset
 
+    For additional details refer to https://rajpurkar.github.io/SQuAD-explorer/
+
     Number of lines per split:
         train: 130319
 
