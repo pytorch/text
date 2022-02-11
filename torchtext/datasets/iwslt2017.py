@@ -117,7 +117,7 @@ def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename
 def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de", "en")):
     """IWSLT2017 dataset
 
-    For additional details refer to source website: https://wit3.fbk.eu/2017-01
+    For additional details refer to https://wit3.fbk.eu/2017-01
 
     The available datasets include following:
 

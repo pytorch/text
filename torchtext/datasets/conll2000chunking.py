@@ -39,7 +39,7 @@ DATASET_NAME = "CoNLL2000Chunking"
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     """CoNLL2000Chunking Dataset
 
-    Additional details can be found on this page: https://www.clips.uantwerpen.be/conll2000/chunking/
+    For additional details refer to https://www.clips.uantwerpen.be/conll2000/chunking/
 
     Number of lines per split:
         train: 8936
