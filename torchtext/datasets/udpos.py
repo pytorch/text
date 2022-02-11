@@ -4,7 +4,6 @@ from typing import Union, Tuple
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
@@ -28,10 +27,25 @@ _EXTRACTED_FILES = {"train": "train.txt", "valid": "dev.txt", "test": "test.txt"
 DATASET_NAME = "UDPOS"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
 def UDPOS(root: str, split: Union[Tuple[str], str]):
+    """UDPOS Dataset
+
+    Number of lines per split:
+        train: 12543
+
+        valid: 2002
+
+        test: 2077
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `valid`, `test`)
+
+    :returns: DataPipe that yields list of words along with corresponding parts-of-speech tags
+    :rtype: [list(str), list(str)]
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"

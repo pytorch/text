@@ -22,10 +22,15 @@ DATASET_NAME = "EnWik9"
 def EnWik9(root: str):
     """EnWik9 dataset
 
+    For additional details refer to http://mattmahoney.net/dc/textdata.html
+
     Number of lines in dataset: 13147026
 
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+
+    :returns: DataPipe that yields raw text rows from WnWik9 dataset
+    :rtype: str
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(

@@ -153,6 +153,8 @@ def IWSLT2016(
 ):
     """IWSLT2016 dataset
 
+    For additional details refer to https://wit3.fbk.eu/2016-01
+
     The available datasets include following:
 
     **Language pairs**:
@@ -173,14 +175,16 @@ def IWSLT2016(
 
     **valid/test sets**: ["dev2010", "tst2010", "tst2011", "tst2012", "tst2013", "tst2014"]
 
-    For additional details refer to source website: https://wit3.fbk.eu/2016-01
 
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
         language_pair: tuple or list containing src and tgt language
         valid_set: a string to identify validation set.
         test_set: a string to identify test set.
+
+    :return: DataPipe that yields tuple of source and target sentences
+    :rtype: (str, str)
 
     Examples:
         >>> from torchtext.datasets import IWSLT2016
