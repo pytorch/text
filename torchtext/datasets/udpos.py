@@ -33,11 +33,9 @@ def UDPOS(root: str, split: Union[Tuple[str], str]):
     """UDPOS Dataset
 
     Number of lines per split:
-        train: 12543
-
-        valid: 2002
-
-        test: 2077
+        - train: 12543
+        - valid: 2002
+        - test: 2077
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

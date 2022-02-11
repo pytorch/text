@@ -38,10 +38,8 @@ def SQuAD1(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://rajpurkar.github.io/SQuAD-explorer/
 
     Number of lines per split:
-        train: 87599
-
-        Dev: 10570
-
+        - train: 87599
+        - dev: 10570
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
