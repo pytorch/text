@@ -24,9 +24,9 @@ def EnWik9(root: str):
     Number of lines in dataset: 13147026
 
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
 
-    :returns: DataPipe that yields rows from WnWik9 dataset
+    :returns: DataPipe that yields raw text rows from WnWik9 dataset
     :rtype: str
     """
     if not is_module_available("torchdata"):

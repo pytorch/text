@@ -117,6 +117,8 @@ def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename
 def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de", "en")):
     """IWSLT2017 dataset
 
+    For additional details refer to source website: https://wit3.fbk.eu/2017-01
+
     The available datasets include following:
 
     **Language pairs**:
@@ -136,10 +138,8 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
     +-----+-----+-----+-----+-----+-----+
 
 
-    For additional details refer to source website: https://wit3.fbk.eu/2017-01
-
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
         language_pair: tuple or list containing src and tgt language
 

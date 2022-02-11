@@ -45,7 +45,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     Reference: http://www.statmt.org/wmt16/multimodal-task.html#task1
 
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: ('train', 'valid', 'test')
         language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
 
