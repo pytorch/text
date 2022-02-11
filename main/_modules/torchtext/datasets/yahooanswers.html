@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.yahooanswers &mdash; torchtext 0.12.0.dev20220210 documentation</title>
+  <title>torchtext.datasets.yahooanswers &mdash; torchtext 0.12.0.dev20220211 documentation</title>
   
 
   
@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220210 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220211 &#x25BC</a>
     </div>
     
 
@@ -318,36 +318,36 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.datasets.yahooanswers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">GDriveReader</span><span class="p">,</span> <span class="n">IterableWrapper</span>
-
+<span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_wrap_split_argument</span><span class="p">,</span>
     <span class="n">_add_docstring_header</span><span class="p">,</span>
     <span class="n">_create_dataset_directory</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">GDriveReader</span><span class="p">,</span> <span class="n">IterableWrapper</span>
 
-<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU&#39;</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;f3f9899b997a42beb24157e62e3eea8d&#39;</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU&quot;</span>
+
+<span class="n">MD5</span> <span class="o">=</span> <span class="s2">&quot;f3f9899b997a42beb24157e62e3eea8d&quot;</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">1400000</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">60000</span><span class="p">,</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="mi">1400000</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">60000</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;yahoo_answers_csv.tar.gz&#39;</span>
+<span class="n">_PATH</span> <span class="o">=</span> <span class="s2">&quot;yahoo_answers_csv.tar.gz&quot;</span>
 
 <span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;YahooAnswers&quot;</span>
 
 <span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;yahoo_answers_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;yahoo_answers_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">),</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;yahoo_answers_csv&quot;</span><span class="p">,</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;yahoo_answers_csv&quot;</span><span class="p">,</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">),</span>
 <span class="p">}</span>
 
 
@@ -356,24 +356,32 @@
 <span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">YahooAnswers</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="s2">&quot;Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+            <span class="s2">&quot;Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">URL</span><span class="p">])</span>
 
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
         <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span>
         <span class="n">hash_dict</span><span class="o">=</span><span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">):</span> <span class="n">MD5</span><span class="p">},</span>
-        <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span>
+        <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">GDriveReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">GDriveReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
         <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">read_from_tar</span><span class="p">()</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
     <span class="n">data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
 
