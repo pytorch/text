@@ -72,9 +72,11 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = (
         cache_decompressed_dp.lines_to_paragraphs()
     )  # group by label in cache file
+    cache_decompressed_dp = cache_decompressed_dp.map(lambda x: (x[0], x[1].encode()))
     cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wt",
+        mode="wb",
         filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x),
+        skip_read=True
     )
 
     # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
