@@ -45,7 +45,7 @@ def SQuAD1(root: str, split: Union[Tuple[str], str]):
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
-        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `valid`, `test`)
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`)
 
     :returns: DataPipe that yields data points from SQuaAD1 dataset which consist of context, question, list of answers and corresponding index in context
     :rtype: (str, str, list(str), list(int))
