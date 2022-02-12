@@ -10,7 +10,6 @@ from . import vocab
 from . import transforms
 from . import functional
 from . import models
-from . import experimental
 from ._extension import _init_extension
 
 
@@ -26,8 +25,7 @@ __all__ = ['data',
            'vocab',
            'transforms',
            'functional',
-           'models',
-           'experimental']
+           'models']
 
 
 _init_extension()
