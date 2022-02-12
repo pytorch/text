@@ -1,7 +1,5 @@
 import json
 import os
-import random
-import string
 import uuid
 from collections import defaultdict
 from random import randint
@@ -11,13 +9,13 @@ from torchtext.data.datasets_utils import _ParseSQuADQAData
 from torchtext.datasets.squad1 import SQuAD1
 from torchtext.datasets.squad2 import SQuAD2
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
 def _get_mock_json_data():
-    rand_string = " ".join(random.choice(string.ascii_letters) for i in range(10))
+    rand_string = get_random_unicode(10)
     mock_json_data = {
         "data": [
             {
@@ -60,7 +58,7 @@ def _get_mock_dataset(root_dir, base_dir_name):
     mocked_data = defaultdict(list)
     for file_name in file_names:
         txt_file = os.path.join(base_dir, file_name)
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             mock_json_data = _get_mock_json_data()
             f.write(json.dumps(mock_json_data))
 

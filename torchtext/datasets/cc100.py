@@ -30,6 +30,17 @@ DATASET_NAME = "CC100"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 def CC100(root: str, language_code: str = "en"):
+    """CC100 Dataset
+
+    For additional details refer to https://data.statmt.org/cc-100/
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        language_code: the language of the dataset
+
+    :returns: DataPipe that yields tuple of language code and text
+    :rtype: (str, str)
+    """
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
@@ -50,5 +61,6 @@ def CC100(root: str, language_code: str = "en"):
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_xz()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="r").readlines(return_path=False)
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    data_dp = FileOpener(cache_decompressed_dp, mode="b").readlines(return_path=False, decode=True)
     return data_dp.map(lambda x: (language_code, x))

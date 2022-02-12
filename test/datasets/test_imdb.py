@@ -1,6 +1,4 @@
 import os
-import random
-import string
 import tarfile
 from collections import defaultdict
 from unittest.mock import patch
@@ -8,7 +6,7 @@ from unittest.mock import patch
 from parameterized import parameterized
 from torchtext.datasets.imdb import IMDB
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -34,10 +32,8 @@ def _get_mock_dataset(root_dir):
             label = "neg" if i < 2 else "pos"
             cur_dir = pos_dir if label == "pos" else neg_dir
             txt_file = os.path.join(cur_dir, f"{i}{i}_{i}.txt")
-            with open(txt_file, "w") as f:
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+            with open(txt_file, "w", encoding="utf-8") as f:
+                rand_string = get_random_unicode(seed)
                 dataset_line = (label, rand_string)
                 # append line to correct dataset split
                 mocked_data[split].append(dataset_line)

@@ -128,6 +128,8 @@ def IWSLT2017(
 ):
     """IWSLT2017 dataset
 
+    For additional details refer to https://wit3.fbk.eu/2017-01
+
     The available datasets include following:
 
     **Language pairs**:
@@ -147,17 +149,18 @@ def IWSLT2017(
     +-----+-----+-----+-----+-----+-----+
 
 
-    For additional details refer to source website: https://wit3.fbk.eu/2017-01
-
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
         language_pair: tuple or list containing src and tgt language
+
+    :return: DataPipe that yields tuple of source and target sentences
+    :rtype: (str, str)
 
     Examples:
         >>> from torchtext.datasets import IWSLT2017
         >>> train_iter, valid_iter, test_iter = IWSLT2017()
-        >>> src_sentence, tgt_sentence = next(train_iter)
+        >>> src_sentence, tgt_sentence = next(iter(train_iter))
 
     """
     if not is_module_available("torchdata"):
@@ -265,10 +268,11 @@ def IWSLT2017(
         cache_decompressed_dp, full_tgt_filepath, uncleaned_tgt_filename
     )
 
-    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="r")
-    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="r")
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
+    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
 
-    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
-    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
+    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
+    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
 
     return src_lines.zip(tgt_lines)

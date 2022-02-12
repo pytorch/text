@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _create_dataset_directory
 from torchtext.data.datasets_utils import _wrap_split_argument
 
@@ -25,10 +24,24 @@ _PATH = "aclImdb_v1.tar.gz"
 DATASET_NAME = "IMDB"
 
 
-@_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
+    """IMDB Dataset
+
+    For additional details refer to http://ai.stanford.edu/~amaas/data/sentiment/
+
+    Number of lines per split:
+        - train: 25000
+        - test: 25000
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+
+    :returns: DataPipe that yields tuple of label (1 to 2) and text containing the movie review
+    :rtype: (int, str)
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
@@ -72,11 +85,14 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = (
         cache_decompressed_dp.lines_to_paragraphs()
     )  # group by label in cache file
+    cache_decompressed_dp = cache_decompressed_dp.map(lambda x: (x[0], x[1].encode()))
     cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wt",
+        mode="wb",
         filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x),
+        skip_read=True
     )
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="t")
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    data_dp = FileOpener(cache_decompressed_dp, mode="b")
     # get label from cache file, eg. "aclImdb_v1/train/neg" -> "neg"
-    return data_dp.readlines().map(lambda t: (Path(t[0]).parts[-1], t[1]))
+    return data_dp.readlines(decode=True).map(lambda t: (Path(t[0]).parts[-1], t[1]))

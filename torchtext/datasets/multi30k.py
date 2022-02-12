@@ -45,12 +45,20 @@ def Multi30k(
 ):
     """Multi30k dataset
 
-    Reference: http://www.statmt.org/wmt16/multimodal-task.html#task1
+    For additional details refer to https://www.statmt.org/wmt16/multimodal-task.html#task1
+
+    Number of lines per split:
+        - train: 29000
+        - valid: 1014
+        - test: 1000
 
     Args:
-        root: Directory where the datasets are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: ('train', 'valid', 'test')
         language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
+
+    :return: DataPipe that yields tuple of source and target sentences
+    :rtype: (str, str)
     """
 
     assert (
