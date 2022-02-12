@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.sst2 &mdash; torchtext 0.12.0.dev20220212 documentation</title>
+  <title>torchtext.datasets.cc100 &mdash; torchtext 0.12.0.dev20220212 documentation</title>
   
 
   
@@ -287,7 +287,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.sst2</li>
+      <li>torchtext.datasets.cc100</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -317,103 +317,73 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.sst2</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
-<span class="kn">import</span> <span class="nn">os</span>
+  <h1>Source code for torchtext.datasets.cc100</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os.path</span>
 
 <span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_create_dataset_directory</span><span class="p">,</span>
-    <span class="n">_wrap_split_argument</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">IterableWrapper</span><span class="p">,</span> <span class="n">FileOpener</span>
-
-    <span class="c1"># we import HttpReader from _download_hooks so we can swap out public URLs</span>
-    <span class="c1"># with interal URLs when the dataset is used within Facebook</span>
-    <span class="kn">from</span> <span class="nn">torchtext._download_hooks</span> <span class="kn">import</span> <span class="n">HttpReader</span>
+    <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">HttpReader</span><span class="p">,</span> <span class="n">IterableWrapper</span>
 
 
-<span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;https://dl.fbaipublicfiles.com/glue/data/SST-2.zip&quot;</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;http://data.statmt.org/cc-100/</span><span class="si">%s</span><span class="s2">.txt.xz&quot;</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="s2">&quot;9f81648d4199384278b86e315dac217c&quot;</span>
-
-<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="mi">67349</span><span class="p">,</span>
-    <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="mi">872</span><span class="p">,</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">1821</span><span class="p">,</span>
+<span class="n">VALID_CODES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;am&quot;</span><span class="p">,</span> <span class="s2">&quot;ar&quot;</span><span class="p">,</span> <span class="s2">&quot;as&quot;</span><span class="p">,</span> <span class="s2">&quot;az&quot;</span><span class="p">,</span> <span class="s2">&quot;be&quot;</span><span class="p">,</span> <span class="s2">&quot;bg&quot;</span><span class="p">,</span> <span class="s2">&quot;bn&quot;</span><span class="p">,</span> <span class="s2">&quot;bn_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;bs&quot;</span><span class="p">,</span> <span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;cs&quot;</span><span class="p">,</span> <span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="s2">&quot;da&quot;</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;eo&quot;</span><span class="p">,</span> <span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="s2">&quot;et&quot;</span><span class="p">,</span> <span class="s2">&quot;eu&quot;</span><span class="p">,</span> <span class="s2">&quot;fa&quot;</span><span class="p">,</span> <span class="s2">&quot;ff&quot;</span><span class="p">,</span> <span class="s2">&quot;fi&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="s2">&quot;fy&quot;</span><span class="p">,</span> <span class="s2">&quot;ga&quot;</span><span class="p">,</span> <span class="s2">&quot;gd&quot;</span><span class="p">,</span> <span class="s2">&quot;gl&quot;</span><span class="p">,</span> <span class="s2">&quot;gn&quot;</span><span class="p">,</span> <span class="s2">&quot;gu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ha&quot;</span><span class="p">,</span> <span class="s2">&quot;he&quot;</span><span class="p">,</span> <span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="s2">&quot;hi_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;ht&quot;</span><span class="p">,</span> <span class="s2">&quot;hu&quot;</span><span class="p">,</span> <span class="s2">&quot;hy&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;ig&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="s2">&quot;ja&quot;</span><span class="p">,</span> <span class="s2">&quot;jv&quot;</span><span class="p">,</span> <span class="s2">&quot;ka&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kk&quot;</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="s2">&quot;kn&quot;</span><span class="p">,</span> <span class="s2">&quot;ko&quot;</span><span class="p">,</span> <span class="s2">&quot;ku&quot;</span><span class="p">,</span> <span class="s2">&quot;ky&quot;</span><span class="p">,</span> <span class="s2">&quot;la&quot;</span><span class="p">,</span> <span class="s2">&quot;lg&quot;</span><span class="p">,</span> <span class="s2">&quot;li&quot;</span><span class="p">,</span> <span class="s2">&quot;ln&quot;</span><span class="p">,</span> <span class="s2">&quot;lo&quot;</span><span class="p">,</span> <span class="s2">&quot;lt&quot;</span><span class="p">,</span> <span class="s2">&quot;lv&quot;</span><span class="p">,</span> <span class="s2">&quot;mg&quot;</span><span class="p">,</span> <span class="s2">&quot;mk&quot;</span><span class="p">,</span> <span class="s2">&quot;ml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mn&quot;</span><span class="p">,</span> <span class="s2">&quot;mr&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;my_zaw&quot;</span><span class="p">,</span> <span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;nl&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span> <span class="s2">&quot;om&quot;</span><span class="p">,</span> <span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="s2">&quot;pa&quot;</span><span class="p">,</span> <span class="s2">&quot;pl&quot;</span><span class="p">,</span> <span class="s2">&quot;ps&quot;</span><span class="p">,</span> <span class="s2">&quot;pt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;qu&quot;</span><span class="p">,</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span> <span class="s2">&quot;ru&quot;</span><span class="p">,</span> <span class="s2">&quot;sa&quot;</span><span class="p">,</span> <span class="s2">&quot;si&quot;</span><span class="p">,</span> <span class="s2">&quot;sc&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;sk&quot;</span><span class="p">,</span> <span class="s2">&quot;sl&quot;</span><span class="p">,</span> <span class="s2">&quot;so&quot;</span><span class="p">,</span> <span class="s2">&quot;sq&quot;</span><span class="p">,</span> <span class="s2">&quot;sr&quot;</span><span class="p">,</span> <span class="s2">&quot;ss&quot;</span><span class="p">,</span> <span class="s2">&quot;su&quot;</span><span class="p">,</span> <span class="s2">&quot;sv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sw&quot;</span><span class="p">,</span> <span class="s2">&quot;ta&quot;</span><span class="p">,</span> <span class="s2">&quot;ta_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;te&quot;</span><span class="p">,</span> <span class="s2">&quot;te_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;th&quot;</span><span class="p">,</span> <span class="s2">&quot;tl&quot;</span><span class="p">,</span> <span class="s2">&quot;tn&quot;</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="s2">&quot;ug&quot;</span><span class="p">,</span> <span class="s2">&quot;uk&quot;</span><span class="p">,</span> <span class="s2">&quot;ur&quot;</span><span class="p">,</span> <span class="s2">&quot;ur_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;uz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vi&quot;</span><span class="p">,</span> <span class="s2">&quot;wo&quot;</span><span class="p">,</span> <span class="s2">&quot;xh&quot;</span><span class="p">,</span> <span class="s2">&quot;yi&quot;</span><span class="p">,</span> <span class="s2">&quot;yo&quot;</span><span class="p">,</span> <span class="s2">&quot;zh-Hans&quot;</span><span class="p">,</span> <span class="s2">&quot;zh-Hant&quot;</span><span class="p">,</span> <span class="s2">&quot;zu&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s2">&quot;SST-2.zip&quot;</span>
+<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">MD5</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;SST2&quot;</span>
-
-<span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;SST-2&quot;</span><span class="p">,</span> <span class="s2">&quot;train.tsv&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;SST-2&quot;</span><span class="p">,</span> <span class="s2">&quot;dev.tsv&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;SST-2&quot;</span><span class="p">,</span> <span class="s2">&quot;test.tsv&quot;</span><span class="p">),</span>
-<span class="p">}</span>
+<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;CC100&quot;</span>
 
 
-<div class="viewcode-block" id="SST2"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SST2">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">SST2</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;SST2 Dataset</span>
+<div class="viewcode-block" id="CC100"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CC100">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">CC100</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CC100 Dataset</span>
 
-<span class="sd">    For additional details refer to https://nlp.stanford.edu/sentiment/</span>
-
-<span class="sd">    Number of lines per split:</span>
-<span class="sd">        - train: 67349</span>
-<span class="sd">        - dev: 872</span>
-<span class="sd">        - test: 1821</span>
+<span class="sd">    For additional details refer to https://data.statmt.org/cc-100/</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        root: Directory where the datasets are saved. Default: os.path.expanduser(&#39;~/.torchtext/cache&#39;)</span>
-<span class="sd">        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`, `test`)</span>
+<span class="sd">        language_code: the language of the dataset</span>
 
-<span class="sd">    :returns: DataPipe that yields tuple of text and/or label (1 to 4). The `test` split only returns text.</span>
-<span class="sd">    :rtype: Union[(int, str), (str,)]</span>
+<span class="sd">    :returns: DataPipe that yields tuple of language code and text</span>
+<span class="sd">    :rtype: (str, str)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO Remove this after removing conditional dependency</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
-            <span class="s2">&quot;Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`&quot;</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">language_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_CODES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid language code </span><span class="si">{</span><span class="n">language_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">URL</span><span class="p">])</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span> <span class="o">%</span> <span class="n">language_code</span>
+    <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">url</span><span class="p">])</span>
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
-        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
-        <span class="n">hash_dict</span><span class="o">=</span><span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">URL</span><span class="p">)):</span> <span class="n">MD5</span><span class="p">},</span>
-        <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span>
+        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
     <span class="p">)</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">HttpReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
+
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">HttpReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
-        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">])</span>
+        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.xz&quot;</span><span class="p">))</span>
     <span class="p">)</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">read_from_zip</span><span class="p">()</span>
-        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="p">)</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_from_xz</span><span class="p">()</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
 
-    <span class="n">data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
-    <span class="c1"># test split for SST2 doesn&#39;t have labels</span>
-    <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
-        <span class="n">parsed_data</span> <span class="o">=</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="n">skip_lines</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),)</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">parsed_data</span> <span class="o">=</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="n">skip_lines</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">parsed_data</span></div>
+    <span class="c1"># TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713</span>
+    <span class="n">data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">return_path</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span></div>
 </pre></div>
 
              </article>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.dbpedia &mdash; torchtext 0.12.0.dev20220211 documentation</title>
+  <title>torchtext.datasets.dbpedia &mdash; torchtext 0.12.0.dev20220212 documentation</title>
   
 
   
@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220211 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220212 &#x25BC</a>
     </div>
     
 
@@ -324,7 +324,6 @@
 <span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_wrap_split_argument</span><span class="p">,</span>
-    <span class="n">_add_docstring_header</span><span class="p">,</span>
     <span class="n">_create_dataset_directory</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -351,10 +350,24 @@
 <span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;DBpedia&quot;</span>
 
 
-<div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="nd">@_add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-<span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
+<div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
 <span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">DBpedia</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;DBpedia Dataset</span>
+
+<span class="sd">    For additional details refer to https://www.dbpedia.org/resources/latest-core/</span>
+
+<span class="sd">    Number of lines per split:</span>
+<span class="sd">        - train: 560000</span>
+<span class="sd">        - test: 70000</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: os.path.expanduser(&#39;~/.torchtext/cache&#39;)</span>
+<span class="sd">        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)</span>
+
+<span class="sd">    :returns: DataPipe that yields tuple of label (1 to 14) and text containing the news title and contents</span>
+<span class="sd">    :rtype: (int, str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO Remove this after removing conditional dependency</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
