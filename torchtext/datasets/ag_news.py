@@ -61,5 +61,6 @@ def AG_NEWS(root: str, split: Union[Tuple[str], str]):
     cache_dp = HttpReader(cache_dp)
     cache_dp = cache_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    data_dp = FileOpener(cache_dp, mode="r")
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    data_dp = FileOpener(cache_dp, mode="b")
     return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))

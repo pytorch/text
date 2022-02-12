@@ -1,12 +1,10 @@
 import os
-import random
-import string
 import zipfile
 from unittest.mock import patch
 
 from torchtext.datasets.enwik9 import EnWik9
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -22,13 +20,9 @@ def _get_mock_dataset(root_dir):
     file_name = "enwik9"
     txt_file = os.path.join(temp_dataset_dir, file_name)
     mocked_data = []
-    with open(txt_file, "w") as f:
+    with open(txt_file, "w", encoding="utf-8") as f:
         for i in range(5):
-            rand_string = (
-                "<"
-                + " ".join(random.choice(string.ascii_letters) for i in range(seed))
-                + ">"
-            )
+            rand_string = "<" + get_random_unicode(seed) + ">"
             dataset_line = f"'{rand_string}'"
             f.write(f"'{rand_string}'\n")
 

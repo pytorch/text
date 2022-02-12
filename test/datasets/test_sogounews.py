@@ -1,6 +1,4 @@
 import os
-import random
-import string
 import tarfile
 from collections import defaultdict
 from unittest.mock import patch
@@ -8,7 +6,7 @@ from unittest.mock import patch
 from parameterized import parameterized
 from torchtext.datasets.sogounews import SogouNews
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -24,12 +22,10 @@ def _get_mock_dataset(root_dir):
     mocked_data = defaultdict(list)
     for file_name in ("train.csv", "test.csv"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
                 label = seed % 5 + 1
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = get_random_unicode(seed)
                 dataset_line = (label, f"{rand_string} {rand_string}")
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)

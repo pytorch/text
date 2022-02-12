@@ -50,5 +50,6 @@ def CC100(root: str, language_code: str = "en"):
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_xz()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="r").readlines(return_path=False)
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    data_dp = FileOpener(cache_decompressed_dp, mode="b").readlines(return_path=False, decode=True)
     return data_dp.map(lambda x: (language_code, x))

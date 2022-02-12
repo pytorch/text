@@ -1,7 +1,5 @@
-import lzma
 import os
-import random
-import string
+import lzma
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -9,7 +7,7 @@ from parameterized import parameterized
 from torchtext.datasets import CC100
 from torchtext.datasets.cc100 import VALID_CODES
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -26,11 +24,9 @@ def _get_mock_dataset(root_dir):
     for language_code in VALID_CODES:
         file_name = f"{language_code}.txt.xz"
         compressed_file = os.path.join(base_dir, file_name)
-        with lzma.open(compressed_file, "wt") as f:
+        with lzma.open(compressed_file, "wt", encoding="utf-8") as f:
             for i in range(5):
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = get_random_unicode(seed)
                 content = f"{rand_string}\n"
                 f.write(content)
                 mocked_data[language_code].append((language_code, rand_string))

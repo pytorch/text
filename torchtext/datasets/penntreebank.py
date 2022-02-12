@@ -63,6 +63,8 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    data_dp = FileOpener(cache_dp, mode="r")
+
+    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
+    data_dp = FileOpener(cache_dp, mode="b")
     # remove single leading and trailing space from the dataset
-    return data_dp.readlines(return_path=False).map(lambda t: t.strip())
+    return data_dp.readlines(return_path=False, decode=True).map(lambda t: t.strip())
