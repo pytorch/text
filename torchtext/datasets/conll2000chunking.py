@@ -39,9 +39,8 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://www.clips.uantwerpen.be/conll2000/chunking/
 
     Number of lines per split:
-        train: 8936
-
-        test: 2012
+        - train: 8936
+        - test: 2012
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')

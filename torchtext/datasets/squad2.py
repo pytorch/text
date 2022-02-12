@@ -38,9 +38,8 @@ def SQuAD2(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://rajpurkar.github.io/SQuAD-explorer/
 
     Number of lines per split:
-        train: 130319
-
-        Dev: 11873
+        - train: 130319
+        - dev: 11873
 
 
     Args:

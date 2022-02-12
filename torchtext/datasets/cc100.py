@@ -30,6 +30,17 @@ DATASET_NAME = "CC100"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 def CC100(root: str, language_code: str = "en"):
+    """CC100 Dataset
+
+    For additional details refer to https://data.statmt.org/cc-100/
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        language_code: the language of the dataset
+
+    :returns: DataPipe that yields tuple of language code and text
+    :rtype: (str, str)
+    """
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
