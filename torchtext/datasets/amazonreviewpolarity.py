@@ -4,7 +4,6 @@ from typing import Union, Tuple
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
@@ -32,7 +31,6 @@ _EXTRACTED_FILES = {
 DATASET_NAME = "AmazonReviewPolarity"
 
 
-@_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
