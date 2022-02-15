@@ -365,7 +365,7 @@ class CLIPTokenizer(Module):
             A list of bpe token ids represents each bpe tokens
 
         For example: "awesome,awe"
-            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", "e"]
             --> bpe encode --> bpe token ids: [707, 5927, 11, 707, 68]
         """
         text = text.lower().strip()
