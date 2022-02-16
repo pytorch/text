@@ -1,14 +1,14 @@
-#include <ATen/Parallel.h>  // @manual
+#include <ATen/Parallel.h> // @manual
 #include <common.h>
-#include <torch/torch.h>  // @manual
-#include <vocab.h>        // @manual
+#include <torch/torch.h> // @manual
+#include <vocab.h> // @manual
 
 #include <iostream>
 #include <stdexcept>
 #include <string>
 namespace torchtext {
 
-Vocab::Vocab(StringList tokens, const c10::optional<int64_t> &default_index)
+Vocab::Vocab(StringList tokens, const c10::optional<int64_t>& default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (auto& token : tokens) {
     // throw error if duplicate token is found
@@ -36,7 +36,8 @@ bool Vocab::__contains__(const c10::string_view& token) const {
 
 int64_t Vocab::__getitem__(const c10::string_view& token) const {
   int64_t id = _find(token);
-  if (stoi_[id] != -1) return stoi_[id];
+  if (stoi_[id] != -1)
+    return stoi_[id];
 
   // throw error if default_index_ is not set
   TORCH_CHECK(
@@ -114,7 +115,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t>& indices) {
 }
 
 std::vector<int64_t> Vocab::lookup_indices(
-    const std::vector<c10::string_view> &tokens) {
+    const std::vector<c10::string_view>& tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (size_t i = 0; i < tokens.size(); i++) {
     indices[i] = __getitem__(tokens[i]);
@@ -204,9 +205,12 @@ void parse_raw_text_file_chunk(
 
 StringList _concat_tokens(
     std::vector<std::shared_ptr<IndexDict>> chunk_counters,
-    const int64_t min_freq, const int64_t num_lines, const bool sort_tokens) {
-  TORCH_CHECK(chunk_counters.size() > 0,
-              "There must be at least 1 chunk to concatenate!");
+    const int64_t min_freq,
+    const int64_t num_lines,
+    const bool sort_tokens) {
+  TORCH_CHECK(
+      chunk_counters.size() > 0,
+      "There must be at least 1 chunk to concatenate!");
 
   IndexDict tokens_freq;
   StringList unique_tokens;
@@ -258,8 +262,10 @@ StringList _concat_tokens(
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
-Vocab _load_vocab_from_file(const std::string &file_path,
-                            const int64_t min_freq, const int64_t num_cpus) {
+Vocab _load_vocab_from_file(
+    const std::string& file_path,
+    const int64_t min_freq,
+    const int64_t num_cpus) {
   int64_t num_lines = _infer_lines(file_path);
   int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
@@ -399,4 +405,4 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   return c10::make_intrusive<Vocab>(std::move(strings), default_index);
 }
 
-}  // namespace torchtext
+} // namespace torchtext
