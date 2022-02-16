@@ -29,9 +29,7 @@ def _get_mock_dataset(root_dir):
                 rand_label_1 = [get_random_unicode(seed)]
                 rand_label_2 = [get_random_unicode(seed)]
                 # one token per line (each sample ends with an extra \n)
-                for rand_string, label_1, label_2 in zip(
-                    rand_strings, rand_label_1, rand_label_2
-                ):
+                for rand_string, label_1, label_2 in zip(rand_strings, rand_label_1, rand_label_2):
                     f.write(f"{rand_string}\t{label_1}\t{label_2}\n")
                 f.write("\n")
                 dataset_line = (rand_strings, rand_label_1, rand_label_2)
@@ -71,9 +69,7 @@ class TestUDPOS(TempDirMixin, TorchtextTestCase):
     def test_udpos(self, split):
         dataset = UDPOS(root=self.root_dir, split=split)
         samples = list(dataset)
-        expected_samples = (
-            self.samples[split] if split != "valid" else self.samples["dev"]
-        )
+        expected_samples = self.samples[split] if split != "valid" else self.samples["dev"]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 

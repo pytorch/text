@@ -2,15 +2,16 @@ import codecs
 import functools
 import inspect
 import io
+
 import torch
+from torch.utils.data import functional_datapipe, IterDataPipe
+from torch.utils.data.datapipes.utils.common import StreamWrapper
+from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader, validate_file
 from torchtext.utils import (
     validate_file,
     download_from_url,
     extract_archive,
 )
-from torch.utils.data import functional_datapipe, IterDataPipe
-from torch.utils.data.datapipes.utils.common import StreamWrapper
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader, validate_file
 
 try:
     import defusedxml.ElementTree as ET
@@ -248,11 +249,12 @@ def _wrap_split_argument(splits):
 def _create_dataset_directory(dataset_name):
     def decorator(fn):
         argspec = inspect.getfullargspec(fn)
-        if not (argspec.args[0] == "root" and
-                argspec.varargs is None and
-                argspec.varkw is None and
-                len(argspec.kwonlyargs) == 0
-                ):
+        if not (
+            argspec.args[0] == "root"
+            and argspec.varargs is None
+            and argspec.varkw is None
+            and len(argspec.kwonlyargs) == 0
+        ):
             raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
         @functools.wraps(fn)

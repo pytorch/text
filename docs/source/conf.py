@@ -20,10 +20,11 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import torchtext
-import pytorch_sphinx_theme
 import os
 import re
+
+import pytorch_sphinx_theme
+import torchtext
 
 # -- General configuration ------------------------------------------------
 
@@ -36,16 +37,16 @@ import re
 # ones.
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'sphinx_gallery.gen_gallery',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx_gallery.gen_gallery",
 ]
 
 #  Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
@@ -65,6 +66,7 @@ def _get_var(var, default=False):
             f" --- WARNING: Unexpected environment variable value `{var}={val}`. " f"Expected one of {trues + falses}"
         )
     return False
+
 
 # Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
 
@@ -169,11 +171,11 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 # documentation.
 #
 html_theme_options = {
-    'pytorch_project': 'text',
-    'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
-    'analytics_id': 'UA-117752657-2',
+    "pytorch_project": "text",
+    "collapse_navigation": False,
+    "display_version": True,
+    "logo_only": True,
+    "analytics_id": "UA-117752657-2",
 }
 
 html_logo = "_static/img/pytorch-logo-dark.svg"
@@ -185,9 +187,9 @@ html_static_path = ["_static"]
 
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'torch': ('https://pytorch.org/docs/stable/', None)
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "torch": ("https://pytorch.org/docs/stable/", None),
 }
 
 

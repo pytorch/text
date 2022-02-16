@@ -63,9 +63,7 @@ def _get_mock_dataset(root_dir, base_dir_name):
             f.write(json.dumps(mock_json_data))
 
             split = "train" if "train" in file_name else "dev"
-            dataset_line = next(
-                iter(_ParseSQuADQAData([("file_handle", mock_json_data)]))
-            )
+            dataset_line = next(iter(_ParseSQuADQAData([("file_handle", mock_json_data)])))
             mocked_data[split].append(dataset_line)
 
     return mocked_data
@@ -79,9 +77,7 @@ class TestSQuADs(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -91,9 +87,7 @@ class TestSQuADs(TempDirMixin, TorchtextTestCase):
 
     @nested_params([SQuAD1, SQuAD2], ["train", "dev"])
     def test_squads(self, squad_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, squad_dataset.__name__)[
-            split
-        ]
+        expected_samples = _get_mock_dataset(self.root_dir, squad_dataset.__name__)[split]
         dataset = squad_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
 

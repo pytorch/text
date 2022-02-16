@@ -19,9 +19,7 @@ from torchtext.datasets.iwslt2017 import (
 from ..common.case_utils import zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
-SUPPORTED_LANGPAIRS = [
-    (k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v
-]
+SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
 
 
 def _generate_uncleaned_train():
@@ -61,9 +59,7 @@ def _generate_uncleaned_valid():
     for doc_id in range(5):
         file_contents.append(f'<doc docid="{doc_id}" genre="lectures">')
         for seg_id in range(100):
-            rand_string = " ".join(
-                random.choice(string.ascii_letters) for i in range(10)
-            )
+            rand_string = " ".join(random.choice(string.ascii_letters) for i in range(10))
             examples.append(rand_string)
             file_contents.append(f"<seg>{rand_string} </seg>" + "\n")
         file_contents.append("</doc>")
@@ -90,12 +86,8 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
 
     base_dir = os.path.join(root_dir, DATASET_NAME)
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
-    outer_temp_dataset_dir = os.path.join(
-        temp_dataset_dir, "texts/DeEnItNlRo/DeEnItNlRo"
-    )
-    inner_temp_dataset_dir = os.path.join(
-        outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo"
-    )
+    outer_temp_dataset_dir = os.path.join(temp_dataset_dir, "texts/DeEnItNlRo/DeEnItNlRo")
+    inner_temp_dataset_dir = os.path.join(outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo")
 
     os.makedirs(outer_temp_dataset_dir, exist_ok=True)
     os.makedirs(inner_temp_dataset_dir, exist_ok=True)
@@ -124,9 +116,7 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
             mocked_data[split][lang] = mocked_data_for_split
             f.write(file_contents)
 
-    inner_compressed_dataset_path = os.path.join(
-        outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo.tgz"
-    )
+    inner_compressed_dataset_path = os.path.join(outer_temp_dataset_dir, "DeEnItNlRo-DeEnItNlRo.tgz")
 
     # create tar file from dataset folder
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
@@ -150,9 +140,7 @@ class TestIWSLT2017(TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -161,18 +149,12 @@ class TestIWSLT2017(TorchtextTestCase):
         super().tearDownClass()
 
     @parameterized.expand(
-        [
-            (split, src, tgt)
-            for split in ("train", "valid", "test")
-            for src, tgt in SUPPORTED_LANGPAIRS
-        ]
+        [(split, src, tgt) for split in ("train", "valid", "test") for src, tgt in SUPPORTED_LANGPAIRS]
     )
     def test_iwslt2017(self, split, src, tgt):
 
         with tempfile.TemporaryDirectory() as root_dir:
-            expected_samples = _get_mock_dataset(
-                root_dir, split, src, tgt, "dev2010", "tst2010"
-            )
+            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, "dev2010", "tst2010")
 
             dataset = IWSLT2017(root=root_dir, split=split, language_pair=(src, tgt))
 
@@ -187,15 +169,9 @@ class TestIWSLT2017(TorchtextTestCase):
             language_pair = ("de", "en")
             valid_set = "dev2010"
             test_set = "tst2010"
-            _ = _get_mock_dataset(
-                root_dir, split, language_pair[0], language_pair[1], valid_set, test_set
-            )
-            dataset1 = IWSLT2017(
-                root=root_dir, split=split, language_pair=language_pair
-            )
-            (dataset2,) = IWSLT2017(
-                root=root_dir, split=(split,), language_pair=language_pair
-            )
+            _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
+            dataset1 = IWSLT2017(root=root_dir, split=split, language_pair=language_pair)
+            (dataset2,) = IWSLT2017(root=root_dir, split=(split,), language_pair=language_pair)
 
             for d1, d2 in zip_equal(dataset1, dataset2):
                 self.assertEqual(d1, d2)

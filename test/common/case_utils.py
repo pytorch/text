@@ -1,5 +1,5 @@
-import random
 import os.path
+import random
 import tempfile
 import unittest
 from itertools import zip_longest
@@ -74,5 +74,9 @@ def get_random_unicode(length):
         (0x038C, 0x038C),
     ]
 
-    alphabet = [chr(code_point) for current_range in include_ranges for code_point in range(current_range[0], current_range[1] + 1)]
-    return ''.join(random.choice(alphabet) for i in range(length))
+    alphabet = [
+        chr(code_point)
+        for current_range in include_ranges
+        for code_point in range(current_range[0], current_range[1] + 1)
+    ]
+    return "".join(random.choice(alphabet) for i in range(length))
