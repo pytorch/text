@@ -2,6 +2,7 @@ import codecs
 import functools
 import inspect
 import io
+import os
 
 import torch
 from torch.utils.data import functional_datapipe, IterDataPipe
