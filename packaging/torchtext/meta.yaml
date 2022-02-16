@@ -16,6 +16,7 @@ requirements:
     - python
     - setuptools
     {{ environ.get('CONDA_PYTORCH_BUILD_CONSTRAINT') }}
+    {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT', '') }}
 
   run:
     - python
@@ -23,6 +24,7 @@ requirements:
     - tqdm
     - pytorch-mutex 1.0 {{ build_variant }}  # [not osx ]
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
+    {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT', '') }}
 
   {% if build_variant == 'cpu' %}
   run_constrained:
@@ -33,7 +35,7 @@ requirements:
   {% endif %}
 
 build:
-  string: py{{py}}
+  string: py{{py}}_{{ environ['CU_VERSION'] }}
   script_env:
     - BUILD_VERSION
 
