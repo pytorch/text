@@ -1,14 +1,12 @@
 import os
-import random
-import string
 import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
 from torchtext.datasets import Multi30k
 
-from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.parameterized_utils import nested_params
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -24,12 +22,11 @@ def _get_mock_dataset(root_dir):
     mocked_data = defaultdict(list)
     for file_name in ("train.de", "train.en", "val.de", "val.en", "test.de", "test.en"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
-                rand_string = " ".join(random.choice(string.ascii_letters) for i in range(seed))
-                content = f"{rand_string}\n"
-                f.write(content)
-                mocked_data[file_name].append(content)
+                rand_string = get_random_unicode(seed)
+                f.write(rand_string + "\n")
+                mocked_data[file_name].append(rand_string)
                 seed += 1
 
     archive = {}
@@ -67,15 +64,22 @@ class TestMulti30k(TempDirMixin, TorchtextTestCase):
         samples = list(dataset)
         expected_samples = [
             (d1, d2)
-            for d1, d2 in zip(self.samples[f"{split}.{language_pair[0]}"], self.samples[f"{split}.{language_pair[1]}"])
+            for d1, d2 in zip(
+                self.samples[f"{split}.{language_pair[0]}"],
+                self.samples[f"{split}.{language_pair[1]}"],
+            )
         ]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
     @nested_params(["train", "valid", "test"], [("de", "en"), ("en", "de")])
     def test_multi30k_split_argument(self, split, language_pair):
-        dataset1 = Multi30k(root=self.root_dir, split=split, language_pair=language_pair)
-        (dataset2,) = Multi30k(root=self.root_dir, split=(split,), language_pair=language_pair)
+        dataset1 = Multi30k(
+            root=self.root_dir, split=split, language_pair=language_pair
+        )
+        (dataset2,) = Multi30k(
+            root=self.root_dir, split=(split,), language_pair=language_pair
+        )
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)

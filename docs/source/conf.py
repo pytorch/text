@@ -20,9 +20,10 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import pytorch_sphinx_theme
-import torch
 import torchtext
+import pytorch_sphinx_theme
+import os
+import re
 
 # -- General configuration ------------------------------------------------
 
@@ -33,17 +34,78 @@ import torchtext
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery',
 ]
+
+#  Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
+
+
+def _get_var(var, default=False):
+    if var not in os.environ:
+        return default
+
+    val = os.environ.get(var, "0")
+    trues = ["1", "true", "TRUE", "on", "ON", "yes", "YES"]
+    falses = ["0", "false", "FALSE", "off", "OFF", "no", "NO"]
+    if val in trues:
+        return True
+    if val not in falses:
+        print(
+            f" --- WARNING: Unexpected environment variable value `{var}={val}`. " f"Expected one of {trues + falses}"
+        )
+    return False
+
+# Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
+
+
+def _get_pattern():
+    pattern = os.getenv("GALLERY_PATTERN")
+    # If BUILD_GALLERY is falsy -> no build
+    # If BUILD_GALLERY is truey -> build
+    # If BUILD_GALLERY is undefined
+    #    If GALLERY_PATTERN is defined     -> build
+    #    If GALLERY_PATTERN is not defined -> not build
+    if not _get_var("BUILD_GALLERY", default=False if pattern is None else True):
+        if pattern is not None:
+            print(
+                ' --- WARNING: "GALLERY_PATTERN" is provided, but "BUILD_GALLERY" value is falsy. '
+                "Sphinx galleries are not built. To build galleries, set `BUILD_GALLERY=1`."
+            )
+        return {
+            "ignore_pattern": r"\.py",
+        }
+
+    ret = {"filename_pattern": "tutorial.py"}
+    if os.getenv("GALLERY_PATTERN"):
+        # See https://github.com/pytorch/tutorials/blob/cbf2238df0e78d84c15bd94288966d2f4b2e83ae/conf.py#L75-L83
+        ret["ignore_pattern"] = r"/(?!" + re.escape(os.getenv("GALLERY_PATTERN")) + r")[^/]+$"
+    return ret
+
+
+sphinx_gallery_conf = {
+    "examples_dirs": [
+        "../../examples/tutorials",
+    ],
+    "gallery_dirs": [
+        "tutorials",
+    ],
+    **_get_pattern(),
+    "backreferences_dir": "gen_modules/backreferences",
+    "first_notebook_cell": None,
+    "doc_module": ("torchtext",),
+}
+
 
 napoleon_use_ivar = True
 napoleon_numpy_docstring = False
@@ -107,11 +169,11 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 # documentation.
 #
 html_theme_options = {
-    "pytorch_project": "docs",
-    "collapse_navigation": False,
-    "display_version": True,
-    "logo_only": True,
-    "analytics_id": "UA-117752657-2",
+    'pytorch_project': 'text',
+    'collapse_navigation': False,
+    'display_version': True,
+    'logo_only': True,
+    'analytics_id': 'UA-117752657-2',
 }
 
 html_logo = "_static/img/pytorch-logo-dark.svg"
@@ -123,9 +185,9 @@ html_static_path = ["_static"]
 
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/", None),
-    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
-    "torch": ("http://pytorch.org/docs/0.3.0/", None),
+    'python': ('https://docs.python.org/3/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'torch': ('https://pytorch.org/docs/stable/', None)
 }
 
 
@@ -236,3 +298,24 @@ def patched_make_field(self, types, domain, items, **kw):
 
 
 TypedField.make_field = patched_make_field
+
+
+# Based off of
+# https://github.com/sphinx-gallery/sphinx-gallery/blob/5b21962284f865beeaeb79cca50c8c394fa60cba/sphinx_gallery/directives.py#L66-L70
+def _has_backref(obj):
+    this_dir = os.path.dirname(__file__)
+    path = os.path.join(this_dir, "gen_modules", "backreferences", f"{obj}.examples")
+    return os.path.isfile(path) and os.path.getsize(path) > 0
+
+
+# Based off of
+# https://github.com/pytorch/vision/blob/5335006be7ef01c9f6cb700fe793d7c645e83e84/docs/source/conf.py#L262
+def inject_minigalleries(app, what, name, obj, options, lines):
+    if what in ("class", "function") and _has_backref(name):
+        lines.append(f"Tutorials using ``{name.split('.')[-1]}``:")
+        lines.append(f"    .. minigallery:: {name}")
+        lines.append("\n")
+
+
+def setup(app):
+    app.connect("autodoc-process-docstring", inject_minigalleries)
