@@ -148,23 +148,12 @@ def indent(indentation, data_list):
 def unittest_workflows(indentation=6):
     w = []
     for os_type in ["linux", "windows"]:
-        for i, python_version in enumerate(PYTHON_VERSIONS):
-            w.append(
-                {
-                    f"unittest_{os_type}": {
-                        "name": f"unittest_{os_type}_py{python_version}",
-                        "python_version": python_version,
-                    }
-                }
-            )
-
         for python_version in PYTHON_VERSIONS:
             w.append(
                 {
                     f"unittest_{os_type}": {
                         "name": f"unittest_{os_type}_py{python_version}",
                         "python_version": python_version,
-                        "requires": [f"cachesetup_{os_type}_py_any"],
                     }
                 }
             )
