@@ -3,7 +3,6 @@
 # A set of useful bash functions for common functionality we need to do in
 # many build scripts
 
-
 # Setup CUDA environment variables, based on CU_VERSION
 #
 # Inputs:
@@ -37,42 +36,104 @@ setup_cuda() {
   export WHEEL_DIR="cpu/"
   # Wheel builds need suffixes (but not if they're on OS X, which never has suffix)
   if [[ "$BUILD_TYPE" == "wheel" ]] && [[ "$(uname)" != Darwin ]]; then
-    # The default CUDA has no suffix
-    if [[ "$CU_VERSION" != "cu100" ]]; then
-      export PYTORCH_VERSION_SUFFIX="+$CU_VERSION"
-    fi
+    export PYTORCH_VERSION_SUFFIX="+$CU_VERSION"
     # Match the suffix scheme of pytorch, unless this package does not have
     # CUDA builds (in which case, use default)
     if [[ -z "$NO_CUDA_PACKAGE" ]]; then
       export VERSION_SUFFIX="$PYTORCH_VERSION_SUFFIX"
-      # If the suffix is non-empty, we will use a wheel subdirectory
-      if [[ -n "$PYTORCH_VERSION_SUFFIX" ]]; then
-        export WHEEL_DIR="$PYTORCH_VERSION_SUFFIX/"
-      fi
+      export WHEEL_DIR="$CU_VERSION/"
     fi
   fi
 
   # Now work out the CUDA settings
   case "$CU_VERSION" in
+    cu115)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.5"
+      else
+        export CUDA_HOME=/usr/local/cuda-11.5/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5;8.0;8.6"
+      ;;
+    cu113)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.3"
+      else
+        export CUDA_HOME=/usr/local/cuda-11.3/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5;8.0;8.6"
+      ;;
+    cu112)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.2"
+      else
+        export CUDA_HOME=/usr/local/cuda-11.2/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5;8.0;8.6"
+      ;;
+    cu111)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.1"
+      else
+        export CUDA_HOME=/usr/local/cuda-11.1/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5;8.0;8.6"
+      ;;
+    cu110)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.0"
+      else
+        export CUDA_HOME=/usr/local/cuda-11.0/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5;8.0"
+      ;;
+    cu102)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.2"
+      else
+        export CUDA_HOME=/usr/local/cuda-10.2/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5"
+      ;;
+    cu101)
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1"
+      else
+        export CUDA_HOME=/usr/local/cuda-10.1/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5"
+      ;;
     cu100)
-      export CUDA_HOME=/usr/local/cuda-10.0/
-      export FORCE_CUDA=1
-      # Hard-coding gencode flags is temporary situation until
-      # https://github.com/pytorch/pytorch/pull/23408 lands
-      export NVCC_FLAGS="-gencode=arch=compute_35,code=sm_35 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_50,code=compute_50"
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.0"
+      else
+        export CUDA_HOME=/usr/local/cuda-10.0/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0;7.5"
       ;;
     cu92)
-      export CUDA_HOME=/usr/local/cuda-9.2/
-      export FORCE_CUDA=1
-      export NVCC_FLAGS="-gencode=arch=compute_35,code=sm_35 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_50,code=compute_50"
+      if [[ "$OSTYPE" == "msys" ]]; then
+        export CUDA_HOME="C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v9.2"
+      else
+        export CUDA_HOME=/usr/local/cuda-9.2/
+      fi
+      export TORCH_CUDA_ARCH_LIST="3.5;5.0+PTX;6.0;7.0"
       ;;
     cpu)
+      ;;
+    rocm*)
+      export FORCE_CUDA=1
       ;;
     *)
       echo "Unrecognized CU_VERSION=$CU_VERSION"
       exit 1
       ;;
   esac
+  if [[ -n "$CUDA_HOME" ]]; then
+    # Adds nvcc binary to the search path so that CMake's `find_package(CUDA)` will pick the right one
+    export PATH="$CUDA_HOME/bin:$PATH"
+    export FORCE_CUDA=1
+  fi
 }
 
 # Populate build version if necessary, and add version suffix
