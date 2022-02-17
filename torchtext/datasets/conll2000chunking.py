@@ -11,8 +11,6 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
 
-from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
-
 URL = {
     "train": "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
     "test": "https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz",

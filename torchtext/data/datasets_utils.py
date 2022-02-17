@@ -7,12 +7,7 @@ import os
 import torch
 from torch.utils.data import functional_datapipe, IterDataPipe
 from torch.utils.data.datapipes.utils.common import StreamWrapper
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader, validate_file
-from torchtext.utils import (
-    validate_file,
-    download_from_url,
-    extract_archive,
-)
+from torchtext.utils import download_from_url, extract_archive, validate_file
 
 try:
     import defusedxml.ElementTree as ET
