@@ -1,4 +1,7 @@
 [flake8]
 ignore = E401,E402,E501,E722,W503,W504,F821,B006,B007,B008,B009
+select =
+    B,C,E,F,P,T4,W,B9,
+    D417 # Missing argument descriptions in the docstring
 max-line-length = 120
 exclude = docs/source,third_party
