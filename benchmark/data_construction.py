@@ -1,19 +1,20 @@
-from torchtext.experimental import datasets
 import time
+
+from torchtext.experimental import datasets
 
 
 def benchmark_construction(name, Dataset):
     t0 = time.perf_counter()
-    print(name, end='')
-    d, = Dataset(data_select=('train',))
+    print(name, end="")
+    (d,) = Dataset(data_select=("train",))
     print(" construction time {0:.2f}s".format(time.perf_counter() - t0))
     del d
 
 
 def benchmark_raw_construction(name, Dataset):
-    print(name, end='')
+    print(name, end="")
     if name in "WMTNewsCrawl":
-        d = Dataset(data_select=('train',))
+        d = Dataset(data_select=("train",))
     else:
         d = Dataset()
     del d

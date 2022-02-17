@@ -1,10 +1,11 @@
 import importlib
-from .wmtnewscrawl import WMTNewsCrawl
+
 from .wmt14 import WMT14
+from .wmtnewscrawl import WMTNewsCrawl
 
 DATASETS = {
-    'WMTNewsCrawl': WMTNewsCrawl,
-    'WMT14': WMT14,
+    "WMTNewsCrawl": WMTNewsCrawl,
+    "WMT14": WMT14,
 }
 
 URLS = {}

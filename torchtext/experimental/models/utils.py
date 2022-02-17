@@ -1,7 +1,7 @@
 import torch
 
 
-def count_model_param(nn_model, unit=10**6):
+def count_model_param(nn_model, unit=10 ** 6):
     r"""
     Count the parameters in a model
 

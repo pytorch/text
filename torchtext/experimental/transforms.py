@@ -1,25 +1,25 @@
+import io
+from typing import List
+
 import torch
 import torch.nn as nn
-from typing import List
-from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torch import Tensor
-from torchtext._torchtext import SentencePiece as SentencePiecePybind
-import io
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind, SentencePiece as SentencePiecePybind
 
 
 __all__ = [
-    'basic_english_normalize',
-    'regex_tokenizer',
-    'BasicEnglishNormalize',
-    'RegexTokenizer',
-    'PRETRAINED_SP_MODEL',
-    'load_sp_model',
-    'sentencepiece_tokenizer',
-    'SentencePieceTokenizer',
-    'sentencepiece_processor',
-    'SentencePieceProcessor',
-    'VocabTransform',
-    'VectorTransform'
+    "basic_english_normalize",
+    "regex_tokenizer",
+    "BasicEnglishNormalize",
+    "RegexTokenizer",
+    "PRETRAINED_SP_MODEL",
+    "load_sp_model",
+    "sentencepiece_tokenizer",
+    "SentencePieceTokenizer",
+    "sentencepiece_processor",
+    "SentencePieceProcessor",
+    "VocabTransform",
+    "VectorTransform",
 ]
 
 
@@ -53,18 +53,19 @@ def basic_english_normalize():
     """
 
     patterns_list = [
-        (r'\'', ' \'  '),
-        (r'\"', ''),
-        (r'\.', ' . '),
-        (r'<br \/>', ' '),
-        (r',', ' , '),
-        (r'\(', ' ( '),
-        (r'\)', ' ) '),
-        (r'\!', ' ! '),
-        (r'\?', ' ? '),
-        (r'\;', ' '),
-        (r'\:', ' '),
-        (r'\s+', ' ')]
+        (r"\'", " '  "),
+        (r"\"", ""),
+        (r"\.", " . "),
+        (r"<br \/>", " "),
+        (r",", " , "),
+        (r"\(", " ( "),
+        (r"\)", " ) "),
+        (r"\!", " ! "),
+        (r"\?", " ? "),
+        (r"\;", " "),
+        (r"\:", " "),
+        (r"\s+", " "),
+    ]
 
     patterns = [pair[0] for pair in patterns_list]
     replacements = [pair[1] for pair in patterns_list]
@@ -123,9 +124,10 @@ class BasicEnglishNormalize(nn.Module):
         return self.regex_tokenizer.forward(line)
 
     def __prepare_scriptable__(self):
-        r"""Return a JITable BasicEnglishNormalize.
-        """
-        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
+        r"""Return a JITable BasicEnglishNormalize."""
+        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True
+        )
         return BasicEnglishNormalize(regex_tokenizer)
 
 
@@ -157,19 +159,21 @@ class RegexTokenizer(nn.Module):
         return self.regex_tokenizer.forward(line)
 
     def __prepare_scriptable__(self):
-        r"""Return a JITable RegexTokenizer.
-        """
-        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
+        r"""Return a JITable RegexTokenizer."""
+        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
+        )
         return RegexTokenizer(regex_tokenizer)
 
 
 PRETRAINED_SP_MODEL = {
-    'text_unigram_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model',
-    'text_unigram_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model',
-    'text_unigram_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model',
-    'text_bpe_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_15000.model',
-    'text_bpe_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_25000.model',
-    'text_bpe_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_50000.model'}
+    "text_unigram_15000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model",
+    "text_unigram_25000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model",
+    "text_unigram_50000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model",
+    "text_bpe_15000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_15000.model",
+    "text_bpe_25000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_25000.model",
+    "text_bpe_50000": "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_50000.model",
+}
 
 
 def load_sp_model(sp_model):
@@ -206,17 +210,16 @@ def load_sp_model(sp_model):
     """
 
     if isinstance(sp_model, str):
-        with open(sp_model, 'rb') as f:
+        with open(sp_model, "rb") as f:
             return SentencePiecePybind(f.read())
     elif isinstance(sp_model, io.BufferedReader):
         return SentencePiecePybind(sp_model.read())
     else:
         raise TypeError(
-            f'Unsupported type for sp_model argument: {type(sp_model).__name__}. ' +
-            'Supported types are: ' +
-            ', '.join([
-                'str', 'io.BufferedReader'
-            ]))
+            f"Unsupported type for sp_model argument: {type(sp_model).__name__}. "
+            + "Supported types are: "
+            + ", ".join(["str", "io.BufferedReader"])
+        )
 
 
 def sentencepiece_tokenizer(sp_model):

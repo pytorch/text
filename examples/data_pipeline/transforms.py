@@ -1,14 +1,14 @@
-import torch.nn as nn
-from torchtext.vocab import vocab
-from typing import List
 from collections import OrderedDict
+from typing import List
+
 import torch
+import torch.nn as nn
 from torch import Tensor
+from torchtext.vocab import vocab
 
 
 class PretrainedSPVocab(nn.Module):
-    r"""Vocab based on a pretained sentencepiece model
-    """
+    r"""Vocab based on a pretained sentencepiece model"""
 
     def __init__(self, sp_model):
         super(PretrainedSPVocab, self).__init__()
@@ -26,8 +26,7 @@ class PretrainedSPVocab(nn.Module):
 
 
 class PyTextVocabTransform(nn.Module):
-    r"""PyTextVocabTransform transform
-    """
+    r"""PyTextVocabTransform transform"""
 
     def __init__(self, vocab):
         super(PyTextVocabTransform, self).__init__()
@@ -39,8 +38,7 @@ class PyTextVocabTransform(nn.Module):
 
 
 class PyTextScriptVocabTransform(nn.Module):
-    r"""PyTextScriptVocabTransform transform
-    """
+    r"""PyTextScriptVocabTransform transform"""
 
     def __init__(self, vocab):
         super(PyTextScriptVocabTransform, self).__init__()
@@ -51,8 +49,7 @@ class PyTextScriptVocabTransform(nn.Module):
 
 
 class ToLongTensor(nn.Module):
-    r"""Convert a list of integers to long tensor
-    """
+    r"""Convert a list of integers to long tensor"""
 
     def __init__(self):
         super(ToLongTensor, self).__init__()
@@ -64,6 +61,7 @@ class ToLongTensor(nn.Module):
 def iterate_batch(pipeline):
     def func(data_batch):
         return [pipeline(data) for data in data_batch]
+
     return func
 
 
@@ -89,8 +87,7 @@ def tokenizer_func(tokenizer):
 
 
 class TextClassificationPipeline(nn.Module):
-    r"""Text classification pipeline template
-    """
+    r"""Text classification pipeline template"""
 
     def __init__(self, label_transform, text_transform):
         super(TextClassificationPipeline, self).__init__()

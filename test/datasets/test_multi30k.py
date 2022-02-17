@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 from torchtext.datasets import Multi30k
 
-from ..common.parameterized_utils import nested_params
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -48,9 +48,7 @@ class TestMulti30k(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -76,12 +74,8 @@ class TestMulti30k(TempDirMixin, TorchtextTestCase):
 
     @nested_params(["train", "valid", "test"], [("de", "en"), ("en", "de")])
     def test_multi30k_split_argument(self, split, language_pair):
-        dataset1 = Multi30k(
-            root=self.root_dir, split=split, language_pair=language_pair
-        )
-        (dataset2,) = Multi30k(
-            root=self.root_dir, split=(split,), language_pair=language_pair
-        )
+        dataset1 = Multi30k(root=self.root_dir, split=split, language_pair=language_pair)
+        (dataset2,) = Multi30k(root=self.root_dir, split=(split,), language_pair=language_pair)
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)

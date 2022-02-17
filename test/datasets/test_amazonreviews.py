@@ -6,8 +6,8 @@ from unittest.mock import patch
 from torchtext.datasets.amazonreviewfull import AmazonReviewFull
 from torchtext.datasets.amazonreviewpolarity import AmazonReviewPolarity
 
-from ..common.parameterized_utils import nested_params
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
+from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -59,9 +59,7 @@ class TestAmazonReviews(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -71,9 +69,7 @@ class TestAmazonReviews(TempDirMixin, TorchtextTestCase):
 
     @nested_params([AmazonReviewFull, AmazonReviewPolarity], ["train", "test"])
     def test_amazon_reviews(self, amazon_review_dataset, split):
-        expected_samples = _get_mock_dataset(
-            self.root_dir, amazon_review_dataset.__name__
-        )[split]
+        expected_samples = _get_mock_dataset(self.root_dir, amazon_review_dataset.__name__)[split]
         dataset = amazon_review_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
 

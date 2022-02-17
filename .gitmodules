@@ -10,4 +10,3 @@
 	path = third_party/double-conversion
 	url = https://github.com/google/double-conversion
 	ignore = dirty
-

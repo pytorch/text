@@ -1,10 +1,9 @@
 from collections import OrderedDict
-
-from fairseq.data.dictionary import Dictionary
-import torch
-from torchtext.vocab import vocab
-from torchtext.vocab import Vocab
 from typing import Dict, List, Optional
+
+import torch
+from fairseq.data.dictionary import Dictionary
+from torchtext.vocab import vocab, Vocab
 
 
 def build_fairseq_vocab(
@@ -31,9 +30,13 @@ def build_fairseq_vocab(
             "<unk>": "__UNKNOWN__",
             "<mask>": "__MASK__",
         }
-        unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
+        unk_replacement = (
+            special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
+        )
         special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
-        special_tokens_to_add = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
+        special_tokens_to_add = tuple(
+            special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token
+        )
 
     with open(vocab_file) as f:
         dictionary = dictionary_class.load(f)
@@ -64,12 +67,7 @@ def build_fairseq_vocab(
         return Vocab(dictionary_items, unk_token=unk_replacement)
 
 
-def script_vocab(ordered_dict,
-                 pad_token=None,
-                 bos_token=None,
-                 eos_token=None,
-                 mask_token=None,
-                 **kwargs):
+def script_vocab(ordered_dict, pad_token=None, bos_token=None, eos_token=None, mask_token=None, **kwargs):
 
     v = vocab(ordered_dict, **kwargs)
     return ScriptVocab(v.vocab, pad_token, bos_token, eos_token, mask_token, **kwargs)
@@ -93,18 +91,13 @@ class ScriptVocab(Vocab):
         >>> print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
         >>> print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
     """
-    def __init__(self,
-                 cpp_vocab,
-                 pad_token=None,
-                 bos_token=None,
-                 eos_token=None,
-                 mask_token=None,
-                 **kwargs):
+
+    def __init__(self, cpp_vocab, pad_token=None, bos_token=None, eos_token=None, mask_token=None, **kwargs):
 
         super(ScriptVocab, self).__init__(cpp_vocab)
 
         # store all tokens
-        self.unk_token: str = kwargs.get('unk_token', '<unk>')
+        self.unk_token: str = kwargs.get("unk_token", "<unk>")
         self.pad_token: str = pad_token
         self.bos_token: str = bos_token
         self.eos_token: str = eos_token
@@ -201,8 +194,8 @@ class ScriptVocab(Vocab):
         return result
 
     def to_ivalue(self):
-        r"""Return a JITable ScriptVocab.
-        """
+        r"""Return a JITable ScriptVocab."""
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
-        return ScriptVocab(cpp_vocab, self.pad_token, self.bos_token, self.eos_token,
-                           self.mask_token, unk_token=self.unk_token)
+        return ScriptVocab(
+            cpp_vocab, self.pad_token, self.bos_token, self.eos_token, self.mask_token, unk_token=self.unk_token
+        )

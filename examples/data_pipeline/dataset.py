@@ -3,10 +3,9 @@ from torchtext.datasets import DATASETS
 
 
 class BatchTextClassificationData(torch.utils.data.IterableDataset):
-
     def __init__(self, dataset_name, batch_size=16):
         super(BatchTextClassificationData, self).__init__()
-        self._iterator = DATASETS[dataset_name](split='train')
+        self._iterator = DATASETS[dataset_name](split="train")
         self.batch_size = batch_size
 
     def __iter__(self):
