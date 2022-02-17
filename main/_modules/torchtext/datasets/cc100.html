@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.cc100 &mdash; torchtext 0.12.0.dev20220216 documentation</title>
+  <title>torchtext.datasets.cc100 &mdash; torchtext 0.12.0.dev20220217 documentation</title>
   
 
   
@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220216 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220217 &#x25BC</a>
     </div>
     
 
@@ -332,14 +332,121 @@
 <span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;http://data.statmt.org/cc-100/</span><span class="si">%s</span><span class="s2">.txt.xz&quot;</span>
 
 <span class="n">VALID_CODES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;am&quot;</span><span class="p">,</span> <span class="s2">&quot;ar&quot;</span><span class="p">,</span> <span class="s2">&quot;as&quot;</span><span class="p">,</span> <span class="s2">&quot;az&quot;</span><span class="p">,</span> <span class="s2">&quot;be&quot;</span><span class="p">,</span> <span class="s2">&quot;bg&quot;</span><span class="p">,</span> <span class="s2">&quot;bn&quot;</span><span class="p">,</span> <span class="s2">&quot;bn_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;bs&quot;</span><span class="p">,</span> <span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;cs&quot;</span><span class="p">,</span> <span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="s2">&quot;da&quot;</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;eo&quot;</span><span class="p">,</span> <span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="s2">&quot;et&quot;</span><span class="p">,</span> <span class="s2">&quot;eu&quot;</span><span class="p">,</span> <span class="s2">&quot;fa&quot;</span><span class="p">,</span> <span class="s2">&quot;ff&quot;</span><span class="p">,</span> <span class="s2">&quot;fi&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="s2">&quot;fy&quot;</span><span class="p">,</span> <span class="s2">&quot;ga&quot;</span><span class="p">,</span> <span class="s2">&quot;gd&quot;</span><span class="p">,</span> <span class="s2">&quot;gl&quot;</span><span class="p">,</span> <span class="s2">&quot;gn&quot;</span><span class="p">,</span> <span class="s2">&quot;gu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ha&quot;</span><span class="p">,</span> <span class="s2">&quot;he&quot;</span><span class="p">,</span> <span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="s2">&quot;hi_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;ht&quot;</span><span class="p">,</span> <span class="s2">&quot;hu&quot;</span><span class="p">,</span> <span class="s2">&quot;hy&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;ig&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="s2">&quot;ja&quot;</span><span class="p">,</span> <span class="s2">&quot;jv&quot;</span><span class="p">,</span> <span class="s2">&quot;ka&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;kk&quot;</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="s2">&quot;kn&quot;</span><span class="p">,</span> <span class="s2">&quot;ko&quot;</span><span class="p">,</span> <span class="s2">&quot;ku&quot;</span><span class="p">,</span> <span class="s2">&quot;ky&quot;</span><span class="p">,</span> <span class="s2">&quot;la&quot;</span><span class="p">,</span> <span class="s2">&quot;lg&quot;</span><span class="p">,</span> <span class="s2">&quot;li&quot;</span><span class="p">,</span> <span class="s2">&quot;ln&quot;</span><span class="p">,</span> <span class="s2">&quot;lo&quot;</span><span class="p">,</span> <span class="s2">&quot;lt&quot;</span><span class="p">,</span> <span class="s2">&quot;lv&quot;</span><span class="p">,</span> <span class="s2">&quot;mg&quot;</span><span class="p">,</span> <span class="s2">&quot;mk&quot;</span><span class="p">,</span> <span class="s2">&quot;ml&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mn&quot;</span><span class="p">,</span> <span class="s2">&quot;mr&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;my_zaw&quot;</span><span class="p">,</span> <span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;nl&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span> <span class="s2">&quot;om&quot;</span><span class="p">,</span> <span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="s2">&quot;pa&quot;</span><span class="p">,</span> <span class="s2">&quot;pl&quot;</span><span class="p">,</span> <span class="s2">&quot;ps&quot;</span><span class="p">,</span> <span class="s2">&quot;pt&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;qu&quot;</span><span class="p">,</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span> <span class="s2">&quot;ru&quot;</span><span class="p">,</span> <span class="s2">&quot;sa&quot;</span><span class="p">,</span> <span class="s2">&quot;si&quot;</span><span class="p">,</span> <span class="s2">&quot;sc&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;sk&quot;</span><span class="p">,</span> <span class="s2">&quot;sl&quot;</span><span class="p">,</span> <span class="s2">&quot;so&quot;</span><span class="p">,</span> <span class="s2">&quot;sq&quot;</span><span class="p">,</span> <span class="s2">&quot;sr&quot;</span><span class="p">,</span> <span class="s2">&quot;ss&quot;</span><span class="p">,</span> <span class="s2">&quot;su&quot;</span><span class="p">,</span> <span class="s2">&quot;sv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sw&quot;</span><span class="p">,</span> <span class="s2">&quot;ta&quot;</span><span class="p">,</span> <span class="s2">&quot;ta_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;te&quot;</span><span class="p">,</span> <span class="s2">&quot;te_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;th&quot;</span><span class="p">,</span> <span class="s2">&quot;tl&quot;</span><span class="p">,</span> <span class="s2">&quot;tn&quot;</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="s2">&quot;ug&quot;</span><span class="p">,</span> <span class="s2">&quot;uk&quot;</span><span class="p">,</span> <span class="s2">&quot;ur&quot;</span><span class="p">,</span> <span class="s2">&quot;ur_rom&quot;</span><span class="p">,</span> <span class="s2">&quot;uz&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vi&quot;</span><span class="p">,</span> <span class="s2">&quot;wo&quot;</span><span class="p">,</span> <span class="s2">&quot;xh&quot;</span><span class="p">,</span> <span class="s2">&quot;yi&quot;</span><span class="p">,</span> <span class="s2">&quot;yo&quot;</span><span class="p">,</span> <span class="s2">&quot;zh-Hans&quot;</span><span class="p">,</span> <span class="s2">&quot;zh-Hant&quot;</span><span class="p">,</span> <span class="s2">&quot;zu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;am&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;as&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;az&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;be&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bn_rom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;br&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ca&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;da&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;de&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;el&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;es&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;et&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ha&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;he&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hi_rom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ht&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ig&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;it&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ja&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ka&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;km&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ko&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ku&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ky&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;la&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;li&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ln&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;my&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;my_zaw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ne&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;om&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;or&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ps&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;qu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ru&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;si&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;so&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sq&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ss&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;su&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ta&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ta_rom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;te&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;te_rom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;th&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ur&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ur_rom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;yi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;yo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;zh-Hans&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;zh-Hant&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;zu&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="kc">None</span>
@@ -366,14 +473,10 @@
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span> <span class="o">%</span> <span class="n">language_code</span>
     <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">url</span><span class="p">])</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
-        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
-    <span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)))</span>
 
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">HttpReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
         <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.xz&quot;</span><span class="p">))</span>

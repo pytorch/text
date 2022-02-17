@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SST-2 Binary text classification with XLM-RoBERTa model &mdash; torchtext 0.12.0.dev20220216 documentation</title>
+  <title>SST-2 Binary text classification with XLM-RoBERTa model &mdash; torchtext 0.12.0.dev20220217 documentation</title>
   
 
   
@@ -195,7 +195,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220216 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220217 &#x25BC</a>
     </div>
     
 
@@ -369,6 +369,7 @@ We will show how to use torchtext library to:</p>
 <h2>Common imports<a class="headerlink" href="#common-imports" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
 <span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span> <span class="k">if</span> <a href="https://pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -405,6 +406,9 @@ can either pass a single sentence or list of sentences.</p>
     <span class="n">T</span><span class="o">.</span><span class="n">AddToken</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">bos_idx</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
     <span class="n">T</span><span class="o">.</span><span class="n">AddToken</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
 <span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
 </pre></div>
 </div>
 <p>Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box</p>
@@ -420,11 +424,11 @@ datapipes and hence support standard flow-control and mapping/transformation usi
 and transforms. Below, we demonstrate how to use text and label processing transforms to pre-process the
 SST-2 dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">SST2</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
+
 <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
 
-<span class="n">train_datapipe</span> <span class="o">=</span> <span class="n">SST2</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
-<span class="n">dev_datapipe</span> <span class="o">=</span> <span class="n">SST2</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s1">&#39;dev&#39;</span><span class="p">)</span>
+<span class="n">train_datapipe</span> <span class="o">=</span> <span class="n">SST2</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">dev_datapipe</span> <span class="o">=</span> <span class="n">SST2</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;dev&quot;</span><span class="p">)</span>
 
 <span class="c1"># Transform the raw dataset using non-batched API (i.e apply transformation line by line)</span>
 <span class="n">train_datapipe</span> <span class="o">=</span> <span class="n">train_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">text_transform</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
@@ -457,6 +461,7 @@ please refer to documentation at <a class="reference external" href="https://pyt
 <span class="n">input_dim</span> <span class="o">=</span> <span class="mi">768</span>
 
 <span class="kn">from</span> <span class="nn">torchtext.models</span> <span class="kn">import</span> <span class="n">RobertaClassificationHead</span><span class="p">,</span> <span class="n">XLMR_BASE_ENCODER</span>
+
 <span class="n">classifier_head</span> <span class="o">=</span> <span class="n">RobertaClassificationHead</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">input_dim</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">XLMR_BASE_ENCODER</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">head</span><span class="o">=</span><span class="n">classifier_head</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
@@ -497,8 +502,8 @@ for training and evaluation</p>
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">with</span> <a href="https://pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
         <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dev_dataloader</span><span class="p">:</span>
-            <span class="nb">input</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;token_ids&#39;</span><span class="p">],</span> <span class="n">padding_value</span><span class="o">=</span><span class="n">padding_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-            <span class="n">target</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.tensor.html#torch.tensor" title="torch.tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span></a><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;token_ids&quot;</span><span class="p">],</span> <span class="n">padding_value</span><span class="o">=</span><span class="n">padding_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.tensor.html#torch.tensor" title="torch.tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span></a><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
             <span class="n">loss</span><span class="p">,</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">eval_step</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
             <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span>
             <span class="n">correct_predictions</span> <span class="o">+=</span> <span class="n">predictions</span>
@@ -519,8 +524,8 @@ take care of data-sharding.</p>
 
 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
-        <span class="nb">input</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;token_ids&#39;</span><span class="p">],</span> <span class="n">padding_value</span><span class="o">=</span><span class="n">padding_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-        <span class="n">target</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.tensor.html#torch.tensor" title="torch.tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span></a><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;token_ids&quot;</span><span class="p">],</span> <span class="n">padding_value</span><span class="o">=</span><span class="n">padding_idx</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.tensor.html#torch.tensor" title="torch.tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span></a><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
         <span class="n">train_step</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 
     <span class="n">loss</span><span class="p">,</span> <span class="n">accuracy</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">()</span>

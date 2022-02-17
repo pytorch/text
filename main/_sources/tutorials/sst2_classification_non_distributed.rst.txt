@@ -49,17 +49,18 @@ To run this tutorial, please install torchtext nightly and TorchData (following 
 Common imports
 --------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-38
+.. GENERATED FROM PYTHON SOURCE LINES 33-39
 
 .. code-block:: default
 
     import torch
     import torch.nn as nn
+
     DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-56
+.. GENERATED FROM PYTHON SOURCE LINES 40-57
 
 Data Transformation
 -------------------
@@ -79,7 +80,7 @@ but is torchscriptable. Note that the transforms support both batched and non-ba
 can either pass a single sentence or list of sentences.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-76
+.. GENERATED FROM PYTHON SOURCE LINES 57-79
 
 .. code-block:: default
 
@@ -103,8 +104,10 @@ can either pass a single sentence or list of sentences.
     )
 
 
+    from torch.utils.data import DataLoader
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-83
+
+.. GENERATED FROM PYTHON SOURCE LINES 80-86
 
 Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
 
@@ -113,7 +116,7 @@ Alternately we can also use transform shipped with pre-trained model that does a
   text_transform = XLMR_BASE_ENCODER.transform()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-94
+.. GENERATED FROM PYTHON SOURCE LINES 88-97
 
 Dataset
 -------
@@ -125,17 +128,17 @@ SST-2 dataset.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-114
+.. GENERATED FROM PYTHON SOURCE LINES 97-117
 
 .. code-block:: default
 
 
     from torchtext.datasets import SST2
-    from torch.utils.data import DataLoader
+
     batch_size = 16
 
-    train_datapipe = SST2(split='train')
-    dev_datapipe = SST2(split='dev')
+    train_datapipe = SST2(split="train")
+    dev_datapipe = SST2(split="dev")
 
     # Transform the raw dataset using non-batched API (i.e apply transformation line by line)
     train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
@@ -150,7 +153,7 @@ SST-2 dataset.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-124
+.. GENERATED FROM PYTHON SOURCE LINES 118-127
 
 Alternately we can also use batched API (i.e apply transformation on the whole batch)
 
@@ -162,7 +165,7 @@ Alternately we can also use batched API (i.e apply transformation on the whole b
   dev_datapipe = dev_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-136
+.. GENERATED FROM PYTHON SOURCE LINES 129-139
 
 Model Preparation
 -----------------
@@ -175,7 +178,7 @@ please refer to documentation at https://pytorch.org/text/main/models.html
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-146
+.. GENERATED FROM PYTHON SOURCE LINES 139-150
 
 .. code-block:: default
 
@@ -184,13 +187,14 @@ please refer to documentation at https://pytorch.org/text/main/models.html
     input_dim = 768
 
     from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
+
     classifier_head = RobertaClassificationHead(num_classes=num_classes, input_dim=input_dim)
     model = XLMR_BASE_ENCODER.get_model(head=classifier_head)
     model.to(DEVICE)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-153
+.. GENERATED FROM PYTHON SOURCE LINES 151-157
 
 Training methods
 ----------------
@@ -199,7 +203,7 @@ Let's now define the standard optimizer and training criteria as well as some he
 for training and evaluation
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-195
+.. GENERATED FROM PYTHON SOURCE LINES 157-199
 
 .. code-block:: default
 
@@ -234,8 +238,8 @@ for training and evaluation
         counter = 0
         with torch.no_grad():
             for batch in dev_dataloader:
-                input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
-                target = torch.tensor(batch['target']).to(DEVICE)
+                input = F.to_tensor(batch["token_ids"], padding_value=padding_idx).to(DEVICE)
+                target = torch.tensor(batch["target"]).to(DEVICE)
                 loss, predictions = eval_step(input, target)
                 total_loss += loss
                 correct_predictions += predictions
@@ -246,7 +250,7 @@ for training and evaluation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-204
+.. GENERATED FROM PYTHON SOURCE LINES 200-208
 
 Train
 -----
@@ -257,7 +261,7 @@ thanks to the batching datapipe we have applied. For distributed training, we wo
 take care of data-sharding.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-217
+.. GENERATED FROM PYTHON SOURCE LINES 208-221
 
 .. code-block:: default
 
@@ -266,8 +270,8 @@ take care of data-sharding.
 
     for e in range(num_epochs):
         for batch in train_dataloader:
-            input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
-            target = torch.tensor(batch['target']).to(DEVICE)
+            input = F.to_tensor(batch["token_ids"], padding_value=padding_idx).to(DEVICE)
+            target = torch.tensor(batch["target"]).to(DEVICE)
             train_step(input, target)
 
         loss, accuracy = evaluate()
@@ -275,7 +279,7 @@ take care of data-sharding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-230
+.. GENERATED FROM PYTHON SOURCE LINES 222-234
 
 Output
 ------

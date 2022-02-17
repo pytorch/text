@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab.vectors &mdash; torchtext 0.12.0.dev20220216 documentation</title>
+  <title>torchtext.vocab.vectors &mdash; torchtext 0.12.0.dev20220217 documentation</title>
   
 
   
@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220216 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220217 &#x25BC</a>
     </div>
     
 
@@ -318,15 +318,17 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.vocab.vectors</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span></span><span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">import</span> <span class="nn">gzip</span>
-<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">reporthook</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -350,9 +352,7 @@
 
 
 <div class="viewcode-block" id="Vectors"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vectors">[docs]</a><span class="k">class</span> <span class="nc">Vectors</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-<div class="viewcode-block" id="Vectors.__init__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vectors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Vectors.__init__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vectors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 
@@ -370,7 +370,7 @@
 <span class="sd">                can limit the size of the loaded set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">cache</span> <span class="o">=</span> <span class="s1">&#39;.vector_cache&#39;</span> <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="s2">&quot;.vector_cache&quot;</span> <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="kc">None</span>
@@ -386,56 +386,57 @@
 
     <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">ssl</span>
+
         <span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">name</span>
             <span class="k">if</span> <span class="n">max_vectors</span><span class="p">:</span>
-                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.pt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">.pt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;.pt&#39;</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;.pt&quot;</span>
             <span class="n">path_pt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="o">+</span> <span class="n">file_suffix</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">max_vectors</span><span class="p">:</span>
-                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.pt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">.pt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;.pt&#39;</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;.pt&quot;</span>
             <span class="n">path_pt</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file_suffix</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_pt</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">url</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading vectors from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading vectors from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
                 <span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
-                    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">reporthook</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
                         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># remove the partial zip file</span>
                             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
                             <span class="k">raise</span> <span class="n">e</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Extracting vectors into </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Extracting vectors into </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache</span><span class="p">))</span>
                 <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;zip&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;zip&quot;</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
                         <span class="n">zf</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;gz&#39;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.tar.gz&#39;</span><span class="p">):</span>
-                        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;gz&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.tar.gz&quot;</span><span class="p">):</span>
+                        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
                             <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;no vectors found at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;no vectors found at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading vectors from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;gz&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;gz&quot;</span><span class="p">:</span>
                 <span class="n">open_file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">open_file</span> <span class="o">=</span> <span class="nb">open</span>
 
             <span class="n">vectors_loaded</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">with</span> <span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">num_lines</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">_infer_shape</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">max_vectors</span> <span class="ow">or</span> <span class="n">max_vectors</span> <span class="o">&gt;</span> <span class="n">num_lines</span><span class="p">:</span>
                     <span class="n">max_vectors</span> <span class="o">=</span> <span class="n">num_lines</span>
@@ -451,19 +452,20 @@
                     <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Skipping token </span><span class="si">{}</span><span class="s2"> with 1-dimensional &quot;</span>
-                                       <span class="s2">&quot;vector </span><span class="si">{}</span><span class="s2">; likely a header&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">entries</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;Skipping token </span><span class="si">{}</span><span class="s2"> with 1-dimensional &quot;</span> <span class="s2">&quot;vector </span><span class="si">{}</span><span class="s2">; likely a header&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
+                        <span class="p">)</span>
                         <span class="k">continue</span>
                     <span class="k">elif</span> <span class="n">dim</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                             <span class="s2">&quot;Vector for token </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> dimensions, but previously &quot;</span>
                             <span class="s2">&quot;read vectors have </span><span class="si">{}</span><span class="s2"> dimensions. All vectors must have &quot;</span>
-                            <span class="s2">&quot;the same number of dimensions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">),</span>
-                                                                    <span class="n">dim</span><span class="p">))</span>
+                            <span class="s2">&quot;the same number of dimensions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">),</span> <span class="n">dim</span><span class="p">)</span>
+                        <span class="p">)</span>
 
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-                            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping non-UTF8 token </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
                         <span class="k">continue</span>
@@ -479,12 +481,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">itos</span><span class="p">)}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving vectors to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saving vectors to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">path_pt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading vectors from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading vectors from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_pt</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -518,9 +520,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">lower_case_backup</span><span class="p">:</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span>
-                       <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-                       <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
 
         <span class="n">vecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">to_reduce</span> <span class="k">else</span> <span class="n">vecs</span></div></div>
@@ -528,21 +528,21 @@
 
 <div class="viewcode-block" id="GloVe"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.GloVe">[docs]</a><span class="k">class</span> <span class="nc">GloVe</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;42B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.42B.300d.zip&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;840B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.840B.300d.zip&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;twitter.27B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.twitter.27B.zip&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;6B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.6B.zip&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;42B&quot;</span><span class="p">:</span> <span class="s2">&quot;http://nlp.stanford.edu/data/glove.42B.300d.zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;840B&quot;</span><span class="p">:</span> <span class="s2">&quot;http://nlp.stanford.edu/data/glove.840B.300d.zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;twitter.27B&quot;</span><span class="p">:</span> <span class="s2">&quot;http://nlp.stanford.edu/data/glove.twitter.27B.zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;6B&quot;</span><span class="p">:</span> <span class="s2">&quot;http://nlp.stanford.edu/data/glove.6B.zip&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;840B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;840B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;glove.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">d.txt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;glove.</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">d.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FastText"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.FastText">[docs]</a><span class="k">class</span> <span class="nc">FastText</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
 
-    <span class="n">url_base</span> <span class="o">=</span> <span class="s1">&#39;https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.</span><span class="si">{}</span><span class="s1">.vec&#39;</span>
+    <span class="n">url_base</span> <span class="o">=</span> <span class="s2">&quot;https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.</span><span class="si">{}</span><span class="s2">.vec&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
@@ -552,9 +552,8 @@
 
 <div class="viewcode-block" id="CharNGram"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.CharNGram">[docs]</a><span class="k">class</span> <span class="nc">CharNGram</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;charNgram.txt&#39;</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/&#39;</span>
-           <span class="s1">&#39;jmt_pre-trained_embeddings.tar.gz&#39;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;charNgram.txt&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/&quot;</span> <span class="s2">&quot;jmt_pre-trained_embeddings.tar.gz&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CharNGram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -563,13 +562,13 @@
         <span class="n">vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;&lt;unk&gt;&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
-        <span class="n">chars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#BEGIN#&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;#END#&#39;</span><span class="p">]</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#BEGIN#&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;#END#&quot;</span><span class="p">]</span>
         <span class="n">num_vectors</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">grams</span> <span class="o">=</span> <span class="p">[</span><span class="n">chars</span><span class="p">[</span><span class="n">i</span><span class="p">:(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
+            <span class="n">grams</span> <span class="o">=</span> <span class="p">[</span><span class="n">chars</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
             <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">grams</span><span class="p">:</span>
-                <span class="n">gram_key</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">gram-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gram</span><span class="p">))</span>
+                <span class="n">gram_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">gram-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gram</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">gram_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">:</span>
                     <span class="n">vector</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">gram_key</span><span class="p">]]</span>
                     <span class="n">num_vectors</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -593,7 +592,7 @@
     <span class="s2">&quot;glove.6B.50d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;50&quot;</span><span class="p">),</span>
     <span class="s2">&quot;glove.6B.100d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;100&quot;</span><span class="p">),</span>
     <span class="s2">&quot;glove.6B.200d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;200&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;glove.6B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">)</span>
+    <span class="s2">&quot;glove.6B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">),</span>
 <span class="p">}</span>
 <span class="sd">&quot;&quot;&quot;Mapping from string name to factory function&quot;&quot;&quot;</span>
 </pre></div>
