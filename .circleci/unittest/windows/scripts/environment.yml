@@ -1,24 +1,24 @@
 channels:
   - defaults
-  - conda-forge
 dependencies:
   - flake8>=3.7.9
   - codecov
   - pip
-  - nltk
-  - requests
-  - pytest
-  - pytest-cov
-  - sacremoses
-  - spacy>=3.0
-  - sphinx
-  - tqdm
-  - certifi
-  - future
-  - expecttest
   - pip:
+    - dataclasses
+    - nltk
+    - requests
     - revtok
+    - pytest
+    - pytest-cov
     - pytest-pythonpath
+    - sacremoses
+    - spacy
+    - sphinx
     - sphinx-rtd-theme
+    - tqdm
+    - certifi
+    - future
+    - expecttest
     - https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.0.0/de_core_news_sm-3.0.0.tar.gz#egg=de_core_news_sm==3.0.0
     - https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz#egg=en_core_web_sm==3.0.0
