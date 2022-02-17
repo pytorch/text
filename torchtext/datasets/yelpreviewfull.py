@@ -70,5 +70,5 @@ def YelpReviewFull(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = cache_decompressed_dp.read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
-    return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
+    return data_dp.parse_csv().map(lambda t: (int(t[0]), " ".join(t[1:])))
