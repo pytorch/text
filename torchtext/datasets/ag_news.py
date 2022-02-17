@@ -11,8 +11,6 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
 
-from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
-
 URL = {
     "train": "https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv",
     "test": "https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/test.csv",
