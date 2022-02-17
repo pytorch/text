@@ -40,9 +40,7 @@ DATASET_NAME = "Multi30k"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
-def Multi30k(
-    root: str, split: Union[Tuple[str], str], language_pair: Tuple[str] = ("de", "en")
-):
+def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str] = ("de", "en")):
     """Multi30k dataset
 
     For additional details refer to https://www.statmt.org/wmt16/multimodal-task.html#task1
@@ -61,9 +59,7 @@ def Multi30k(
     :rtype: (str, str)
     """
 
-    assert (
-        len(language_pair) == 2
-    ), "language_pair must contain only 2 elements: src and tgt language respectively"
+    assert len(language_pair) == 2, "language_pair must contain only 2 elements: src and tgt language respectively"
     assert tuple(sorted(language_pair)) == (
         "de",
         "en",
@@ -81,9 +77,7 @@ def Multi30k(
         hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
         hash_type="sha256",
     )
-    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     src_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[0]}")
@@ -93,9 +87,7 @@ def Multi30k(
         .read_from_tar()
         .filter(lambda x: f"{_PREFIX[split]}.{language_pair[0]}" in x[0])
     )
-    src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     tgt_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[1]}")
@@ -105,9 +97,7 @@ def Multi30k(
         .read_from_tar()
         .filter(lambda x: f"{_PREFIX[split]}.{language_pair[1]}" in x[0])
     )
-    tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     src_data_dp = FileOpener(src_cache_decompressed_dp, mode="b").readlines(
         decode=True, return_path=False, strip_newline=True

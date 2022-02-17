@@ -32,6 +32,7 @@ SST-2 Binary text classification with XLM-RoBERTa model
 # --------------
 import torch
 import torch.nn as nn
+
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 
@@ -73,6 +74,8 @@ text_transform = T.Sequential(
 )
 
 
+from torch.utils.data import DataLoader
+
 #######################################################################
 # Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
 #
@@ -93,11 +96,11 @@ text_transform = T.Sequential(
 #
 
 from torchtext.datasets import SST2
-from torch.utils.data import DataLoader
+
 batch_size = 16
 
-train_datapipe = SST2(split='train')
-dev_datapipe = SST2(split='dev')
+train_datapipe = SST2(split="train")
+dev_datapipe = SST2(split="dev")
 
 # Transform the raw dataset using non-batched API (i.e apply transformation line by line)
 train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), x[1]))
@@ -138,6 +141,7 @@ num_classes = 2
 input_dim = 768
 
 from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
+
 classifier_head = RobertaClassificationHead(num_classes=num_classes, input_dim=input_dim)
 model = XLMR_BASE_ENCODER.get_model(head=classifier_head)
 model.to(DEVICE)
@@ -181,8 +185,8 @@ def evaluate():
     counter = 0
     with torch.no_grad():
         for batch in dev_dataloader:
-            input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
-            target = torch.tensor(batch['target']).to(DEVICE)
+            input = F.to_tensor(batch["token_ids"], padding_value=padding_idx).to(DEVICE)
+            target = torch.tensor(batch["target"]).to(DEVICE)
             loss, predictions = eval_step(input, target)
             total_loss += loss
             correct_predictions += predictions
@@ -206,8 +210,8 @@ num_epochs = 1
 
 for e in range(num_epochs):
     for batch in train_dataloader:
-        input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
-        target = torch.tensor(batch['target']).to(DEVICE)
+        input = F.to_tensor(batch["token_ids"], padding_value=padding_idx).to(DEVICE)
+        target = torch.tensor(batch["target"]).to(DEVICE)
         train_step(input, target)
 
     loss, accuracy = evaluate()

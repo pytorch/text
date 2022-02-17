@@ -1,5 +1,5 @@
-import os
 import gzip
+import os
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -29,9 +29,7 @@ def _get_mock_dataset(root_dir):
                 rand_label_1 = [get_random_unicode(seed)]
                 rand_label_2 = [get_random_unicode(seed)]
                 # one token per line (each sample ends with an extra \n)
-                for rand_string, label_1, label_2 in zip(
-                    rand_strings, rand_label_1, rand_label_2
-                ):
+                for rand_string, label_1, label_2 in zip(rand_strings, rand_label_1, rand_label_2):
                     f.write(f"{rand_string} {label_1} {label_2}\n")
                 f.write("\n")
                 dataset_line = (rand_strings, rand_label_1, rand_label_2)
@@ -41,9 +39,7 @@ def _get_mock_dataset(root_dir):
 
         # create gz file from dataset folder
         compressed_dataset_path = os.path.join(base_dir, f"{file_name}.gz")
-        with gzip.open(compressed_dataset_path, "wb") as gz_file, open(
-            txt_file, "rb"
-        ) as file_in:
+        with gzip.open(compressed_dataset_path, "wb") as gz_file, open(txt_file, "rb") as file_in:
             gz_file.writelines(file_in)
 
     return mocked_data
@@ -58,9 +54,7 @@ class TestCoNLL2000Chunking(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod

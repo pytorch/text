@@ -3,7 +3,7 @@ package:
   version: 0.4.0
 
 source:
-   url: https://github.com/pytorch/text/archive/0.4.0.zip
+  url: https://github.com/pytorch/text/archive/0.4.0.zip
 
 requirements:
   build:
@@ -23,12 +23,12 @@ build:
   script: python setup.py install --single-version-externally-managed --record=record.txt
 
 test:
-   imports:
-      - torchtext
-      - torchtext.data
+  imports:
+    - torchtext
+    - torchtext.data
 
 about:
   home: https://github.com/pytorch/text
   license: BSD
   license_file: LICENSE
-  summary: 'PyTorch Data loaders and abstractions for text and NLP'
+  summary: "PyTorch Data loaders and abstractions for text and NLP"

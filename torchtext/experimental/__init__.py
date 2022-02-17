@@ -1,5 +1,3 @@
-from . import datasets
-from . import transforms
-from . import models
+from . import datasets, models, transforms
 
-__all__ = ['datasets', 'transforms', 'models']
+__all__ = ["datasets", "transforms", "models"]

@@ -11,6 +11,8 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
 
+from torchtext.data.datasets_utils import _add_docstring_header, _create_dataset_directory, _wrap_split_argument
+
 URL = {
     "train": "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
     "dev": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json",

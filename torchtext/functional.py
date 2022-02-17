@@ -1,12 +1,13 @@
+from typing import Any, List, Optional
+
 import torch
 from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
-from typing import List, Optional, Any
 
 __all__ = [
-    'to_tensor',
-    'truncate',
-    'add_token',
+    "to_tensor",
+    "truncate",
+    "add_token",
 ]
 
 
@@ -29,9 +30,7 @@ def to_tensor(input: Any, padding_value: Optional[int] = None, dtype: torch.dtyp
             return output
         else:
             output = pad_sequence(
-                [torch.tensor(ids, dtype=dtype) for ids in input],
-                batch_first=True,
-                padding_value=float(padding_value)
+                [torch.tensor(ids, dtype=dtype) for ids in input], batch_first=True, padding_value=float(padding_value)
             )
             return output
     else:
@@ -39,7 +38,7 @@ def to_tensor(input: Any, padding_value: Optional[int] = None, dtype: torch.dtyp
 
 
 def truncate(input: Any, max_seq_len: int) -> Any:
-    """ Truncate input sequence or batch
+    """Truncate input sequence or batch
 
     :param input: Input sequence or batch to be truncated
     :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]

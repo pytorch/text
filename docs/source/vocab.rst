@@ -13,7 +13,7 @@ torchtext.vocab
 .. autoclass:: Vocab
     :members:
     :special-members:
-    
+
 :hidden:`vocab`
 ~~~~~~~~~~~~~~~
 

@@ -87,10 +87,62 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install check utilities
+          command: pip install --user --progress-bar=off jinja2 pyyaml
+      - run:
+          name: Check CircleCI config consistency
+          command: python .circleci/regenerate.py && git diff --quiet
+      - run:
+          when: on_fail
+          name: .circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this.
+          command: exit 1
+
+  lint_python_and_config:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install lint utilities
+          command: pip install --user --progress-bar=off pre-commit
+      - run:
+          name: Install pre-commit hooks
+          command: pre-commit install-hooks
+      - run:
+          name: Lint Python code and config files
+          command: pre-commit run --all-files
+      - run:
+          when: on_fail
+          name: Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this.
+          command: exit 1
+
+  lint_c:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - run:
+          name: Install additional system libraries
           command: |
-            pip install --user --progress-bar off jinja2 pyyaml
-            python .circleci/regenerate.py
-            git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run .circleci/regenerate.py to update config"; exit 1)
+            sudo apt update -qy
+            sudo apt install libtinfo5
+      - checkout
+      - run:
+          name: Install lint utilities
+          command: |
+            curl https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64 -o clang-format
+            chmod +x clang-format
+            ./clang-format --version
+      - run:
+          name: Lint C code
+          command: >
+            python run-clang-format.py
+            --recursive
+            --clang-format-executable=./clang-format
+            torchtext/csrc
+      - run:
+          when: on_fail
+          name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
+          command: exit 1
 
   binary_linux_wheel:
     <<: *binary_common
@@ -512,28 +564,14 @@ jobs:
             target=${tag:-main}
             ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
 
-  docstring_parameters_sync:
-    <<: *binary_common
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - checkout
-      - run:
-          name: Check parameters docstring sync
-          command: |
-            pip install --user pydocstyle
-            export PATH="$HOME/.local/bin:$PATH"
-            pydocstyle torchtext
-
-
 workflows:
-  build:
+  lint:
     jobs:
       - circleci_consistency
+      - lint_python_and_config
+      - lint_c
+  build:
+    jobs:
       {{ build_workflows() }}
   unittest:
     jobs:

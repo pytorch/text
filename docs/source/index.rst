@@ -45,7 +45,7 @@ popular datasets for natural language.
 
 Getting Started
 ---------------
-    
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started
@@ -67,4 +67,3 @@ Getting Started
    TorchElastic <https://pytorch.org/elastic/>
    TorchServe <https://pytorch.org/serve>
    PyTorch on XLA Devices <http://pytorch.org/xla/>
-

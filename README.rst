@@ -30,8 +30,8 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :widths: 10, 10, 10
 
    nightly build, main, ">=3.7, <=3.9"
-   1.10.0, 0.11.0, ">=3.6, <=3.9" 
-   1.9.1, 0.10.1, ">=3.6, <=3.9" 
+   1.10.0, 0.11.0, ">=3.6, <=3.9"
+   1.9.1, 0.10.1, ">=3.6, <=3.9"
    1.9, 0.10, ">=3.6, <=3.9"
    1.8.2, 0.9.2, ">=3.6, <=3.9"
    1.8.1, 0.9.1, ">=3.6, <=3.9"
@@ -57,7 +57,7 @@ Optional requirements
 If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need to install SpaCy and download its English model::
 
     pip install spacy
-    python -m spacy download en_core_web_sm 
+    python -m spacy download en_core_web_sm
 
 Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
@@ -102,7 +102,7 @@ The datasets module currently contains:
 * Language modeling: WikiText2, WikiText103, PennTreebank, EnWik9
 * Machine translation: IWSLT2016, IWSLT2017, Multi30k
 * Sequence tagging (e.g. POS/NER): UDPOS, CoNLL2000Chunking
-* Question answering: SQuAD1, SQuAD2 
+* Question answering: SQuAD1, SQuAD2
 * Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull, IMDB
 
 For example, to access the raw text from the AG_NEWS dataset:
@@ -141,9 +141,9 @@ In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <
 * ``torchtext.legacy.data.pipeline``
 * ``torchtext.legacy.datasets``
 
-We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/release/0.9/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
+We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/release/0.9/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.
 
-In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/release/0.9/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows. 
+In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/release/0.9/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows.
 
 Disclaimer on Datasets
 ======================
