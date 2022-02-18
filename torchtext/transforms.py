@@ -322,30 +322,44 @@ class CLIPTokenizer(Module):
     (a bit like sentencepiece) so a word will be encoded differently whether it
     is at the beginning of the sentence (without space) or not.
 
+    :param merges_path: Path to bpe merges file.
+    :type merges_path: str
     :param encoder_json_path: Path to BPE encoder json file.
     :type encoder_json_path: str
-    :param vocab_bpe_path: Path to bpe vocab file.
-    :type vocab_bpe_path: str
+    :param num_merges: Number of merges to read from the bpe merges file.
+    :type num_merges: int
     """
 
     _seperator: torch.jit.Final[str]
 
-    def __init__(
-        self,
-        encoder_json_path: str,
-        vocab_bpe_path: str,
-    ):
+    def __init__(self, merges_path: str, encoder_json_path: Optional[str] = None, num_merges: Optional[int] = None):
         super().__init__()
         self._seperator = "\u0001"
-        # load bpe encoder
-        with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
-            bpe_encoder = json.load(f)
-        # load bpe vocab
-        with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
-            bpe_vocab = f.read()
-        bpe_merge_ranks = {
-            self._seperator.join(merge_pair.split()): i for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
-        }
+        # load bpe merges
+        with open(get_asset_local_path(merges_path), "r", encoding="utf-8") as f:
+            bpe_merges = f.read().split("\n")[1:]
+
+        if encoder_json_path:
+            # load bpe encoder
+            with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
+                bpe_encoder = json.load(f)
+            # 256 * 2 for each byte. For each byte we have ['a', 'a</w>']
+            # Additional 2 tokens for bos and eos
+            num_merges = len(bpe_encoder) - (256 * 2 + 2)
+            bpe_merge_ranks = {
+                self._seperator.join(merge_pair.split()): i for i, merge_pair in enumerate(bpe_merges[:num_merges])
+            }
+        else:
+            num_merges = num_merges or len(bpe_merges)
+            bpe_merge_ranks = {
+                self._seperator.join(merge_pair.split()): i for i, merge_pair in enumerate(bpe_merges[:num_merges])
+            }
+            bpe_vocab = list(bytes_to_unicode().values())
+            bpe_vocab = bpe_vocab + [v + "</w>" for v in bpe_vocab]
+            bpe_vocab.extend(["".join(merge_pair.split()) for merge_pair in bpe_merges[:num_merges]])
+            bpe_vocab.extend(["<|startoftext|>", "<|endoftext|>"])
+            bpe_encoder = {v: i for i, v in enumerate(bpe_vocab)}
+
         # Caching is enabled in Eager mode
         self.bpe = CLIPEncoderPyBind(bpe_encoder, bpe_merge_ranks, self._seperator, bytes_to_unicode(), True)
 
