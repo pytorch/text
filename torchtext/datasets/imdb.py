@@ -80,7 +80,6 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
         mode="wb", filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x), skip_read=True
     )
 
-    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # get label from cache file, eg. "aclImdb_v1/train/neg" -> "neg"
-    return data_dp.readlines(decode=True).map(lambda t: (Path(t[0]).parts[-1], t[1]))
+    return data_dp.readlines().map(lambda t: (Path(t[0]).parts[-1], t[1]))

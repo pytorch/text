@@ -290,11 +290,10 @@ def IWSLT2016(
         cache_decompressed_dp, full_tgt_filepath, uncleaned_tgt_filename
     )
 
-    # TODO: read in text mode with utf-8 encoding, see: https://github.com/pytorch/pytorch/issues/72713
-    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
-    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
+    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, encoding="utf-8")
+    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, encoding="utf-8")
 
-    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
-    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
+    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
+    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
 
     return src_lines.zip(tgt_lines)
