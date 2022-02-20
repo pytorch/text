@@ -77,7 +77,7 @@ def SST2(root, split):
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # test split for SST2 doesn't have labels
     if split == "test":
         parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda t: (t[1].strip(),))
