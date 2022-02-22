@@ -322,11 +322,22 @@ class CLIPTokenizer(Module):
     (a bit like sentencepiece) so a word will be encoded differently whether it
     is at the beginning of the sentence (without space) or not.
 
+    The below code snippet shows how to use the CLIP tokenizer with encoder and merges file
+    taken from the original paper implementation.
+
+    Example
+        >>> from torchtext.transforms import CLIPTokenizer
+        >>> MERGES_FILE = "http://download.pytorch.org/models/text/clip_merges.bpe"
+        >>> ENCODER_FILE = "http://download.pytorch.org/models/text/clip_encoder.json"
+        >>> tokenizer = CLIPTokenizer(merges_path=MERGES_FILE, encoder_json_path=ENCODER_FILE)
+        >>> tokenizer("the quick brown fox jumped over the lazy dog")
+
     :param merges_path: Path to bpe merges file.
     :type merges_path: str
-    :param encoder_json_path: Path to BPE encoder json file.
+    :param encoder_json_path: Optional, path to BPE encoder json file. When specified, this is used
+        to infer num_merges.
     :type encoder_json_path: str
-    :param num_merges: Number of merges to read from the bpe merges file.
+    :param num_merges: Optional, number of merges to read from the bpe merges file.
     :type num_merges: int
     """
 
