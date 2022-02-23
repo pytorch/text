@@ -120,14 +120,14 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(
           "__contains__",
           [](c10::intrusive_ptr<Vocab>& self, const py::str& item) -> bool {
-            ssize_t length;
+            Py_ssize_t length;
             const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
             return self->__contains__(c10::string_view{buffer, (size_t)length});
           })
       .def(
           "__getitem__",
           [](c10::intrusive_ptr<Vocab>& self, const py::str& item) -> int64_t {
-            ssize_t length;
+            Py_ssize_t length;
             const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
             return self->__getitem__(c10::string_view{buffer, (size_t)length});
           })
@@ -144,7 +144,7 @@ PYBIND11_MODULE(_torchtext, m) {
             std::vector<int64_t> indices(items.size());
             int64_t counter = 0;
             for (const auto& item : items) {
-              ssize_t length;
+              Py_ssize_t length;
               const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
               indices[counter++] =
                   self->__getitem__(c10::string_view{buffer, (size_t)length});
