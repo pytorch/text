@@ -641,31 +641,55 @@
 <span class="sd">    (a bit like sentencepiece) so a word will be encoded differently whether it</span>
 <span class="sd">    is at the beginning of the sentence (without space) or not.</span>
 
-<span class="sd">    :param encoder_json_path: Path to BPE encoder json file.</span>
+<span class="sd">    The below code snippet shows how to use the CLIP tokenizer with encoder and merges file</span>
+<span class="sd">    taken from the original paper implementation.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.transforms import CLIPTokenizer</span>
+<span class="sd">        &gt;&gt;&gt; MERGES_FILE = &quot;http://download.pytorch.org/models/text/clip_merges.bpe&quot;</span>
+<span class="sd">        &gt;&gt;&gt; ENCODER_FILE = &quot;http://download.pytorch.org/models/text/clip_encoder.json&quot;</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = CLIPTokenizer(merges_path=MERGES_FILE, encoder_json_path=ENCODER_FILE)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer(&quot;the quick brown fox jumped over the lazy dog&quot;)</span>
+
+<span class="sd">    :param merges_path: Path to bpe merges file.</span>
+<span class="sd">    :type merges_path: str</span>
+<span class="sd">    :param encoder_json_path: Optional, path to BPE encoder json file. When specified, this is used</span>
+<span class="sd">        to infer num_merges.</span>
 <span class="sd">    :type encoder_json_path: str</span>
-<span class="sd">    :param vocab_bpe_path: Path to bpe vocab file.</span>
-<span class="sd">    :type vocab_bpe_path: str</span>
+<span class="sd">    :param num_merges: Optional, number of merges to read from the bpe merges file.</span>
+<span class="sd">    :type num_merges: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_seperator</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">encoder_json_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">vocab_bpe_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">merges_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">encoder_json_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_merges</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\u0001</span><span class="s2">&quot;</span>
-        <span class="c1"># load bpe encoder</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">encoder_json_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">bpe_encoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="c1"># load bpe vocab</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">vocab_bpe_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">bpe_vocab</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">bpe_merge_ranks</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merge_pair</span><span class="o">.</span><span class="n">split</span><span class="p">()):</span> <span class="n">i</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">merge_pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpe_vocab</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="p">}</span>
+        <span class="c1"># load bpe merges</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">merges_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">bpe_merges</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">encoder_json_path</span><span class="p">:</span>
+            <span class="c1"># load bpe encoder</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">encoder_json_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">bpe_encoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="c1"># 256 * 2 for each byte. For each byte we have [&#39;a&#39;, &#39;a&lt;/w&gt;&#39;]</span>
+            <span class="c1"># Additional 2 tokens for bos and eos</span>
+            <span class="n">num_merges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bpe_encoder</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">bpe_merge_ranks</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merge_pair</span><span class="o">.</span><span class="n">split</span><span class="p">()):</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">merge_pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpe_merges</span><span class="p">[:</span><span class="n">num_merges</span><span class="p">])</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_merges</span> <span class="o">=</span> <span class="n">num_merges</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">bpe_merges</span><span class="p">)</span>
+            <span class="n">bpe_merge_ranks</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merge_pair</span><span class="o">.</span><span class="n">split</span><span class="p">()):</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">merge_pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpe_merges</span><span class="p">[:</span><span class="n">num_merges</span><span class="p">])</span>
+            <span class="p">}</span>
+            <span class="n">bpe_vocab</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bytes_to_unicode</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">bpe_vocab</span> <span class="o">=</span> <span class="n">bpe_vocab</span> <span class="o">+</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="s2">&quot;&lt;/w&gt;&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bpe_vocab</span><span class="p">]</span>
+            <span class="n">bpe_vocab</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merge_pair</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="k">for</span> <span class="n">merge_pair</span> <span class="ow">in</span> <span class="n">bpe_merges</span><span class="p">[:</span><span class="n">num_merges</span><span class="p">]])</span>
+            <span class="n">bpe_vocab</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;&lt;|startoftext|&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;|endoftext|&gt;&quot;</span><span class="p">])</span>
+            <span class="n">bpe_encoder</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpe_vocab</span><span class="p">)}</span>
+
         <span class="c1"># Caching is enabled in Eager mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span> <span class="o">=</span> <span class="n">CLIPEncoderPyBind</span><span class="p">(</span><span class="n">bpe_encoder</span><span class="p">,</span> <span class="n">bpe_merge_ranks</span><span class="p">,</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="p">,</span> <span class="n">bytes_to_unicode</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
