@@ -1,7 +1,7 @@
 from .bundler import (
     ROBERTA_BASE_ENCODER,
     ROBERTA_LARGE_ENCODER,
-    RobertaModelBundle,
+    RobertaBundle,
     XLMR_BASE_ENCODER,
     XLMR_LARGE_ENCODER,
 )
@@ -11,7 +11,7 @@ __all__ = [
     "RobertaEncoderConf",
     "RobertaClassificationHead",
     "RobertaModel",
-    "RobertaModelBundle",
+    "RobertaBundle",
     "XLMR_BASE_ENCODER",
     "XLMR_LARGE_ENCODER",
     "ROBERTA_BASE_ENCODER",
