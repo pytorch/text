@@ -8,7 +8,7 @@ torchtext.models
 .. currentmodule:: torchtext.models
 
 RobertaBundle
-------------------
+-------------
 
 .. autoclass:: RobertaBundle
    :members: transform
