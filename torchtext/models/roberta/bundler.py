@@ -22,8 +22,8 @@ def _is_head_available_in_checkpoint(checkpoint, head_state_dict):
 
 
 @dataclass
-class RobertaModelBundle:
-    """RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
+class RobertaBundle:
+    """RobertaBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
 
     Example - Pretrained base xlmr encoder
         >>> import torch, torchtext
@@ -52,11 +52,11 @@ class RobertaModelBundle:
         torch.Size([1, 2])
 
     Example - User-specified configuration and checkpoint
-        >>> from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead
+        >>> from torchtext.models import RobertaEncoderConf, RobertaBundle, RobertaClassificationHead
         >>> model_weights_path = "https://download.pytorch.org/models/text/xlmr.base.encoder.pt"
         >>> encoder_conf = RobertaEncoderConf(vocab_size=250002)
         >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
-        >>> model = RobertaModelBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)
+        >>> model = RobertaBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)
     """
 
     _encoder_conf: RobertaEncoderConf
@@ -99,7 +99,7 @@ class RobertaModelBundle:
         else:
             input_head = self._head
 
-        return RobertaModelBundle.build_model(
+        return RobertaBundle.build_model(
             encoder_conf=self._encoder_conf,
             head=input_head,
             freeze_encoder=freeze_encoder,
@@ -160,7 +160,7 @@ class RobertaModelBundle:
         return self._encoder_conf
 
 
-XLMR_BASE_ENCODER = RobertaModelBundle(
+XLMR_BASE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002),
     transform=lambda: T.Sequential(
@@ -184,11 +184,11 @@ XLMR_BASE_ENCODER.__doc__ = """
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
     """
 
 
-XLMR_LARGE_ENCODER = RobertaModelBundle(
+XLMR_LARGE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(
         vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24
@@ -214,11 +214,11 @@ XLMR_LARGE_ENCODER.__doc__ = """
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
     """
 
 
-ROBERTA_BASE_ENCODER = RobertaModelBundle(
+ROBERTA_BASE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "roberta.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=50265),
     transform=lambda: T.Sequential(
@@ -250,11 +250,11 @@ ROBERTA_BASE_ENCODER.__doc__ = """
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
     """
 
 
-ROBERTA_LARGE_ENCODER = RobertaModelBundle(
+ROBERTA_LARGE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "roberta.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(
         vocab_size=50265,
@@ -292,5 +292,5 @@ ROBERTA_LARGE_ENCODER.__doc__ = """
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
     """

@@ -7,10 +7,10 @@ torchtext.models
 .. automodule:: torchtext.models
 .. currentmodule:: torchtext.models
 
-RobertaModelBundle
-------------------
+RobertaBundle
+-------------
 
-.. autoclass:: RobertaModelBundle
+.. autoclass:: RobertaBundle
    :members: transform
 
    .. automethod:: get_model
