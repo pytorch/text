@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220302) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220303) &#x25BC</a>
     </div>
     
 
@@ -341,9 +341,9 @@
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">head_state_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="RobertaModelBundle"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaModelBundle">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RobertaModelBundle</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)</span>
+<div class="viewcode-block" id="RobertaBundle"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaBundle">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RobertaBundle</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;RobertaBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)</span>
 
 <span class="sd">    Example - Pretrained base xlmr encoder</span>
 <span class="sd">        &gt;&gt;&gt; import torch, torchtext</span>
@@ -372,11 +372,11 @@
 <span class="sd">        torch.Size([1, 2])</span>
 
 <span class="sd">    Example - User-specified configuration and checkpoint</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.models import RobertaEncoderConf, RobertaBundle, RobertaClassificationHead</span>
 <span class="sd">        &gt;&gt;&gt; model_weights_path = &quot;https://download.pytorch.org/models/text/xlmr.base.encoder.pt&quot;</span>
 <span class="sd">        &gt;&gt;&gt; encoder_conf = RobertaEncoderConf(vocab_size=250002)</span>
 <span class="sd">        &gt;&gt;&gt; classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)</span>
-<span class="sd">        &gt;&gt;&gt; model = RobertaModelBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)</span>
+<span class="sd">        &gt;&gt;&gt; model = RobertaBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_encoder_conf</span><span class="p">:</span> <span class="n">RobertaEncoderConf</span>
@@ -384,7 +384,7 @@
     <span class="n">_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="RobertaModelBundle.get_model"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaModelBundle.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span>
+<div class="viewcode-block" id="RobertaBundle.get_model"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaBundle.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -419,7 +419,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">input_head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span>
 
-        <span class="k">return</span> <span class="n">RobertaModelBundle</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">RobertaBundle</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
             <span class="n">encoder_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoder_conf</span><span class="p">,</span>
             <span class="n">head</span><span class="o">=</span><span class="n">input_head</span><span class="p">,</span>
             <span class="n">freeze_encoder</span><span class="o">=</span><span class="n">freeze_encoder</span><span class="p">,</span>
@@ -480,7 +480,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encoder_conf</span></div>
 
 
-<span class="n">XLMR_BASE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+<span class="n">XLMR_BASE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaBundle</span><span class="p">(</span>
     <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.base.encoder.pt&quot;</span><span class="p">),</span>
     <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">),</span>
     <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
@@ -504,11 +504,11 @@
 <span class="s2">    [`License &lt;https://github.com/pytorch/fairseq/blob/main/LICENSE&gt;`__,</span>
 <span class="s2">    `Source &lt;https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models&gt;`__]</span>
 
-<span class="s2">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="s2">    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<span class="n">XLMR_LARGE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+<span class="n">XLMR_LARGE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaBundle</span><span class="p">(</span>
     <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.large.encoder.pt&quot;</span><span class="p">),</span>
     <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span>
         <span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">ffn_dimension</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">num_attention_heads</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_encoder_layers</span><span class="o">=</span><span class="mi">24</span>
@@ -534,11 +534,11 @@
 <span class="s2">    [`License &lt;https://github.com/pytorch/fairseq/blob/main/LICENSE&gt;`__,</span>
 <span class="s2">    `Source &lt;https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models&gt;`__]</span>
 
-<span class="s2">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="s2">    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<span class="n">ROBERTA_BASE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+<span class="n">ROBERTA_BASE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaBundle</span><span class="p">(</span>
     <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;roberta.base.encoder.pt&quot;</span><span class="p">),</span>
     <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">50265</span><span class="p">),</span>
     <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
@@ -570,11 +570,11 @@
 <span class="s2">    [`License &lt;https://github.com/pytorch/fairseq/blob/main/LICENSE&gt;`__,</span>
 <span class="s2">    `Source &lt;https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models&gt;`__]</span>
 
-<span class="s2">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="s2">    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<span class="n">ROBERTA_LARGE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+<span class="n">ROBERTA_LARGE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaBundle</span><span class="p">(</span>
     <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;roberta.large.encoder.pt&quot;</span><span class="p">),</span>
     <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span>
         <span class="n">vocab_size</span><span class="o">=</span><span class="mi">50265</span><span class="p">,</span>
@@ -612,7 +612,7 @@
 <span class="s2">    [`License &lt;https://github.com/pytorch/fairseq/blob/main/LICENSE&gt;`__,</span>
 <span class="s2">    `Source &lt;https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models&gt;`__]</span>
 
-<span class="s2">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="s2">    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 </pre></div>
 

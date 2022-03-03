@@ -196,7 +196,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220302) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220303) &#x25BC</a>
     </div>
     
 
@@ -323,11 +323,11 @@
               
   <div class="section" id="module-torchtext.models">
 <span id="torchtext-models"></span><h1>torchtext.models<a class="headerlink" href="#module-torchtext.models" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="robertamodelbundle">
-<h2>RobertaModelBundle<a class="headerlink" href="#robertamodelbundle" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="robertabundle">
+<h2>RobertaBundle<a class="headerlink" href="#robertabundle" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="torchtext.models.RobertaModelBundle">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">RobertaModelBundle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torchtext.models.RobertaEncoderParams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.10.0)"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaModelBundle" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.models.RobertaBundle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">RobertaBundle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torchtext.models.RobertaEncoderParams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.10.0)"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaBundle" title="Permalink to this definition">¶</a></dt>
 <dd><dl>
 <dt>Example - Pretrained base xlmr encoder</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">torchtext</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.functional</span> <span class="kn">import</span> <span class="n">to_tensor</span>
@@ -357,18 +357,18 @@
 </pre></div>
 </div>
 </dd>
-<dt>Example - User-specified configuration and checkpoint</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.models</span> <span class="kn">import</span> <span class="n">RobertaEncoderConf</span><span class="p">,</span> <span class="n">RobertaModelBundle</span><span class="p">,</span> <span class="n">RobertaClassificationHead</span>
+<dt>Example - User-specified configuration and checkpoint</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.models</span> <span class="kn">import</span> <span class="n">RobertaEncoderConf</span><span class="p">,</span> <span class="n">RobertaBundle</span><span class="p">,</span> <span class="n">RobertaClassificationHead</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model_weights_path</span> <span class="o">=</span> <span class="s2">&quot;https://download.pytorch.org/models/text/xlmr.base.encoder.pt&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">encoder_conf</span> <span class="o">=</span> <span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">classifier_head</span> <span class="o">=</span> <span class="n">RobertaClassificationHead</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">encoder_conf</span><span class="o">=</span><span class="n">encoder_conf</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="n">classifier_head</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="n">model_weights_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RobertaBundle</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">encoder_conf</span><span class="o">=</span><span class="n">encoder_conf</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="n">classifier_head</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="n">model_weights_path</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="torchtext.models.RobertaModelBundle.get_model">
-<code class="sig-name descname"><span class="pre">get_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.10.0)"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_weights</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_encoder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dl_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torctext.models.RobertaModel</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaModelBundle.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaModelBundle.get_model" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.models.RobertaBundle.get_model">
+<code class="sig-name descname"><span class="pre">get_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.10.0)"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_weights</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_encoder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dl_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torctext.models.RobertaModel</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaBundle.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaBundle.get_model" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -398,7 +398,7 @@ trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model arc
 and redistributed with the same license.
 [<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
 <a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models">Source</a>]</p>
-<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaBundle" title="torchtext.models.RobertaBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
 </div>
@@ -417,7 +417,7 @@ trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model arc
 and redistributed with the same license.
 [<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
 <a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models">Source</a>]</p>
-<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaBundle" title="torchtext.models.RobertaBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
 </div>
@@ -440,7 +440,7 @@ contain over a 160GB of text.</p>
 and redistributed with the same license.
 [<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
 <a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models">Source</a>]</p>
-<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaBundle" title="torchtext.models.RobertaBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
 </div>
@@ -463,7 +463,7 @@ contain over a 160GB of text.</p>
 and redistributed with the same license.
 [<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
 <a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models">Source</a>]</p>
-<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaBundle" title="torchtext.models.RobertaBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
 </div>
@@ -516,7 +516,7 @@ and redistributed with the same license.
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
 <li><a class="reference internal" href="#">torchtext.models</a><ul>
-<li><a class="reference internal" href="#robertamodelbundle">RobertaModelBundle</a></li>
+<li><a class="reference internal" href="#robertabundle">RobertaBundle</a></li>
 <li><a class="reference internal" href="#xlmr-base-encoder">XLMR_BASE_ENCODER</a></li>
 <li><a class="reference internal" href="#xlmr-large-encoder">XLMR_LARGE_ENCODER</a></li>
 <li><a class="reference internal" href="#roberta-base-encoder">ROBERTA_BASE_ENCODER</a></li>
