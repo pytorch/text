@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from torchtext.datasets import SST2
 
 
-class roberta_transform(Module):
+class RobertaTransform(Module):
     def __init__(self) -> None:
         super().__init__()
         # Instantiate various transforms
@@ -43,7 +43,7 @@ class roberta_transform(Module):
 def main(args):
 
     # transformation
-    transform = roberta_transform()
+    transform = RobertaTransform()
 
     # we need to find alternative for this for serving stack :)
     # transform_jit = torch.jit.script(transform)
