@@ -3,6 +3,7 @@ from functools import partial
 
 import torcharrow as ta
 import torcharrow.dtypes as dt
+import torcharrow.pytorch as tap
 import torchtext.functional as F
 import torchtext.transforms as T
 from torch.hub import load_state_dict_from_url
@@ -31,7 +32,7 @@ class RobertaTransform(Module):
         # Add EOS token to the end of sentence
         self.add_eos = T.AddToken(token=2, begin=False)
 
-    def forward(self, input: ta.IDataFrame) -> ta.IDataFrame:
+    def forward(self, input: ta.DataFrame) -> ta.DataFrame:
         input["tokens"] = input["text"].map(self.tokenizer, dtype=dt.List(dt.string))
         input["tokens"] = input["tokens"].map(partial(F.truncate, max_seq_len=254))
         input["tokens"] = input["tokens"].map(self.vocab, dtype=dt.List(dt.int32))
@@ -51,27 +52,30 @@ def main(args):
     # Create SST2 datapipe and apply pre-processing
     train_dp = SST2(split="train")
 
-    # convert to DataFrame
-    train_dp = train_dp.dataframe(columns=["text", "label"], dataframe_size=args.dataframe_size)
+    # convert to DataFrame of size batches
+    # TODO: Figure out how to create DataFrame of larger size and create batches consequently
+    train_dp = train_dp.dataframe(columns=["text", "labels"], dataframe_size=args.batch_size)
 
     # Apply transformation on DataFrame
     train_dp = train_dp.map(transform)
 
     # keep necessary columns
-    train_dp = train_dp.map(lambda x: x["tokens", "label"])
+    train_dp = train_dp.map(lambda x: x["tokens", "labels"])
 
-    train_dp = train_dp.map(lambda x: x.batch(args.batch_size))
+    # convert DataFrame to tensor (This will yeild named tuple)
+    train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
 
     # create DataLoader
     dl = DataLoader(train_dp, batch_size=None)
 
     train_steps = args.train_steps
     for i, batch in enumerate(dl):
+        print(batch)
         if i == train_steps:
             break
 
-        # model_input = batch["tokens"]
-        # target = batch["label"]
+        # model_input = batch.tokens
+        # target = batch.labels
         ...
 
 
