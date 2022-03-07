@@ -1,12 +1,14 @@
 from argparse import ArgumentParser
 from functools import partial
 from typing import Dict, Any
+
 import torchtext.functional as F
 import torchtext.transforms as T
-from torch.nn import Module
 from torch.hub import load_state_dict_from_url
+from torch.nn import Module
 from torch.utils.data import DataLoader
 from torchtext.datasets import SST2
+
 
 class RobertaTransform(Module):
     def __init__(self) -> None:
@@ -30,12 +32,13 @@ class RobertaTransform(Module):
 
     def forward(self, input: Dict[str, Any]) -> Dict[str, Any]:
         tokens = self.tokenizer(input["text"])
-        tokens = F.truncate(tokens,  max_seq_len=254)
+        tokens = F.truncate(tokens, max_seq_len=254)
         tokens = self.vocab(tokens)
         tokens = self.add_bos(tokens)
         tokens = self.add_eos(tokens)
         input["tokens"] = tokens
         return input
+
 
 def main(args):
     # Instantiate transform
@@ -46,10 +49,10 @@ def main(args):
     train_dp = SST2(split="train")
     train_dp = train_dp.batch(batch_size).rows2columnar(["text", "label"])
 
-    #Apply text pre-processing
+    # Apply text pre-processing
     train_dp = train_dp.map(transform)
 
-    #convert to Tensor
+    # convert to Tensor
     train_dp = train_dp.map(partial(F.to_tensor, padding_value=1), input_col="tokens")
     train_dp = train_dp.map(F.to_tensor, input_col="label")
 
