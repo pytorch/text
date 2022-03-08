@@ -59,8 +59,8 @@ def main(args):
     # Apply transformation on DataFrame
     train_dp = train_dp.map(transform)
 
-    # keep necessary columns
-    train_dp = train_dp.map(lambda x: x["tokens", "labels"])
+    # Remove not required columns
+    train_dp = train_dp.map(lambda x: x.drop(["text"]))
 
     # convert DataFrame to tensor (This will yeild named tuple)
     train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
@@ -70,7 +70,6 @@ def main(args):
 
     train_steps = args.train_steps
     for i, batch in enumerate(dl):
-        print(batch)
         if i == train_steps:
             break
 
