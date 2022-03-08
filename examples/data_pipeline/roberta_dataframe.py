@@ -41,11 +41,8 @@ class RobertaTransform(Module):
 
 def main(args):
 
-    # transformation
+    # Instantiate transform
     transform = RobertaTransform()
-
-    # we need to find alternative for this for serving stack :)
-    # transform_jit = torch.jit.script(transform)
 
     # Create SST2 datapipe and apply pre-processing
     train_dp = SST2(split="train")
