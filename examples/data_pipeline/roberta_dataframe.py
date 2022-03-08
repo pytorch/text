@@ -1,10 +1,8 @@
 from argparse import ArgumentParser
-from functools import partial
 
 import torcharrow as ta
 import torcharrow.dtypes as dt
 import torcharrow.pytorch as tap
-import torchtext.functional as F
 import torchtext.transforms as T
 from torch.hub import load_state_dict_from_url
 from torch.nn import Module
@@ -33,8 +31,8 @@ class RobertaTransform(Module):
         self.add_eos = T.AddToken(token=2, begin=False)
 
     def forward(self, input: ta.DataFrame) -> ta.DataFrame:
-        input["tokens"] = input["text"].map(self.tokenizer, dtype=dt.List(dt.string))
-        input["tokens"] = input["tokens"].map(partial(F.truncate, max_seq_len=254))
+        input["tokens"] = input["text"].map(self.tokenizer.forward, dtype=dt.List(dt.string))
+        input["tokens"] = input["tokens"].list.slice(stop=254)
         input["tokens"] = input["tokens"].map(self.vocab, dtype=dt.List(dt.int32))
         input["tokens"] = input["tokens"].map(self.add_bos)
         input["tokens"] = input["tokens"].map(self.add_eos)
