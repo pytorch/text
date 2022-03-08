@@ -71,6 +71,6 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--batch-size", default=32, type=int)
+    parser.add_argument("--batch-size", default=4, type=int)
     parser.add_argument("--train-steps", default=-1, type=int)
     main(parser.parse_args())
