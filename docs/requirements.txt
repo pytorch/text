@@ -1,2 +1,4 @@
 sphinx==3.5.4
--e git+https://github.com/pytorch/pytorch_sphinx_theme.git#egg=pytorch_sphinx_theme
+-e git+https://github.com/pytorch/pytorch_sphinx_theme.git@b4d0005#egg=pytorch_sphinx_theme
+matplotlib
+sphinx_gallery
