@@ -6,18 +6,22 @@ from .common.torchtext_test_case import TorchtextTestCase
 
 class TestFunctional(TorchtextTestCase):
     def _to_tensor(self, test_scripting):
-        input = [[1, 2], [1, 2, 3]]
-        padding_value = 0
-
         func = functional.to_tensor
         if test_scripting:
             func = torch.jit.script(func)
-        actual = func(input, padding_value=padding_value)
+
+        input = [[1, 2], [1, 2, 3]]
+        actual = func(input, padding_value=0)
         expected = torch.tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
+        input = [[1, 2], [1, 2, 3]]
+        actual = func(input, padding_value=1)
+        expected = torch.tensor([[1, 2], [1, 2]], dtype=torch.long)
+        torch.testing.assert_close(actual, expected)
+
         input = [1, 2]
-        actual = func(input, padding_value=padding_value)
+        actual = func(input, padding_value=0)
         expected = torch.tensor([1, 2], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
