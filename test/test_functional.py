@@ -1,5 +1,6 @@
 import torch
 from torchtext import functional
+
 from .common.torchtext_test_case import TorchtextTestCase
 
 

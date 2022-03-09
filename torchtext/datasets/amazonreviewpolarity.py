@@ -61,21 +61,15 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
         hash_dict={os.path.join(root, _PATH): MD5},
         hash_type="md5",
     )
-    cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b")
-        .read_from_tar()
-        .filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     )
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))

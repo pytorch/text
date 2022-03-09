@@ -61,5 +61,5 @@ def SQuAD1(root: str, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_dp = FileOpener(cache_dp, mode="b")
+    cache_dp = FileOpener(cache_dp, encoding="utf-8")
     return cache_dp.parse_json_files().read_squad()

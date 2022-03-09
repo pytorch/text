@@ -8,7 +8,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import IterableWrapper, FileOpener
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
 
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
@@ -67,30 +67,20 @@ def SST2(root, split):
         hash_dict={os.path.join(root, os.path.basename(URL)): MD5},
         hash_type="md5",
     )
-    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b")
-        .read_from_zip()
-        .filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+        FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     )
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(
-        mode="wb", same_filepath_fn=True
-    )
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # test split for SST2 doesn't have labels
     if split == "test":
-        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(
-            lambda t: (t[1].strip(),)
-        )
+        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda t: (t[1].strip(),))
     else:
-        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(
-            lambda t: (t[0].strip(), int(t[1]))
-        )
+        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda t: (t[0].strip(), int(t[1])))
     return parsed_data

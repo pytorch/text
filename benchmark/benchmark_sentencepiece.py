@@ -1,9 +1,10 @@
-import time
 import argparse
-from torchtext.experimental.transforms import load_sp_model as load_pybind_sp_model
+import time
+
 from torchtext.data.functional import load_sp_model as load_torchbind_sp_model
-from torchtext.utils import download_from_url
 from torchtext.datasets import DATASETS
+from torchtext.experimental.transforms import load_sp_model as load_pybind_sp_model
+from torchtext.utils import download_from_url
 
 
 def benchmark_sentencepiece(args):
@@ -14,25 +15,26 @@ def benchmark_sentencepiece(args):
         print("Sentencepiece processor time:", time.monotonic() - t0)
 
     # Download a pretrained sentencepiece model
-    sp_model_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model')
+    sp_model_path = download_from_url(
+        "https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model"
+    )
 
     # existing sentencepiece model with torchbind
-    train = DATASETS[args.dataset](split='train')
+    train = DATASETS[args.dataset](split="train")
     sp_model = load_torchbind_sp_model(sp_model_path)
     print("SentencePiece EncodeAsIds - torchbind")
     _run_benchmark(train, sp_model.EncodeAsIds)
 
     # experimental sentencepiece model with pybind
-    train = DATASETS[args.dataset](split='train')
+    train = DATASETS[args.dataset](split="train")
     sp_model = load_pybind_sp_model(sp_model_path)
     print("SentencePiece EncodeAsIds - pybind")
     _run_benchmark(train, sp_model.EncodeAsIds)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='SentencePiece benchmark')
-    parser.add_argument('--dataset', type=str, default='AG_NEWS',
-                        help='Dataset for performance benchmark')
+    parser = argparse.ArgumentParser(description="SentencePiece benchmark")
+    parser.add_argument("--dataset", type=str, default="AG_NEWS", help="Dataset for performance benchmark")
     args = parser.parse_args()
     benchmark_sentencepiece(args)
 

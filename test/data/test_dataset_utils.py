@@ -1,27 +1,19 @@
-from ..common.torchtext_test_case import TorchtextTestCase
-
-from torchtext.data.datasets_utils import _ParseIOBData
-from torch.utils.data.datapipes.iter import IterableWrapper
-
 from parameterized import parameterized
+from torch.utils.data.datapipes.iter import IterableWrapper
+from torchtext.data.datasets_utils import _ParseIOBData
+
+from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDatasetUtils(TorchtextTestCase):
-    @parameterized.expand([
-        [lambda it: list(_ParseIOBData(IterableWrapper(it), sep=" "))],
-        [lambda it: list(IterableWrapper(it).read_iob(sep=" "))]
-    ])
-    def test_iob_datapipe(self, pipe_fn):
-        iob = [
-            "Alex I-PER",
-            "is O",
-            "going O",
-            "to O",
-            "Los I-LOC",
-            "Angeles I-LOC",
-            "in O",
-            "California I-LOC"
+    @parameterized.expand(
+        [
+            [lambda it: list(_ParseIOBData(IterableWrapper(it), sep=" "))],
+            [lambda it: list(IterableWrapper(it).read_iob(sep=" "))],
         ]
+    )
+    def test_iob_datapipe(self, pipe_fn):
+        iob = ["Alex I-PER", "is O", "going O", "to O", "Los I-LOC", "Angeles I-LOC", "in O", "California I-LOC"]
         iterable = [("ignored.txt", e) for e in iob]
         iob_dp = pipe_fn(iterable)
         # There's only one example in this dataset

@@ -1,6 +1,7 @@
+from typing import Dict, List, Optional
+
 import torch
 import torch.nn as nn
-from typing import Dict, List, Optional
 from torchtext.utils import _log_class_usage
 
 
@@ -157,8 +158,7 @@ class Vocab(nn.Module):
         return self.vocab.get_itos()
 
     def __prepare_scriptable__(self):
-        r"""Return a JITable Vocab.
-        """
+        r"""Return a JITable Vocab."""
         if not self.is_jitable:
             cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.default_index_)
             return Vocab(cpp_vocab)

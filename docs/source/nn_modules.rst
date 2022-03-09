@@ -17,13 +17,13 @@ torchtext.nn
 :hidden:`InProjContainer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: InProjContainer 
+.. autoclass:: InProjContainer
     :members:
     :special-members: __init__
 
 :hidden:`ScaledDotProduct`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: ScaledDotProduct 
+.. autoclass:: ScaledDotProduct
     :members:
     :special-members: __init__

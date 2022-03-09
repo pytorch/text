@@ -1,16 +1,9 @@
 import os
-_TEXT_BUCKET = 'https://download.pytorch.org/models/text/'
-_CACHE_DIR = os.path.expanduser('~/.torchtext/cache')
 
-from . import data
-from . import nn
-from . import datasets
-from . import utils
-from . import vocab
-from . import transforms
-from . import functional
-from . import models
-from . import experimental
+_TEXT_BUCKET = "https://download.pytorch.org/models/text/"
+_CACHE_DIR = os.path.expanduser("~/.torchtext/cache")
+
+from . import data, datasets, experimental, functional, models, nn, transforms, utils, vocab
 from ._extension import _init_extension
 
 
@@ -19,15 +12,7 @@ try:
 except ImportError:
     pass
 
-__all__ = ['data',
-           'nn',
-           'datasets',
-           'utils',
-           'vocab',
-           'transforms',
-           'functional',
-           'models',
-           'experimental']
+__all__ = ["data", "nn", "datasets", "utils", "vocab", "transforms", "functional", "models", "experimental"]
 
 
 _init_extension()

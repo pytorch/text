@@ -1,10 +1,13 @@
-import re
 import io
+import re
+
 import torch
 
 __all__ = [
-    "generate_sp_model", "load_sp_model",
-    "sentencepiece_numericalizer", "sentencepiece_tokenizer",
+    "generate_sp_model",
+    "load_sp_model",
+    "sentencepiece_numericalizer",
+    "sentencepiece_tokenizer",
     "numericalize_tokens_from_iterator",
     "filter_wikipedia_xml",
     "to_map_style_dataset",
@@ -17,9 +20,7 @@ All of these are experimental, unstable, and subject to change or deletion.
 """
 
 
-def generate_sp_model(filename, vocab_size=20000,
-                      model_type="unigram",
-                      model_prefix='m_user'):
+def generate_sp_model(filename, vocab_size=20000, model_type="unigram", model_prefix="m_user"):
     r"""Train a SentencePiece tokenizer.
 
     Args:
@@ -60,11 +61,10 @@ def load_sp_model(spm):
         return torch.ops.torchtext.load_sp_model_string(spm.read())
     else:
         raise TypeError(
-            f'Unsupported type for spm argument: {type(spm).__name__}. ' +
-            'Supported types are: ' +
-            ', '.join([
-                'str', 'io.BufferedReader'
-            ]))
+            f"Unsupported type for spm argument: {type(spm).__name__}. "
+            + "Supported types are: "
+            + ", ".join(["str", "io.BufferedReader"])
+        )
 
 
 def sentencepiece_numericalizer(sp_model):
@@ -90,6 +90,7 @@ def sentencepiece_numericalizer(sp_model):
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsIds(line)
+
     return _internal_func
 
 
@@ -116,6 +117,7 @@ def sentencepiece_tokenizer(sp_model):
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
+
     return _internal_func
 
 
@@ -130,14 +132,14 @@ def custom_replace(replace_pattern):
             ['sentencepiece encode as pieces', 'examples to try!']
     """
 
-    _patterns = list((re.compile(p), r)
-                     for (p, r) in replace_pattern)
+    _patterns = list((re.compile(p), r) for (p, r) in replace_pattern)
 
     def _internal_func(txt_iter):
         for line in txt_iter:
             for pattern_re, replaced_str in _patterns:
                 line = pattern_re.sub(replaced_str, line)
             yield line
+
     return _internal_func
 
 
@@ -179,48 +181,71 @@ def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
         if removed_tokens is None:
             yield iter(vocab[token] for token in tokens)
         else:
-            yield iter(map(lambda x: vocab[x],
-                       filter(lambda x: x not in removed_tokens, tokens)))
+            yield iter(map(lambda x: vocab[x], filter(lambda x: x not in removed_tokens, tokens)))
 
 
-_patterns = [(r'<.*>', ''),
-             (r'&amp;', '&'),
-             (r'&lt;', '<'),
-             (r'&gt;', '>'),
-             (r'<ref[^<]*<\/ref>', ''),
-             (r'<[^>]*>', ''),
-             (r'\[http:[^] ]*', '['),
-             (r'\|thumb', ''),
-             (r'\|left', ''),
-             (r'\|right', ''),
-             (r'\|\d+px', ''),
-             (r'\[\[image:[^\[\]]*\|', ''),
-             (r'\[\[category:([^|\]]*)[^]]*\]\]', '[[$1]]'),
-             (r'\[\[[a-z\-]*:[^\]]*\]\]', ''),
-             (r'\[\[[^\|\]]*\|', '[['),
-             (r'\{\{[^\}]*\}\}', ''),
-             (r'\{[^\}]*\}', ''),
-             (r'\[', ''),
-             (r'\]', ''),
-             (r'&[^;]*;', ' '),
-             (r'A', 'a'), (r'B', 'b'), (r'C', 'c'),
-             (r'D', 'd'), (r'E', 'e'), (r'F', 'f'),
-             (r'G', 'g'), (r'H', 'h'), (r'I', 'i'),
-             (r'J', 'j'), (r'K', 'k'), (r'L', 'l'),
-             (r'M', 'm'), (r'N', 'n'), (r'O', 'o'),
-             (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
-             (r'S', 's'), (r'T', 't'), (r'U', 'u'),
-             (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
-             (r'Y', 'y'), (r'Z', 'z'),
-             (r'0', ' zero '), (r'1', ' one '), (r'2', ' two '),
-             (r'3', ' three '), (r'4', ' four '), (r'5', ' five '),
-             (r'6', ' six '), (r'7', ' seven '), (r'8', ' eight '),
-             (r'9', ' nine '),
-             (r'[^a-z\n]+', ' '),
-             (r'\n ', ''),
-             (r'\s+', ' '),
-             (r'\n\s*\n', r'\n')
-             ]
+_patterns = [
+    (r"<.*>", ""),
+    (r"&amp;", "&"),
+    (r"&lt;", "<"),
+    (r"&gt;", ">"),
+    (r"<ref[^<]*<\/ref>", ""),
+    (r"<[^>]*>", ""),
+    (r"\[http:[^] ]*", "["),
+    (r"\|thumb", ""),
+    (r"\|left", ""),
+    (r"\|right", ""),
+    (r"\|\d+px", ""),
+    (r"\[\[image:[^\[\]]*\|", ""),
+    (r"\[\[category:([^|\]]*)[^]]*\]\]", "[[$1]]"),
+    (r"\[\[[a-z\-]*:[^\]]*\]\]", ""),
+    (r"\[\[[^\|\]]*\|", "[["),
+    (r"\{\{[^\}]*\}\}", ""),
+    (r"\{[^\}]*\}", ""),
+    (r"\[", ""),
+    (r"\]", ""),
+    (r"&[^;]*;", " "),
+    (r"A", "a"),
+    (r"B", "b"),
+    (r"C", "c"),
+    (r"D", "d"),
+    (r"E", "e"),
+    (r"F", "f"),
+    (r"G", "g"),
+    (r"H", "h"),
+    (r"I", "i"),
+    (r"J", "j"),
+    (r"K", "k"),
+    (r"L", "l"),
+    (r"M", "m"),
+    (r"N", "n"),
+    (r"O", "o"),
+    (r"P", "p"),
+    (r"Q", "q"),
+    (r"R", "r"),
+    (r"S", "s"),
+    (r"T", "t"),
+    (r"U", "u"),
+    (r"V", "v"),
+    (r"W", "w"),
+    (r"X", "x"),
+    (r"Y", "y"),
+    (r"Z", "z"),
+    (r"0", " zero "),
+    (r"1", " one "),
+    (r"2", " two "),
+    (r"3", " three "),
+    (r"4", " four "),
+    (r"5", " five "),
+    (r"6", " six "),
+    (r"7", " seven "),
+    (r"8", " eight "),
+    (r"9", " nine "),
+    (r"[^a-z\n]+", " "),
+    (r"\n ", ""),
+    (r"\s+", " "),
+    (r"\n\s*\n", r"\n"),
+]
 
 
 def filter_wikipedia_xml(text_iterator):
@@ -245,7 +270,7 @@ def filter_wikipedia_xml(text_iterator):
 
     norm_transform = custom_replace(_patterns)
     for line in text_iterator:
-        if '#redirect' in line or '#REDIRECT' in line:
+        if "#redirect" in line or "#REDIRECT" in line:
             continue
         line = list(norm_transform([line]))[0].strip()
         if line:
@@ -270,7 +295,6 @@ def to_map_style_dataset(iter_data):
 
     # Inner class to convert iterable-style to map-style dataset
     class _MapStyleDataset(torch.utils.data.Dataset):
-
         def __init__(self, iter_data):
             # TODO Avoid list issue #1296
             self._data = list(iter_data)

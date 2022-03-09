@@ -1,22 +1,19 @@
-from dataclasses import dataclass
-from urllib.parse import urljoin
-
-from typing import Optional, Callable, Dict, Union, Any
-from torchtext._download_hooks import load_state_dict_from_url
-from torch.nn import Module
-import torch
 import logging
 import re
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Optional, Union
+from urllib.parse import urljoin
+
+import torch
+from torch.nn import Module
+from torchtext._download_hooks import load_state_dict_from_url
+
 logger = logging.getLogger(__name__)
 
-from .model import (
-    RobertaEncoderConf,
-    RobertaModel,
-)
-
 import torchtext.transforms as T
-
 from torchtext import _TEXT_BUCKET
+
+from .model import RobertaEncoderConf, RobertaModel
 
 
 def _is_head_available_in_checkpoint(checkpoint, head_state_dict):
@@ -25,8 +22,8 @@ def _is_head_available_in_checkpoint(checkpoint, head_state_dict):
 
 
 @dataclass
-class RobertaModelBundle:
-    """RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
+class RobertaBundle:
+    """RobertaBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
 
     Example - Pretrained base xlmr encoder
         >>> import torch, torchtext
@@ -55,23 +52,26 @@ class RobertaModelBundle:
         torch.Size([1, 2])
 
     Example - User-specified configuration and checkpoint
-        >>> from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead
+        >>> from torchtext.models import RobertaEncoderConf, RobertaBundle, RobertaClassificationHead
         >>> model_weights_path = "https://download.pytorch.org/models/text/xlmr.base.encoder.pt"
         >>> encoder_conf = RobertaEncoderConf(vocab_size=250002)
         >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
-        >>> model = RobertaModelBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)
+        >>> model = RobertaBundle.build_model(encoder_conf=encoder_conf, head=classifier_head, checkpoint=model_weights_path)
     """
+
     _encoder_conf: RobertaEncoderConf
     _path: Optional[str] = None
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
 
-    def get_model(self,
-                  *,
-                  head: Optional[Module] = None,
-                  load_weights: bool = True,
-                  freeze_encoder: bool = False,
-                  dl_kwargs: Dict[str, Any] = None) -> RobertaModel:
+    def get_model(
+        self,
+        *,
+        head: Optional[Module] = None,
+        load_weights: bool = True,
+        freeze_encoder: bool = False,
+        dl_kwargs: Dict[str, Any] = None,
+    ) -> RobertaModel:
         r"""get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> torctext.models.RobertaModel
 
         Args:
@@ -82,11 +82,15 @@ class RobertaModelBundle:
         """
 
         if load_weights:
-            assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
+            assert (
+                self._path is not None
+            ), "load_weights cannot be True. The pre-trained model weights are not available for the current object"
 
         if freeze_encoder:
             if not load_weights or not self._path:
-                logger.warn("The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights.")
+                logger.warn(
+                    "The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights."
+                )
 
         if head is not None:
             input_head = head
@@ -95,13 +99,15 @@ class RobertaModelBundle:
         else:
             input_head = self._head
 
-        return RobertaModelBundle.build_model(encoder_conf=self._encoder_conf,
-                                              head=input_head,
-                                              freeze_encoder=freeze_encoder,
-                                              checkpoint=self._path if load_weights else None,
-                                              override_checkpoint_head=True,
-                                              strict=True,
-                                              dl_kwargs=dl_kwargs)
+        return RobertaBundle.build_model(
+            encoder_conf=self._encoder_conf,
+            head=input_head,
+            freeze_encoder=freeze_encoder,
+            checkpoint=self._path if load_weights else None,
+            override_checkpoint_head=True,
+            strict=True,
+            dl_kwargs=dl_kwargs,
+        )
 
     @classmethod
     def build_model(
@@ -134,7 +140,9 @@ class RobertaModelBundle:
                 dl_kwargs = {} if dl_kwargs is None else dl_kwargs
                 state_dict = load_state_dict_from_url(checkpoint, **dl_kwargs)
             else:
-                raise TypeError("checkpoint must be of type `str` or `Dict[str, torch.Tensor]` but got {}".format(type(checkpoint)))
+                raise TypeError(
+                    "checkpoint must be of type `str` or `Dict[str, torch.Tensor]` but got {}".format(type(checkpoint))
+                )
 
             if head is not None:
                 regex = re.compile(r"^head\.")
@@ -152,7 +160,7 @@ class RobertaModelBundle:
         return self._encoder_conf
 
 
-XLMR_BASE_ENCODER = RobertaModelBundle(
+XLMR_BASE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002),
     transform=lambda: T.Sequential(
@@ -161,11 +169,10 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
         T.Truncate(254),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
-    )
+    ),
 )
 
-XLMR_BASE_ENCODER.__doc__ = (
-    '''
+XLMR_BASE_ENCODER.__doc__ = """
     XLM-R Encoder with Base configuration
 
     The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
@@ -177,25 +184,25 @@ XLMR_BASE_ENCODER.__doc__ = (
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
-    '''
-)
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
+    """
 
 
-XLMR_LARGE_ENCODER = RobertaModelBundle(
+XLMR_LARGE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
-    _encoder_conf=RobertaEncoderConf(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
+    _encoder_conf=RobertaEncoderConf(
+        vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24
+    ),
     transform=lambda: T.Sequential(
         T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
         T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
         T.Truncate(510),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
-    )
+    ),
 )
 
-XLMR_LARGE_ENCODER.__doc__ = (
-    '''
+XLMR_LARGE_ENCODER.__doc__ = """
     XLM-R Encoder with Large configuration
 
     The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
@@ -207,12 +214,11 @@ XLMR_LARGE_ENCODER.__doc__ = (
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
-    '''
-)
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
+    """
 
 
-ROBERTA_BASE_ENCODER = RobertaModelBundle(
+ROBERTA_BASE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "roberta.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=50265),
     transform=lambda: T.Sequential(
@@ -220,17 +226,14 @@ ROBERTA_BASE_ENCODER = RobertaModelBundle(
             encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
             vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
         ),
-        T.VocabTransform(
-            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
-        ),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))),
         T.Truncate(254),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
     ),
 )
 
-ROBERTA_BASE_ENCODER.__doc__ = (
-    '''
+ROBERTA_BASE_ENCODER.__doc__ = """
     Roberta Encoder with Base configuration
 
     RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
@@ -247,12 +250,11 @@ ROBERTA_BASE_ENCODER.__doc__ = (
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
-    '''
-)
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
+    """
 
 
-ROBERTA_LARGE_ENCODER = RobertaModelBundle(
+ROBERTA_LARGE_ENCODER = RobertaBundle(
     _path=urljoin(_TEXT_BUCKET, "roberta.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(
         vocab_size=50265,
@@ -266,17 +268,14 @@ ROBERTA_LARGE_ENCODER = RobertaModelBundle(
             encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
             vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
         ),
-        T.VocabTransform(
-            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
-        ),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))),
         T.Truncate(510),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
     ),
 )
 
-ROBERTA_LARGE_ENCODER.__doc__ = (
-    '''
+ROBERTA_LARGE_ENCODER.__doc__ = """
     Roberta Encoder with Large configuration
 
     RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
@@ -293,6 +292,5 @@ ROBERTA_LARGE_ENCODER.__doc__ = (
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
     `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
-    '''
-)
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
+    """

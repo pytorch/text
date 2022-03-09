@@ -11,14 +11,20 @@
 
 namespace torchtext {
 
-typedef std::tuple<std::unordered_map<std::string, int64_t>,
-                   std::unordered_map<std::string, int64_t>, std::string,
-                   std::unordered_map<int64_t, std::string>, bool>
+typedef std::tuple<
+    std::unordered_map<std::string, int64_t>,
+    std::unordered_map<std::string, int64_t>,
+    std::string,
+    std::unordered_map<int64_t, std::string>,
+    bool>
     GPT2BPEEncoderStatesPybind;
 
-typedef std::tuple<c10::Dict<std::string, int64_t>,
-                   c10::Dict<std::string, int64_t>, std::string,
-                   c10::Dict<int64_t, std::string>, bool>
+typedef std::tuple<
+    c10::Dict<std::string, int64_t>,
+    c10::Dict<std::string, int64_t>,
+    std::string,
+    c10::Dict<int64_t, std::string>,
+    bool>
     GPT2BPEEncoderStatesTorchbind;
 
 // Applies regex based pre-tokenization step for GPT-2 BPE tokenizer
@@ -26,19 +32,23 @@ typedef std::tuple<c10::Dict<std::string, int64_t>,
 std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input);
 
 // Concatenate a vector of strings to a single string
-std::string concatenate_strings(const std::vector<std::string> &list);
+std::string concatenate_strings(const std::vector<std::string>& list);
 
 // Return set of token pairs in a word, seperated by the `seperator`.
-std::vector<std::string> get_pairs(std::vector<std::string> token_list,
-                                   const std::string &seperator);
+std::vector<std::string> get_pairs(
+    std::vector<std::string> token_list,
+    const std::string& seperator);
 
 // Split a string into 2 parts seperated by a `seperator`.
-std::pair<std::string, std::string> split_tokens(std::string s,
-                                                 std::string delimiter);
+std::pair<std::string, std::string> split_tokens(
+    std::string s,
+    std::string delimiter);
 
 // Find index of `element` in a list of strings.
-int list_str_index(std::vector<std::string> list, std::string element,
-                   int start);
+int list_str_index(
+    std::vector<std::string> list,
+    std::string element,
+    int start);
 
 struct GPT2BPEEncoder : torch::CustomClassHolder {
  private:
@@ -52,7 +62,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   virtual std::vector<std::string> PreTokenize_(std::string input);
   // Return a list of bpe tokens.
   virtual std::vector<std::string> BPE_(
-      const std::vector<std::string> &token_list);
+      const std::vector<std::string>& token_list);
   // Return the token pair(e.g bpe merge) with lowest rank.
   std::string FindBestPair_(std::vector<std::string> pairs);
 
@@ -63,17 +73,17 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   const std::string seperator_;
   const bool caching_enabled_;
   explicit GPT2BPEEncoder(
-      const c10::Dict<std::string, int64_t> &bpe_encoder,
-      const c10::Dict<std::string, int64_t> &bpe_merge_ranks,
-      const std::string &seperator,
-      const c10::Dict<int64_t, std::string> &byte_encoder,
+      const c10::Dict<std::string, int64_t>& bpe_encoder,
+      const c10::Dict<std::string, int64_t>& bpe_merge_ranks,
+      const std::string& seperator,
+      const c10::Dict<int64_t, std::string>& byte_encoder,
       bool caching_enabled = false);
 
   explicit GPT2BPEEncoder(
-      const std::unordered_map<std::string, int64_t> &bpe_encoder,
-      const std::unordered_map<std::string, int64_t> &bpe_merge_ranks,
-      const std::string &seperator,
-      const std::unordered_map<int64_t, std::string> &byte_encoder,
+      const std::unordered_map<std::string, int64_t>& bpe_encoder,
+      const std::unordered_map<std::string, int64_t>& bpe_merge_ranks,
+      const std::string& seperator,
+      const std::unordered_map<int64_t, std::string>& byte_encoder,
       bool caching_enabled = false);
 
   // Encode text into a list of bpe token ids.
@@ -87,7 +97,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   //  --> bpe encode --> bpe token ids: [707, 5927], [11], [707, 68]
   //  --> result --> [707, 5927, 11, 707, 68]
   //
-  std::vector<int64_t> Encode(const std::string &text);
+  std::vector<int64_t> Encode(const std::string& text);
 
   std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
   std::unordered_map<std::string, int64_t> GetBPEMergeRanks() const;
@@ -95,13 +105,13 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
 };
 
 GPT2BPEEncoderStatesPybind _serialize_gpt2_bpe_encoder_pybind(
-    const c10::intrusive_ptr<GPT2BPEEncoder> &self);
+    const c10::intrusive_ptr<GPT2BPEEncoder>& self);
 GPT2BPEEncoderStatesTorchbind _serialize_gpt2_bpe_encoder_torchbind(
-    const c10::intrusive_ptr<GPT2BPEEncoder> &self);
+    const c10::intrusive_ptr<GPT2BPEEncoder>& self);
 c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
     GPT2BPEEncoderStatesPybind states);
 c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states);
-}  // namespace torchtext
+} // namespace torchtext
 
-#endif  // GPT2_BPE_TOKENIZER_H_
+#endif // GPT2_BPE_TOKENIZER_H_

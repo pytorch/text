@@ -1,7 +1,7 @@
 import random
+import re
 from contextlib import contextmanager
 from copy import deepcopy
-import re
 from functools import partial
 
 
@@ -14,31 +14,9 @@ def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
-_patterns = [r'\'',
-             r'\"',
-             r'\.',
-             r'<br \/>',
-             r',',
-             r'\(',
-             r'\)',
-             r'\!',
-             r'\?',
-             r'\;',
-             r'\:',
-             r'\s+']
+_patterns = [r"\'", r"\"", r"\.", r"<br \/>", r",", r"\(", r"\)", r"\!", r"\?", r"\;", r"\:", r"\s+"]
 
-_replacements = [' \'  ',
-                 '',
-                 ' . ',
-                 ' ',
-                 ' , ',
-                 ' ( ',
-                 ' ) ',
-                 ' ! ',
-                 ' ? ',
-                 ' ',
-                 ' ',
-                 ' ']
+_replacements = [" '  ", "", " . ", " ", " , ", " ( ", " ) ", " ! ", " ? ", " ", " ", " "]
 
 _patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
 
@@ -71,7 +49,7 @@ def _basic_english_normalize(line):
     return line.split()
 
 
-def get_tokenizer(tokenizer, language='en'):
+def get_tokenizer(tokenizer, language="en"):
     r"""
     Generate tokenizer function for a string sentence.
 
@@ -100,7 +78,7 @@ def get_tokenizer(tokenizer, language='en'):
         return _split_tokenizer
 
     if tokenizer == "basic_english":
-        if language != 'en':
+        if language != "en":
             raise ValueError("Basic normalization is only available for Enlish(en)")
         return _basic_english_normalize
 
@@ -111,73 +89,86 @@ def get_tokenizer(tokenizer, language='en'):
     if tokenizer == "spacy":
         try:
             import spacy
+
             try:
                 spacy = spacy.load(language)
             except IOError:
                 # Model shortcuts no longer work in spaCy 3.0+, try using fullnames
                 # List is from https://github.com/explosion/spaCy/blob/b903de3fcb56df2f7247e5b6cfa6b66f4ff02b62/spacy/errors.py#L789
-                OLD_MODEL_SHORTCUTS = spacy.errors.OLD_MODEL_SHORTCUTS if hasattr(spacy.errors, 'OLD_MODEL_SHORTCUTS') else {}
+                OLD_MODEL_SHORTCUTS = (
+                    spacy.errors.OLD_MODEL_SHORTCUTS if hasattr(spacy.errors, "OLD_MODEL_SHORTCUTS") else {}
+                )
                 if language not in OLD_MODEL_SHORTCUTS:
                     raise
                 import warnings
-                warnings.warn(f'Spacy model "{language}" could not be loaded, trying "{OLD_MODEL_SHORTCUTS[language]}" instead')
+
+                warnings.warn(
+                    f'Spacy model "{language}" could not be loaded, trying "{OLD_MODEL_SHORTCUTS[language]}" instead'
+                )
                 spacy = spacy.load(OLD_MODEL_SHORTCUTS[language])
             return partial(_spacy_tokenize, spacy=spacy)
         except ImportError:
-            print("Please install SpaCy. "
-                  "See the docs at https://spacy.io for more information.")
+            print("Please install SpaCy. " "See the docs at https://spacy.io for more information.")
             raise
         except AttributeError:
-            print("Please install SpaCy and the SpaCy {} tokenizer. "
-                  "See the docs at https://spacy.io for more "
-                  "information.".format(language))
+            print(
+                "Please install SpaCy and the SpaCy {} tokenizer. "
+                "See the docs at https://spacy.io for more "
+                "information.".format(language)
+            )
             raise
     elif tokenizer == "moses":
         try:
             from sacremoses import MosesTokenizer
+
             moses_tokenizer = MosesTokenizer()
             return moses_tokenizer.tokenize
         except ImportError:
-            print("Please install SacreMoses. "
-                  "See the docs at https://github.com/alvations/sacremoses "
-                  "for more information.")
+            print(
+                "Please install SacreMoses. "
+                "See the docs at https://github.com/alvations/sacremoses "
+                "for more information."
+            )
             raise
     elif tokenizer == "toktok":
         try:
             from nltk.tokenize.toktok import ToktokTokenizer
+
             toktok = ToktokTokenizer()
             return toktok.tokenize
         except ImportError:
-            print("Please install NLTK. "
-                  "See the docs at https://nltk.org  for more information.")
+            print("Please install NLTK. " "See the docs at https://nltk.org  for more information.")
             raise
-    elif tokenizer == 'revtok':
+    elif tokenizer == "revtok":
         try:
             import revtok
+
             return revtok.tokenize
         except ImportError:
             print("Please install revtok.")
             raise
-    elif tokenizer == 'subword':
+    elif tokenizer == "subword":
         try:
             import revtok
+
             return partial(revtok.tokenize, decap=True)
         except ImportError:
             print("Please install revtok.")
             raise
-    raise ValueError("Requested tokenizer {}, valid choices are a "
-                     "callable that takes a single string as input, "
-                     "\"revtok\" for the revtok reversible tokenizer, "
-                     "\"subword\" for the revtok caps-aware tokenizer, "
-                     "\"spacy\" for the SpaCy English tokenizer, or "
-                     "\"moses\" for the NLTK port of the Moses tokenization "
-                     "script.".format(tokenizer))
+    raise ValueError(
+        "Requested tokenizer {}, valid choices are a "
+        "callable that takes a single string as input, "
+        '"revtok" for the revtok reversible tokenizer, '
+        '"subword" for the revtok caps-aware tokenizer, '
+        '"spacy" for the SpaCy English tokenizer, or '
+        '"moses" for the NLTK port of the Moses tokenization '
+        "script.".format(tokenizer)
+    )
 
 
 def is_tokenizer_serializable(tokenizer, language):
-    """Extend with other tokenizers which are found to not be serializable
-    """
-    if tokenizer == 'spacy':
+    """Extend with other tokenizers which are found to not be serializable"""
+    if tokenizer == "spacy":
         return False
     return True
 
@@ -189,15 +180,18 @@ def interleave_keys(a, b):
     values for the key defined by this function. Useful for tasks with two
     text fields like machine translation or natural language inference.
     """
+
     def interleave(args):
-        return ''.join([x for t in zip(*args) for x in t])
-    return int(''.join(interleave(format(x, '016b') for x in (a, b))), base=2)
+        return "".join([x for t in zip(*args) for x in t])
+
+    return int("".join(interleave(format(x, "016b") for x in (a, b))), base=2)
 
 
 def get_torch_version():
     import torch
+
     v = torch.__version__
-    version_substrings = v.split('.')
+    version_substrings = v.split(".")
     major, minor = version_substrings[0], version_substrings[1]
     return int(major), int(minor)
 
@@ -206,7 +200,7 @@ def dtype_to_attr(dtype):
     # convert torch.dtype to dtype string id
     # e.g. torch.int32 -> "int32"
     # used for serialization
-    _, dtype = str(dtype).split('.')
+    _, dtype = str(dtype).split(".")
     return dtype
 
 
@@ -231,7 +225,7 @@ def ngrams_iterator(token_list, ngrams):
         yield x
     for n in range(2, ngrams + 1):
         for x in _get_ngrams(n):
-            yield ' '.join(x)
+            yield " ".join(x)
 
 
 class RandomShuffler(object):

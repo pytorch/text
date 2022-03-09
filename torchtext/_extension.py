@@ -1,14 +1,12 @@
 def _init_extension():
-    import os
     import importlib
+    import os
+
     import torch
 
     # load the custom_op_library and register the custom ops
     lib_dir = os.path.dirname(__file__)
-    loader_details = (
-        importlib.machinery.ExtensionFileLoader,
-        importlib.machinery.EXTENSION_SUFFIXES
-    )
+    loader_details = (importlib.machinery.ExtensionFileLoader, importlib.machinery.EXTENSION_SUFFIXES)
 
     extfinder = importlib.machinery.FileFinder(lib_dir, loader_details)
     ext_specs = extfinder.find_spec("_torchtext")

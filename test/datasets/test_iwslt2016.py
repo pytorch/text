@@ -20,15 +20,9 @@ from torchtext.datasets.iwslt2016 import (
 from ..common.case_utils import zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
-SUPPORTED_LANGPAIRS = [
-    (k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v
-]
+SUPPORTED_LANGPAIRS = [(k, e) for k, v in SUPPORTED_DATASETS["language_pair"].items() for e in v]
 SUPPORTED_DEVTEST_SPLITS = SUPPORTED_DATASETS["valid_test"]
-DEV_TEST_SPLITS = [
-    (dev, test)
-    for dev, test in itertools.product(SUPPORTED_DEVTEST_SPLITS, repeat=2)
-    if dev != test
-]
+DEV_TEST_SPLITS = [(dev, test) for dev, test in itertools.product(SUPPORTED_DEVTEST_SPLITS, repeat=2) if dev != test]
 
 
 def _generate_uncleaned_train():
@@ -68,9 +62,7 @@ def _generate_uncleaned_valid():
     for doc_id in range(5):
         file_contents.append(f'<doc docid="{doc_id}" genre="lectures">')
         for seg_id in range(100):
-            rand_string = " ".join(
-                random.choice(string.ascii_letters) for i in range(10)
-            )
+            rand_string = " ".join(random.choice(string.ascii_letters) for i in range(10))
             examples.append(rand_string)
             file_contents.append(f"<seg>{rand_string} </seg>" + "\n")
         file_contents.append("</doc>")
@@ -127,9 +119,7 @@ def _get_mock_dataset(root_dir, split, src, tgt, valid_set, test_set):
             mocked_data[split][lang] = mocked_data_for_split
             f.write(file_contents)
 
-    inner_compressed_dataset_path = os.path.join(
-        outer_temp_dataset_dir, f"{src}-{tgt}.tgz"
-    )
+    inner_compressed_dataset_path = os.path.join(outer_temp_dataset_dir, f"{src}-{tgt}.tgz")
 
     # create tar file from dataset folder
     with tarfile.open(inner_compressed_dataset_path, "w:gz") as tar:
@@ -153,9 +143,7 @@ class TestIWSLT2016(TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod
@@ -169,18 +157,13 @@ class TestIWSLT2016(TorchtextTestCase):
             for split in ("train", "valid", "test")
             for dev_set, test_set in DEV_TEST_SPLITS
             for src, tgt in SUPPORTED_LANGPAIRS
-            if (
-                dev_set not in SET_NOT_EXISTS[(src, tgt)]
-                and test_set not in SET_NOT_EXISTS[(src, tgt)]
-            )
+            if (dev_set not in SET_NOT_EXISTS[(src, tgt)] and test_set not in SET_NOT_EXISTS[(src, tgt)])
         ]
     )
     def test_iwslt2016(self, split, src, tgt, dev_set, test_set):
 
         with tempfile.TemporaryDirectory() as root_dir:
-            expected_samples = _get_mock_dataset(
-                root_dir, split, src, tgt, dev_set, test_set
-            )
+            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, dev_set, test_set)
 
             dataset = IWSLT2016(
                 root=root_dir,
@@ -201,9 +184,7 @@ class TestIWSLT2016(TorchtextTestCase):
             language_pair = ("de", "en")
             valid_set = "tst2013"
             test_set = "tst2014"
-            _ = _get_mock_dataset(
-                root_dir, split, language_pair[0], language_pair[1], valid_set, test_set
-            )
+            _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
             dataset1 = IWSLT2016(
                 root=root_dir,
                 split=split,
