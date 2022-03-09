@@ -45,7 +45,6 @@ def _generate_uncleaned_train():
         "<title",
         "<speaker",
         "<doc",
-        "</doc",
     ]
     for i in range(100):
         rand_string = " ".join(random.choice(string.ascii_letters) for i in range(10))
@@ -54,7 +53,7 @@ def _generate_uncleaned_train():
         if random.random() < 0.1:
             open_tag = random.choice(xml_tags) + ">"
             # Open tag already contains the closing >
-            close_tag = "</" + open_tag[1:-1] + ">"
+            close_tag = "</" + open_tag[1:]
             file_contents.append(open_tag + rand_string + close_tag)
         else:
             examples.append(rand_string + "\n")
