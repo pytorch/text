@@ -32,7 +32,7 @@ class RobertaBundle:
         >>> model = xlmr_base.get_model()
         >>> transform = xlmr_base.transform()
         >>> input_batch = ["Hello world", "How are you!"]
-        >>> model_input = to_tensor(transform(input_batch), padding_value=transform.pad_idx)
+        >>> model_input = to_tensor(transform(input_batch), padding_value=1)
         >>> output = model(model_input)
         >>> output.shape
         torch.Size([2, 6, 768])
@@ -46,7 +46,7 @@ class RobertaBundle:
         >>> model = xlmr_large.get_model(head=classifier_head)
         >>> transform = xlmr_large.transform()
         >>> input_batch = ["Hello world", "How are you!"]
-        >>> model_input = to_tensor(transform(input_batch), padding_value=transform.pad_idx)
+        >>> model_input = to_tensor(transform(input_batch), padding_value=1)
         >>> output = model(model_input)
         >>> output.shape
         torch.Size([1, 2])
