@@ -18,14 +18,6 @@ SST-2 Binary text classification with XLM-RoBERTa model
 # 3. instantiate classification model using pre-trained XLM-R encoder
 #
 #
-# To run this tutorial, please install torchtext nightly and TorchData (following commands will do in google Colab)
-#
-# ::
-#
-#   !pip3 install --pre --upgrade torchtext -f https://download.pytorch.org/whl/nightly/cu113/torch_nightly.html
-#   !pip install --user "git+https://github.com/pytorch/data.git"
-#
-
 
 ######################################################################
 # Common imports
