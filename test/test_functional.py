@@ -2,13 +2,16 @@ import torch
 from torchtext import functional
 
 from .common.torchtext_test_case import TorchtextTestCase
-
+import pytest
 
 class TestFunctional(TorchtextTestCase):
     def _to_tensor(self, test_scripting):
         func = functional.to_tensor
         if test_scripting:
             func = torch.jit.script(func)
+        else:
+            with pytest.raises(TypeError, match="Input type not supported"):
+                func("test")
 
         input = [[1, 2], [1, 2, 3]]
         actual = func(input, padding_value=0)
@@ -17,7 +20,7 @@ class TestFunctional(TorchtextTestCase):
 
         input = [[1, 2], [1, 2, 3]]
         actual = func(input, padding_value=1)
-        expected = torch.tensor([[1, 2], [1, 2]], dtype=torch.long)
+        expected = torch.tensor([[1, 2, 1], [1, 2, 3]], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
         input = [1, 2]
@@ -38,6 +41,9 @@ class TestFunctional(TorchtextTestCase):
         func = functional.truncate
         if test_scripting:
             func = torch.jit.script(func)
+        else:
+            with pytest.raises(TypeError, match="Input type not supported"):
+                func("test", max_seq_len=max_seq_len)
 
         input = [[1, 2], [1, 2, 3]]
         actual = func(input, max_seq_len=max_seq_len)
@@ -72,6 +78,8 @@ class TestFunctional(TorchtextTestCase):
         func = functional.add_token
         if test_scripting:
             func = torch.jit.script(func)
+
+        # List[List[int]]
         input = [[1, 2], [1, 2, 3]]
         token_id = 0
         actual = func(input, token_id=token_id)
@@ -82,9 +90,36 @@ class TestFunctional(TorchtextTestCase):
         expected = [[1, 2, 0], [1, 2, 3, 0]]
         self.assertEqual(actual, expected)
 
+        # List[int]
         input = [1, 2]
         actual = func(input, token_id=token_id, begin=False)
         expected = [1, 2, 0]
+        self.assertEqual(actual, expected)
+
+        actual = func(input, token_id=token_id, begin=True)
+        expected = [0, 1, 2]
+        self.assertEqual(actual, expected)
+
+        # List[str]
+        token_id = "x"
+
+        input = ["a", "b"]
+        actual = func(input, token_id=token_id, begin=False)
+        expected = ["a", "b", "x"]
+        self.assertEqual(actual, expected)
+
+        actual = func(input, token_id=token_id, begin=True)
+        expected = ["x", "a", "b"]
+        self.assertEqual(actual, expected)
+
+        # List[List[str]]
+        input = [["a", "b"], ["c", "d"]]
+        actual = func(input, token_id=token_id, begin=False)
+        expected = [["a", "b", "x"], ["c", "d", "x"]]
+        self.assertEqual(actual, expected)
+
+        actual = func(input, token_id=token_id, begin=True)
+        expected = [["x", "a", "b"], ["x", "c", "d"]]
         self.assertEqual(actual, expected)
 
     def test_add_token(self):
