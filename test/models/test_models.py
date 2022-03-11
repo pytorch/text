@@ -5,7 +5,8 @@ import torchtext
 from torch.nn import functional as torch_F
 
 from ..common.torchtext_test_case import TorchtextTestCase
-
+import pytest
+import logging
 
 class TestModules(TorchtextTestCase):
     def test_self_attn_mask(self):
@@ -135,3 +136,46 @@ class TestModels(TorchtextTestCase):
 
         self.assertEqual(model.encoder.state_dict(), encoder_current_state_dict)
         self.assertNotEqual(model.head.state_dict(), head_current_state_dict)
+
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, caplog):
+        self._caplog = caplog
+
+    def test_roberta_bundler_get_model(self):
+        from torchtext.models import RobertaEncoderConf, RobertaBundle
+
+        with self._caplog.at_level(logging.WARNING):
+            dummy_encoder_conf = RobertaEncoderConf(
+                vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+            )
+            model_bundle = RobertaBundle(dummy_encoder_conf)
+            model = model_bundle.get_model(
+                load_weights = False,
+                freeze_encoder = True
+            )
+            self.assertTrue(self._caplog.records[0].message.startswith('The encoder is not loaded'))
+
+    def test_roberta_bundler_raise_checkpoint(self):
+        from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaModel, RobertaBundle
+
+        with self.assertRaises(TypeError):
+            dummy_encoder_conf = RobertaEncoderConf(
+                vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+            )
+            dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
+            dummy_classifier = RobertaModel(dummy_encoder_conf, dummy_classifier_head)
+            model = RobertaBundle.build_model(
+                encoder_conf=dummy_encoder_conf,
+                head=dummy_classifier_head,
+                freeze_encoder=True,
+                checkpoint=1,
+            )
+
+    def test_roberta_bundler_encode_conf_property(self):
+        from torchtext.models import RobertaEncoderConf, RobertaBundle
+
+        dummy_encoder_conf = RobertaEncoderConf(
+            vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+        )
+        model_bundle = RobertaBundle(dummy_encoder_conf)
+        self.assertTrue(isinstance(model_bundle.encoderConf, RobertaEncoderConf))

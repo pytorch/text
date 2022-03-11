@@ -2,7 +2,6 @@ import torch
 from torchtext import functional
 
 from .common.torchtext_test_case import TorchtextTestCase
-import pytest
 
 class TestFunctional(TorchtextTestCase):
     def _to_tensor(self, test_scripting):
@@ -10,7 +9,7 @@ class TestFunctional(TorchtextTestCase):
         if test_scripting:
             func = torch.jit.script(func)
         else:
-            with pytest.raises(TypeError, match="Input type not supported"):
+            with self.assertRaises(TypeError):
                 func("test")
 
         input = [[1, 2], [1, 2, 3]]
@@ -42,7 +41,7 @@ class TestFunctional(TorchtextTestCase):
         if test_scripting:
             func = torch.jit.script(func)
         else:
-            with pytest.raises(TypeError, match="Input type not supported"):
+            with self.assertRaises(TypeError):
                 func("test", max_seq_len=max_seq_len)
 
         input = [[1, 2], [1, 2, 3]]

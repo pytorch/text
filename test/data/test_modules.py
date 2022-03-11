@@ -2,6 +2,7 @@ import torch
 from torch.nn import Linear
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
+from torchtext.nn.modules.multiheadattention import generate_square_subsequent_mask
 
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -202,6 +203,24 @@ class TestModels(TorchtextTestCase):
                 value.expand(src_len, 2, embed_dim),
                 attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len),
             )
+        # attn_mask must be a 3D tensor.
+        with self.assertRaises(RuntimeError):
+            SDP(
+                query.expand(1, 2, 3, tgt_len, bsz * nhead, embed_dim),
+                key.expand(src_len, 2, embed_dim),
+                value.expand(src_len, 2, embed_dim),
+                attn_mask=attn_mask_2D,
+            )
+
+        # Only bool tensor is supported for attn_mask
+        attn_mask_2D_not_bool = torch.randint(0, 2, (tgt_len, src_len))
+        with self.assertRaises(RuntimeError):
+            SDP(
+                query.expand(1, 2, 3, tgt_len, bsz * nhead, embed_dim),
+                key.expand(src_len, 2, embed_dim),
+                value.expand(src_len, 2, embed_dim),
+                attn_mask=attn_mask_2D_not_bool,
+            )
 
         # attn_mask in a size of (1, tgt_len, src_len)
         # 2D tensor is not supported for attn_mask
@@ -221,3 +240,26 @@ class TestModels(TorchtextTestCase):
                 value.expand(src_len, bsz * nhead, embed_dim),
                 attn_mask=attn_mask_2D.expand(2, tgt_len, src_len),
             )
+
+    def test_sdp_batch_first(self):
+        embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
+        SDP = ScaledDotProduct(batch_first=True)
+        query = torch.rand((1, tgt_len, embed_dim))
+        key = value = torch.rand((1, src_len, embed_dim))
+        attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
+
+        sdp_attn_output, sdp_attn_weights = SDP(
+            query.expand(bsz * nhead, tgt_len, embed_dim),
+            key.expand(bsz * nhead, src_len, embed_dim),
+            value.expand(bsz * nhead, src_len, embed_dim),
+            attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len),
+        )
+
+        self.assertEqual(list(sdp_attn_output.size()), [bsz * nhead, tgt_len, embed_dim])
+
+    def test_generate_square_subsequent_mask(self):
+        configs = [(3, 2), (1, 3), (1, 1), (3, 1), (2, 3)]
+        for nbatch, sz in configs:
+            out = generate_square_subsequent_mask(nbatch, sz)
+            self.assertEqual(out.size(), (nbatch, sz, sz))
+            self.assertEqual(out.sum().item(), nbatch * (sz * (sz + 1)) / 2 if sz != 1 else nbatch)
