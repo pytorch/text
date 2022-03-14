@@ -1,9 +1,7 @@
-import csv
 import gzip
 import hashlib
 import logging
 import os
-import sys
 import tarfile
 import zipfile
 
@@ -38,14 +36,12 @@ def reporthook(t):
 
 def validate_file(file_obj, hash_value, hash_type="sha256"):
     """Validate a given file object with its hash.
-
     Args:
         file_obj: File object to read from.
         hash_value (str): Hash for url.
         hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
     Returns:
         bool: return True if its a valid file, else False.
-
     """
 
     if hash_type == "sha256":
@@ -76,7 +72,6 @@ def _check_hash(path, hash_value, hash_type):
 def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
-
     Args:
         url: the url of the file from URL header. (None)
         path: path where file will be saved
@@ -84,14 +79,12 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
         overwrite: overwrite existing files (False)
         hash_value (str, optional): hash for url (Default: ``None``).
         hash_type (str, optional): hash type, among "sha256" and "md5" (Default: ``"sha256"``).
-
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> '.data/validation.tar.gz'
-
     """
     # figure out filename and root
     if path is None:
@@ -130,54 +123,14 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
     return path
 
 
-def unicode_csv_reader(unicode_csv_data, **kwargs):
-    r"""Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
-    Borrowed and slightly modified from the Python docs:
-    https://docs.python.org/2/library/csv.html#csv-examples
-
-    Args:
-        unicode_csv_data: unicode csv data (see example below)
-
-    Examples:
-        >>> from torchtext.utils import unicode_csv_reader
-        >>> import io
-        >>> with io.open(data_path, encoding="utf8") as f:
-        >>>     reader = unicode_csv_reader(f)
-
-    """
-
-    # Fix field larger than field limit error
-    maxInt = sys.maxsize
-    while True:
-        # decrease the maxInt value by factor 10
-        # as long as the OverflowError occurs.
-        try:
-            csv.field_size_limit(maxInt)
-            break
-        except OverflowError:
-            maxInt = int(maxInt / 10)
-    csv.field_size_limit(maxInt)
-
-    for line in csv.reader(unicode_csv_data, **kwargs):
-        yield line
-
-
-def utf_8_encoder(unicode_csv_data):
-    for line in unicode_csv_data:
-        yield line.encode("utf-8")
-
-
 def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract archive.
-
     Args:
         from_path: the path of the archive.
         to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)
-
     Returns:
         List of paths to extracted files even if not overwritten.
-
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> from_path = './validation.tar.gz'
@@ -188,7 +141,6 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
         >>> ['.data/val.de', '.data/val.en']
-
     """
 
     if to_path is None:
@@ -256,12 +208,10 @@ def _log_class_usage(klass):
 
 def get_asset_local_path(asset_path: str) -> str:
     """Get local path for assets. Download if path does not exost locally
-
     Args:
         asset_path: Local path to asset or remote URL
     Returns:
         bool: local path of the asset after downloading or reading from cache
-
     Examples:
         >>> url = 'http://<HOST>/file.txt'
         >>> torchtext.utils.get_asset_local_path(url)
