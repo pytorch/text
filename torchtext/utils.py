@@ -11,6 +11,9 @@ from torchtext import _CACHE_DIR
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
 
+logger = logging.getLogger(__name__)
+
+
 def reporthook(t):
     """
     https://github.com/tqdm/tqdm.
@@ -61,7 +64,7 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
 
 def _check_hash(path, hash_value, hash_type):
-    logging.info("Validating hash {} matches hash of {}".format(hash_value, path))
+    logger.info("Validating hash {} matches hash of {}".format(hash_value, path))
     with open(path, "rb") as file_obj:
         if not validate_file(file_obj, hash_value, hash_type):
             raise RuntimeError(
@@ -97,7 +100,7 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
 
     # skip download if path exists and overwrite is not True
     if os.path.exists(path):
-        logging.info("File %s already exists." % path)
+        logger.info("File %s already exists." % path)
         if not overwrite:
             if hash_value:
                 _check_hash(path, hash_value, hash_type)
@@ -113,7 +116,7 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
     # download data and move to path
     _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    logging.info("File {} downloaded.".format(path))
+    logger.info("File {} downloaded.".format(path))
 
     # validate
     if hash_value:
@@ -147,7 +150,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         to_path = os.path.dirname(from_path)
 
     if from_path.endswith((".tar.gz", ".tgz")):
-        logging.info("Opening tar file {}.".format(from_path))
+        logger.info("Opening tar file {}.".format(from_path))
         with tarfile.open(from_path, "r") as tar:
             files = []
             for file_ in tar:
@@ -155,32 +158,32 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                 if file_.isfile():
                     files.append(file_path)
                     if os.path.exists(file_path):
-                        logging.info("{} already extracted.".format(file_path))
+                        logger.info("{} already extracted.".format(file_path))
                         if not overwrite:
                             continue
                 tar.extract(file_, to_path)
-            logging.info("Finished extracting tar file {}.".format(from_path))
+            logger.info("Finished extracting tar file {}.".format(from_path))
             return files
 
     elif from_path.endswith(".zip"):
         assert zipfile.is_zipfile(from_path), from_path
-        logging.info("Opening zip file {}.".format(from_path))
+        logger.info("Opening zip file {}.".format(from_path))
         with zipfile.ZipFile(from_path, "r") as zfile:
             files = []
             for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
                 files.append(file_path)
                 if os.path.exists(file_path):
-                    logging.info("{} already extracted.".format(file_path))
+                    logger.info("{} already extracted.".format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
         files = [f for f in files if os.path.isfile(f)]
-        logging.info("Finished extracting zip file {}.".format(from_path))
+        logger.info("Finished extracting zip file {}.".format(from_path))
         return files
 
     elif from_path.endswith(".gz"):
-        logging.info("Opening gz file {}.".format(from_path))
+        logger.info("Opening gz file {}.".format(from_path))
         default_block_size = 65536
         filename = from_path[:-3]
         files = [filename]
@@ -192,7 +195,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                 else:
                     d_file.write(block)
             d_file.write(block)
-        logging.info("Finished extracting gz file {}.".format(from_path))
+        logger.info("Finished extracting gz file {}.".format(from_path))
         return files
 
     else:
