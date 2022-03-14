@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220313) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220314) &#x25BC</a>
     </div>
     
 
@@ -318,12 +318,10 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">csv</span>
-<span class="kn">import</span> <span class="nn">gzip</span>
+<span></span><span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 
@@ -358,14 +356,12 @@
 
 <span class="k">def</span> <span class="nf">validate_file</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Validate a given file object with its hash.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        file_obj: File object to read from.</span>
 <span class="sd">        hash_value (str): Hash for url.</span>
 <span class="sd">        hash_type (str, optional): Hash type, among &quot;sha256&quot; and &quot;md5&quot; (Default: ``&quot;sha256&quot;``).</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: return True if its a valid file, else False.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">hash_type</span> <span class="o">==</span> <span class="s2">&quot;sha256&quot;</span><span class="p">:</span>
@@ -396,7 +392,6 @@
 <div class="viewcode-block" id="download_from_url"><a class="viewcode-back" href="../../utils.html#torchtext.utils.download_from_url">[docs]</a><span class="k">def</span> <span class="nf">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Download file, with logic (from tensor2tensor) for Google Drive. Returns</span>
 <span class="sd">    the path to the downloaded file.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        url: the url of the file from URL header. (None)</span>
 <span class="sd">        path: path where file will be saved</span>
@@ -404,14 +399,12 @@
 <span class="sd">        overwrite: overwrite existing files (False)</span>
 <span class="sd">        hash_value (str, optional): hash for url (Default: ``None``).</span>
 <span class="sd">        hash_type (str, optional): hash type, among &quot;sha256&quot; and &quot;md5&quot; (Default: ``&quot;sha256&quot;``).</span>
-
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url)</span>
 <span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url)</span>
 <span class="sd">        &gt;&gt;&gt; &#39;.data/validation.tar.gz&#39;</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># figure out filename and root</span>
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -450,54 +443,14 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
-<div class="viewcode-block" id="unicode_csv_reader"><a class="viewcode-back" href="../../utils.html#torchtext.utils.unicode_csv_reader">[docs]</a><span class="k">def</span> <span class="nf">unicode_csv_reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Since the standard csv library does not handle unicode in Python 2, we need a wrapper.</span>
-<span class="sd">    Borrowed and slightly modified from the Python docs:</span>
-<span class="sd">    https://docs.python.org/2/library/csv.html#csv-examples</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        unicode_csv_data: unicode csv data (see example below)</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.utils import unicode_csv_reader</span>
-<span class="sd">        &gt;&gt;&gt; import io</span>
-<span class="sd">        &gt;&gt;&gt; with io.open(data_path, encoding=&quot;utf8&quot;) as f:</span>
-<span class="sd">        &gt;&gt;&gt;     reader = unicode_csv_reader(f)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Fix field larger than field limit error</span>
-    <span class="n">maxInt</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># decrease the maxInt value by factor 10</span>
-        <span class="c1"># as long as the OverflowError occurs.</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">csv</span><span class="o">.</span><span class="n">field_size_limit</span><span class="p">(</span><span class="n">maxInt</span><span class="p">)</span>
-            <span class="k">break</span>
-        <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">:</span>
-            <span class="n">maxInt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxInt</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="n">csv</span><span class="o">.</span><span class="n">field_size_limit</span><span class="p">(</span><span class="n">maxInt</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="n">line</span></div>
-
-
-<span class="k">def</span> <span class="nf">utf_8_encoder</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">unicode_csv_data</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">line</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="extract_archive"><a class="viewcode-back" href="../../utils.html#torchtext.utils.extract_archive">[docs]</a><span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extract archive.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        from_path: the path of the archive.</span>
 <span class="sd">        to_path: the root path of the extracted files (directory of from_path)</span>
 <span class="sd">        overwrite: overwrite existing files (False)</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        List of paths to extracted files even if not overwritten.</span>
-
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="sd">        &gt;&gt;&gt; from_path = &#39;./validation.tar.gz&#39;</span>
@@ -508,7 +461,6 @@
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url, from_path)</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.extract_archive(from_path, to_path)</span>
 <span class="sd">        &gt;&gt;&gt; [&#39;.data/val.de&#39;, &#39;.data/val.en&#39;]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">to_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -576,12 +528,10 @@
 
 <span class="k">def</span> <span class="nf">get_asset_local_path</span><span class="p">(</span><span class="n">asset_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get local path for assets. Download if path does not exost locally</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        asset_path: Local path to asset or remote URL</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: local path of the asset after downloading or reading from cache</span>
-
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; url = &#39;http://&lt;HOST&gt;/file.txt&#39;</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.get_asset_local_path(url)</span>
