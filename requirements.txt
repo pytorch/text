@@ -8,7 +8,7 @@ requests
 nltk
 spacy
 sacremoses
-git+git://github.com/jekbradbury/revtok.git
+git+https://github.com/jekbradbury/revtok.git
 
 # Documentation
 Sphinx
