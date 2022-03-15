@@ -8,8 +8,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import GDriveReader
 
 URL = "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA"
 

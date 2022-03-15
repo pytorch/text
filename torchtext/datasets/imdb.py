@@ -7,8 +7,8 @@ from torchtext.data.datasets_utils import _create_dataset_directory
 from torchtext.data.datasets_utils import _wrap_split_argument
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
 

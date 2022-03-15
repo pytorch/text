@@ -8,8 +8,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = "https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip"
 
