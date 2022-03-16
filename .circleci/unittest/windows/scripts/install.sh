@@ -18,6 +18,9 @@ conda activate ./env
 printf "* Installing PyTorch\n"
 conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly
 
+printf "Installing torchdata from source\n"
+pip install git+https://github.com/pytorch/data.git
+
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
 "$root_dir/packaging/vc_env_helper.bat" python setup.py develop

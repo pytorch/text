@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import platform
-import torch
 import unittest
+
+import torch
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.vectors import (
-    build_vectors,
-)
+from torchtext.experimental.vectors import build_vectors
 
 
 class TestVectors(TorchtextTestCase):
@@ -21,37 +20,37 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0], dtype=torch.float)
 
         vectors_obj = build_vectors(tokens, vecs, unk_tensor)
-        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-        tokens = ['a']
+        tokens = ["a"]
         vecs = tensorA.unsqueeze(0)
         vectors_obj = build_vectors(tokens, vecs)
 
-        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj["not_in_it"], expected_unk_tensor)
 
     def test_vectors_basic(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
-        self.assertEqual(vectors_obj['a'], tensorA)
-        self.assertEqual(vectors_obj['b'], tensorB)
-        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj["a"], tensorA)
+        self.assertEqual(vectors_obj["b"], tensorB)
+        self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
     def test_vectors_jit(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj)
@@ -61,21 +60,21 @@ class TestVectors(TorchtextTestCase):
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         assert vectors_obj.__prepare_scriptable__().is_jitable
 
-        self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
-        self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
-        self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
+        self.assertEqual(vectors_obj["a"], jit_vectors_obj["a"])
+        self.assertEqual(vectors_obj["b"], jit_vectors_obj["b"])
+        self.assertEqual(vectors_obj["not_in_it"], jit_vectors_obj["not_in_it"])
 
     def test_vectors_forward(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj)
 
-        tokens_to_lookup = ['a', 'b', 'c']
+        tokens_to_lookup = ["a", "b", "c"]
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
         vectors_by_tokens = vectors_obj(tokens_to_lookup)
         jit_vectors_by_tokens = jit_vectors_obj(tokens_to_lookup)
@@ -88,11 +87,11 @@ class TestVectors(TorchtextTestCase):
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
-        tokens_to_lookup = ['a', 'b', 'c']
+        tokens_to_lookup = ["a", "b", "c"]
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
         vectors_by_tokens = vectors_obj.lookup_vectors(tokens_to_lookup)
 
@@ -102,16 +101,16 @@ class TestVectors(TorchtextTestCase):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-        tokens = ['a']
+        tokens = ["a"]
         vecs = tensorA.unsqueeze(0)
         vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
         tensorB = torch.tensor([0, 1], dtype=torch.float)
-        vectors_obj['b'] = tensorB
+        vectors_obj["b"] = tensorB
 
-        self.assertEqual(vectors_obj['a'], tensorA)
-        self.assertEqual(vectors_obj['b'], tensorB)
-        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj["a"], tensorA)
+        self.assertEqual(vectors_obj["b"], tensorB)
+        self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
     def test_vectors_update(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -120,44 +119,44 @@ class TestVectors(TorchtextTestCase):
 
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
 
-        vectors_obj['b'] = tensorC
+        vectors_obj["b"] = tensorC
 
-        self.assertEqual(vectors_obj['a'], tensorA)
-        self.assertEqual(vectors_obj['b'], tensorC)
-        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj["a"], tensorA)
+        self.assertEqual(vectors_obj["b"], tensorC)
+        self.assertEqual(vectors_obj["not_in_it"], expected_unk_tensor)
 
     def test_vectors_load_and_save(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-        tokens = ['a', 'b']
+        tokens = ["a", "b"]
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
 
-        with self.subTest('pybind'):
-            vector_path = os.path.join(self.test_dir, 'vectors_pybind.pt')
+        with self.subTest("pybind"):
+            vector_path = os.path.join(self.test_dir, "vectors_pybind.pt")
             torch.save(vectors_obj, vector_path)
             loaded_vectors_obj = torch.load(vector_path)
 
-            self.assertEqual(loaded_vectors_obj['a'], tensorA)
-            self.assertEqual(loaded_vectors_obj['b'], tensorB)
-            self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+            self.assertEqual(loaded_vectors_obj["a"], tensorA)
+            self.assertEqual(loaded_vectors_obj["b"], tensorB)
+            self.assertEqual(loaded_vectors_obj["not_in_it"], expected_unk_tensor)
 
-        with self.subTest('torchscript'):
-            vector_path = os.path.join(self.test_dir, 'vectors_torchscript.pt')
+        with self.subTest("torchscript"):
+            vector_path = os.path.join(self.test_dir, "vectors_torchscript.pt")
             # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
             # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             torch.save(vectors_obj.__prepare_scriptable__(), vector_path)
             loaded_vectors_obj = torch.load(vector_path)
 
-            self.assertEqual(loaded_vectors_obj['a'], tensorA)
-            self.assertEqual(loaded_vectors_obj['b'], tensorB)
-            self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+            self.assertEqual(loaded_vectors_obj["a"], tensorA)
+            self.assertEqual(loaded_vectors_obj["b"], tensorB)
+            self.assertEqual(loaded_vectors_obj["not_in_it"], expected_unk_tensor)
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
@@ -166,7 +165,7 @@ class TestVectors(TorchtextTestCase):
         tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-        tokens = ['a', 'a', 'c']
+        tokens = ["a", "a", "c"]
         vecs = torch.stack((tensorA, tensorB, tensorC), 0)
 
         with self.assertRaises(RuntimeError):

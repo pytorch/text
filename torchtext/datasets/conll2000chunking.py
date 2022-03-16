@@ -1,52 +1,76 @@
-from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
-    _wrap_split_argument,
-    _add_docstring_header,
-    _download_extract_validate,
-    _create_dataset_directory,
-    _create_data_from_iob,
-)
 import os
-import logging
+from typing import Union, Tuple
+
+from torchtext._internal.module_utils import is_module_available
+from torchtext.data.datasets_utils import (
+    _wrap_split_argument,
+    _create_dataset_directory,
+)
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
-    'train': "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
-    'test': "https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz",
+    "train": "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
+    "test": "https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz",
 }
 
 MD5 = {
-    'train': "6969c2903a1f19a83569db643e43dcc8",
-    'test': "a916e1c2d83eb3004b38fc6fcd628939",
+    "train": "6969c2903a1f19a83569db643e43dcc8",
+    "test": "a916e1c2d83eb3004b38fc6fcd628939",
 }
 
 NUM_LINES = {
-    'train': 8936,
-    'test': 2012,
+    "train": 8936,
+    "test": 2012,
 }
 
-_EXTRACTED_FILES = {
-    'train': 'train.txt',
-    'test': 'test.txt'
-}
-
-_EXTRACTED_FILES_MD5 = {
-    'train': "2e2f24e90e20fcb910ab2251b5ed8cd0",
-    'test': "56944df34be553b72a2a634e539a0951"
-}
-
+_EXTRACTED_FILES = {"train": "train.txt", "test": "test.txt"}
 
 DATASET_NAME = "CoNLL2000Chunking"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
-def CoNLL2000Chunking(root, split):
-    # Create a dataset specific subfolder to deal with generic download filenames
-    root = os.path.join(root, 'conll2000chunking')
-    path = os.path.join(root, split + ".txt.gz")
-    data_filename = _download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
-                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
-    logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_iob(data_filename, " "))
+@_wrap_split_argument(("train", "test"))
+def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
+    """CoNLL2000Chunking Dataset
+
+    For additional details refer to https://www.clips.uantwerpen.be/conll2000/chunking/
+
+    Number of lines per split:
+        - train: 8936
+        - test: 2012
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
+
+    :returns: DataPipe that yields list of words along with corresponding Parts-of-speech tag and chunk tag
+    :rtype: [list(str), list(str), list(str)]
+    """
+
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+        )
+
+    url_dp = IterableWrapper([URL[split]])
+
+    # Cache and check HTTP response
+    cache_compressed_dp = url_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, os.path.basename(URL[split])),
+        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        hash_type="md5",
+    )
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
+
+    # Cache and check the gzip extraction for relevant split
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
+    )
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").extract(file_type="gzip")
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+
+    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
+    return data_dp.readlines().read_iob(sep=" ")

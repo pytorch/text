@@ -138,11 +138,10 @@ setup_wheel_python() {
           python_abi=cp27-cp27m
         fi
         ;;
-      3.5) python_abi=cp35-cp35m ;;
-      3.6) python_abi=cp36-cp36m ;;
       3.7) python_abi=cp37-cp37m ;;
       3.8) python_abi=cp38-cp38 ;;
       3.9) python_abi=cp39-cp39 ;;
+      3.10) python_abi=cp310-cp310 ;;
       *)
         echo "Unrecognized PYTHON_VERSION=$PYTHON_VERSION"
         exit 1
@@ -180,7 +179,6 @@ setup_pip_pytorch_version() {
 # You MUST have populated PYTORCH_VERSION_SUFFIX before hand.
 setup_conda_pytorch_constraint() {
   CONDA_CHANNEL_FLAGS=${CONDA_CHANNEL_FLAGS:-}
-  CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c iopath"
   if [[ -z "$PYTORCH_VERSION" ]]; then
     export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-nightly"
     export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-nightly]' | python -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"

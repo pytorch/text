@@ -1,19 +1,22 @@
+from typing import Callable, Optional
+
 import torch
-from torchtext.vocab import Vocab
-from typing import Optional, Callable
 from torchtext._torchtext import (
     _build_vocab_from_text_file,
-    _load_vocab_from_file,
     _build_vocab_from_text_file_using_python_tokenizer,
+    _load_vocab_from_file,
 )
+from torchtext.vocab import Vocab
 
 __all__ = [
-    'build_vocab_from_text_file',
-    'load_vocab_from_file',
+    "build_vocab_from_text_file",
+    "load_vocab_from_file",
 ]
 
 
-def build_vocab_from_text_file(file_path: str, tokenizer: Optional[Callable] = None, min_freq: int = 1, num_cpus: Optional[int] = 4) -> Vocab:
+def build_vocab_from_text_file(
+    file_path: str, tokenizer: Optional[Callable] = None, min_freq: int = 1, num_cpus: Optional[int] = 4
+) -> Vocab:
     r"""Create a `Vocab` object from a raw text file.
     The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in
     parallel to the text.
@@ -38,6 +41,7 @@ def build_vocab_from_text_file(file_path: str, tokenizer: Optional[Callable] = N
     """
 
     if not tokenizer:
+
         def tokenizer(x):
             return x.split()
 

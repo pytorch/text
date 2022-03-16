@@ -1,7 +1,7 @@
 .. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
     :target: https://circleci.com/gh/pytorch/text
 
-.. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/pytorch/text/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
 .. image:: https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Ftorchtext%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v
@@ -12,13 +12,13 @@ torchtext
 
 This repository consists of:
 
-* `torchtext.datasets <https://github.com/pytorch/text/tree/master/torchtext/datasets>`_: The raw text iterators for common NLP datasets
-* `torchtext.data <https://github.com/pytorch/text/tree/master/torchtext/data>`_: Some basic NLP building blocks (tokenizers, metrics, functionals etc.)
-* `torchtext.nn <https://github.com/pytorch/text/tree/master/torchtext/nn>`_: NLP related modules
-* `torchtext.vocab <https://github.com/pytorch/text/tree/master/torchtext/vocab.py>`_: Vocab and Vectors related classes and factory functions
-* `examples <https://github.com/pytorch/text/tree/master/examples>`_: Example NLP workflows with PyTorch and torchtext library.
+* `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
+* `torchtext.data <https://github.com/pytorch/text/tree/main/torchtext/data>`_: Some basic NLP building blocks
+* `torchtext.transforms <https://github.com/pytorch/text/tree/main/torchtext/transforms>`_: Basic text-processing transformations
+* `torchtext.models <https://github.com/pytorch/text/tree/main/torchtext/models>`_: Pre-trained models
+* `torchtext.vocab <https://github.com/pytorch/text/tree/main/torchtext/vocab>`_: Vocab and Vectors related classes and factory functions
+* `examples <https://github.com/pytorch/text/tree/main/examples>`_: Example NLP workflows with PyTorch and torchtext library.
 
-Note: The legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder for more details.
 
 Installation
 ============
@@ -29,14 +29,20 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :header: "PyTorch version", "torchtext version", "Supported Python version"
    :widths: 10, 10, 10
 
-   nightly build, master, 3.6+
-   1.9, 0.10, 3.6+
-   1.8, 0.9, 3.6+
-   1.7, 0.8, 3.6+
-   1.6, 0.7, 3.6+
-   1.5, 0.6, 3.5+
-   1.4, 0.5, "2.7, 3.5+"
-   0.4 and below, 0.2.3, "2.7, 3.5+"
+   nightly build, main, ">=3.7, <=3.9"
+   1.11.0, 0.12.0, ">=3.6, <=3.9"
+   1.10.0, 0.11.0, ">=3.6, <=3.9"
+   1.9.1, 0.10.1, ">=3.6, <=3.9"
+   1.9, 0.10, ">=3.6, <=3.9"
+   1.8.2, 0.9.2, ">=3.6, <=3.9"
+   1.8.1, 0.9.1, ">=3.6, <=3.9"
+   1.8, 0.9, ">=3.6, <=3.9"
+   1.7.1, 0.8.1, ">=3.6, <=3.9"
+   1.7, 0.8, ">=3.6, <=3.8"
+   1.6, 0.7, ">=3.6, <=3.8"
+   1.5, 0.6, ">=3.5, <=3.8"
+   1.4, 0.5, "2.7, >=3.5, <=3.8"
+   0.4 and below, 0.2.3, "2.7, >=3.5, <=3.8"
 
 Using conda::
 
@@ -52,7 +58,7 @@ Optional requirements
 If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need to install SpaCy and download its English model::
 
     pip install spacy
-    python -m spacy download en_core_web_sm 
+    python -m spacy download en_core_web_sm
 
 Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
@@ -82,7 +88,7 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 **Note**
 
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
-If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/master/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
+If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/main/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/main/manywheel>`_.
 
 Documentation
 =============
@@ -97,63 +103,37 @@ The datasets module currently contains:
 * Language modeling: WikiText2, WikiText103, PennTreebank, EnWik9
 * Machine translation: IWSLT2016, IWSLT2017, Multi30k
 * Sequence tagging (e.g. POS/NER): UDPOS, CoNLL2000Chunking
-* Question answering: SQuAD1, SQuAD2 
-* Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull, IMDB
+* Question answering: SQuAD1, SQuAD2
+* Text classification: SST2, AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull, IMDB
+* Model pre-training: CC-100
 
-For example, to access the raw text from the AG_NEWS dataset:
+Models
+======
 
-  .. code-block:: python
+The library currently consist of following pre-trained models:
 
-      >>> from torchtext.datasets import AG_NEWS
-      >>> train_iter = AG_NEWS(split='train')
-      >>> next(train_iter)
-      >>> # Or iterate with for loop
-      >>> for (label, line) in train_iter:
-      >>>     print(label, line)
-      >>> # Or send to DataLoader
-      >>> from torch.utils.data import DataLoader
-      >>> train_iter = AG_NEWS(split='train')
-      >>> dataloader = DataLoader(train_iter, batch_size=8, shuffle=False)
+* RoBERTa: `Base and Large Architecture <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`_
+* XLM-RoBERTa: `Base and Large Architure <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`_
+
+Tokenizers
+==========
+
+The transforms module currently support following scriptable tokenizers:
+
+* `SentencePiece <https://github.com/google/sentencepiece>`_
+* `GPT-2 BPE <https://github.com/openai/gpt-2/blob/master/src/encoder.py>`_
+* `CLIP <https://github.com/openai/CLIP/blob/main/clip/simple_tokenizer.py>`_
 
 Tutorials
 =========
 
-To get started with torchtext, users may refer to the following tutorials available on PyTorch website.
+To get started with torchtext, users may refer to the following tutorial available on PyTorch website.
 
+* `SST-2 binary text classification using XLM-R pre-trained model <https://pytorch.org/text/stable/tutorials/sst2_classification_non_distributed.html>`_
 * `Text classification with AG_NEWS dataset <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
 * `Translation trained with Multi30k dataset using transformers and torchtext <https://pytorch.org/tutorials/beginner/translation_transformer.html>`_
 * `Language modeling using transforms and torchtext <https://pytorch.org/tutorials/beginner/transformer_tutorial.html>`_
 
-
-[Prototype] Experimental Code
-=============================
-
-We have re-written several building blocks under ``torchtext.experimental``:
-
-* `Transforms <https://github.com/pytorch/text/blob/master/torchtext/experimental/transforms.py>`_: some basic data processing building blocks
-* `Vectors <https://github.com/pytorch/text/blob/master/torchtext/experimental/vectors.py>`_: the vectors to convert tokens into tensors.
-
-These prototype building blocks in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
-
-    pip install --pre --upgrade torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
-
-For more detailed instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
-
-[BC Breaking] Legacy
-====================
-
-In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
-
-* ``torchtext.legacy.data.field``
-* ``torchtext.legacy.data.batch``
-* ``torchtext.legacy.data.example``
-* ``torchtext.legacy.data.iterator``
-* ``torchtext.legacy.data.pipeline``
-* ``torchtext.legacy.datasets``
-
-We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/master/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
-
-In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows. 
 
 Disclaimer on Datasets
 ======================

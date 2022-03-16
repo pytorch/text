@@ -41,7 +41,7 @@ commands:
     steps:
       - run:
           name: Generate CCI cache key
-          command:
+          command: |
             echo "$(date "+%D")" > .cachekey
             cat .circleci/cached_datasets_list.txt >> .cachekey
       - persist_to_workspace:
@@ -83,14 +83,66 @@ smoke_test_common: &smoke_test_common
 jobs:
   circleci_consistency:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
+          name: Install check utilities
+          command: pip install --user --progress-bar=off jinja2 pyyaml
+      - run:
+          name: Check CircleCI config consistency
+          command: python .circleci/regenerate.py && git diff --quiet
+      - run:
+          when: on_fail
+          name: .circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this.
+          command: exit 1
+
+  lint_python_and_config:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install lint utilities
+          command: pip install --user --progress-bar=off pre-commit
+      - run:
+          name: Install pre-commit hooks
+          command: pre-commit install-hooks
+      - run:
+          name: Lint Python code and config files
+          command: pre-commit run --all-files
+      - run:
+          when: on_fail
+          name: Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this.
+          command: exit 1
+
+  lint_c:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - run:
+          name: Install additional system libraries
           command: |
-            pip install --user --progress-bar off jinja2 pyyaml
-            python .circleci/regenerate.py
-            git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run .circleci/regenerate.py to update config"; exit 1)
+            sudo apt update -qy
+            sudo apt install libtinfo5
+      - checkout
+      - run:
+          name: Install lint utilities
+          command: |
+            curl https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64 -o clang-format
+            chmod +x clang-format
+            ./clang-format --version
+      - run:
+          name: Lint C code
+          command: >
+            python run-clang-format.py
+            --recursive
+            --clang-format-executable=./clang-format
+            torchtext/csrc
+      - run:
+          when: on_fail
+          name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
+          command: exit 1
 
   binary_linux_wheel:
     <<: *binary_common
@@ -234,7 +286,7 @@ jobs:
   # Requires org-member context
   binary_wheel_upload:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     steps:
       - attach_workspace:
           at: ~/workspace
@@ -361,44 +413,6 @@ jobs:
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
 
-  cachesetup_linux:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - generate_cachekey
-      - restore_cache:
-          keys:
-
-            - v1-linux-cache-index-{{ checksum ".cachekey" }}
-
-      - run:
-          name: Generate cache
-          no_output_timeout: 30m
-          command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
-              .circleci/unittest/linux/scripts/setup_env.sh
-              .circleci/unittest/linux/scripts/install.sh
-              .circleci/unittest/linux/scripts/generate_cache.sh
-            fi
-            cat .data/cache_status_file.json
-      - save_cache:
-
-          key: v1-linux-dataset-{{ checksum ".cachekey" }}
-
-          paths:
-            - .data
-      - save_cache:
-
-          key: v1-linux-cache-index-{{ checksum ".cachekey" }}
-
-          paths:
-            - .data/cache_status_file.json
-
   unittest_linux:
     <<: *binary_common
     docker:
@@ -419,7 +433,6 @@ jobs:
           keys:
 
             - v1-linux-dataset-vector-{{ checksum ".cachekey" }}
-            - v1-linux-dataset-{{ checksum ".cachekey" }}
 
       - run:
           name: Run tests
@@ -432,49 +445,11 @@ jobs:
 
           paths:
             - .vector_cache
-            - .data
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
       - store_test_results:
           path: test-results
-
-  cachesetup_windows:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - generate_cachekey
-      - restore_cache:
-          keys:
-
-            - v1-windows-cache-index-{{ checksum ".cachekey" }}
-
-      - run:
-          name: Generate daily data Cache
-          no_output_timeout: 30m
-          command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
-              .circleci/unittest/windows/scripts/setup_env.sh
-              .circleci/unittest/windows/scripts/install.sh
-              .circleci/unittest/windows/scripts/generate_cache.sh
-            fi
-            cat .data/cache_status_file.json
-      - save_cache:
-
-          key: v1-windows-dataset-{{ checksum ".cachekey" }}
-
-          paths:
-            - .data
-      - save_cache:
-
-          key: v1-windows-cache-index-{{ checksum ".cachekey" }}
-
-          paths:
-            - .data/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
@@ -495,9 +470,8 @@ jobs:
           keys:
 
             - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
-            - v1-windows-dataset-{{ checksum ".cachekey" }}
 
- 
+
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
@@ -509,7 +483,6 @@ jobs:
 
           paths:
             - .vector_cache
-            - .data
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
@@ -544,7 +517,7 @@ jobs:
           name: install binaries
           command: |
             set -x
-            conda install make
+            conda install -y make python=${PYTHON_VERSION}
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: Build docs
@@ -552,7 +525,7 @@ jobs:
             set -x
             pushd docs
             pip install -r requirements.txt
-            make html
+            BUILD_GALLERY=1 make 'SPHINXOPTS=-W' html
             popd
       - persist_to_workspace:
           root: ./
@@ -586,47 +559,36 @@ jobs:
             # Don't use "checkout" step since it uses ssh, which cannot git push
             # https://circleci.com/docs/2.0/configuration-reference/#checkout
             set -ex
-            tag=${CIRCLE_TAG:1:5}
-            target=${tag:-master}
+            # turn v1.12.0rc3 into 1.12.0
+            tag=$(echo $CIRCLE_TAG | sed -e 's/v*\([0-9.]*\).*/\1/')
+            target=${tag:-main}
             ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
 
-  docstring_parameters_sync:
-    <<: *binary_common
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - checkout
-      - run:
-          name: Check parameters docstring sync
-          command: |
-            pip install --user pydocstyle
-            export PATH="$HOME/.local/bin:$PATH"
-            pydocstyle torchtext
-
-
 workflows:
-  build:
+  lint:
     jobs:
       - circleci_consistency
-      - binary_linux_wheel:
-          name: binary_linux_wheel_py3.6
-          python_version: '3.6'
+      - lint_python_and_config
+      - lint_c
+  build:
+    jobs:
       - binary_linux_wheel:
           name: binary_linux_wheel_py3.7
           python_version: '3.7'
       - binary_linux_wheel:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: binary_linux_wheel_py3.8
           python_version: '3.8'
       - binary_linux_wheel:
           name: binary_linux_wheel_py3.9
           python_version: '3.9'
-      - binary_macos_wheel:
-          name: binary_macos_wheel_py3.6
-          python_version: '3.6'
+      - binary_linux_wheel:
+          name: binary_linux_wheel_py3.10
+          python_version: '3.10'
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.7
           python_version: '3.7'
@@ -636,9 +598,9 @@ workflows:
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.9
           python_version: '3.9'
-      - binary_windows_wheel:
-          name: binary_windows_wheel_py3.6
-          python_version: '3.6'
+      - binary_macos_wheel:
+          name: binary_macos_wheel_py3.10
+          python_version: '3.10'
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.7
           python_version: '3.7'
@@ -648,9 +610,9 @@ workflows:
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.9
           python_version: '3.9'
-      - binary_linux_conda:
-          name: binary_linux_conda_py3.6
-          python_version: '3.6'
+      - binary_windows_wheel:
+          name: binary_windows_wheel_py3.10
+          python_version: '3.10'
       - binary_linux_conda:
           name: binary_linux_conda_py3.7
           python_version: '3.7'
@@ -660,9 +622,9 @@ workflows:
       - binary_linux_conda:
           name: binary_linux_conda_py3.9
           python_version: '3.9'
-      - binary_macos_conda:
-          name: binary_macos_conda_py3.6
-          python_version: '3.6'
+      - binary_linux_conda:
+          name: binary_linux_conda_py3.10
+          python_version: '3.10'
       - binary_macos_conda:
           name: binary_macos_conda_py3.7
           python_version: '3.7'
@@ -672,9 +634,9 @@ workflows:
       - binary_macos_conda:
           name: binary_macos_conda_py3.9
           python_version: '3.9'
-      - binary_windows_conda:
-          name: binary_windows_conda_py3.6
-          python_version: '3.6'
+      - binary_macos_conda:
+          name: binary_macos_conda_py3.10
+          python_version: '3.10'
       - binary_windows_conda:
           name: binary_windows_conda_py3.7
           python_version: '3.7'
@@ -684,7 +646,15 @@ workflows:
       - binary_windows_conda:
           name: binary_windows_conda_py3.9
           python_version: '3.9'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.10
+          python_version: '3.10'
       - build_docs:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: build_docs
           python_version: '3.8'
           requires:
@@ -700,96 +670,38 @@ workflows:
           python_version: '3.8'
           requires:
           - build_docs
-      - docstring_parameters_sync:
-          name: docstring_parameters_sync
-          python_version: '3.8'
-          requires:
-          - binary_linux_wheel_py3.8
   unittest:
     jobs:
-      - cachesetup_linux:
-          name: cachesetup_linux_py_any
-          python_version: '3.6'
-      - unittest_linux:
-          name: unittest_linux_py3.6
-          python_version: '3.6'
-          requires:
-          - cachesetup_linux_py_any
-      - stylecheck:
-          name: stylecheck_py3.6
-          python_version: '3.6'
       - unittest_linux:
           name: unittest_linux_py3.7
           python_version: '3.7'
-          requires:
-          - cachesetup_linux_py_any
       - unittest_linux:
           name: unittest_linux_py3.8
           python_version: '3.8'
-          requires:
-          - cachesetup_linux_py_any
       - unittest_linux:
           name: unittest_linux_py3.9
           python_version: '3.9'
-          requires:
-          - cachesetup_linux_py_any
-      - cachesetup_windows:
-          name: cachesetup_windows_py_any
-          python_version: '3.6'
-      - unittest_windows:
-          name: unittest_windows_py3.6
-          python_version: '3.6'
-          requires:
-          - cachesetup_windows_py_any
+      - unittest_linux:
+          name: unittest_linux_py3.10
+          python_version: '3.10'
       - unittest_windows:
           name: unittest_windows_py3.7
           python_version: '3.7'
-          requires:
-          - cachesetup_windows_py_any
       - unittest_windows:
           name: unittest_windows_py3.8
           python_version: '3.8'
-          requires:
-          - cachesetup_windows_py_any
       - unittest_windows:
           name: unittest_windows_py3.9
           python_version: '3.9'
-          requires:
-          - cachesetup_windows_py_any
+      - unittest_windows:
+          name: unittest_windows_py3.10
+          python_version: '3.10'
   nightly:
     jobs:
       - circleci_consistency:
           filters:
             branches:
               only: nightly
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.6
-          python_version: '3.6'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.6_upload
-          requires:
-          - nightly_binary_linux_wheel_py3.6
-      - smoke_test_linux_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.6_smoke_test_pip
-          python_version: '3.6'
-          requires:
-          - nightly_binary_linux_wheel_py3.6_upload
       - binary_linux_wheel:
           filters:
             branches:
@@ -874,14 +786,14 @@ workflows:
           python_version: '3.9'
           requires:
           - nightly_binary_linux_wheel_py3.9_upload
-      - binary_macos_wheel:
+      - binary_linux_wheel:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.6
-          python_version: '3.6'
+          name: nightly_binary_linux_wheel_py3.10
+          python_version: '3.10'
       - binary_wheel_upload:
           context: org-member
           filters:
@@ -889,9 +801,19 @@ workflows:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.6_upload
+          name: nightly_binary_linux_wheel_py3.10_upload
           requires:
-          - nightly_binary_macos_wheel_py3.6
+          - nightly_binary_linux_wheel_py3.10
+      - smoke_test_linux_pip:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.10_smoke_test_pip
+          python_version: '3.10'
+          requires:
+          - nightly_binary_linux_wheel_py3.10_upload
       - binary_macos_wheel:
           filters:
             branches:
@@ -946,14 +868,14 @@ workflows:
           name: nightly_binary_macos_wheel_py3.9_upload
           requires:
           - nightly_binary_macos_wheel_py3.9
-      - binary_windows_wheel:
+      - binary_macos_wheel:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.6
-          python_version: '3.6'
+          name: nightly_binary_macos_wheel_py3.10
+          python_version: '3.10'
       - binary_wheel_upload:
           context: org-member
           filters:
@@ -961,19 +883,9 @@ workflows:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.6_upload
+          name: nightly_binary_macos_wheel_py3.10_upload
           requires:
-          - nightly_binary_windows_wheel_py3.6
-      - smoke_test_windows_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.6_smoke_test_pip
-          python_version: '3.6'
-          requires:
-          - nightly_binary_windows_wheel_py3.6_upload
+          - nightly_binary_macos_wheel_py3.10
       - binary_windows_wheel:
           filters:
             branches:
@@ -1058,34 +970,34 @@ workflows:
           python_version: '3.9'
           requires:
           - nightly_binary_windows_wheel_py3.9_upload
-      - binary_linux_conda:
+      - binary_windows_wheel:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_conda_py3.6
-          python_version: '3.6'
-      - binary_conda_upload:
+          name: nightly_binary_windows_wheel_py3.10
+          python_version: '3.10'
+      - binary_wheel_upload:
           context: org-member
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_conda_py3.6_upload
+          name: nightly_binary_windows_wheel_py3.10_upload
           requires:
-          - nightly_binary_linux_conda_py3.6
-      - smoke_test_linux_conda:
+          - nightly_binary_windows_wheel_py3.10
+      - smoke_test_windows_pip:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_conda_py3.6_smoke_test_conda
-          python_version: '3.6'
+          name: nightly_binary_windows_wheel_py3.10_smoke_test_pip
+          python_version: '3.10'
           requires:
-          - nightly_binary_linux_conda_py3.6_upload
+          - nightly_binary_windows_wheel_py3.10_upload
       - binary_linux_conda:
           filters:
             branches:
@@ -1170,14 +1082,14 @@ workflows:
           python_version: '3.9'
           requires:
           - nightly_binary_linux_conda_py3.9_upload
-      - binary_macos_conda:
+      - binary_linux_conda:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.6
-          python_version: '3.6'
+          name: nightly_binary_linux_conda_py3.10
+          python_version: '3.10'
       - binary_conda_upload:
           context: org-member
           filters:
@@ -1185,9 +1097,19 @@ workflows:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.6_upload
+          name: nightly_binary_linux_conda_py3.10_upload
           requires:
-          - nightly_binary_macos_conda_py3.6
+          - nightly_binary_linux_conda_py3.10
+      - smoke_test_linux_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_conda_py3.10_smoke_test_conda
+          python_version: '3.10'
+          requires:
+          - nightly_binary_linux_conda_py3.10_upload
       - binary_macos_conda:
           filters:
             branches:
@@ -1242,14 +1164,14 @@ workflows:
           name: nightly_binary_macos_conda_py3.9_upload
           requires:
           - nightly_binary_macos_conda_py3.9
-      - binary_windows_conda:
+      - binary_macos_conda:
           filters:
             branches:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.6
-          python_version: '3.6'
+          name: nightly_binary_macos_conda_py3.10
+          python_version: '3.10'
       - binary_conda_upload:
           context: org-member
           filters:
@@ -1257,19 +1179,9 @@ workflows:
               only: nightly
             tags:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.6_upload
+          name: nightly_binary_macos_conda_py3.10_upload
           requires:
-          - nightly_binary_windows_conda_py3.6
-      - smoke_test_windows_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.6_smoke_test_conda
-          python_version: '3.6'
-          requires:
-          - nightly_binary_windows_conda_py3.6_upload
+          - nightly_binary_macos_conda_py3.10
       - binary_windows_conda:
           filters:
             branches:
@@ -1354,6 +1266,34 @@ workflows:
           python_version: '3.9'
           requires:
           - nightly_binary_windows_conda_py3.9_upload
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.10
+          python_version: '3.10'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.10_upload
+          requires:
+          - nightly_binary_windows_conda_py3.10
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.10_smoke_test_conda
+          python_version: '3.10'
+          requires:
+          - nightly_binary_windows_conda_py3.10_upload
   docker_build:
     triggers:
       - schedule:
@@ -1361,7 +1301,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - smoke_test_docker_image_build:
           context: org-member

@@ -4,7 +4,7 @@ name: Bandit
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -19,5 +19,5 @@ jobs:
       # Ignoring submodules
       - name: Run Bandit Security Analysis
         run: |
-              python -m pip install bandit
-              python -m bandit -r . -x ./third_party -lll
+          python -m pip install bandit
+          python -m bandit -r . -x ./third_party -lll
