@@ -1,21 +1,18 @@
 import torch
 from torchtext import functional
-from parameterized import parameterized
-import itertools
+from .common.parameterized_utils import nested_params
 
 from .common.torchtext_test_case import TorchtextTestCase
 
 class TestFunctional(TorchtextTestCase):
 
-    @parameterized.expand(
-        itertools.product(
-            [True, False],
-            [
-                [[[1, 2], [1, 2, 3]], 0, [[1, 2, 0], [1, 2, 3]]],
-                [[[1, 2], [1, 2, 3]], 1, [[1, 2, 1], [1, 2, 3]]],
-                [[1, 2], 0, [1, 2]],
-            ]
-        )
+    @nested_params(
+        [True, False],
+        [
+            [[[1, 2], [1, 2, 3]], 0, [[1, 2, 0], [1, 2, 3]]],
+            [[[1, 2], [1, 2, 3]], 1, [[1, 2, 1], [1, 2, 3]]],
+            [[1, 2], 0, [1, 2]],
+        ]
     )
     def test_to_tensor(self, test_scripting, configs):
         """test tensorization on both single sequence and batch of sequence"""
@@ -31,16 +28,14 @@ class TestFunctional(TorchtextTestCase):
         expected = torch.tensor(expected_list, dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
-    @parameterized.expand(
-        itertools.product(
-            [True, False],
-            [
-                [[[1, 2], [1, 2, 3]], [[1, 2], [1, 2]]],
-                [[1, 2, 3], [1, 2]],
-                [[["a", "b"], ["a", "b", "c"]], [["a", "b"], ["a", "b"]]],
-                [["a", "b", "c"], ["a", "b"]],
-            ]
-        )
+    @nested_params(
+        [True, False],
+        [
+            [[[1, 2], [1, 2, 3]], [[1, 2], [1, 2]]],
+            [[1, 2, 3], [1, 2]],
+            [[["a", "b"], ["a", "b", "c"]], [["a", "b"], ["a", "b"]]],
+            [["a", "b", "c"], ["a", "b"]],
+        ]
     )
     def test_truncate(self, test_scripting, configs):
         """test truncation on both sequence and batch of sequence with both str and int types"""
@@ -56,24 +51,22 @@ class TestFunctional(TorchtextTestCase):
         actual = func(inputs, max_seq_len=max_seq_len)
         self.assertEqual(actual, expected)
 
-    @parameterized.expand(
-        itertools.product(
-            [True, False],
-            [
-                # case: List[List[int]]
-                [[[1, 2], [1, 2, 3]], 0, [[0, 1, 2], [0, 1, 2, 3]], True],
-                [[[1, 2], [1, 2, 3]], 0, [[1, 2, 0], [1, 2, 3, 0]], False],
-                # case: List[int]
-                [[1, 2], 0, [0, 1, 2], True],
-                [[1, 2], 0, [1, 2, 0], False],
-                # case: List[List[str]]
-                [[["a", "b"], ["c", "d"]], "x", [["x", "a", "b"], ["x", "c", "d"]], True],
-                [[["a", "b"], ["c", "d"]], "x", [["a", "b", "x"], ["c", "d", "x"]], False],
-                # case: List[str]
-                [["a", "b"], "x", ["x", "a", "b"], True],
-                [["a", "b"], "x", ["a", "b", "x"], False],
-            ]
-        )
+    @nested_params(
+        [True, False],
+        [
+            # case: List[List[int]]
+            [[[1, 2], [1, 2, 3]], 0, [[0, 1, 2], [0, 1, 2, 3]], True],
+            [[[1, 2], [1, 2, 3]], 0, [[1, 2, 0], [1, 2, 3, 0]], False],
+            # case: List[int]
+            [[1, 2], 0, [0, 1, 2], True],
+            [[1, 2], 0, [1, 2, 0], False],
+            # case: List[List[str]]
+            [[["a", "b"], ["c", "d"]], "x", [["x", "a", "b"], ["x", "c", "d"]], True],
+            [[["a", "b"], ["c", "d"]], "x", [["a", "b", "x"], ["c", "d", "x"]], False],
+            # case: List[str]
+            [["a", "b"], "x", ["x", "a", "b"], True],
+            [["a", "b"], "x", ["a", "b", "x"], False],
+        ]
     )
     def test_add_token(self, test_scripting, configs):
         inputs, token_id, expected, begin = configs
