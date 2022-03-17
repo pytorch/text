@@ -149,7 +149,7 @@ class TestModels(TorchtextTestCase):
                 vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
             )
             model_bundle = RobertaBundle(dummy_encoder_conf)
-            model = model_bundle.get_model(
+            model_bundle.get_model(
                 load_weights = False,
                 freeze_encoder = True
             )
@@ -163,8 +163,7 @@ class TestModels(TorchtextTestCase):
                 vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
             )
             dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
-            dummy_classifier = RobertaModel(dummy_encoder_conf, dummy_classifier_head)
-            model = RobertaBundle.build_model(
+            RobertaBundle.build_model(
                 encoder_conf=dummy_encoder_conf,
                 head=dummy_classifier_head,
                 freeze_encoder=True,
