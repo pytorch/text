@@ -156,7 +156,7 @@ class TestModels(TorchtextTestCase):
             self.assertTrue(self._caplog.records[0].message.startswith('The encoder is not loaded'))
 
     def test_roberta_bundler_raise_checkpoint(self):
-        from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaModel, RobertaBundle
+        from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaBundle
 
         with self.assertRaises(TypeError):
             dummy_encoder_conf = RobertaEncoderConf(
