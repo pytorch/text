@@ -9,7 +9,7 @@
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
 #include <vectors.h> // @manual
-#include <vocab.h> // @manual
+#include "vocab.h" // @manual
 #include <vocab_factory.h> // @manual
 
 #include <iostream>

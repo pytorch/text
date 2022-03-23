@@ -32,18 +32,18 @@ add_subdirectory(re2)
 add_subdirectory(double-conversion)
 
 
-# Sentencepiece cannot be built outside of the tree because the `third_party/absl` directory
-# is shadowed by the `third_party` directory in build binary directory and headers are
-# unaccessible.
-#
-# Apply custom patch to resolve that
-set(SPM_REPO ${CMAKE_CURRENT_SOURCE_DIR}/sentencepiece)
-execute_process(
-  WORKING_DIRECTORY ${SPM_REPO}
-  COMMAND "git" "checkout" "."
-  )
-execute_process(
-  WORKING_DIRECTORY ${SPM_REPO}
-  COMMAND git apply ../spm.patch
-  )
+# # Sentencepiece cannot be built outside of the tree because the `third_party/absl` directory
+# # is shadowed by the `third_party` directory in build binary directory and headers are
+# # unaccessible.
+# #
+# # Apply custom patch to resolve that
+# set(SPM_REPO ${CMAKE_CURRENT_SOURCE_DIR}/sentencepiece)
+# execute_process(
+#   WORKING_DIRECTORY ${SPM_REPO}
+#   COMMAND "git" "checkout" "."
+#   )
+# execute_process(
+#   WORKING_DIRECTORY ${SPM_REPO}
+#   COMMAND git apply ../spm.patch
+#   )
 add_subdirectory(sentencepiece)
