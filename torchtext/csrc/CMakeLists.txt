@@ -1,5 +1,3 @@
-get_property(TORCHTEXT_THIRD_PARTIES GLOBAL PROPERTY TORCHTEXT_THIRD_PARTIES)
-
 ################################################################################
 # libtorchtext
 ################################################################################
@@ -28,12 +26,18 @@ set(
 set(
   LIBTORCHTEXT_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}
+  $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:double-conversion,INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:sentencepiece,INCLUDE_DIRECTORIES>
   )
 
 set(
   LIBTORCHTEXT_LINK_LIBRARIES
   torch
-  ${TORCHTEXT_THIRD_PARTIES}
+  re2
+  double-conversion
+  sentencepiece
+  sentencepiece_train
   )
 
 set(

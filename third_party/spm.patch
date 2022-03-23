@@ -1,0 +1,59 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5bced90..fc65804 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -51,13 +51,13 @@ else()
+   set(libprotobuf_lite "-lprotobuf-lite")
+ endif()
+ 
+-if (MSVC)
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG          ${CMAKE_CXX_FLAGS_DEBUG})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_MINSIZEREL     ${CMAKE_CXX_FLAGS_MINSIZEREL})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE        ${CMAKE_CXX_FLAGS_RELEASE})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+-  add_definitions("/wd4267 /wd4244 /wd4305 /Zc:strictStrings /utf-8")
+-endif()
++# if (MSVC)
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG          ${CMAKE_CXX_FLAGS_DEBUG})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_MINSIZEREL     ${CMAKE_CXX_FLAGS_MINSIZEREL})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE        ${CMAKE_CXX_FLAGS_RELEASE})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
++#   add_definitions("/wd4267 /wd4244 /wd4305 /Zc:strictStrings /utf-8")
++# endif()
+ 
+ if (APPLE)
+   set(CMAKE_MACOSX_RPATH ON)
+@@ -83,14 +83,14 @@ if (NOT DEFINED CMAKE_INSTALL_INCDIR)
+   set(CMAKE_INSTALL_INCDIR include)
+ endif()
+ 
+-configure_file("${PROJECT_SOURCE_DIR}/config.h.in" "config.h")
+-configure_file("${PROJECT_SOURCE_DIR}/sentencepiece.pc.in" "sentencepiece.pc" @ONLY)
++configure_file("${PROJECT_SOURCE_DIR}/config.h.in" "config/config.h")
++configure_file("${PROJECT_SOURCE_DIR}/sentencepiece.pc.in" "config/sentencepiece.pc" @ONLY)
+ 
+ if (NOT MSVC)
+-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sentencepiece.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++  install(FILES "${PROJECT_BINARY_DIR}/config/sentencepiece.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ endif()
+ 
+-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
++include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR}/config)
+ 
+ if (SPM_BUILD_TEST)
+   enable_testing()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index f7e4d50..98d8e02 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -77,8 +77,8 @@ else()
+   include_directories(${PROTOBUF_INCLUDE_DIR})
+ endif()
+ 
+-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party)
++include_directories(${CMAKE_CURRENT_BINARY_DIR}/../)
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../third_party)
+ 
+ if (MSVC)
+   add_definitions("/D_USE_INTERNAL_STRING_VIEW")

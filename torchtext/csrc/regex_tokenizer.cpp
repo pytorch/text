@@ -1,4 +1,4 @@
-#include <regex_tokenizer.h> // @manual
+#include "regex_tokenizer.h" // @manual
 #include <sstream>
 
 namespace torchtext {
