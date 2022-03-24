@@ -116,10 +116,16 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
     register_pybindings.cpp
     )
 
+  set(
+    EXTENSION_LIBRARIES
+    libtorchtext
+    re2
+  )
+
   define_extension(
     _torchtext
     "${EXTENSION_SOURCES}"
-    libtorchtext
+    "${EXTENSION_LIBRARIES}"
     "${LIBTORCHTEXT_COMPILE_DEFINITIONS}"
     )
 endif()

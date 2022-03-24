@@ -231,6 +231,8 @@ class CMakeBuild(build_ext):
             "-DCMAKE_VERBOSE_MAKEFILE=ON",
             f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
             "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
+            "-DRE2_BUILD_TESTING:BOOL=OFF",
+            "-DBUILD_TESTING:BOOL=OFF"
         ]
         build_args = ["--target", "install"]
 
