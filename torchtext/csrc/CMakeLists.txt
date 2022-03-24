@@ -84,11 +84,11 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
     find_package(Python3 ${PYTHON_VERSION} EXACT COMPONENTS Development)
     set(ADDITIONAL_ITEMS Python3::Python)
   endif()
-  function(define_extension name sources libraries definitions)
+  function(define_extension name sources include_dirs libraries definitions)
     add_library(${name} SHARED ${sources})
     target_compile_definitions(${name} PRIVATE "${definitions}")
     target_include_directories(
-      ${name} PRIVATE ${PROJECT_SOURCE_DIR} ${Python_INCLUDE_DIR})
+      ${name} PRIVATE ${PROJECT_SOURCE_DIR} ${Python_INCLUDE_DIR} ${include_dirs})
     target_link_libraries(
       ${name}
       ${libraries}
@@ -117,13 +117,18 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
     )
 
   set(
+    EXTENSION_INCLUDE_DIRS
+    $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
+    )
+
+  set(
     EXTENSION_LIBRARIES
     libtorchtext
-    re2
   )
 
   define_extension(
     _torchtext
+    "${EXTENSION_INCLUDE_DIRS}"
     "${EXTENSION_SOURCES}"
     "${EXTENSION_LIBRARIES}"
     "${LIBTORCHTEXT_COMPILE_DEFINITIONS}"
