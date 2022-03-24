@@ -88,7 +88,7 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
     add_library(${name} SHARED ${sources})
     target_compile_definitions(${name} PRIVATE "${definitions}")
     target_include_directories(
-      ${name} PRIVATE ${PROJECT_SOURCE_DIR} ${Python_INCLUDE_DIR} ${include_dirs})
+      ${name} PRIVATE ${Python_INCLUDE_DIR} ${include_dirs})
     target_link_libraries(
       ${name}
       ${libraries}
@@ -118,6 +118,8 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
 
   set(
     EXTENSION_INCLUDE_DIRS
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/third_party/sentencepiece/src
     $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
     )
 
@@ -128,8 +130,8 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
 
   define_extension(
     _torchtext
-    "${EXTENSION_INCLUDE_DIRS}"
     "${EXTENSION_SOURCES}"
+    "${EXTENSION_INCLUDE_DIRS}"
     "${EXTENSION_LIBRARIES}"
     "${LIBTORCHTEXT_COMPILE_DEFINITIONS}"
     )
