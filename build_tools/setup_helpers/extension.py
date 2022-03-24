@@ -88,97 +88,97 @@ def _get_cxx11_abi():
     return "-D_GLIBCXX_USE_CXX11_ABI=" + str(value)
 
 
-def _build_third_party(debug):
-    build_dir = _TP_BASE_DIR / "build"
-    build_dir.mkdir(exist_ok=True)
-    build_env = os.environ.copy()
-    config = "Debug" if debug else "Release"
-    if platform.system() == "Windows":
-        extra_args = [
-            "-GNinja",
-        ]
-        build_env.setdefault("CC", "cl")
-        build_env.setdefault("CXX", "cl")
-    else:
-        extra_args = ["-DCMAKE_CXX_FLAGS=-fPIC " + _get_cxx11_abi()]
-    subprocess.run(
-        args=[
-            "cmake",
-            "-DBUILD_SHARED_LIBS=OFF",
-            "-DRE2_BUILD_TESTING=OFF",
-            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-            f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
-            f"-DCMAKE_BUILD_TYPE={config}",
-            "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
-            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-        ]
-        + extra_args
-        + [".."],
-        cwd=str(build_dir),
-        check=True,
-        env=build_env,
-    )
-    print("*** Command list Thirdparty ***")
-    with open(build_dir / "compile_commands.json", "r") as fileobj:
-        print(fileobj.read())
-    print("running cmake --build", flush=True)
-    subprocess.run(
-        args=["cmake", "--build", ".", "--target", "install", "--config", config],
-        cwd=str(build_dir),
-        check=True,
-        env=build_env,
-    )
+# def _build_third_party(debug):
+#     build_dir = _TP_BASE_DIR / "build"
+#     build_dir.mkdir(exist_ok=True)
+#     build_env = os.environ.copy()
+#     config = "Debug" if debug else "Release"
+#     if platform.system() == "Windows":
+#         extra_args = [
+#             "-GNinja",
+#         ]
+#         build_env.setdefault("CC", "cl")
+#         build_env.setdefault("CXX", "cl")
+#     else:
+#         extra_args = ["-DCMAKE_CXX_FLAGS=-fPIC " + _get_cxx11_abi()]
+#     subprocess.run(
+#         args=[
+#             "cmake",
+#             "-DBUILD_SHARED_LIBS=OFF",
+#             "-DRE2_BUILD_TESTING=OFF",
+#             "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+#             f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
+#             f"-DCMAKE_BUILD_TYPE={config}",
+#             "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+#             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+#         ]
+#         + extra_args
+#         + [".."],
+#         cwd=str(build_dir),
+#         check=True,
+#         env=build_env,
+#     )
+#     print("*** Command list Thirdparty ***")
+#     with open(build_dir / "compile_commands.json", "r") as fileobj:
+#         print(fileobj.read())
+#     print("running cmake --build", flush=True)
+#     subprocess.run(
+#         args=["cmake", "--build", ".", "--target", "install", "--config", config],
+#         cwd=str(build_dir),
+#         check=True,
+#         env=build_env,
+#     )
 
 
-def _build_sentence_piece(debug):
-    build_dir = _TP_BASE_DIR / "sentencepiece" / "build"
-    build_dir.mkdir(exist_ok=True)
-    build_env = os.environ.copy()
-    config = "Debug" if debug else "Release"
-    if platform.system() == "Windows":
-        extra_args = ["-GNinja"]
-        build_env.setdefault("CC", "cl")
-        build_env.setdefault("CXX", "cl")
-    else:
-        extra_args = []
-    subprocess.run(
-        args=[
-            "cmake",
-            "-DSPM_ENABLE_SHARED=OFF",
-            f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
-            "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
-            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
-            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-            f"-DCMAKE_BUILD_TYPE={config}",
-        ]
-        + extra_args
-        + [".."],
-        cwd=str(build_dir),
-        check=True,
-        env=build_env,
-    )
-    subprocess.run(
-        args=["cmake", "--build", ".", "--target", "install", "--config", config],
-        cwd=str(build_dir),
-        check=True,
-        env=build_env,
-    )
+# def _build_sentence_piece(debug):
+#     build_dir = _TP_BASE_DIR / "sentencepiece" / "build"
+#     build_dir.mkdir(exist_ok=True)
+#     build_env = os.environ.copy()
+#     config = "Debug" if debug else "Release"
+#     if platform.system() == "Windows":
+#         extra_args = ["-GNinja"]
+#         build_env.setdefault("CC", "cl")
+#         build_env.setdefault("CXX", "cl")
+#     else:
+#         extra_args = []
+#     subprocess.run(
+#         args=[
+#             "cmake",
+#             "-DSPM_ENABLE_SHARED=OFF",
+#             f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
+#             "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+#             "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
+#             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+#             f"-DCMAKE_BUILD_TYPE={config}",
+#         ]
+#         + extra_args
+#         + [".."],
+#         cwd=str(build_dir),
+#         check=True,
+#         env=build_env,
+#     )
+#     subprocess.run(
+#         args=["cmake", "--build", ".", "--target", "install", "--config", config],
+#         cwd=str(build_dir),
+#         check=True,
+#         env=build_env,
+#     )
 
 
-def _configure_third_party(debug):
-    _build_third_party(debug)
-    _build_sentence_piece(debug)
+# def _configure_third_party(debug):
+#     _build_third_party(debug)
+#     _build_sentence_piece(debug)
 
 
 
-_LIB_TORCHTEXT_NAME = "torchtext.lib.libtorchtext"
+_LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
 _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 def get_ext_modules():
     modules = [
-        Extension(name=_LIB_TORCHTEXT_NAME, sources=[]),
+        Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
         Extension(name=_EXT_NAME, sources=[]),
     ]
     return modules
