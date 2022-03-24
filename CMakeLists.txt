@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
+# get_cmake_property(_variableNames VARIABLES)
+# list (SORT _variableNames)
+# foreach (_variableName ${_variableNames})
+#     message(STATUS "${_variableName}=${${_variableName}}")
+# endforeach()
+# message( FATAL_ERROR)
+
 # Most of the configurations are taken from PyTorch
 # https://github.com/pytorch/pytorch/blob/0c9fb4aff0d60eaadb04e4d5d099fb1e1d5701a9/CMakeLists.txt
 

@@ -2,6 +2,7 @@ import os
 import platform
 import subprocess
 from pathlib import Path
+from setuptools import Extension
 from setuptools.command.build_ext import build_ext
 import torch
 import distutils.sysconfig
@@ -10,7 +11,8 @@ from torch.utils.cpp_extension import BuildExtension as TorchBuildExtension, Cpp
 
 __all__ = [
     "get_ext_modules",
-    "BuildExtension",
+    # "BuildExtension",
+    "CMakeBuild",
 ]
 
 _ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
@@ -168,33 +170,18 @@ def _configure_third_party(debug):
     _build_sentence_piece(debug)
 
 
+
+_LIB_TORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
-
-
-def get_ext_modules(debug=False):
-    return [
-        CppExtension(
-            _EXT_NAME,
-            _get_srcs(),
-            libraries=_get_libraries(),
-            include_dirs=_get_include_dirs(),
-            library_dirs=_get_library_dirs(),
-            extra_compile_args=_get_eca(debug),
-            extra_link_args=_get_ela(debug),
-        ),
-    ]
-
-
-class BuildExtension(TorchBuildExtension):
-    def build_extension(self, ext):
-        if ext.name == _EXT_NAME:
-            _configure_third_party(self.debug)
-        super().build_extension(ext)
-
-
-
 _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
+
+def get_ext_modules():
+    modules = [
+        Extension(name=_LIB_TORCHTEXT_NAME, sources=[]),
+        Extension(name=_EXT_NAME, sources=[]),
+    ]
+    return modules
 
 # Based off of
 # https://github.com/pybind/cmake_example/blob/580c5fd29d4651db99d8874714b07c0c49a53f8a/setup.py
@@ -233,6 +220,12 @@ class CMakeBuild(build_ext):
             "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
             "-DRE2_BUILD_TESTING:BOOL=OFF",
             "-DBUILD_TESTING:BOOL=OFF"
+            # new args
+            "-DBUILD_SHARED_LIBS=OFF",
+            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+            "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
+            "-DSPM_ENABLE_SHARED=OFF",
         ]
         build_args = ["--target", "install"]
 
