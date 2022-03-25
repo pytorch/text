@@ -48,7 +48,7 @@ def EnWik9(root: str):
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.splitext(_PATH)[0])
     )
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip()
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_zip()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
