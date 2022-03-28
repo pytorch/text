@@ -34,7 +34,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    1.10.0, 0.11.0, ">=3.6, <=3.9"
    1.9.1, 0.10.1, ">=3.6, <=3.9"
    1.9, 0.10, ">=3.6, <=3.9"
-   1.8.2, 0.9.2, ">=3.6, <=3.9"
+   1.8.2 (LTS), 0.9.2 (LTS), ">=3.6, <=3.9"
    1.8.1, 0.9.1, ">=3.6, <=3.9"
    1.8, 0.9, ">=3.6, <=3.9"
    1.7.1, 0.8.1, ">=3.6, <=3.9"
@@ -51,6 +51,9 @@ Using conda::
 Using pip::
 
     pip install torchtext
+
+**Note** LTS versions are distributed through a different channel than the other versioned releases. 
+Please refer to https://pytorch.org/get-started/locally/ for details.
 
 Optional requirements
 ---------------------
