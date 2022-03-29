@@ -161,7 +161,7 @@ def CC100(root: str, language_code: str = "en"):
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.basename(x).rstrip(".xz"))
     )
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_xz()
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_xz()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8").readlines(return_path=False)
