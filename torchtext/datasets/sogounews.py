@@ -8,8 +8,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import GDriveReader
 
 URL = "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE"
 
@@ -70,7 +70,7 @@ def SogouNews(root: str, split: Union[Tuple[str], str]):
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+        FileOpener(cache_decompressed_dp, mode="b").load_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 

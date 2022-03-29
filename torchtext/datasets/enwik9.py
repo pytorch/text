@@ -4,8 +4,8 @@ from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = "http://mattmahoney.net/dc/enwik9.zip"
 
@@ -48,7 +48,7 @@ def EnWik9(root: str):
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, os.path.splitext(_PATH)[0])
     )
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip()
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_zip()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
