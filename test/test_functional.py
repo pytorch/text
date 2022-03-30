@@ -4,6 +4,7 @@ from .common.parameterized_utils import nested_params
 
 from .common.torchtext_test_case import TorchtextTestCase
 
+
 class TestFunctional(TorchtextTestCase):
 
     @nested_params(
@@ -20,13 +21,14 @@ class TestFunctional(TorchtextTestCase):
         func = functional.to_tensor
         if test_scripting:
             func = torch.jit.script(func)
-        else:
-            with self.assertRaises(TypeError):
-                func("test")
 
         actual = func(inputs, padding_value=padding_value)
         expected = torch.tensor(expected_list, dtype=torch.long)
         torch.testing.assert_close(actual, expected)
+
+    def test_to_tensor_assert_raises(self):
+        with self.assertRaises(TypeError):
+            functional.to_tensor("test")
 
     @nested_params(
         [True, False],
@@ -38,18 +40,19 @@ class TestFunctional(TorchtextTestCase):
         ]
     )
     def test_truncate(self, test_scripting, configs):
-        """test truncation on both sequence and batch of sequence with both str and int types"""
+        """test truncation to max_seq_len length on both sequence and batch of sequence with both str/int types"""
         inputs, expected = configs
         max_seq_len = 2
         func = functional.truncate
         if test_scripting:
             func = torch.jit.script(func)
-        else:
-            with self.assertRaises(TypeError):
-                func("test", max_seq_len=max_seq_len)
 
         actual = func(inputs, max_seq_len=max_seq_len)
         self.assertEqual(actual, expected)
+
+    def test_truncate_assert_raises(self):
+        with self.assertRaises(TypeError):
+            functional.truncate("test", max_seq_len=2)
 
     @nested_params(
         [True, False],

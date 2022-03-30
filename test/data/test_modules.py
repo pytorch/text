@@ -5,9 +5,10 @@ from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDot
 from torchtext.nn.modules.multiheadattention import generate_square_subsequent_mask
 
 from ..common.torchtext_test_case import TorchtextTestCase
-
+from parameterized import parameterized
 
 class TestModels(TorchtextTestCase):
+
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
@@ -191,14 +192,8 @@ class TestModels(TorchtextTestCase):
         self.assertEqual(sdp_attn_output, sdp_attn_output_full)
         self.assertEqual(sdp_attn_weights, sdp_attn_weights_full)
 
-    def test_assert_raises(self):
-        embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
-        SDP = ScaledDotProduct()
-        query = torch.rand((tgt_len, 1, embed_dim))
-        key = value = torch.rand((src_len, 1, embed_dim))
-        attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len))
-
-        configs = [
+    embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
+    @parameterized.expand([
             # case: dim -2 is not equal to neither key/value's dim -2 or 1
             [
                 RuntimeError, "",
@@ -223,7 +218,7 @@ class TestModels(TorchtextTestCase):
                 (src_len, 1, embed_dim),
                 (bsz * nhead, tgt_len, src_len), True
             ],
-            # kcase: ey/value dim -2 is not equal to neither query's dim -2 or 1
+            # case: key/value dim -2 is not equal to neither query's dim -2 or 1
             [
                 RuntimeError, "",
                 (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
@@ -247,17 +242,23 @@ class TestModels(TorchtextTestCase):
                 (src_len, 2, embed_dim),
                 (), False
             ],
+    ])
+    def test_scaled_dot_product_assert_raises(self, error_type, error_regex, query_size, key_size, value_size, attn_mask_size, att_masc_bool):
+        """Scaled Dot Produce should raise errors when shape/type mismatch"""
+        embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
+        SDP = ScaledDotProduct()
+        query = torch.rand((tgt_len, 1, embed_dim))
+        key = value = torch.rand((src_len, 1, embed_dim))
+        attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len))
 
-        ]
-        for (error_type, error_regex, query_size, key_size, value_size, attn_mask_size, att_masc_bool) in configs:
-            with self.assertRaisesRegex(error_type, error_regex) if error_regex else self.assertRaises(error_type):
-                attn_mask = attn_mask_2D.to(torch.bool) if att_masc_bool else attn_mask_2D
-                SDP(
-                    query.expand(*query_size),
-                    key.expand(*key_size),
-                    value.expand(*value_size),
-                    attn_mask=attn_mask.expand(*attn_mask_size) if attn_mask_size else attn_mask
-                )
+        with self.assertRaisesRegex(error_type, error_regex) if error_regex else self.assertRaises(error_type):
+            attn_mask = attn_mask_2D.to(torch.bool) if att_masc_bool else attn_mask_2D
+            SDP(
+                query.expand(*query_size),
+                key.expand(*key_size),
+                value.expand(*value_size),
+                attn_mask=attn_mask.expand(*attn_mask_size) if attn_mask_size else attn_mask
+            )
 
     def test_sdp_batch_first(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
