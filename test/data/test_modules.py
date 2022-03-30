@@ -192,70 +192,44 @@ class TestModels(TorchtextTestCase):
         self.assertEqual(sdp_attn_output, sdp_attn_output_full)
         self.assertEqual(sdp_attn_weights, sdp_attn_weights_full)
 
-    embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
-
     @parameterized.expand(
         [
             # case: dim -2 is not equal to neither key/value's dim -2 or 1
             [
                 RuntimeError,
                 "",
-                (tgt_len, 2, embed_dim),
-                (3, 3, src_len, bsz * nhead, embed_dim),
-                (3, 3, src_len, bsz * nhead, embed_dim),
-                (bsz * nhead, tgt_len, src_len),
+                (6, 2, 10),
+                (3, 3, 10, 64 * 5, 10),
+                (3, 3, 10, 64 * 5, 10),
+                (64 * 5, 6, 10),
                 True,
             ],
             # case: attn_mask's dim -3 is not equal to neither batch size or 1
             [
                 RuntimeError,
                 "The size of the attn_mask is not correct.",
-                (tgt_len, bsz * nhead, embed_dim),
-                (src_len, bsz * nhead, embed_dim),
-                (src_len, bsz * nhead, embed_dim),
-                (2, tgt_len, src_len),
+                (6, 64 * 5, 10),
+                (10, 64 * 5, 10),
+                (10, 64 * 5, 10),
+                (2, 6, 10),
                 True,
             ],
             # case: key dim -2 is not equal to value dim -2
             [
                 AssertionError,
                 "Shape of key, value must match",
-                (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
-                (src_len, 2, embed_dim),
-                (src_len, 1, embed_dim),
-                (bsz * nhead, tgt_len, src_len),
+                (1, 2, 3, 6, 64 * 5, 10),
+                (10, 2, 10),
+                (10, 1, 10),
+                (64 * 5, 6, 10),
                 True,
             ],
             # case: key/value dim -2 is not equal to neither query's dim -2 or 1
-            [
-                RuntimeError,
-                "",
-                (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
-                (src_len, 2, embed_dim),
-                (src_len, 2, embed_dim),
-                (bsz * nhead, tgt_len, src_len),
-                True,
-            ],
+            [RuntimeError, "", (1, 2, 3, 6, 64 * 5, 10), (10, 2, 10), (10, 2, 10), (64 * 5, 6, 10), True],
             # case: attn_mask must be a 3D tensor.
-            [
-                RuntimeError,
-                "",
-                (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
-                (src_len, 2, embed_dim),
-                (src_len, 2, embed_dim),
-                (),
-                True,
-            ],
+            [RuntimeError, "", (1, 2, 3, 6, 64 * 5, 10), (10, 2, 10), (10, 2, 10), (), True],
             # case: only bool tensor is supported for attn_mask
-            [
-                RuntimeError,
-                "",
-                (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
-                (src_len, 2, embed_dim),
-                (src_len, 2, embed_dim),
-                (),
-                False,
-            ],
+            [RuntimeError, "", (1, 2, 3, 6, 64 * 5, 10), (10, 2, 10), (10, 2, 10), (), False],
         ]
     )
     def test_scaled_dot_product_assert_raises(
