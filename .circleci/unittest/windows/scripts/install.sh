@@ -18,8 +18,8 @@ conda activate ./env
 printf "* Installing PyTorch\n"
 conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly
 
-printf "Installing torchdata from source\n"
-pip install git+https://github.com/pytorch/data.git
+printf "Installing torchdata nightly\n"
+pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
