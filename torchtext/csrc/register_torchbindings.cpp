@@ -1,11 +1,11 @@
-#include <clip_tokenizer.h> // @manual
-#include <gpt2_bpe_tokenizer.h> // @manual
-#include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
+#include "clip_tokenizer.h" // @manual
+#include "gpt2_bpe_tokenizer.h" // @manual
+#include "regex.h"
+#include "regex_tokenizer.h" // @manual
+#include "sentencepiece.h" // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h> // @manual
+#include "vectors.h" // @manual
+#include "vocab.h" // @manual
 
 #include <iostream>
 namespace torchtext {

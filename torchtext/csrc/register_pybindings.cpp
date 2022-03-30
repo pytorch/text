@@ -1,16 +1,16 @@
-#include <clip_tokenizer.h> // @manual
-#include <gpt2_bpe_tokenizer.h> // @manual
+#include "clip_tokenizer.h" // @manual
+#include "gpt2_bpe_tokenizer.h" // @manual
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
-#include <torch/csrc/jit/python/pybind_utils.h> // @manual
+#include "regex.h"
+#include "regex_tokenizer.h" // @manual
+#include "sentencepiece.h" // @manual
+#include <torch/csrc/jit/python/module_python.h> // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h> // @manual
-#include <vocab_factory.h> // @manual
+#include "vectors.h" // @manual
+#include "vocab.h" // @manual
+#include "vocab_factory.h" // @manual
 
 #include <iostream>
 

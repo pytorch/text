@@ -1,5 +1,5 @@
-#include <clip_tokenizer.h>
-#include <regex.h> // @manual
+#include "clip_tokenizer.h"
+#include "regex.h" // @manual
 
 #include <unordered_set>
 
