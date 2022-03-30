@@ -73,7 +73,7 @@ def SST2(root, split):
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
