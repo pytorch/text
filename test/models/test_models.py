@@ -1,12 +1,12 @@
 import copy
+from unittest.mock import patch
 
 import torch
 import torchtext
 from torch.nn import functional as torch_F
 
 from ..common.torchtext_test_case import TorchtextTestCase
-import pytest
-import logging
+
 
 class TestModules(TorchtextTestCase):
     def test_self_attn_mask(self):
@@ -137,23 +137,18 @@ class TestModels(TorchtextTestCase):
         self.assertEqual(model.encoder.state_dict(), encoder_current_state_dict)
         self.assertNotEqual(model.head.state_dict(), head_current_state_dict)
 
-    @pytest.fixture(autouse=True)
-    def inject_fixtures(self, caplog):
-        self._caplog = caplog
-
-    def test_roberta_bundler_get_model(self):
+    @patch("logging.Logger.warning")
+    def test_roberta_bundler_get_model(self, mock):
         from torchtext.models import RobertaEncoderConf, RobertaBundle
 
-        with self._caplog.at_level(logging.WARNING):
-            dummy_encoder_conf = RobertaEncoderConf(
-                vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
-            )
-            model_bundle = RobertaBundle(dummy_encoder_conf)
-            model_bundle.get_model(
-                load_weights = False,
-                freeze_encoder = True
-            )
-            self.assertTrue(self._caplog.records[0].message.startswith('The encoder is not loaded'))
+        dummy_encoder_conf = RobertaEncoderConf(
+            vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+        )
+        model_bundle = RobertaBundle(dummy_encoder_conf)
+        model_bundle.get_model(load_weights=False, freeze_encoder=True)
+        mock.assert_called_with(
+            "The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights."
+        )
 
     def test_roberta_bundler_raise_checkpoint(self):
         from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaBundle

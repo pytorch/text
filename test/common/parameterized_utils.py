@@ -19,7 +19,7 @@ def _name_func(func, _, params):
         else:
             strs.append(str(arg))
     # sanitize the test name
-    name = "_".join(strs).replace(".", "_")
+    name = parameterized.to_safe_name("_".join(strs))
     return f"{func.__name__}_{name}"
 
 
