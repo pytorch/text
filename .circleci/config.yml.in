@@ -451,7 +451,7 @@ jobs:
       - store_test_results:
           path: test-results
 
-unittest_macos:
+  unittest_macos:
     <<: *binary_common
     macos:
       xcode: "12.0"
