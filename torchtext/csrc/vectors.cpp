@@ -1,8 +1,9 @@
-#include "vectors.h" // @manual
 #include <ATen/Parallel.h> // @manual
 #include <double-conversion/double-conversion.h>
 #include <double-conversion/ieee.h>
 #include <double-conversion/utils.h>
+#include <torchtext/csrc/common.h>
+#include <torchtext/csrc/vectors.h> // @manual
 #include <atomic>
 #include <condition_variable>
 #include <future>
@@ -11,7 +12,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include "common.h"
 
 namespace torchtext {
 

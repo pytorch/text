@@ -3,14 +3,14 @@
 #include <torch/csrc/jit/python/module_python.h> // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
-#include "clip_tokenizer.h" // @manual
-#include "gpt2_bpe_tokenizer.h" // @manual
-#include "regex.h"
-#include "regex_tokenizer.h" // @manual
-#include "sentencepiece.h" // @manual
-#include "vectors.h" // @manual
-#include "vocab.h" // @manual
-#include "vocab_factory.h" // @manual
+#include <torchtext/csrc/clip_tokenizer.h> // @manual
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
+#include <torchtext/csrc/regex.h>
+#include <torchtext/csrc/regex_tokenizer.h> // @manual
+#include <torchtext/csrc/sentencepiece.h> // @manual
+#include <torchtext/csrc/vectors.h> // @manual
+#include <torchtext/csrc/vocab.h> // @manual
+#include <torchtext/csrc/vocab_factory.h> // @manual
 
 #include <iostream>
 
