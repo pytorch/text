@@ -1,7 +1,7 @@
-#include <ATen/Parallel.h> // @manual
-#include "common.h"
-#include <torch/torch.h> // @manual
 #include "vocab.h" // @manual
+#include <ATen/Parallel.h> // @manual
+#include <torch/torch.h> // @manual
+#include "common.h"
 
 #include <iostream>
 #include <stdexcept>
