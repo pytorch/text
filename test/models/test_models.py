@@ -1,7 +1,6 @@
 import copy
 from unittest.mock import patch
 
-import pytest
 import torch
 import torchtext
 from torch.nn import functional as torch_F
