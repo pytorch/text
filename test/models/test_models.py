@@ -1,12 +1,13 @@
 import copy
+import logging
 
+import pytest
 import torch
 import torchtext
 from torch.nn import functional as torch_F
 
 from ..common.torchtext_test_case import TorchtextTestCase
-import pytest
-import logging
+
 
 class TestModules(TorchtextTestCase):
     def test_self_attn_mask(self):
@@ -149,11 +150,8 @@ class TestModels(TorchtextTestCase):
                 vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
             )
             model_bundle = RobertaBundle(dummy_encoder_conf)
-            model_bundle.get_model(
-                load_weights = False,
-                freeze_encoder = True
-            )
-            self.assertTrue(self._caplog.records[0].message.startswith('The encoder is not loaded'))
+            model_bundle.get_model(load_weights=False, freeze_encoder=True)
+            self.assertTrue(self._caplog.records[0].message.startswith("The encoder is not loaded"))
 
     def test_roberta_bundler_raise_checkpoint(self):
         from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaBundle

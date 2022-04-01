@@ -201,53 +201,64 @@ class TestModels(TorchtextTestCase):
         configs = [
             # case: dim -2 is not equal to neither key/value's dim -2 or 1
             [
-                RuntimeError, "",
+                RuntimeError,
+                "",
                 (tgt_len, 2, embed_dim),
                 (3, 3, src_len, bsz * nhead, embed_dim),
                 (3, 3, src_len, bsz * nhead, embed_dim),
-                (bsz * nhead, tgt_len, src_len), True
+                (bsz * nhead, tgt_len, src_len),
+                True,
             ],
             # case: attn_mask's dim -3 is not equal to neither batch size or 1
             [
-                RuntimeError, "The size of the attn_mask is not correct.",
+                RuntimeError,
+                "The size of the attn_mask is not correct.",
                 (tgt_len, bsz * nhead, embed_dim),
                 (src_len, bsz * nhead, embed_dim),
                 (src_len, bsz * nhead, embed_dim),
-                (2, tgt_len, src_len), True
+                (2, tgt_len, src_len),
+                True,
             ],
             # case: key dim -2 is not equal to value dim -2
             [
-                AssertionError, "Shape of key, value must match",
+                AssertionError,
+                "Shape of key, value must match",
                 (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
                 (src_len, 2, embed_dim),
                 (src_len, 1, embed_dim),
-                (bsz * nhead, tgt_len, src_len), True
+                (bsz * nhead, tgt_len, src_len),
+                True,
             ],
             # kcase: ey/value dim -2 is not equal to neither query's dim -2 or 1
             [
-                RuntimeError, "",
+                RuntimeError,
+                "",
                 (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
                 (src_len, 2, embed_dim),
                 (src_len, 2, embed_dim),
-                (bsz * nhead, tgt_len, src_len), True
+                (bsz * nhead, tgt_len, src_len),
+                True,
             ],
             # case: attn_mask must be a 3D tensor.
             [
-                RuntimeError, "",
+                RuntimeError,
+                "",
                 (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
                 (src_len, 2, embed_dim),
                 (src_len, 2, embed_dim),
-                (), True
+                (),
+                True,
             ],
             # case: only bool tensor is supported for attn_mask
             [
-                RuntimeError, "",
+                RuntimeError,
+                "",
                 (1, 2, 3, tgt_len, bsz * nhead, embed_dim),
                 (src_len, 2, embed_dim),
                 (src_len, 2, embed_dim),
-                (), False
+                (),
+                False,
             ],
-
         ]
         for (error_type, error_regex, query_size, key_size, value_size, attn_mask_size, att_masc_bool) in configs:
             with self.assertRaisesRegex(error_type, error_regex) if error_regex else self.assertRaises(error_type):
@@ -256,7 +267,7 @@ class TestModels(TorchtextTestCase):
                     query.expand(*query_size),
                     key.expand(*key_size),
                     value.expand(*value_size),
-                    attn_mask=attn_mask.expand(*attn_mask_size) if attn_mask_size else attn_mask
+                    attn_mask=attn_mask.expand(*attn_mask_size) if attn_mask_size else attn_mask,
                 )
 
     def test_sdp_batch_first(self):
