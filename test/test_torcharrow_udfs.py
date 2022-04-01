@@ -50,7 +50,7 @@ class _TestFunctionalBase(unittest.TestCase):
             },
             dtype=dt.Struct(
                 fields=[
-                    dt.Field("text", dt.List(dt.string)),
+                    dt.Field("text", dt.string),
                     dt.Field("labels", dt.int32),
                     dt.Field("tokens", dt.List(dt.string)),
                 ]
