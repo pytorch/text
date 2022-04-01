@@ -1,4 +1,5 @@
 import copy
+from unittest.mock import patch
 
 import torch
 import torchtext
@@ -135,3 +136,40 @@ class TestModels(TorchtextTestCase):
 
         self.assertEqual(model.encoder.state_dict(), encoder_current_state_dict)
         self.assertNotEqual(model.head.state_dict(), head_current_state_dict)
+
+    @patch("logging.Logger.warning")
+    def test_roberta_bundler_get_model(self, mock):
+        from torchtext.models import RobertaEncoderConf, RobertaBundle
+
+        dummy_encoder_conf = RobertaEncoderConf(
+            vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+        )
+        model_bundle = RobertaBundle(dummy_encoder_conf)
+        model_bundle.get_model(load_weights=False, freeze_encoder=True)
+        mock.assert_called_with(
+            "The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights."
+        )
+
+    def test_roberta_bundler_raise_checkpoint(self):
+        from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaBundle
+
+        with self.assertRaises(TypeError):
+            dummy_encoder_conf = RobertaEncoderConf(
+                vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+            )
+            dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
+            RobertaBundle.build_model(
+                encoder_conf=dummy_encoder_conf,
+                head=dummy_classifier_head,
+                freeze_encoder=True,
+                checkpoint=1,
+            )
+
+    def test_roberta_bundler_encode_conf_property(self):
+        from torchtext.models import RobertaEncoderConf, RobertaBundle
+
+        dummy_encoder_conf = RobertaEncoderConf(
+            vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2
+        )
+        model_bundle = RobertaBundle(dummy_encoder_conf)
+        self.assertTrue(isinstance(model_bundle.encoderConf, RobertaEncoderConf))
