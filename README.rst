@@ -53,7 +53,7 @@ Using pip::
     pip install torchtext
 
 **Note** LTS versions are distributed through a different channel than the other versioned releases.
-Please refer to https://pytorch.org/get-started/locally/ for details. 
+Please refer to https://pytorch.org/get-started/locally/ for details.
 
 Optional requirements
 ---------------------
