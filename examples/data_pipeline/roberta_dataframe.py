@@ -51,6 +51,9 @@ def main(args):
     # TODO: Figure out how to create DataFrame of larger size and create batches consequently
     train_dp = train_dp.dataframe(columns=["text", "labels"], dataframe_size=args.batch_size)
 
+    for batch in train_dp:
+        raise Exception(batch)
+
     # Apply transformation on DataFrame
     train_dp = train_dp.map(transform)
 
