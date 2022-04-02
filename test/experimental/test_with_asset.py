@@ -3,6 +3,7 @@ import platform
 import shutil
 import tempfile
 import unittest
+from functools import partial
 
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -24,9 +25,7 @@ from ..common.assets import get_asset_path
 
 # Windows doesn't support the nested function pickle
 # Move the batch function out of the test_sentencepiece_with_dataloader test
-def _batch_func(data):
-    sp_model_path = download_from_url(PRETRAINED_SP_MODEL["text_bpe_25000"])
-    spm_processor = sentencepiece_processor(sp_model_path)
+def _batch_func(spm_processor, data):
     return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
 
 
@@ -223,7 +222,11 @@ class TestTransformsWithAsset(TorchtextTestCase):
         example_strings = ["the pretrained spm model names"] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
 
-        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2, collate_fn=_batch_func)
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL["text_bpe_25000"])
+        spm_processor = sentencepiece_processor(sp_model_path)
+        batch_fn = partial(_batch_func, spm_processor)
+
+        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2, collate_fn=batch_fn)
         for item in dataloader:
             self.assertEqual(item, ref_results)
 
