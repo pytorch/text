@@ -49,7 +49,7 @@ def _get_srcs():
 
 def _get_include_dirs():
     return [
-        str(_CSRC_DIR),
+        str(_ROOT_DIR),
         str(_TP_INSTALL_DIR / "include"),
     ]
 
