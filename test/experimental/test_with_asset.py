@@ -1,8 +1,10 @@
 import os
-import platform
+
+# import platform
 import shutil
 import tempfile
-import unittest
+
+# import unittest
 from functools import partial
 
 import torch
@@ -217,7 +219,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    # @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_sentencepiece_with_dataloader(self):
         example_strings = ["the pretrained spm model names"] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
