@@ -1,10 +1,6 @@
 import os
-
-# import platform
 import shutil
 import tempfile
-
-# import unittest
 from functools import partial
 
 import torch
@@ -25,7 +21,7 @@ from torchtext.utils import download_from_url
 from ..common.assets import get_asset_path
 
 
-# Windows doesn't support the nested function pickle
+# Windows and MaxOS doesn't support the nested function pickle
 # Move the batch function out of the test_sentencepiece_with_dataloader test
 def _batch_func(spm_processor, data):
     return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
@@ -219,7 +215,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
-    # @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_sentencepiece_with_dataloader(self):
         example_strings = ["the pretrained spm model names"] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
