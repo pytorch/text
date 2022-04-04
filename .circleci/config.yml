@@ -42,7 +42,7 @@ commands:
       - run:
           name: Generate CCI cache key
           command: |
-            echo "$(date "+%D")" > .cachekey
+            echo "$(date +"Year-Week %Y-%U")" > .cachekey
       - persist_to_workspace:
           root: .
           paths:
