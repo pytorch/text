@@ -4,15 +4,16 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import json
 import unittest
 
-import json
 import torcharrow as ta
-import torcharrow.dtypes as dt
-from torcharrow import functional
-import torchtext.transforms as T
 import torcharrow._torcharrow as _ta
+import torcharrow.dtypes as dt
+import torchtext.transforms as T
+from torcharrow import functional
 from torchtext.utils import get_asset_local_path
+
 from .common.assets import get_asset_path
 
 
@@ -46,13 +47,13 @@ class _TestFunctionalBase(unittest.TestCase):
             {
                 "text": ["Hello World!, how are you?", "Respublica superiorem"],
                 "labels": [0, 1],
-                "tokens": [["15496", "2159", "28265", "703", "389", "345", "30"], ["4965", "11377", "64", "2208", "72", "29625"]],
+                "tokens": [[15496, 2159, 28265, 703, 389, 345, 30], [4965, 11377, 64, 2208, 72, 29625]],
             },
             dtype=dt.Struct(
                 fields=[
                     dt.Field("text", dt.string),
                     dt.Field("labels", dt.int32),
-                    dt.Field("tokens", dt.List(dt.string)),
+                    dt.Field("tokens", dt.List(dt.int64)),
                 ]
             ),
         )
@@ -67,7 +68,7 @@ class _TestFunctionalBase(unittest.TestCase):
 
     def test_bpe_encode(self):
         out_df = functional.bpe_tokenize(self.tokenizer, self.df["text"])
-        self.assertEqual(out_df, self.df["tokens"])
+        self.assertEqual(list(out_df), list(self.df["tokens"]))
 
 
 class TestFunctionalCpu(_TestFunctionalBase):
