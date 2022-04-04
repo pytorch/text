@@ -1,11 +1,12 @@
+import distutils.sysconfig
 import os
 import platform
 import subprocess
 from pathlib import Path
+
+import torch
 from setuptools import Extension
 from setuptools.command.build_ext import build_ext
-import torch
-import distutils.sysconfig
 
 
 __all__ = [
@@ -34,6 +35,7 @@ def get_ext_modules():
         Extension(name=_EXT_NAME, sources=[]),
     ]
     return modules
+
 
 # Based off of
 # https://github.com/pybind/cmake_example/blob/580c5fd29d4651db99d8874714b07c0c49a53f8a/setup.py
@@ -73,8 +75,7 @@ class CMakeBuild(build_ext):
             f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
             "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
             "-DRE2_BUILD_TESTING:BOOL=OFF",
-            "-DBUILD_TESTING:BOOL=OFF"
-            "-DBUILD_SHARED_LIBS=OFF",
+            "-DBUILD_TESTING:BOOL=OFF" "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
             "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
             "-DSPM_ENABLE_SHARED=OFF",

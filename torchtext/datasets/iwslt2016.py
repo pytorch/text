@@ -125,7 +125,7 @@ DATASET_NAME = "IWSLT2016"
 # avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
     cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_filepath)
-    cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").read_from_tar()
+    cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").load_from_tar()
     cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(
         lambda x: os.path.basename(uncleaned_filename) in x[0]
     )
@@ -263,7 +263,7 @@ def IWSLT2016(
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: inner_iwslt_tar)
     cache_decompressed_dp = (
         FileOpener(cache_decompressed_dp, mode="b")
-        .read_from_tar()
+        .load_from_tar()
         .filter(lambda x: os.path.basename(inner_iwslt_tar) in x[0])
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
