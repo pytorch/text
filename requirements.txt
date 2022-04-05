@@ -18,6 +18,8 @@ sphinx_rtd_theme
 
 # Run unit tests
 pytest
+expecttest
+parameterized
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath

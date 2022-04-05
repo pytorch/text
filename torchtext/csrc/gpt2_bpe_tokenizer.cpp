@@ -1,5 +1,5 @@
-#include <gpt2_bpe_tokenizer.h>
-#include <regex.h> // @manual
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h>
+#include <torchtext/csrc/regex.h> // @manual
 
 #include <algorithm>
 #include <sstream>
