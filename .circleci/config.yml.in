@@ -446,7 +446,10 @@ jobs:
       - checkout
       - designate_upload_channel
       - load_conda_channel_flags
-      - fetch_cachekey
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build should generate new cache.
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly
       - run:
           name: Setup
           command: .circleci/unittest/linux/scripts/setup_env.sh
@@ -456,7 +459,7 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+            - data-macos-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
 
       - run:
@@ -467,7 +470,7 @@ jobs:
       - save_cache:
           keys:
           {% raw %}
-          key: v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+          key: data-macos-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
 
           paths:
