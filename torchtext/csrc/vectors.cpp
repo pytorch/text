@@ -1,9 +1,9 @@
 #include <ATen/Parallel.h> // @manual
-#include <common.h>
 #include <double-conversion/double-conversion.h>
 #include <double-conversion/ieee.h>
 #include <double-conversion/utils.h>
-#include <vectors.h> // @manual
+#include <torchtext/csrc/common.h>
+#include <torchtext/csrc/vectors.h> // @manual
 #include <atomic>
 #include <condition_variable>
 #include <future>

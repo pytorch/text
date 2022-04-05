@@ -437,6 +437,47 @@ jobs:
       - store_test_results:
           path: test-results
 
+  unittest_macos:
+    <<: *binary_common
+    macos:
+      xcode: "12.0"
+    resource_class: large
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - fetch_cachekey
+      - run:
+          name: Setup
+          command: .circleci/unittest/linux/scripts/setup_env.sh
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/linux/scripts/install.sh
+      - restore_cache:
+          keys:
+
+            - v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+
+
+      - run:
+          name: Run tests
+          # Downloading embedding vector takes long time.
+          no_output_timeout: 30m
+          command: .circleci/unittest/linux/scripts/run_test.sh
+      - save_cache:
+          keys:
+
+          key: v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+
+
+          paths:
+            - .vector_cache
+      - run:
+          name: Post process
+          command: .circleci/unittest/linux/scripts/post_process.sh
+      - store_test_results:
+          path: test-results
+
   unittest_windows:
     <<: *binary_common
     executor:
@@ -684,6 +725,18 @@ workflows:
           python_version: '3.9'
       - unittest_windows:
           name: unittest_windows_py3.10
+          python_version: '3.10'
+      - unittest_macos:
+          name: unittest_macos_py3.7
+          python_version: '3.7'
+      - unittest_macos:
+          name: unittest_macos_py3.8
+          python_version: '3.8'
+      - unittest_macos:
+          name: unittest_macos_py3.9
+          python_version: '3.9'
+      - unittest_macos:
+          name: unittest_macos_py3.10
           python_version: '3.10'
   nightly:
     jobs:

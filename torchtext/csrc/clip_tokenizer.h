@@ -1,7 +1,7 @@
 #ifndef CLIP_TOKENIZER_H_
 #define CLIP_TOKENIZER_H_
 
-#include <gpt2_bpe_tokenizer.h>
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h>
 
 namespace torchtext {
 

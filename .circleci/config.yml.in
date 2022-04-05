@@ -437,6 +437,47 @@ jobs:
       - store_test_results:
           path: test-results
 
+  unittest_macos:
+    <<: *binary_common
+    macos:
+      xcode: "12.0"
+    resource_class: large
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - fetch_cachekey
+      - run:
+          name: Setup
+          command: .circleci/unittest/linux/scripts/setup_env.sh
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/linux/scripts/install.sh
+      - restore_cache:
+          keys:
+          {% raw %}
+            - v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+          {% endraw %}
+
+      - run:
+          name: Run tests
+          # Downloading embedding vector takes long time.
+          no_output_timeout: 30m
+          command: .circleci/unittest/linux/scripts/run_test.sh
+      - save_cache:
+          keys:
+          {% raw %}
+          key: v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+          {% endraw %}
+
+          paths:
+            - .vector_cache
+      - run:
+          name: Post process
+          command: .circleci/unittest/linux/scripts/post_process.sh
+      - store_test_results:
+          path: test-results
+
   unittest_windows:
     <<: *binary_common
     executor:
