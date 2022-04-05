@@ -1,4 +1,4 @@
-#include <sentencepiece.h> // @manual
+#include <torchtext/csrc/sentencepiece.h> // @manual
 
 namespace torchtext {
 
