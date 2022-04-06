@@ -95,6 +95,7 @@ class CMakeBuild(build_ext):
             cmake_args += [
                 "-DCMAKE_C_COMPILER=cl",
                 "-DCMAKE_CXX_COMPILER=cl",
+                "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON",
                 f"-DPYTHON_VERSION={python_version.major}.{python_version.minor}",
             ]
 

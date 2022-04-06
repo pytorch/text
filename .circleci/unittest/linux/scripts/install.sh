@@ -7,6 +7,11 @@ unset PYTORCH_VERSION
 
 set -e
 
+case "$(uname -s)" in
+    Darwin*) os=MacOSX;;
+    *) os=Linux
+esac
+
 eval "$(./conda/bin/conda shell.bash hook)"
 conda activate ./env
 
