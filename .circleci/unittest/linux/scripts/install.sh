@@ -11,7 +11,7 @@ eval "$(./conda/bin/conda shell.bash hook)"
 conda activate ./env
 
 printf "* Installing PyTorch\n"
-conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly
+conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly mkl<=2021.2.0
 
 printf "Installing torchdata nightly\n"
 pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu

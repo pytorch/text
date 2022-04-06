@@ -10,13 +10,14 @@ requirements:
     - {{ compiler('c') }} # [win]
     - {{ compiler('cxx') }} # [win]
     - cmake
-    - mkl<=2021.2.0
 
   host:
     - python
     - setuptools
     - cpuonly
     {{ environ.get('CONDA_PYTORCH_BUILD_CONSTRAINT') }}
+    {{ environ.get('CONDA_EXTRA_BUILD_CONSTRAINT') }}
+
 
   run:
     - python
