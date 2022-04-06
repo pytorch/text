@@ -42,7 +42,8 @@ def _get_eca(debug):
             eca += ["-O2"]
         else:
             eca += ["-O3", "-fvisibility=hidden"]
-    return eca
+        # raise Exception(" ".join(eca))
+    return " ".join(eca)
 
 
 def _get_ela(debug):
@@ -56,7 +57,7 @@ def _get_ela(debug):
     else:
         if platform.system() != "Windows":
             ela += ["-O3"]
-    return ela
+    return " ".join(ela)
 
 
 def get_ext_modules():
@@ -98,24 +99,21 @@ class CMakeBuild(build_ext):
 
         cfg = "Debug" if self.debug else "Release"
 
-        cmake_args = (
-            [
-                f"-DCMAKE_BUILD_TYPE={cfg}",
-                f"-DCMAKE_PREFIX_PATH={torch.utils.cmake_prefix_path}",
-                f"-DCMAKE_INSTALL_PREFIX={extdir}",
-                "-DCMAKE_VERBOSE_MAKEFILE=ON",
-                f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
-                "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
-                "-DRE2_BUILD_TESTING:BOOL=OFF",
-                "-DBUILD_TESTING:BOOL=OFF",
-                "-DBUILD_SHARED_LIBS=OFF",
-                "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-                "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
-                "-DSPM_ENABLE_SHARED=OFF",
-            ]
-            + _get_eca(cfg == "Debug")
-            + _get_ela(cfg == "Debug")
-        )
+        cmake_args = [
+            f"-DCMAKE_BUILD_TYPE={cfg}",
+            f"-DCMAKE_PREFIX_PATH={torch.utils.cmake_prefix_path}",
+            f"-DCMAKE_INSTALL_PREFIX={extdir}",
+            "-DCMAKE_VERBOSE_MAKEFILE=ON",
+            f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
+            "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
+            "-DRE2_BUILD_TESTING:BOOL=OFF",
+            "-DBUILD_TESTING:BOOL=OFF",
+            "-DBUILD_SHARED_LIBS=OFF",
+            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi() + " " + _get_eca(cfg == "Debug"),
+            "-DCMAKE_EXE_LINKER_FLAGS=" + _get_ela(cfg == "Debug"),
+            "-DSPM_ENABLE_SHARED=OFF",
+        ]
         build_args = ["--target", "install"]
 
         # Default to Ninja
