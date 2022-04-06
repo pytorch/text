@@ -30,6 +30,35 @@ _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 
+def _get_eca(debug):
+    """Extra compile args"""
+    eca = []
+    if platform.system() == "Windows":
+        eca += ["/MT"]
+    if debug:
+        eca += ["-O0", "-g"]
+    else:
+        if platform.system() == "Windows":
+            eca += ["-O2"]
+        else:
+            eca += ["-O3", "-fvisibility=hidden"]
+    return eca
+
+
+def _get_ela(debug):
+    """Extra linker args"""
+    ela = []
+    if debug:
+        if platform.system() == "Windows":
+            ela += ["/DEBUG:FULL"]
+        else:
+            ela += ["-O0", "-g"]
+    else:
+        if platform.system() != "Windows":
+            ela += ["-O3"]
+    return ela
+
+
 def get_ext_modules():
     modules = [
         # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
@@ -69,20 +98,24 @@ class CMakeBuild(build_ext):
 
         cfg = "Debug" if self.debug else "Release"
 
-        cmake_args = [
-            f"-DCMAKE_BUILD_TYPE={cfg}",
-            f"-DCMAKE_PREFIX_PATH={torch.utils.cmake_prefix_path}",
-            f"-DCMAKE_INSTALL_PREFIX={extdir}",
-            "-DCMAKE_VERBOSE_MAKEFILE=ON",
-            f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
-            "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
-            "-DRE2_BUILD_TESTING:BOOL=OFF",
-            "-DBUILD_TESTING:BOOL=OFF",
-            "-DBUILD_SHARED_LIBS=OFF",
-            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
-            "-DSPM_ENABLE_SHARED=OFF",
-        ]
+        cmake_args = (
+            [
+                f"-DCMAKE_BUILD_TYPE={cfg}",
+                f"-DCMAKE_PREFIX_PATH={torch.utils.cmake_prefix_path}",
+                f"-DCMAKE_INSTALL_PREFIX={extdir}",
+                "-DCMAKE_VERBOSE_MAKEFILE=ON",
+                f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
+                "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
+                "-DRE2_BUILD_TESTING:BOOL=OFF",
+                "-DBUILD_TESTING:BOOL=OFF",
+                "-DBUILD_SHARED_LIBS=OFF",
+                "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+                "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
+                "-DSPM_ENABLE_SHARED=OFF",
+            ]
+            + _get_eca()
+            + _get_ela()
+        )
         build_args = ["--target", "install"]
 
         # Default to Ninja

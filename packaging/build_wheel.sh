@@ -8,7 +8,7 @@ export BUILD_TYPE="wheel"
 export NO_CUDA_PACKAGE=1
 setup_env 0.13.0
 setup_wheel_python
-pip_install numpy future cmake>=3.4.0 ninja
+pip_install numpy future cmake>=3.18.0 ninja
 setup_pip_pytorch_version
 git submodule update --init --recursive
 python setup.py clean
