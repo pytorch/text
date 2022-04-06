@@ -42,7 +42,6 @@ def _get_eca(debug):
             eca += ["-O2"]
         else:
             eca += ["-O3", "-fvisibility=hidden"]
-        # raise Exception(" ".join(eca))
     return " ".join(eca)
 
 
