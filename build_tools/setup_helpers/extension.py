@@ -113,8 +113,8 @@ class CMakeBuild(build_ext):
                 "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
                 "-DSPM_ENABLE_SHARED=OFF",
             ]
-            + _get_eca()
-            + _get_ela()
+            + _get_eca(cfg == "Debug")
+            + _get_ela(cfg == "Debug")
         )
         build_args = ["--target", "install"]
 
