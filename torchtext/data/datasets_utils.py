@@ -189,7 +189,7 @@ def _create_dataset_directory(dataset_name):
         def wrapper(root=_CACHE_DIR, *args, **kwargs):
             new_root = os.path.join(root, dataset_name)
             if not os.path.exists(new_root):
-                os.makedirs(new_root)
+                os.makedirs(new_root, exist_ok=True)
             return fn(root=new_root, *args, **kwargs)
 
         return wrapper
