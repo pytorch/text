@@ -15,14 +15,6 @@ __all__ = [
 ]
 
 
-def _get_cxx11_abi():
-    try:
-        value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
-    except ImportError:
-        value = 0
-    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(value)
-
-
 # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
 # _LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
