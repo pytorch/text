@@ -15,48 +15,11 @@ __all__ = [
 ]
 
 
-def _get_cxx11_abi():
-    try:
-        value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
-    except ImportError:
-        value = 0
-    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(value)
-
-
 # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
 # _LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
 _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
-
-
-def _get_eca(debug):
-    """Extra compile args"""
-    eca = []
-    if platform.system() == "Windows":
-        eca += ["/MT"]
-    if debug:
-        eca += ["-O0", "-g"]
-    else:
-        if platform.system() == "Windows":
-            eca += ["-O2"]
-        else:
-            eca += ["-O3", "-fvisibility=hidden"]
-    return " ".join(eca)
-
-
-def _get_ela(debug):
-    """Extra linker args"""
-    ela = []
-    if debug:
-        if platform.system() == "Windows":
-            ela += ["/DEBUG:FULL"]
-        else:
-            ela += ["-O0", "-g"]
-    else:
-        if platform.system() != "Windows":
-            ela += ["-O3"]
-    return " ".join(ela)
 
 
 def get_ext_modules():
@@ -109,8 +72,6 @@ class CMakeBuild(build_ext):
             "-DBUILD_TESTING:BOOL=OFF",
             "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi() + " " + _get_eca(cfg == "Debug"),
-            "-DCMAKE_EXE_LINKER_FLAGS=" + _get_ela(cfg == "Debug"),
             "-DSPM_ENABLE_SHARED=OFF",
         ]
         build_args = ["--target", "install"]
@@ -125,7 +86,6 @@ class CMakeBuild(build_ext):
             cmake_args += [
                 "-DCMAKE_C_COMPILER=cl",
                 "-DCMAKE_CXX_COMPILER=cl",
-                "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON",
                 f"-DPYTHON_VERSION={python_version.major}.{python_version.minor}",
             ]
 
