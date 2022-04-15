@@ -25,7 +25,7 @@ printf "* Installing PyTorch\n"
       MKL_CONSTRAINT=''
     fi
     set -x
-    conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} $MKL_CONSTRAINT pytorch cpuonly
+    conda install -y -c "pytorch-${UPLOAD_CHANNEL}" "${CONDA_CHANNEL_FLAGS}" "$MKL_CONSTRAINT" pytorch cpuonly
 )
 
 
