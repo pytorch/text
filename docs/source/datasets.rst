@@ -32,61 +32,64 @@ AG_NEWS
 
 .. autofunction:: AG_NEWS
 
+AmazonReviewFull
+~~~~~~~~~~~~~~~~
 
-SogouNews
-~~~~~~~~~
-
-.. autofunction:: SogouNews
-
-DBpedia
-~~~~~~~
-
-.. autofunction:: DBpedia
-
-YelpReviewPolarity
-~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: YelpReviewPolarity
-
-YelpReviewFull
-~~~~~~~~~~~~~~
-
-.. autofunction:: YelpReviewFull
-
-YahooAnswers
-~~~~~~~~~~~~
-
-.. autofunction:: YahooAnswers
+.. autofunction:: AmazonReviewFull
 
 AmazonReviewPolarity
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: AmazonReviewPolarity
 
-AmazonReviewFull
-~~~~~~~~~~~~~~~~
+DBpedia
+~~~~~~~
 
-.. autofunction:: AmazonReviewFull
+.. autofunction:: DBpedia
 
 IMDb
 ~~~~
 
 .. autofunction:: IMDB
 
+SogouNews
+~~~~~~~~~
+
+.. autofunction:: SogouNews
+
 SST2
 ~~~~
 
 .. autofunction:: SST2
 
+YahooAnswers
+~~~~~~~~~~~~
+
+.. autofunction:: YahooAnswers
+
+YelpReviewFull
+~~~~~~~~~~~~~~
+
+.. autofunction:: YelpReviewFull
+
+YelpReviewPolarity
+~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: YelpReviewPolarity
+
 
 Language Modeling
 ^^^^^^^^^^^^^^^^^
+
+PennTreebank
+~~~~~~~~~~~~
+
+.. autofunction:: PennTreebank
 
 WikiText-2
 ~~~~~~~~~~
 
 .. autofunction:: WikiText2
-
 
 WikiText103
 ~~~~~~~~~~~
@@ -94,21 +97,8 @@ WikiText103
 .. autofunction:: WikiText103
 
 
-PennTreebank
-~~~~~~~~~~~~
-
-.. autofunction:: PennTreebank
-
-
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
-
-Multi30k
-~~~~~~~~
-
-.. autofunction:: Multi30k
-
-
 
 IWSLT2016
 ~~~~~~~~~
@@ -120,19 +110,24 @@ IWSLT2017
 
 .. autofunction:: IWSLT2017
 
+Multi30k
+~~~~~~~~
+
+.. autofunction:: Multi30k
+
 
 Sequence Tagging
 ^^^^^^^^^^^^^^^^
-
-UDPOS
-~~~~~
-
-.. autofunction:: UDPOS
 
 CoNLL2000Chunking
 ~~~~~~~~~~~~~~~~~
 
 .. autofunction:: CoNLL2000Chunking
+
+UDPOS
+~~~~~
+
+.. autofunction:: UDPOS
 
 
 Question Answer
@@ -152,6 +147,11 @@ SQuAD 2.0
 
 Unsupervised Learning
 ^^^^^^^^^^^^^^^^^^^^^
+
+CC100
+~~~~~~
+
+.. autofunction:: CC100
 
 EnWik9
 ~~~~~~

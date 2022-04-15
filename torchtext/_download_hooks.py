@@ -1,17 +1,19 @@
-import requests
 import re
-from tqdm import tqdm
+
+import requests
+
 # This is to allow monkey-patching in fbcode
-from torch.hub import load_state_dict_from_url # noqa
+from torch.hub import load_state_dict_from_url  # noqa
 from torchtext._internal.module_utils import is_module_available
+from tqdm import tqdm
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import HttpReader # noqa F401
+    from torchdata.datapipes.iter import HttpReader, GDriveReader  # noqa F401
 
 
 def _stream_response(r, chunk_size=16 * 1024):
-    total_size = int(r.headers.get('Content-length', 0))
-    with tqdm(total=total_size, unit='B', unit_scale=1) as t:
+    total_size = int(r.headers.get("Content-length", 0))
+    with tqdm(total=total_size, unit="B", unit_scale=1) as t:
         for chunk in r.iter_content(chunk_size):
             if chunk:
                 t.update(len(chunk))
@@ -28,19 +30,18 @@ def _get_response_from_google_drive(url):
     if confirm_token is None:
         if "Quota exceeded" in str(response.content):
             raise RuntimeError(
-                "Google drive link {} is currently unavailable, because the quota was exceeded.".format(
-                    url
-                ))
+                "Google drive link {} is currently unavailable, because the quota was exceeded.".format(url)
+            )
         else:
             raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
 
     url = url + "&confirm=" + confirm_token
     response = session.get(url, stream=True)
 
-    if 'content-disposition' not in response.headers:
+    if "content-disposition" not in response.headers:
         raise RuntimeError("Internal error: headers don't contain content-disposition.")
 
-    filename = re.findall("filename=\"(.+)\"", response.headers['content-disposition'])
+    filename = re.findall('filename="(.+)"', response.headers["content-disposition"])
     if filename is None:
         raise RuntimeError("Filename could not be autodetected")
     filename = filename[0]
@@ -50,12 +51,12 @@ def _get_response_from_google_drive(url):
 
 class DownloadManager:
     def get_local_path(self, url, destination):
-        if 'drive.google.com' not in url:
-            response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
+        if "drive.google.com" not in url:
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, stream=True)
         else:
             response, filename = _get_response_from_google_drive(url)
 
-        with open(destination, 'wb') as f:
+        with open(destination, "wb") as f:
             for chunk in _stream_response(response):
                 f.write(chunk)
 

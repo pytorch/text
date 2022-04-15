@@ -1,10 +1,5 @@
 import torch
-from torchtext.models import (
-    XLMR_BASE_ENCODER,
-    XLMR_LARGE_ENCODER,
-    ROBERTA_BASE_ENCODER,
-    ROBERTA_LARGE_ENCODER,
-)
+from torchtext.models import ROBERTA_BASE_ENCODER, ROBERTA_LARGE_ENCODER, XLMR_BASE_ENCODER, XLMR_LARGE_ENCODER
 
 from ..common.assets import get_asset_path
 from ..common.parameterized_utils import nested_params

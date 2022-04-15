@@ -3,31 +3,28 @@ import platform
 import subprocess
 from pathlib import Path
 
-from torch.utils.cpp_extension import (
-    CppExtension,
-    BuildExtension as TorchBuildExtension
-)
+from torch.utils.cpp_extension import BuildExtension as TorchBuildExtension, CppExtension
 
 __all__ = [
-    'get_ext_modules',
-    'BuildExtension',
+    "get_ext_modules",
+    "BuildExtension",
 ]
 
 _ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
-_CSRC_DIR = _ROOT_DIR / 'torchtext' / 'csrc'
-_TP_BASE_DIR = _ROOT_DIR / 'third_party'
-_TP_INSTALL_DIR = _TP_BASE_DIR / 'build'
+_CSRC_DIR = _ROOT_DIR / "torchtext" / "csrc"
+_TP_BASE_DIR = _ROOT_DIR / "third_party"
+_TP_INSTALL_DIR = _TP_BASE_DIR / "build"
 
 
 def _get_eca(debug):
     eca = []
     if platform.system() == "Windows":
-        eca += ['/MT']
+        eca += ["/MT"]
     if debug:
         eca += ["-O0", "-g"]
     else:
         if platform.system() == "Windows":
-            eca += ['-O2']
+            eca += ["-O2"]
         else:
             eca += ["-O3", "-fvisibility=hidden"]
     return eca
@@ -47,21 +44,18 @@ def _get_ela(debug):
 
 
 def _get_srcs():
-    return [str(p) for p in _CSRC_DIR.glob('**/*.cpp')]
+    return [str(p) for p in _CSRC_DIR.glob("**/*.cpp")]
 
 
 def _get_include_dirs():
     return [
-        str(_CSRC_DIR),
-        str(_TP_INSTALL_DIR / 'include'),
+        str(_ROOT_DIR),
+        str(_TP_INSTALL_DIR / "include"),
     ]
 
 
 def _get_library_dirs():
-    return [
-        str(_TP_INSTALL_DIR / 'lib'),
-        str(_TP_INSTALL_DIR / 'lib64')
-    ]
+    return [str(_TP_INSTALL_DIR / "lib"), str(_TP_INSTALL_DIR / "lib64")]
 
 
 def _get_libraries():
@@ -76,57 +70,55 @@ def _get_libraries():
     #                  U _ZTIN13sentencepiece7unigram5ModelE
     # $ nm third_party/build/lib/libsentencepiece.a       | grep _ZTIN13sentencepiece7unigram5ModelE
     # 0000000000000000 V _ZTIN13sentencepiece7unigram5ModelE
-    return [
-        'sentencepiece_train',
-        'sentencepiece',
-        're2',
-        'double-conversion'
-    ]
+    return ["sentencepiece_train", "sentencepiece", "re2", "double-conversion"]
 
 
 def _get_cxx11_abi():
     try:
         import torch
+
         value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
     except ImportError:
         value = 0
-    return '-D_GLIBCXX_USE_CXX11_ABI=' + str(value)
+    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(value)
 
 
 def _build_third_party(debug):
-    build_dir = _TP_BASE_DIR / 'build'
+    build_dir = _TP_BASE_DIR / "build"
     build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
-    config = 'Debug' if debug else 'Release'
-    if platform.system() == 'Windows':
+    config = "Debug" if debug else "Release"
+    if platform.system() == "Windows":
         extra_args = [
-            '-GNinja',
+            "-GNinja",
         ]
-        build_env.setdefault('CC', 'cl')
-        build_env.setdefault('CXX', 'cl')
+        build_env.setdefault("CC", "cl")
+        build_env.setdefault("CXX", "cl")
     else:
-        extra_args = ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi()]
+        extra_args = ["-DCMAKE_CXX_FLAGS=-fPIC " + _get_cxx11_abi()]
     subprocess.run(
         args=[
-            'cmake',
-            '-DBUILD_SHARED_LIBS=OFF',
-            '-DRE2_BUILD_TESTING=OFF',
-            '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
-            f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
-            f'-DCMAKE_BUILD_TYPE={config}',
-            '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
-            '-DCMAKE_POLICY_DEFAULT_CMP0063=NEW',
-        ] + extra_args + ['..'],
+            "cmake",
+            "-DBUILD_SHARED_LIBS=OFF",
+            "-DRE2_BUILD_TESTING=OFF",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+            f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
+            f"-DCMAKE_BUILD_TYPE={config}",
+            "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+        ]
+        + extra_args
+        + [".."],
         cwd=str(build_dir),
         check=True,
         env=build_env,
     )
-    print('*** Command list Thirdparty ***')
-    with open(build_dir / 'compile_commands.json', 'r') as fileobj:
+    print("*** Command list Thirdparty ***")
+    with open(build_dir / "compile_commands.json", "r") as fileobj:
         print(fileobj.read())
-    print('running cmake --build', flush=True)
+    print("running cmake --build", flush=True)
     subprocess.run(
-        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
+        args=["cmake", "--build", ".", "--target", "install", "--config", config],
         cwd=str(build_dir),
         check=True,
         env=build_env,
@@ -134,29 +126,34 @@ def _build_third_party(debug):
 
 
 def _build_sentence_piece(debug):
-    build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
+    build_dir = _TP_BASE_DIR / "sentencepiece" / "build"
     build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
-    config = 'Debug' if debug else 'Release'
-    if platform.system() == 'Windows':
-        extra_args = ['-GNinja']
-        build_env.setdefault('CC', 'cl')
-        build_env.setdefault('CXX', 'cl')
+    config = "Debug" if debug else "Release"
+    if platform.system() == "Windows":
+        extra_args = ["-GNinja"]
+        build_env.setdefault("CC", "cl")
+        build_env.setdefault("CXX", "cl")
     else:
         extra_args = []
     subprocess.run(
-        args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
-              '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
-              '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
-              '-DCMAKE_POLICY_DEFAULT_CMP0063=NEW',
-              f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
-
+        args=[
+            "cmake",
+            "-DSPM_ENABLE_SHARED=OFF",
+            f"-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}",
+            "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
+            "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
+            f"-DCMAKE_BUILD_TYPE={config}",
+        ]
+        + extra_args
+        + [".."],
         cwd=str(build_dir),
         check=True,
         env=build_env,
     )
     subprocess.run(
-        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
+        args=["cmake", "--build", ".", "--target", "install", "--config", config],
         cwd=str(build_dir),
         check=True,
         env=build_env,
@@ -168,7 +165,7 @@ def _configure_third_party(debug):
     _build_sentence_piece(debug)
 
 
-_EXT_NAME = 'torchtext._torchtext'
+_EXT_NAME = "torchtext._torchtext"
 
 
 def get_ext_modules(debug=False):

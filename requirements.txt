@@ -8,7 +8,7 @@ requests
 nltk
 spacy
 sacremoses
-git+git://github.com/jekbradbury/revtok.git
+git+https://github.com/jekbradbury/revtok.git
 
 # Documentation
 Sphinx
@@ -16,11 +16,10 @@ sphinx_rtd_theme
 
 # Required for tests only:
 
-# Style-checking for PEP8
-flake8==3.7.9
-
 # Run unit tests
 pytest
+expecttest
+parameterized
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath

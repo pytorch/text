@@ -10,9 +10,9 @@ torchtext.data.utils
 :hidden:`get_tokenizer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: get_tokenizer 
+.. autofunction:: get_tokenizer
 
 :hidden:`ngrams_iterator`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: ngrams_iterator 
+.. autofunction:: ngrams_iterator

@@ -14,48 +14,46 @@ See this comment for design rationale:
 https://github.com/pytorch/vision/pull/1321#issuecomment-531033978
 """
 
-import jinja2
-from jinja2 import select_autoescape
-import yaml
 import os.path
 
+import jinja2
+import yaml
+from jinja2 import select_autoescape
 
-PYTHON_VERSIONS = ["3.7", "3.8", "3.9"]
 
-DOC_VERSION = ('linux', '3.8')
+PYTHON_VERSIONS = ["3.7", "3.8", "3.9", "3.10"]
+
+DOC_VERSION = ("linux", "3.8")
 
 
-def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
+def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
     w = []
     for btype in ["wheel", "conda"]:
         for os_type in ["linux", "macos", "windows"]:
             for python_version in PYTHON_VERSIONS:
                 fb = filter_branch
-                if not fb and (os_type == 'linux' and
-                               btype == 'wheel' and
-                               python_version == '3.8'):
+                if not fb and (os_type == "linux" and btype == "wheel" and python_version == "3.8"):
                     # the fields must match the build_docs "requires" dependency
-                    fb = '/.*/'
+                    fb = "/.*/"
                 w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
 
     if not filter_branch:
         # Build on every pull request, but upload only on nightly and tags
-        w += build_doc_job('/.*/')
-        w += upload_doc_job('nightly')
-        w += docstring_parameters_sync_job(None)
+        w += build_doc_job("/.*/")
+        w += upload_doc_job("nightly")
 
     return indent(indentation, w)
 
 
-def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
+def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix="", upload=False):
     w = []
     base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
     w.append(generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype))
 
     if upload:
         w.append(generate_upload_workflow(base_workflow_name, filter_branch, btype))
-        if filter_branch == 'nightly' and os_type in ['linux', 'windows']:
-            pydistro = 'pip' if btype == 'wheel' else 'conda'
+        if filter_branch == "nightly" and os_type in ["linux", "windows"]:
+            pydistro = "pip" if btype == "wheel" else "conda"
             w.append(generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, python_version, os_type))
     return w
 
@@ -64,7 +62,9 @@ def build_doc_job(filter_branch):
     job = {
         "name": "build_docs",
         "python_version": "3.8",
-        "requires": ["binary_linux_wheel_py3.8", ],
+        "requires": [
+            "binary_linux_wheel_py3.8",
+        ],
     }
 
     if filter_branch:
@@ -77,24 +77,14 @@ def upload_doc_job(filter_branch):
         "name": "upload_docs",
         "context": "org-member",
         "python_version": "3.8",
-        "requires": ["build_docs", ],
+        "requires": [
+            "build_docs",
+        ],
     }
 
     if filter_branch:
         job["filters"] = gen_filter_branch_tree(filter_branch)
     return [{"upload_docs": job}]
-
-
-def docstring_parameters_sync_job(filter_branch):
-    job = {
-        "name": "docstring_parameters_sync",
-        "python_version": "3.8",
-        "requires": ["binary_linux_wheel_py3.8", ],
-    }
-
-    if filter_branch:
-        job["filters"] = gen_filter_branch_tree(filter_branch)
-    return [{"docstring_parameters_sync": job}]
 
 
 def generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype):
@@ -111,14 +101,12 @@ def generate_base_workflow(base_workflow_name, python_version, filter_branch, os
 
 def gen_filter_branch_tree(branch_name):
     return {
-        "branches": {
-            "only": branch_name
-        },
+        "branches": {"only": branch_name},
         "tags": {
             # Using a raw string here to avoid having to escape
             # anything
             "only": r"/v[0-9]+(\.[0-9]+)*-rc[0-9]+/"
-        }
+        },
     }
 
 
@@ -159,30 +147,17 @@ def indent(indentation, data_list):
 
 def unittest_workflows(indentation=6):
     w = []
-    for os_type in ["linux", "windows"]:
-        w.append({
-            f"cachesetup_{os_type}": {
-                "name": f"cachesetup_{os_type}_py_any",
-                "python_version": PYTHON_VERSIONS[0],
-            }
-        })
-
-        for i, python_version in enumerate(PYTHON_VERSIONS):
-            w.append({
-                f"unittest_{os_type}": {
-                    "name": f"unittest_{os_type}_py{python_version}",
-                    "python_version": python_version,
-                    "requires": [f"cachesetup_{os_type}_py_any"],
-                }
-            })
-
-            if i == 0 and os_type == "linux":
-                w.append({
-                    "stylecheck": {
-                        "name": f"stylecheck_py{python_version}",
+    for os_type in ["linux", "windows", "macos"]:
+        for python_version in PYTHON_VERSIONS:
+            w.append(
+                {
+                    f"unittest_{os_type}": {
+                        "name": f"unittest_{os_type}_py{python_version}",
                         "python_version": python_version,
                     }
-                })
+                }
+            )
+
     return indent(indentation, w)
 
 
@@ -191,12 +166,14 @@ if __name__ == "__main__":
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(d),
         lstrip_blocks=True,
-        autoescape=select_autoescape(enabled_extensions=('html', 'xml')),
+        autoescape=select_autoescape(enabled_extensions=("html", "xml")),
     )
 
-    with open(os.path.join(d, 'config.yml'), 'w') as f:
-        f.write(env.get_template('config.yml.in').render(
-            build_workflows=build_workflows,
-            unittest_workflows=unittest_workflows,
-        ))
+    with open(os.path.join(d, "config.yml"), "w") as f:
+        f.write(
+            env.get_template("config.yml.in").render(
+                build_workflows=build_workflows,
+                unittest_workflows=unittest_workflows,
+            )
+        )
         f.write("\n")

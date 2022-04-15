@@ -43,6 +43,16 @@ popular datasets for natural language.
    functional
    models
 
+Getting Started
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
+
+   tutorials/sst2_classification_non_distributed
+
+
 .. automodule:: torchtext
    :members:
 
@@ -57,10 +67,3 @@ popular datasets for natural language.
    TorchElastic <https://pytorch.org/elastic/>
    TorchServe <https://pytorch.org/serve>
    PyTorch on XLA Devices <http://pytorch.org/xla/>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

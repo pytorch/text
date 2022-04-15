@@ -1,14 +1,10 @@
-import torch
-import sys
 import argparse
-from torchtext.data.utils import get_tokenizer
-from torchtext.data.utils import ngrams_iterator
+import sys
+
+import torch
+from torchtext.data.utils import get_tokenizer, ngrams_iterator
+from torchtext.experimental.transforms import load_sp_model, PRETRAINED_SP_MODEL, SentencePieceTokenizer
 from torchtext.utils import download_from_url
-from torchtext.experimental.transforms import (
-    SentencePieceTokenizer,
-    load_sp_model,
-    PRETRAINED_SP_MODEL,
-)
 
 
 def predict(text, model, dictionary, tokenizer, ngrams):
@@ -31,20 +27,19 @@ def predict(text, model, dictionary, tokenizer, ngrams):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description='Predict text from stdin given model and dictionary')
-    parser.add_argument('model', help='the path for model')
-    parser.add_argument('dictionary', help='the path for dictionary')
-    parser.add_argument('--ngrams', type=int, default=2,
-                        help='ngrams (default=2)')
-    parser.add_argument('--use-sp-tokenizer', type=bool, default=False,
-                        help='use sentencepiece tokenizer (default=False)')
+    parser = argparse.ArgumentParser(description="Predict text from stdin given model and dictionary")
+    parser.add_argument("model", help="the path for model")
+    parser.add_argument("dictionary", help="the path for dictionary")
+    parser.add_argument("--ngrams", type=int, default=2, help="ngrams (default=2)")
+    parser.add_argument(
+        "--use-sp-tokenizer", type=bool, default=False, help="use sentencepiece tokenizer (default=False)"
+    )
     args = parser.parse_args()
 
     model = torch.load(args.model)
     dictionary = torch.load(args.dictionary)
     if args.use_sp_tokenizer:
-        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_unigram_15000'])
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL["text_unigram_15000"])
         sp_model = load_sp_model(sp_model_path)
         tokenizer = SentencePieceTokenizer(sp_model)
     else:

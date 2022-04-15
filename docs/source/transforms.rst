@@ -43,7 +43,7 @@ ToTensor
 .. autoclass:: ToTensor
 
    .. automethod:: forward
- 
+
 LabelToIndex
 ------------
 

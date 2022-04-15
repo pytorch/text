@@ -1,6 +1,4 @@
 import os
-import random
-import string
 import zipfile
 from collections import defaultdict
 from unittest.mock import patch
@@ -8,7 +6,7 @@ from unittest.mock import patch
 from parameterized import parameterized
 from torchtext.datasets.sst2 import SST2
 
-from ..common.case_utils import TempDirMixin, zip_equal
+from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -27,13 +25,11 @@ def _get_mock_dataset(root_dir):
         ((("sentence", "label"), ("sentence", "label"), ("index", "sentence"))),
     ):
         txt_file = os.path.join(temp_dataset_dir, file_name)
-        with open(txt_file, "w") as f:
+        with open(txt_file, "w", encoding="utf-8") as f:
             f.write(f"{col1_name}\t{col2_name}\n")
             for i in range(5):
                 label = seed % 2
-                rand_string = " ".join(
-                    random.choice(string.ascii_letters) for i in range(seed)
-                )
+                rand_string = get_random_unicode(seed)
                 if file_name == "test.tsv":
                     dataset_line = (f"{rand_string} .",)
                     f.write(f"{i}\t{rand_string} .\n")
@@ -64,9 +60,7 @@ class TestSST2(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
-        cls.patcher = patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        )
+        cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
     @classmethod

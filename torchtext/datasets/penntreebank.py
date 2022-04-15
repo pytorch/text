@@ -1,15 +1,15 @@
 import os
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _add_docstring_header,
     _create_dataset_directory,
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
     "train": "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt",
@@ -32,10 +32,25 @@ NUM_LINES = {
 DATASET_NAME = "PennTreebank"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
 def PennTreebank(root, split: Union[Tuple[str], str]):
+    """PennTreebank Dataset
+
+    For additional details refer to https://catalog.ldc.upenn.edu/docs/LDC95T7/cl93.html
+
+    Number of lines per split:
+        - train: 42068
+        - valid: 3370
+        - test: 3761
+
+    Args:
+        root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `valid`, `test`)
+
+    :returns: DataPipe that yields text from the Treebank corpus
+    :rtype: str
+    """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
@@ -48,6 +63,7 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    data_dp = FileOpener(cache_dp, mode="r")
+
+    data_dp = FileOpener(cache_dp, encoding="utf-8")
     # remove single leading and trailing space from the dataset
     return data_dp.readlines(return_path=False).map(lambda t: t.strip())

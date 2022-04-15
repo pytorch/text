@@ -1,11 +1,10 @@
 import logging
 import math
-from typing import Optional, List, Union
+from typing import List, Optional, Union
 
 import torch
 from torch import nn
-from torch.nn import Module
-from torch.nn import functional as F
+from torch.nn import functional as F, Module
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +42,7 @@ class ResidualMLP(Module):
         super().__init__()
         modules = []
         for last_dim, dim in zip([input_dim] + hidden_dims, hidden_dims):
-            modules.extend(
-                [nn.Linear(last_dim, dim), activation(), nn.Dropout(dropout)]
-            )
+            modules.extend([nn.Linear(last_dim, dim), activation(), nn.Dropout(dropout)])
 
         last_dim = hidden_dims[-1] if hidden_dims else input_dim
         modules.extend([nn.Linear(last_dim, input_dim), nn.Dropout(dropout)])
@@ -78,9 +75,7 @@ class MultiheadSelfAttention(Module):
 
         expected_scaling = float(1 / math.sqrt(self.head_dim))
 
-        assert (
-            embed_dim % num_heads == 0
-        ), f"embed_dim={embed_dim} should be a multiple of num_heads={num_heads}"
+        assert embed_dim % num_heads == 0, f"embed_dim={embed_dim} should be a multiple of num_heads={num_heads}"
 
         if not scaling:
             logger.warn(
@@ -119,16 +114,23 @@ class MultiheadSelfAttention(Module):
         k = k.contiguous().view(-1, batch_heads, self.head_dim).transpose(0, 1)
         v = v.contiguous().view(-1, batch_heads, self.head_dim).transpose(0, 1)
 
-        torch._assert(
-            k.size(1) == source_length, "key size should be equal to source length"
-        )
+        torch._assert(k.size(1) == source_length, "key size should be equal to source length")
 
         attn_weights = torch.bmm(q, k.transpose(1, 2))
         if attn_mask is not None:
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
-            torch._assert(attn_mask.size(0) == target_length, "attn_mask shape didn't match for target length {}".format(target_length))
-            torch._assert(attn_mask.size(1) == source_length, "attn_mask shape didn't match for source length {}".format(source_length))
-            torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
+            torch._assert(
+                attn_mask.size(0) == target_length,
+                "attn_mask shape didn't match for target length {}".format(target_length),
+            )
+            torch._assert(
+                attn_mask.size(1) == source_length,
+                "attn_mask shape didn't match for source length {}".format(source_length),
+            )
+            torch._assert(
+                attn_mask.is_floating_point() or attn_mask.dtype == torch.bool,
+                f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}",
+            )
             if attn_mask.dtype == torch.bool:
                 new_attn_mask = torch.zeros_like(attn_mask, dtype=query.dtype)
                 new_attn_mask.masked_fill_(attn_mask, -1e8 if query.dtype == torch.float32 else -1e4)
@@ -150,17 +152,11 @@ class MultiheadSelfAttention(Module):
             "attn_weights shape didn't match for source length",
         )
 
-        attn_weights = attn_weights.view(
-            batch_size, self.num_heads, target_length, source_length
-        )
-        attn_weights = attn_weights.masked_fill(
-            key_padding_mask.unsqueeze(1).unsqueeze(2), float("-inf")
-        )
+        attn_weights = attn_weights.view(batch_size, self.num_heads, target_length, source_length)
+        attn_weights = attn_weights.masked_fill(key_padding_mask.unsqueeze(1).unsqueeze(2), float("-inf"))
         attn_weights = attn_weights.view(batch_heads, target_length, source_length)
 
-        attn_weights = F.softmax(attn_weights, dim=-1, dtype=torch.float32).type_as(
-            attn_weights
-        )
+        attn_weights = F.softmax(attn_weights, dim=-1, dtype=torch.float32).type_as(attn_weights)
         attn_weights = self.dropout(attn_weights)
 
         attn = torch.bmm(attn_weights, v)
@@ -181,11 +177,7 @@ class MultiheadSelfAttention(Module):
             attn.size(2) == self.head_dim,
             "attn shape didn't match for head dim",
         )
-        attn = (
-            attn.transpose(0, 1)
-            .contiguous()
-            .view(target_length, batch_size, self.head_dim * self.num_heads)
-        )
+        attn = attn.transpose(0, 1).contiguous().view(target_length, batch_size, self.head_dim * self.num_heads)
         attn = self.output_projection(attn)
 
         return attn
@@ -223,7 +215,10 @@ class TransformerEncoderLayer(Module):
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
         if attn_mask is not None:
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
-            torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
+            torch._assert(
+                attn_mask.is_floating_point() or attn_mask.dtype == torch.bool,
+                f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}",
+            )
 
         if not hasattr(self, "normalize_before"):
             self.normalize_before = False
@@ -275,17 +270,20 @@ class TransformerEncoder(Module):
                 for _ in range(num_encoder_layers)
             ]
         )
-        self.positional_embedding = PositionalEmbedding(
-            max_seq_len, embedding_dim, padding_idx
-        )
+        self.positional_embedding = PositionalEmbedding(max_seq_len, embedding_dim, padding_idx)
         self.embedding_layer_norm = nn.LayerNorm(embedding_dim)
         self.dropout = nn.Dropout(dropout)
         self.normalize_before = normalize_before
         self.return_all_layers = return_all_layers
 
-    def forward(self, tokens: torch.Tensor, attn_mask: Optional[torch.Tensor] = None) -> Union[torch.Tensor, List[torch.Tensor]]:
+    def forward(
+        self, tokens: torch.Tensor, attn_mask: Optional[torch.Tensor] = None
+    ) -> Union[torch.Tensor, List[torch.Tensor]]:
         if attn_mask is not None:
-            torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
+            torch._assert(
+                attn_mask.is_floating_point() or attn_mask.dtype == torch.bool,
+                f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}",
+            )
 
         padding_mask = tokens.eq(self.padding_idx)
 
