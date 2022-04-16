@@ -21,6 +21,8 @@ __all__ = [
     "LabelToIndex",
     "Truncate",
     "AddToken",
+    "PadTransform",
+    "StrToIntTransform",
     "GPT2BPETokenizer",
     "Sequential",
 ]
@@ -219,6 +221,33 @@ class AddToken(Module):
         """
 
         return F.add_token(input, self.token, self.begin)
+
+
+class PadTransform(Module):
+    def __init__(self, max_length: int, pad_value: int):
+        super().__init__()
+        self.max_length = max_length
+        self.pad_value = pad_value
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        max_encoded_length = x.size(-1)
+        if max_encoded_length < self.max_length:
+            pad_amount = self.max_length - max_encoded_length
+            x = torch.nn.functional.pad(x, (0, pad_amount), value=self.pad_value)
+        return x
+
+
+class StrToIntTransform(Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
+        if isinstance(input[0], str):
+            return [int(x) for x in input]  # type: ignore
+        if isinstance(input[0], List) and isinstance(input[0][0], str):
+            return [[int(x) for x in ll] for ll in input]
+        else:
+            raise TypeError("Input type not supported")
 
 
 class GPT2BPETokenizer(Module):
