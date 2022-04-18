@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import torch
-from torchtext._internal import module_utils as _mod_utils  # noqa: F401
+from torchtext._internal import module_utils as _mod_utils
 
 _LIB_DIR = Path(__file__).parent / "lib"
 
