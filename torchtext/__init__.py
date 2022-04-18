@@ -1,5 +1,6 @@
 import os
 
+# the following import has to happen first in order to load the torchtext C++ library
 from torchtext import _extension  # noqa: F401
 
 _TEXT_BUCKET = "https://download.pytorch.org/models/text/"

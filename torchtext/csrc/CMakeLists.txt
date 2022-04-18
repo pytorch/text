@@ -40,24 +40,15 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
   set(
     EXTENSION_SOURCES
     clip_tokenizer.cpp
-    clip_tokenizer.h
     common.cpp
-    common.h
     gpt2_bpe_tokenizer.cpp
-    gpt2_bpe_tokenizer.h
     regex.cpp
-    regex.h
     regex_tokenizer.cpp
-    regex_tokenizer.h
     register_pybindings.cpp
     register_torchbindings.cpp
     sentencepiece.cpp
-    sentencepiece.h
     vectors.cpp
-    vectors.h
     vocab.cpp
-    vocab.h
-    vocab_factory.h
     )
 
   set(
