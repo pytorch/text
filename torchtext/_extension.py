@@ -48,7 +48,6 @@ def _load_lib(lib: str) -> bool:
     if not path.exists():
         return False
     torch.ops.load_library(path)
-    torch.classes.load_library(path)
     return True
 
 
