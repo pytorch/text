@@ -224,12 +224,24 @@ class AddToken(Module):
 
 
 class PadTransform(Module):
+    """Add token to beginning or end of sequence
+
+    :param max_length: Maximum length to pad to
+    :type max_length: int
+    :param pad_value: Value to pad the tensor with
+    :type pad_value: bool
+    """
+
     def __init__(self, max_length: int, pad_value: int):
         super().__init__()
         self.max_length = max_length
         self.pad_value = pad_value
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        :param x: The tensor to pad
+        :type x: torch.Tensor
+        """
         max_encoded_length = x.size(-1)
         if max_encoded_length < self.max_length:
             pad_amount = self.max_length - max_encoded_length
@@ -238,10 +250,16 @@ class PadTransform(Module):
 
 
 class StrToIntTransform(Module):
+    """Convert string representations of ints to ints"""
+
     def __init__(self):
         super().__init__()
 
     def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
+        """
+        :param input: list (or list of lists) of strings to convert
+        :type input: Union[List[str], List[List[str]]]
+        """
         if isinstance(input[0], str):
             return [int(x) for x in input]  # type: ignore
         if isinstance(input[0], List) and isinstance(input[0][0], str):

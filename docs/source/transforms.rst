@@ -71,3 +71,17 @@ Sequential
 .. autoclass:: Sequential
 
    .. automethod:: forward
+
+PadTransform
+----------
+
+.. autoclass:: PadTransform
+
+   .. automethod:: forward
+
+StrToIntTransform
+----------
+
+.. autoclass:: StrToIntTransform
+
+   .. automethod:: forward
