@@ -83,7 +83,7 @@ def benchmark_roberta_datapipe(args):
     with Timer("Initialize Roberta Transform (for datapipe)"):
         transform = RobertaTransformDataPipe()
 
-    with Timer("Initialize datapipe"):
+    with Timer("Initialize Pipeline"):
         # Create SST2 datapipe and apply pre-processing
         train_dp = DATASETS[dataset_name](split="train")
         train_dp = train_dp.batch(batch_size).rows2columnar(columns)
@@ -98,7 +98,7 @@ def benchmark_roberta_datapipe(args):
     # create DataLoader
     dl = DataLoader(train_dp, batch_size=None)
 
-    with Timer("Execute datapipe"):
+    with Timer("Execute Pipeline"):
         list(dl)
 
 
@@ -112,12 +112,12 @@ def benchmark_roberta_dataframe(args):
     with Timer("Initialize Roberta Transform (for DataFrame)"):
         transform = RobertaTransformDataFrame()
 
-    with Timer("Initialize datapipe"):
+    with Timer("Initialize Pipeline"):
         # Create SST2 datapipe and apply pre-processing
         train_dp = DATASETS[dataset_name](split="train")
 
         # convert to DataFrame of size batches
-        # TODO: Figure out how to create DataFrame of larger size and create batches consequently
+        # TODO: Figure out how to create DataFrame of larger size and create smaller batches
         train_dp = train_dp.dataframe(columns=columns, dataframe_size=batch_size)
 
         # Apply transformation on DataFrame
@@ -132,7 +132,7 @@ def benchmark_roberta_dataframe(args):
     # create DataLoader
     dl = DataLoader(train_dp, batch_size=None)
 
-    with Timer("Execute datapipe"):
+    with Timer("Execute Pipeline"):
         list(dl)
 
 

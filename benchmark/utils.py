@@ -8,7 +8,7 @@ class Timer:
 
     def start(self):
         if self._start is not None:
-            raise Exception("Time is already running. Call .stop() to stop it")
+            raise Exception("Timer is already running. Call .stop() to stop it")
 
         self._start = time.perf_counter()
 
