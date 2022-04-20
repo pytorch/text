@@ -10,7 +10,6 @@ import torchtext.transforms as T
 from benchmark.utils import Timer
 from torch.hub import load_state_dict_from_url
 from torch.nn import Module
-from torch.utils.data import DataLoader
 from torchtext.datasets import DATASETS
 
 
@@ -99,11 +98,8 @@ def benchmark_roberta_datapipe(args):
         train_dp = train_dp.map(partial(F.to_tensor, padding_value=1), input_col="tokens")
         train_dp = train_dp.map(F.to_tensor, input_col="label")
 
-    # create DataLoader
-    dl = DataLoader(train_dp, batch_size=None)
-
     with Timer("Execute Pipeline"):
-        list(dl)
+        list(train_dp)
 
 
 def benchmark_roberta_dataframe(args):
@@ -133,11 +129,8 @@ def benchmark_roberta_dataframe(args):
         # convert DataFrame to tensor (This will yeild named tuple)
         train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
 
-    # create DataLoader
-    dl = DataLoader(train_dp, batch_size=None)
-
     with Timer("Execute Pipeline"):
-        list(dl)
+        list(train_dp)
 
 
 if __name__ == "__main__":
@@ -145,5 +138,5 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", default=32, type=int)
     parser.add_argument("--dataset-name", default="SST2", type=str)
     parser.add_argument("--columns", default=["text", "label"], nargs="+")
-    # benchmark_roberta_datapipe(parser.parse_args())
+    benchmark_roberta_datapipe(parser.parse_args())
     benchmark_roberta_dataframe(parser.parse_args())
