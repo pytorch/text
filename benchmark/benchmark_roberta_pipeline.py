@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from functools import partial
-from typing import Dict, Any
+from typing import Callable, Dict, Any, List
 
 import torcharrow as ta
 import torcharrow.dtypes as dt
@@ -44,6 +44,10 @@ class RobertaTransformDataPipe(Module):
         return input
 
 
+def batch_tokenize(input: List[str], tokenizer: Callable) -> List[List[str]]:
+    return tokenizer(input)
+
+
 class RobertaTransformDataFrame(Module):
     def __init__(self) -> None:
         super().__init__()
@@ -65,11 +69,11 @@ class RobertaTransformDataFrame(Module):
         self.add_eos = T.AddToken(token=2, begin=False)
 
     def forward(self, input: ta.DataFrame) -> ta.DataFrame:
-        input["tokens"] = input["text"].map(self.tokenizer.forward, dtype=dt.List(dt.string))
+        input["tokens"] = input["text"].transform(self.tokenizer, dtype=dt.List(dt.string), format="python")
         input["tokens"] = input["tokens"].list.slice(stop=254)
-        input["tokens"] = input["tokens"].map(self.vocab, dtype=dt.List(dt.int32))
-        input["tokens"] = input["tokens"].map(self.add_bos)
-        input["tokens"] = input["tokens"].map(self.add_eos)
+        input["tokens"] = input["tokens"].transform(self.vocab, dtype=dt.List(dt.int32), format="python")
+        input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
+        input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
         return input
 
 
@@ -141,5 +145,5 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", default=32, type=int)
     parser.add_argument("--dataset-name", default="SST2", type=str)
     parser.add_argument("--columns", default=["text", "label"], nargs="+")
-    benchmark_roberta_datapipe(parser.parse_args())
+    # benchmark_roberta_datapipe(parser.parse_args())
     benchmark_roberta_dataframe(parser.parse_args())
