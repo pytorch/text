@@ -22,7 +22,7 @@ esac
 # 1. Install conda at ./conda
 if [ ! -d "${conda_dir}" ]; then
     printf "* Installing conda\n"
-    wget -O miniconda.sh http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    curl --silent -L -o miniconda.sh "http://repo.continuum.io/miniconda/Miniconda3-latest-${os}-x86_64.sh"
     bash ./miniconda.sh -b -f -p "${conda_dir}"
 fi
 eval "$(${conda_dir}/bin/conda shell.bash hook)"
@@ -34,11 +34,15 @@ if [ ! -d "${env_dir}" ]; then
 fi
 conda activate "${env_dir}"
 
-# 3. Install Conda dependencies
+
+# 3. Install minimal build tools
+pip --quiet install cmake>=3.18.0 ninja
+
+# 4. Install Conda dependencies
 printf "* Installing dependencies (except PyTorch)\n"
 conda env update --file "${this_dir}/environment.yml" --prune
 
-# 4. Download
+# 5. Download
 printf "* Downloading SpaCy English models\n"
 python -m spacy download en_core_web_sm
 printf "* Downloading SpaCy German models\n"

@@ -1,11 +1,12 @@
+import distutils.sysconfig
 import os
 import platform
 import subprocess
 from pathlib import Path
+
+import torch
 from setuptools import Extension
 from setuptools.command.build_ext import build_ext
-import torch
-import distutils.sysconfig
 
 
 __all__ = [
@@ -14,15 +15,8 @@ __all__ = [
 ]
 
 
-def _get_cxx11_abi():
-    try:
-        value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
-    except ImportError:
-        value = 0
-    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(value)
-
-
-_LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
+# TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
+# _LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
 _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
@@ -30,10 +24,12 @@ _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 def get_ext_modules():
     modules = [
-        Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
+        # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
+        # Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
         Extension(name=_EXT_NAME, sources=[]),
     ]
     return modules
+
 
 # Based off of
 # https://github.com/pybind/cmake_example/blob/580c5fd29d4651db99d8874714b07c0c49a53f8a/setup.py
@@ -73,10 +69,9 @@ class CMakeBuild(build_ext):
             f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
             "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
             "-DRE2_BUILD_TESTING:BOOL=OFF",
-            "-DBUILD_TESTING:BOOL=OFF"
+            "-DBUILD_TESTING:BOOL=OFF",
             "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
-            "-DCMAKE_CXX_FLAGS=" + _get_cxx11_abi(),
             "-DSPM_ENABLE_SHARED=OFF",
         ]
         build_args = ["--target", "install"]

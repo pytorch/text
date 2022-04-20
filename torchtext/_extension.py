@@ -1,10 +1,8 @@
-
 import os
-import warnings
 from pathlib import Path
 
 import torch
-from torchtext._internal import module_utils as _mod_utils  # noqa: F401
+from torchtext._internal import module_utils as _mod_utils
 
 _LIB_DIR = Path(__file__).parent / "lib"
 
@@ -50,16 +48,18 @@ def _load_lib(lib: str) -> bool:
     if not path.exists():
         return False
     torch.ops.load_library(path)
-    torch.classes.load_library(path)
     return True
 
 
 def _init_extension():
     if not _mod_utils.is_module_available("torchtext._torchtext"):
-        warnings.warn("torchtext C++ extension is not available.")
-        return
+        raise ImportError("torchtext C++ Extension is not found.")
 
-    _load_lib("libtorchtext")
+    # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
+    # _load_lib("libtorchtext")
     # This import is for initializing the methods registered via PyBind11
     # This has to happen after the base library is loaded
     from torchtext import _torchtext  # noqa
+
+
+_init_extension()
