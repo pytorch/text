@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from functools import partial
-from typing import Callable, Dict, Any, List
+from typing import Dict, Any
 
 import torcharrow as ta
 import torcharrow.dtypes as dt
@@ -41,10 +41,6 @@ class RobertaTransformDataPipe(Module):
         tokens = self.add_eos(tokens)
         input["tokens"] = tokens
         return input
-
-
-def batch_tokenize(input: List[str], tokenizer: Callable) -> List[List[str]]:
-    return tokenizer(input)
 
 
 class RobertaTransformDataFrame(Module):
