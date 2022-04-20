@@ -206,6 +206,12 @@ class TestTransforms(TorchtextTestCase):
         self._add_token(test_scripting=True)
 
     def _pad_transform(self, test_scripting):
+        """
+        Test padding transform on 1D and 2D tensors.
+        When max_length < tensor length at dim -1, this should be a no-op.
+        Otherwise the tensor should be padded to max_length in dim -1.
+        """
+
         input_1d_tensor = torch.ones(5)
         input_2d_tensor = torch.ones((8, 5))
         pad_long = transforms.PadTransform(max_length=7, pad_value=0)
@@ -253,6 +259,10 @@ class TestTransforms(TorchtextTestCase):
         self._pad_transform(test_scripting=True)
 
     def _str_to_int_transform(self, test_scripting):
+        """
+        Test StrToIntTransform on list and list of lists.
+        The result should be the same shape as the input but with all strings converted to ints.
+        """
         input_1d_string_list = ["1", "2", "3", "4", "5"]
         input_2d_string_list = [["1", "2", "3"], ["4", "5", "6"]]
 
@@ -270,10 +280,10 @@ class TestTransforms(TorchtextTestCase):
             self.assertListEqual(expected_2d_int_list[i], actual_2d_int_list[i])
 
     def test_str_to_int_transform(self):
-        self._pad_transform(test_scripting=False)
+        self._str_to_int_transform(test_scripting=False)
 
     def test_str_to_int_transform_jit(self):
-        self._pad_transform(test_scripting=True)
+        self._str_to_int_transform(test_scripting=True)
 
 
 class TestSequential(TorchtextTestCase):

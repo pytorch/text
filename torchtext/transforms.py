@@ -224,7 +224,7 @@ class AddToken(Module):
 
 
 class PadTransform(Module):
-    """Add token to beginning or end of sequence
+    """Pad tensor to a fixed length with given padding value.
 
     :param max_length: Maximum length to pad to
     :type max_length: int
@@ -237,10 +237,12 @@ class PadTransform(Module):
         self.max_length = max_length
         self.pad_value = pad_value
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         """
         :param x: The tensor to pad
-        :type x: torch.Tensor
+        :type x: Tensor
+        :return: Tensor padded up to max_length with pad_value
+        :rtype: Tensor
         """
         max_encoded_length = x.size(-1)
         if max_encoded_length < self.max_length:
@@ -250,22 +252,19 @@ class PadTransform(Module):
 
 
 class StrToIntTransform(Module):
-    """Convert string representations of ints to ints"""
+    """Convert string tokens to integers (either single sequence or batch)."""
 
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
+    def forward(self, input: Any) -> Any:
         """
-        :param input: list (or list of lists) of strings to convert
+        :param input: sequence or batch of string tokens to convert
         :type input: Union[List[str], List[List[str]]]
+        :return: sequence or batch converted into corresponding token ids
+        :rtype: Union[List[int], List[List[int]]]
         """
-        if isinstance(input[0], str):
-            return [int(x) for x in input]  # type: ignore
-        if isinstance(input[0], List) and isinstance(input[0][0], str):
-            return [[int(x) for x in ll] for ll in input]
-        else:
-            raise TypeError("Input type not supported")
+        return F.str_to_int(input)
 
 
 class GPT2BPETokenizer(Module):
