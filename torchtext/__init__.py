@@ -1,10 +1,5 @@
 import os
 
-from ._extension import _init_extension
-
-_init_extension()
-del _init_extension
-
 # the following import has to happen first in order to load the torchtext C++ library
 from torchtext import _extension  # noqa: F401
 

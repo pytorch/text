@@ -55,8 +55,7 @@ def _init_extension():
     if not _mod_utils.is_module_available("torchtext._torchtext"):
         raise ImportError("torchtext C++ Extension is not found.")
 
-    # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
-    # _load_lib("libtorchtext")
+    _load_lib("libtorchtext")
     # This import is for initializing the methods registered via PyBind11
     # This has to happen after the base library is loaded
     from torchtext import _torchtext  # noqa
