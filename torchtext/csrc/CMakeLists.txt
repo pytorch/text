@@ -3,15 +3,7 @@
 ################################################################################
 set(
   LIBTORCHTEXT_SOURCES
-  clip_tokenizer.cpp
-  common.cpp
-  gpt2_bpe_tokenizer.cpp
-  regex.cpp
-  regex_tokenizer.cpp
-  register_torchbindings.cpp
-  sentencepiece.cpp
-  vectors.cpp
-  vocab.cpp
+  foo.cpp
   )
 
 set(
@@ -25,10 +17,10 @@ set(
 set(
   LIBTORCHTEXT_LINK_LIBRARIES
   torch
-  re2
-  double-conversion
-  sentencepiece
-  sentencepiece_train
+  # re2
+  # double-conversion
+  # sentencepiece
+  # sentencepiece_train
   )
 
 set(

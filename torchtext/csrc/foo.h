@@ -1,0 +1,3 @@
+namespace torchtext {
+  void foo();
+}
