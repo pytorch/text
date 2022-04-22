@@ -1,3 +1,0 @@
-namespace torchtext {
-  void foo();
-}
