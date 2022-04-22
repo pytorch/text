@@ -9,9 +9,9 @@ set(
 set(
   LIBTORCHTEXT_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/third_party/sentencepiece/src
-  $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
-  $<TARGET_PROPERTY:double-conversion,INCLUDE_DIRECTORIES>
+  # ${PROJECT_SOURCE_DIR}/third_party/sentencepiece/src
+  # $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
+  # $<TARGET_PROPERTY:double-conversion,INCLUDE_DIRECTORIES>
   )
 
 set(
