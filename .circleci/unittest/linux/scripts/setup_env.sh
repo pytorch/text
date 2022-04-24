@@ -36,7 +36,7 @@ conda activate "${env_dir}"
 
 
 # 3. Install minimal build tools
-pip --quiet install cmake ninja
+pip --quiet install cmake>=3.18.0 ninja
 
 # 4. Install Conda dependencies
 printf "* Installing dependencies (except PyTorch)\n"

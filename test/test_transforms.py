@@ -205,6 +205,86 @@ class TestTransforms(TorchtextTestCase):
     def test_add_token_jit(self):
         self._add_token(test_scripting=True)
 
+    def _pad_transform(self, test_scripting):
+        """
+        Test padding transform on 1D and 2D tensors.
+        When max_length < tensor length at dim -1, this should be a no-op.
+        Otherwise the tensor should be padded to max_length in dim -1.
+        """
+
+        input_1d_tensor = torch.ones(5)
+        input_2d_tensor = torch.ones((8, 5))
+        pad_long = transforms.PadTransform(max_length=7, pad_value=0)
+        if test_scripting:
+            pad_long = torch.jit.script(pad_long)
+        padded_1d_tensor_actual = pad_long(input_1d_tensor)
+        padded_1d_tensor_expected = torch.cat([torch.ones(5), torch.zeros(2)])
+        torch.testing.assert_close(
+            padded_1d_tensor_actual,
+            padded_1d_tensor_expected,
+            msg=f"actual: {padded_1d_tensor_actual}, expected: {padded_1d_tensor_expected}",
+        )
+
+        padded_2d_tensor_actual = pad_long(input_2d_tensor)
+        padded_2d_tensor_expected = torch.cat([torch.ones(8, 5), torch.zeros(8, 2)], axis=-1)
+        torch.testing.assert_close(
+            padded_2d_tensor_actual,
+            padded_2d_tensor_expected,
+            msg=f"actual: {padded_2d_tensor_actual}, expected: {padded_2d_tensor_expected}",
+        )
+
+        pad_short = transforms.PadTransform(max_length=3, pad_value=0)
+        if test_scripting:
+            pad_short = torch.jit.script(pad_short)
+        padded_1d_tensor_actual = pad_short(input_1d_tensor)
+        padded_1d_tensor_expected = input_1d_tensor
+        torch.testing.assert_close(
+            padded_1d_tensor_actual,
+            padded_1d_tensor_expected,
+            msg=f"actual: {padded_1d_tensor_actual}, expected: {padded_1d_tensor_expected}",
+        )
+
+        padded_2d_tensor_actual = pad_short(input_2d_tensor)
+        padded_2d_tensor_expected = input_2d_tensor
+        torch.testing.assert_close(
+            padded_2d_tensor_actual,
+            padded_2d_tensor_expected,
+            msg=f"actual: {padded_2d_tensor_actual}, expected: {padded_2d_tensor_expected}",
+        )
+
+    def test_pad_transform(self):
+        self._pad_transform(test_scripting=False)
+
+    def test_pad_transform_jit(self):
+        self._pad_transform(test_scripting=True)
+
+    def _str_to_int_transform(self, test_scripting):
+        """
+        Test StrToIntTransform on list and list of lists.
+        The result should be the same shape as the input but with all strings converted to ints.
+        """
+        input_1d_string_list = ["1", "2", "3", "4", "5"]
+        input_2d_string_list = [["1", "2", "3"], ["4", "5", "6"]]
+
+        str_to_int = transforms.StrToIntTransform()
+        if test_scripting:
+            str_to_int = torch.jit.script(str_to_int)
+
+        expected_1d_int_list = [1, 2, 3, 4, 5]
+        actual_1d_int_list = str_to_int(input_1d_string_list)
+        self.assertListEqual(expected_1d_int_list, actual_1d_int_list)
+
+        expected_2d_int_list = [[1, 2, 3], [4, 5, 6]]
+        actual_2d_int_list = str_to_int(input_2d_string_list)
+        for i in range(len(expected_2d_int_list)):
+            self.assertListEqual(expected_2d_int_list[i], actual_2d_int_list[i])
+
+    def test_str_to_int_transform(self):
+        self._str_to_int_transform(test_scripting=False)
+
+    def test_str_to_int_transform_jit(self):
+        self._str_to_int_transform(test_scripting=True)
+
 
 class TestSequential(TorchtextTestCase):
     def _sequential(self, test_scripting):
