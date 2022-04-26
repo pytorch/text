@@ -235,7 +235,7 @@ class PadTransform(Module):
     def __init__(self, max_length: int, pad_value: int):
         super().__init__()
         self.max_length = max_length
-        self.pad_value = pad_value
+        self.pad_value = float(pad_value)
 
     def forward(self, x: Tensor) -> Tensor:
         """
