@@ -47,7 +47,7 @@ if(APPLE)
 endif()
 
 # Options
-option(BUILD_TORCHTEXT_PYTHON_EXTENSION "Build Python extension" ON)
+option(BUILD_TORCHTEXT_PYTHON_EXTENSION "Build Python extension" OFF)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
