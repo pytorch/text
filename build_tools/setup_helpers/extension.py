@@ -15,8 +15,7 @@ __all__ = [
 ]
 
 
-# TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
-# _LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
+_LIBTORCHTEXT_NAME = "torchtext.lib.libtorchtext"
 _EXT_NAME = "torchtext._torchtext"
 _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
@@ -24,8 +23,7 @@ _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 def get_ext_modules():
     modules = [
-        # TODO: Following line will be uncommented when adding splitting up the cpp libraries to `libtorchtext` and `_torchtext`
-        # Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
+        Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
         Extension(name=_EXT_NAME, sources=[]),
     ]
     return modules
