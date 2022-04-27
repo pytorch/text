@@ -318,7 +318,7 @@ def stratify(examples, strata_field):
     # The field has to be hashable otherwise this doesn't work
     # There's two iterations over the whole dataset here, which can be
     # reduced to just one if a dedicated method for stratified splitting is used
-    unique_strata = set(getattr(example, strata_field) for example in examples)
+    unique_strata = sorted(set(getattr(example, strata_field) for example in examples))
     strata_maps = {s: [] for s in unique_strata}
     for example in examples:
         strata_maps[getattr(example, strata_field)].append(example)
