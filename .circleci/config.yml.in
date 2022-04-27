@@ -61,7 +61,7 @@ binary_common: &binary_common
 smoke_test_common: &smoke_test_common
   <<: *binary_common
   docker:
-    - image: pytorch/torchtext_smoke_base:latest
+    - image: pytorch/torchtext_smoke_base:smoke_test-20220427
 
 jobs:
   circleci_consistency:
