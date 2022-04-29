@@ -195,80 +195,8 @@ class TransformerEncoderLayer(Module):
         scaling: Optional[float] = None,
     ):
         super().__init__()
-        # We still need to build the original module since we might need to
-        # load from stat_dict and convert it to better transformer
-        self.dropout = nn.Dropout(dropout)
-        self.attention = MultiheadSelfAttention(
-            embedding_dim,
-            num_heads=num_attention_heads,
-            scaling=scaling,
-            dropout=dropout,
-        )
-
-        self.residual_mlp = ResidualMLP(
-            embedding_dim,
-            hidden_dims=[ffn_dimension or embedding_dim * 4],
-            add_residual=not normalize_before,
-            dropout=dropout,
-        )
-
-        self.attention_layer_norm = nn.LayerNorm(embedding_dim)
-        self.final_layer_norm = nn.LayerNorm(embedding_dim)
-        self.normalize_before = normalize_before
-
-        self._to_better()
-
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
-        # Ignore the loading of better_transformer
-        super(TransformerEncoderLayer,
-            self)._load_from_state_dict(state_dict, prefix, local_metadata, False, missing_keys, unexpected_keys, error_msgs)
-        # Then call the converter
-        self._to_better()
-
-    # Deprecated
-    def old_forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
-        if attn_mask is not None:
-            torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
-            torch._assert(
-                attn_mask.is_floating_point() or attn_mask.dtype == torch.bool,
-                f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}",
-            )
-
-        if not hasattr(self, "normalize_before"):
-            self.normalize_before = False
-
-        if self.normalize_before:
-            x = self.attention_layer_norm(input)
-            attention = self.attention(x, key_padding_mask, attn_mask)
-            attention = self.dropout(attention)
-            biased_input = input + attention
-            x = self.final_layer_norm(biased_input)
-            return self.residual_mlp(x) + biased_input
-        else:
-            attention = self.attention(input, key_padding_mask, attn_mask)
-            attention = self.dropout(attention)
-            biased_input = input + attention
-            biased_input = self.attention_layer_norm(biased_input)
-            biased = self.residual_mlp(biased_input)
-            return self.final_layer_norm(biased)
-
-    def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
-        # torch.nn.TransformerEncodeLayer's attn_mask and key_padding_mask's
-        # order is reversed
-        # return self.old_forward(input, key_padding_mask, attn_mask)
-        if self.better_transformer is None:
-            self._to_better()
-
-        return self.better_transformer(input.transpose(0, 1), attn_mask, key_padding_mask).transpose(0, 1)
-
-    def _to_better(self):
-        att = self.attention
-        embedding_dim = att.embed_dim
-        num_attention_heads = att.num_heads
-        dropout = att.dropout.p
-
-        ffn = self.residual_mlp
-        ffn_dimension = ffn.hidden_dim
+        #TODO Manually setting scaling is not allowed
+        ffn_dimension = ffn_dimension or embedding_dim * 4
 
         self.better_transformer = torch.nn.TransformerEncoderLayer(
             d_model=embedding_dim,
@@ -277,28 +205,44 @@ class TransformerEncoderLayer(Module):
             dropout=dropout,
             batch_first=True,
             activation="gelu",
-            norm_first=self.normalize_before,
+            norm_first=normalize_before,
         )
-        bt = self.better_transformer
-        btat = bt.self_attn
 
-        btat.in_proj_weight = att.input_projection.weight
-        btat.in_proj_bias = att.input_projection.bias
-        btat.out_proj.weight = att.output_projection.weight
-        btat.out_proj.bias = att.output_projection.bias
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+        better_to_old_names = {
+                "better_transformer.self_attn.in_proj_weight": "attention.input_projection.weight",
+                "better_transformer.self_attn.in_proj_bias": "attention.input_projection.bias",
+                "better_transformer.self_attn.out_proj.weight": "attention.output_projection.weight",
+                "better_transformer.self_attn.out_proj.bias": "attention.output_projection.bias",
+                "better_transformer.linear1.weight": "residual_mlp.mlp.0.weight",
+                "better_transformer.linear1.bias": "residual_mlp.mlp.0.bias",
+                "better_transformer.linear2.weight": "residual_mlp.mlp.3.weight",
+                "better_transformer.linear2.bias": "residual_mlp.mlp.3.bias",
+                "better_transformer.norm1.weight": "attention_layer_norm.weight",
+                "better_transformer.norm1.bias": "attention_layer_norm.bias",
+                "better_transformer.norm2.weight": "final_layer_norm.weight",
+                "better_transformer.norm2.bias": "final_layer_norm.bias",
+        }
+        for better, old in better_to_old_names.items():
+            better_name = prefix + better
+            old_name = prefix + old
+            if old_name in state_dict:
+                state_dict[better_name] = state_dict[old_name]
+                state_dict.pop(old_name)
+            elif better_name in state_dict:
+                # Do nothing
+                pass
+            elif strict:
+                missing_keys.append(better_name)
 
-        ffn = ffn.mlp
-        bt.linear1.weight = ffn[0].weight
-        bt.linear1.bias = ffn[0].bias
-        bt.linear2.weight = ffn[3].weight
-        bt.linear2.bias = ffn[3].bias
+        super(TransformerEncoderLayer,
+            self)._load_from_state_dict(state_dict, prefix, local_metadata,
+                    strict, missing_keys, unexpected_keys, error_msgs)
 
-        norm1 = self.attention_layer_norm
-        norm2 = self.final_layer_norm
-        bt.norm1.weight = norm1.weight
-        bt.norm1.bias = norm1.bias
-        bt.norm2.weight = norm2.weight
-        bt.norm2.bias = norm2.bias
+    def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
+        # torch.nn.TransformerEncodeLayer's attn_mask and key_padding_mask's
+        # order is reversed
+        return self.better_transformer(input.transpose(0, 1), attn_mask, key_padding_mask).transpose(0, 1)
 
 
 class TransformerEncoder(Module):
