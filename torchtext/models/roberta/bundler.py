@@ -105,7 +105,7 @@ class RobertaBundle:
             freeze_encoder=freeze_encoder,
             checkpoint=self._path if load_weights else None,
             override_checkpoint_head=True,
-            strict=True,
+            strict=False,
             dl_kwargs=dl_kwargs,
         )
 
