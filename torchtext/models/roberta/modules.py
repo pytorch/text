@@ -218,15 +218,20 @@ class TransformerEncoderLayer(Module):
 
         self._to_better()
 
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+    ):
         # Ignore the loading of better_transformer
-        super(TransformerEncoderLayer,
-            self)._load_from_state_dict(state_dict, prefix, local_metadata, False, missing_keys, unexpected_keys, error_msgs)
+        super(TransformerEncoderLayer, self)._load_from_state_dict(
+            state_dict, prefix, local_metadata, False, missing_keys, unexpected_keys, error_msgs
+        )
         # Then call the converter
         self._to_better()
 
     # Deprecated
-    def old_forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
+    def old_forward(
+        self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None
+    ):
         if attn_mask is not None:
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
             torch._assert(
