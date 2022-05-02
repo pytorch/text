@@ -6,19 +6,13 @@ from benchmark.utils import Timer
 from torchtext.functional import to_tensor
 
 
-def _train(model):
-    model_input = torch.tensor(
-        [
-            [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-            ]
-        ]
-    )
+def basic_model_input(encoder):
+    transform = encoder.transform()
+    input_batch = ["Hello world", "How are you!"]
+    return to_tensor(transform(input_batch), padding_value=1)
+
+
+def _train(model, model_input):
     model_out = model(model_input)
     model_out.backward(torch.ones_like(model_out))
     model.zero_grad()
@@ -28,6 +22,7 @@ def run(args):
     encoder = args.encoder
     num_passes = args.num_passes
     warmup_passes = args.num_passes
+    model_input = args.model_input
 
     if encoder == "xlmr_base":
         encoder = torchtext.models.XLMR_BASE_ENCODER
@@ -39,9 +34,10 @@ def run(args):
         encoder = torchtext.models.ROBERTA_LARGE_ENCODER
 
     model = encoder.get_model()
-    transform = encoder.transform()
-    input_batch = ["Hello world", "How are you!"]
-    model_input = to_tensor(transform(input_batch), padding_value=1)
+    if model_input == "basic":
+        model_input = basic_model_input(encoder)
+    else:
+        raise NotImplementedError("Given model input type is not implemented")
 
     model.eval()
 
@@ -56,7 +52,7 @@ def run(args):
     model.train()
     with Timer("Executing model forward/backward"):
         for _ in range(num_passes):
-            _train(model)
+            _train(model, model_input)
 
 
 if __name__ == "__main__":
@@ -64,4 +60,5 @@ if __name__ == "__main__":
     parser.add_argument("--encoder", default="xlmr_base", type=str)
     parser.add_argument("--num-passes", default=50, type=int)
     parser.add_argument("--warmup-passes", default=10, type=int)
+    parser.add_argument("--model-input", default="basic", type=str)
     run(parser.parse_args())
