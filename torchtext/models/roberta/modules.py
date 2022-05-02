@@ -29,7 +29,6 @@ class PositionalEmbedding(Module):
         return torch.cumsum(masked, dim=1) * masked + pad_index
 
 
-
 class TransformerEncoderLayer(Module):
     def __init__(
         self,
