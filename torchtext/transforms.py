@@ -306,8 +306,8 @@ class GPT2BPETokenizer(Module):
         return isinstance(self.bpe, torch._C.ScriptObject)
 
     @torch.jit.export
-    def _tokenize(self, text: str) -> List[str]:
-        """Encode text into a list of tokens
+    def _encode(self, text: str) -> List[str]:
+        """Encode text into a list of tokens IDs
 
         Args:
             text: An input text string.
@@ -327,20 +327,43 @@ class GPT2BPETokenizer(Module):
 
         return bpe_tokens
 
-    def forward(self, input: Any) -> Any:
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
+        """
+        return self.bpe.tokenize(text)
+
+    def forward(self, input: Any, return_tokens: bool = False) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
         :type input: Union[str, List[str]]
+        :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)
+        :type return_input: bool
         :return: tokenized text
         :rtype: Union[List[str], List[List(str)]]
         """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
-                tokens.append(self._tokenize(text))
+                if return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self._encode(text))
             return tokens
         elif torch.jit.isinstance(input, str):
-            return self._tokenize(input)
+            if return_tokens:
+                return self._tokenize(input)
+            else:
+                return self._encode(input)
         else:
             raise TypeError("Input type not supported")
 
@@ -425,8 +448,8 @@ class CLIPTokenizer(Module):
         return isinstance(self.bpe, torch._C.ScriptObject)
 
     @torch.jit.export
-    def _tokenize(self, text: str) -> List[str]:
-        """Encode text into a list of tokens
+    def _encode(self, text: str) -> List[str]:
+        """Encode text into a list of tokens IDs
 
         Args:
             text: An input text string.
@@ -447,20 +470,44 @@ class CLIPTokenizer(Module):
 
         return bpe_tokens
 
-    def forward(self, input: Any) -> Any:
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", "e"]
+        """
+        text = text.lower().strip()
+        return self.bpe.tokenize(text)
+
+    def forward(self, input: Any, return_tokens: bool = False) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
         :type input: Union[str, List[str]]
+        :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)
+        :type return_input: bool
         :return: tokenized text
         :rtype: Union[List[str], List[List(str)]]
         """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
-                tokens.append(self._tokenize(text))
+                if return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self._encode(text))
             return tokens
         elif torch.jit.isinstance(input, str):
-            return self._tokenize(input)
+            if return_tokens:
+                return self._tokenize(input)
+            else:
+                return self._encode(input)
         else:
             raise TypeError("Input type not supported")
 

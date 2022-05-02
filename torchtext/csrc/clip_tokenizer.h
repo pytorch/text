@@ -26,6 +26,7 @@ struct CLIPEncoder : GPT2BPEEncoder {
   using GPT2BPEEncoder::GPT2BPEEncoder;
 
   std::vector<int64_t> Encode(const std::string& text);
+  std::vector<std::string> Tokenize(const std::string& text);
 
  protected:
   std::vector<std::string> BPE_(

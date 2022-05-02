@@ -333,6 +333,12 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             "Avdija Vršajević în",
         ]
 
+        expected_tokens = [
+            ["Hello", "ĠWorld", "!,", "Ġhow", "Ġare", "Ġyou", "?"],
+            ["H", "Ã©", "ll", "Ã³", "Ġ", "ĠWo", "Å", "ķ", "l", "á¸", "Ĭ", "Â", "¿"],
+            ["Res", "public", "a", "Ġsuper", "i", "orem"],
+            ["Av", "d", "ija", "ĠV", "r", "Å¡", "aj", "ev", "i", "Äĩ", "ĠÃ", "®", "n"],
+        ]
         expected_token_ids = [
             ["15496", "2159", "28265", "703", "389", "345", "30"],
             ["39", "2634", "297", "10205", "220", "22173", "129", "243", "75", "41585", "232", "126", "123"],
@@ -342,10 +348,12 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
 
         # test batch of sentences
         self.assertEqual(tokenizer(sample_texts), expected_token_ids)
+        self.assertEqual(tokenizer(sample_texts, return_tokens=True), expected_tokens)
 
         # test individual sentences
         for idx, txt in enumerate(sample_texts):
             self.assertEqual(tokenizer(txt), expected_token_ids[idx])
+            self.assertEqual(tokenizer(txt, return_tokens=True), expected_tokens[idx])
 
     def test_gpt2_bpe_tokenizer(self):
         """test tokenization on single sentence input as well as batch on sentences"""
@@ -398,6 +406,77 @@ class TestCLIPTokenizer(TorchtextTestCase):
             "Hello World!, how are you?",
             "<|startoftext|> the quick brown fox jumped over the lazy dog <|endoftext|>",
             "Awaiting their due award... Photo by Frederick (FN) Noronha. Copyleft. Creative Commons 3.0. Non-commercial. Attribution. May be copied for non-commercial purposes. For other purposes, contact fn at goa-india.org",
+        ]
+
+        expected_tokens = [
+            ["hello</w>", "world</w>", "!,</w>", "how</w>", "are</w>", "you</w>", "?</w>"],
+            [
+                "<|startoftext|>",
+                "the</w>",
+                "quick</w>",
+                "brown</w>",
+                "fox</w>",
+                "jumped</w>",
+                "over</w>",
+                "the</w>",
+                "lazy</w>",
+                "dog</w>",
+                "<|endoftext|>",
+            ],
+            [
+                "awaiting</w>",
+                "their</w>",
+                "due</w>",
+                "award</w>",
+                "...</w>",
+                "photo</w>",
+                "by</w>",
+                "frederick</w>",
+                "(</w>",
+                "fn</w>",
+                ")</w>",
+                "nor",
+                "on",
+                "ha</w>",
+                ".</w>",
+                "copy",
+                "left</w>",
+                ".</w>",
+                "creative</w>",
+                "commons</w>",
+                "3</w>",
+                ".</w>",
+                "0</w>",
+                ".</w>",
+                "non</w>",
+                "-</w>",
+                "commercial</w>",
+                ".</w>",
+                "attribu",
+                "tion</w>",
+                ".</w>",
+                "may</w>",
+                "be</w>",
+                "copied</w>",
+                "for</w>",
+                "non</w>",
+                "-</w>",
+                "commercial</w>",
+                "purposes</w>",
+                ".</w>",
+                "for</w>",
+                "other</w>",
+                "purposes</w>",
+                ",</w>",
+                "contact</w>",
+                "fn</w>",
+                "at</w>",
+                "goa</w>",
+                "-</w>",
+                "india</w>",
+                ".</w>",
+                "org</w>",
+            ],
         ]
 
         expected_token_ids = [
@@ -462,9 +541,12 @@ class TestCLIPTokenizer(TorchtextTestCase):
         # test batch of sentences
         self.assertEqual(tokenizer(sample_texts), expected_token_ids)
 
+        self.assertEqual(tokenizer(sample_texts, return_tokens=True), expected_tokens)
+
         # test individual sentences
         for idx, txt in enumerate(sample_texts):
             self.assertEqual(tokenizer(txt), expected_token_ids[idx])
+            self.assertEqual(tokenizer(txt, return_tokens=True), expected_tokens[idx])
 
     def test_clip_tokenizer(self):
         """test tokenization on single sentence input as well as batch on sentences"""
