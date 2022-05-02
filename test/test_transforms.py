@@ -6,6 +6,7 @@ from torchtext import transforms
 from torchtext.vocab import vocab
 
 from .common.assets import get_asset_path
+from .common.parameterized_utils import nested_params
 from .common.torchtext_test_case import TorchtextTestCase
 
 
@@ -314,12 +315,13 @@ class TestSequential(TorchtextTestCase):
 
 
 class TestGPT2BPETokenizer(TorchtextTestCase):
-    def _load_tokenizer(self, test_scripting):
+    def _load_tokenizer(self, test_scripting: bool, return_tokens: bool):
         encoder_json = "gpt2_bpe_encoder.json"
         bpe_vocab = "gpt2_bpe_vocab.bpe"
         tokenizer = transforms.GPT2BPETokenizer(
             encoder_json_path=get_asset_path(encoder_json),
             vocab_bpe_path=get_asset_path(bpe_vocab),
+            return_tokens=return_tokens,
         )
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
@@ -347,31 +349,32 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         ]
 
         # test batch of sentences
-        self.assertEqual(tokenizer(sample_texts), expected_token_ids)
-        self.assertEqual(tokenizer(sample_texts, return_tokens=True), expected_tokens)
+        if tokenizer._return_tokens:
+            self.assertEqual(tokenizer(sample_texts), expected_tokens)
+        else:
+            self.assertEqual(tokenizer(sample_texts), expected_token_ids)
 
         # test individual sentences
         for idx, txt in enumerate(sample_texts):
-            self.assertEqual(tokenizer(txt), expected_token_ids[idx])
-            self.assertEqual(tokenizer(txt, return_tokens=True), expected_tokens[idx])
+            if tokenizer._return_tokens:
+                self.assertEqual(tokenizer(txt), expected_tokens[idx])
+            else:
+                self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
-    def test_gpt2_bpe_tokenizer(self):
+    @nested_params([True, False], [True, False])
+    def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=False))
-
-    def test_gpt2_bpe_tokenizer_jit(self):
-        """test tokenization with scripting on single sentence input as well as batch on sentences"""
-        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=True))
+        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
 
     def test_gpt2_bpe_tokenizer_save_load_pybind(self):
-        tokenizer = self._load_tokenizer(test_scripting=False)
+        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._gpt2_bpe_tokenizer((loaded_tokenizer))
 
     def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
-        tokenizer = self._load_tokenizer(test_scripting=False)
+        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
@@ -381,7 +384,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
 
 
 class TestCLIPTokenizer(TorchtextTestCase):
-    def _load_tokenizer(self, init_using_merge_only: bool, test_scripting: bool):
+    def _load_tokenizer(self, init_using_merge_only: bool, test_scripting: bool, return_tokens: bool):
         encoder_json = "clip_encoder.json"
         bpe_vocab = "clip_vocab.bpe"
         num_merges = (
@@ -391,11 +394,13 @@ class TestCLIPTokenizer(TorchtextTestCase):
             tokenizer = transforms.CLIPTokenizer(
                 merges_path=get_asset_path(bpe_vocab),
                 num_merges=num_merges,
+                return_tokens=return_tokens,
             )
         else:
             tokenizer = transforms.CLIPTokenizer(
                 encoder_json_path=get_asset_path(encoder_json),
                 merges_path=get_asset_path(bpe_vocab),
+                return_tokens=return_tokens,
             )
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
@@ -539,34 +544,37 @@ class TestCLIPTokenizer(TorchtextTestCase):
         ]
 
         # test batch of sentences
-        self.assertEqual(tokenizer(sample_texts), expected_token_ids)
 
-        self.assertEqual(tokenizer(sample_texts, return_tokens=True), expected_tokens)
+        if tokenizer._return_tokens:
+            self.assertEqual(tokenizer(sample_texts), expected_tokens)
+        else:
+            self.assertEqual(tokenizer(sample_texts), expected_token_ids)
 
         # test individual sentences
         for idx, txt in enumerate(sample_texts):
-            self.assertEqual(tokenizer(txt), expected_token_ids[idx])
-            self.assertEqual(tokenizer(txt, return_tokens=True), expected_tokens[idx])
+            if tokenizer._return_tokens:
+                self.assertEqual(tokenizer(txt), expected_tokens[idx])
+            else:
+                self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
-    def test_clip_tokenizer(self):
+    @nested_params([True, False], [True, False], [True, False])
+    def test_clip_tokenizer(self, init_using_merge_only, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._clip_tokenizer(self._load_tokenizer(init_using_merge_only=True, test_scripting=False))
-        self._clip_tokenizer(self._load_tokenizer(init_using_merge_only=False, test_scripting=False))
-
-    def test_clip_tokenizer_jit(self):
-        """test tokenization with scripting on single sentence input as well as batch on sentences"""
-        self._clip_tokenizer(self._load_tokenizer(init_using_merge_only=True, test_scripting=True))
-        self._clip_tokenizer(self._load_tokenizer(init_using_merge_only=False, test_scripting=True))
+        self._clip_tokenizer(
+            self._load_tokenizer(
+                init_using_merge_only=init_using_merge_only, test_scripting=test_scripting, return_tokens=return_tokens
+            )
+        )
 
     def test_clip_tokenizer_save_load_pybind(self):
-        tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False)
+        tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._clip_tokenizer((loaded_tokenizer))
 
     def test_clip_tokenizer_save_load_torchscript(self):
-        tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False)
+        tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
