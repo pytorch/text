@@ -49,6 +49,7 @@ class ResidualMLP(Module):
 
         self.mlp = nn.Sequential(*modules)
         self.add_residual = add_residual
+        self.hidden_dim = hidden_dims[0] if hidden_dims else input_dim
 
     def forward(self, input):
         bias = self.mlp(input)
@@ -194,49 +195,56 @@ class TransformerEncoderLayer(Module):
         scaling: Optional[float] = None,
     ):
         super().__init__()
-        self.dropout = nn.Dropout(dropout)
-        self.attention = MultiheadSelfAttention(
-            embedding_dim,
-            num_heads=num_attention_heads,
-            scaling=scaling,
+        # TODO Manually setting scaling is not allowed
+        ffn_dimension = ffn_dimension or embedding_dim * 4
+
+        self.better_transformer = torch.nn.TransformerEncoderLayer(
+            d_model=embedding_dim,
+            nhead=num_attention_heads,
+            dim_feedforward=ffn_dimension,
             dropout=dropout,
+            batch_first=True,
+            activation="gelu",
+            norm_first=normalize_before,
         )
 
-        self.residual_mlp = ResidualMLP(
-            embedding_dim,
-            hidden_dims=[ffn_dimension or embedding_dim * 4],
-            add_residual=not normalize_before,
-        )
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+    ):
+        better_to_old_names = {
+            "better_transformer.self_attn.in_proj_weight": "attention.input_projection.weight",
+            "better_transformer.self_attn.in_proj_bias": "attention.input_projection.bias",
+            "better_transformer.self_attn.out_proj.weight": "attention.output_projection.weight",
+            "better_transformer.self_attn.out_proj.bias": "attention.output_projection.bias",
+            "better_transformer.linear1.weight": "residual_mlp.mlp.0.weight",
+            "better_transformer.linear1.bias": "residual_mlp.mlp.0.bias",
+            "better_transformer.linear2.weight": "residual_mlp.mlp.3.weight",
+            "better_transformer.linear2.bias": "residual_mlp.mlp.3.bias",
+            "better_transformer.norm1.weight": "attention_layer_norm.weight",
+            "better_transformer.norm1.bias": "attention_layer_norm.bias",
+            "better_transformer.norm2.weight": "final_layer_norm.weight",
+            "better_transformer.norm2.bias": "final_layer_norm.bias",
+        }
+        for better, old in better_to_old_names.items():
+            better_name = prefix + better
+            old_name = prefix + old
+            if old_name in state_dict:
+                state_dict[better_name] = state_dict[old_name]
+                state_dict.pop(old_name)
+            elif better_name in state_dict:
+                # Do nothing
+                pass
+            elif strict:
+                missing_keys.append(better_name)
 
-        self.attention_layer_norm = nn.LayerNorm(embedding_dim)
-        self.final_layer_norm = nn.LayerNorm(embedding_dim)
-        self.normalize_before = normalize_before
+        super(TransformerEncoderLayer, self)._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+        )
 
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
-        if attn_mask is not None:
-            torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
-            torch._assert(
-                attn_mask.is_floating_point() or attn_mask.dtype == torch.bool,
-                f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}",
-            )
-
-        if not hasattr(self, "normalize_before"):
-            self.normalize_before = False
-
-        if self.normalize_before:
-            x = self.attention_layer_norm(input)
-            attention = self.attention(x, key_padding_mask, attn_mask)
-            attention = self.dropout(attention)
-            biased_input = input + attention
-            x = self.final_layer_norm(biased_input)
-            return self.residual_mlp(x) + biased_input
-        else:
-            attention = self.attention(input, key_padding_mask, attn_mask)
-            attention = self.dropout(attention)
-            biased_input = input + attention
-            biased_input = self.attention_layer_norm(biased_input)
-            biased = self.residual_mlp(biased_input)
-            return self.final_layer_norm(biased)
+        # torch.nn.TransformerEncodeLayer's attn_mask and key_padding_mask's
+        # order is reversed
+        return self.better_transformer(input.transpose(0, 1), attn_mask, key_padding_mask).transpose(0, 1)
 
 
 class TransformerEncoder(Module):
