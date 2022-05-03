@@ -105,7 +105,7 @@ class RobertaBundle:
             freeze_encoder=freeze_encoder,
             checkpoint=self._path if load_weights else None,
             override_checkpoint_head=True,
-            strict=True,
+            strict=False,
             dl_kwargs=dl_kwargs,
         )
 
@@ -118,7 +118,7 @@ class RobertaBundle:
         freeze_encoder: bool = False,
         checkpoint: Optional[Union[str, Dict[str, torch.Tensor]]] = None,
         override_checkpoint_head: bool = False,
-        strict=True,
+        strict=False,
         dl_kwargs: Dict[str, Any] = None,
     ) -> RobertaModel:
         """Class builder method
