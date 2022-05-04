@@ -29,7 +29,6 @@ class PositionalEmbedding(Module):
         return torch.cumsum(masked, dim=1) * masked + pad_index
 
 
-
 class TransformerEncoderLayer(Module):
     def __init__(
         self,
@@ -41,7 +40,7 @@ class TransformerEncoderLayer(Module):
         scaling: Optional[float] = None,
     ):
         super().__init__()
-        #TODO Manually setting scaling is not allowed
+        # TODO Manually setting scaling is not allowed
         ffn_dimension = ffn_dimension or embedding_dim * 4
 
         self.better_transformer = torch.nn.TransformerEncoderLayer(
@@ -54,20 +53,22 @@ class TransformerEncoderLayer(Module):
             norm_first=normalize_before,
         )
 
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+    ):
         better_to_old_names = {
-                "better_transformer.self_attn.in_proj_weight": "attention.input_projection.weight",
-                "better_transformer.self_attn.in_proj_bias": "attention.input_projection.bias",
-                "better_transformer.self_attn.out_proj.weight": "attention.output_projection.weight",
-                "better_transformer.self_attn.out_proj.bias": "attention.output_projection.bias",
-                "better_transformer.linear1.weight": "residual_mlp.mlp.0.weight",
-                "better_transformer.linear1.bias": "residual_mlp.mlp.0.bias",
-                "better_transformer.linear2.weight": "residual_mlp.mlp.3.weight",
-                "better_transformer.linear2.bias": "residual_mlp.mlp.3.bias",
-                "better_transformer.norm1.weight": "attention_layer_norm.weight",
-                "better_transformer.norm1.bias": "attention_layer_norm.bias",
-                "better_transformer.norm2.weight": "final_layer_norm.weight",
-                "better_transformer.norm2.bias": "final_layer_norm.bias",
+            "better_transformer.self_attn.in_proj_weight": "attention.input_projection.weight",
+            "better_transformer.self_attn.in_proj_bias": "attention.input_projection.bias",
+            "better_transformer.self_attn.out_proj.weight": "attention.output_projection.weight",
+            "better_transformer.self_attn.out_proj.bias": "attention.output_projection.bias",
+            "better_transformer.linear1.weight": "residual_mlp.mlp.0.weight",
+            "better_transformer.linear1.bias": "residual_mlp.mlp.0.bias",
+            "better_transformer.linear2.weight": "residual_mlp.mlp.3.weight",
+            "better_transformer.linear2.bias": "residual_mlp.mlp.3.bias",
+            "better_transformer.norm1.weight": "attention_layer_norm.weight",
+            "better_transformer.norm1.bias": "attention_layer_norm.bias",
+            "better_transformer.norm2.weight": "final_layer_norm.weight",
+            "better_transformer.norm2.bias": "final_layer_norm.bias",
         }
         for better, old in better_to_old_names.items():
             better_name = prefix + better
@@ -81,9 +82,9 @@ class TransformerEncoderLayer(Module):
             elif strict:
                 missing_keys.append(better_name)
 
-        super(TransformerEncoderLayer,
-            self)._load_from_state_dict(state_dict, prefix, local_metadata,
-                    strict, missing_keys, unexpected_keys, error_msgs)
+        super(TransformerEncoderLayer, self)._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+        )
 
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
         # torch.nn.TransformerEncodeLayer's attn_mask and key_padding_mask's

@@ -102,6 +102,10 @@ std::vector<int64_t> CLIPEncoder::Encode(const std::string& text) {
   return GPT2BPEEncoder::Encode(text);
 }
 
+std::vector<std::string> CLIPEncoder::Tokenize(const std::string& text) {
+  return GPT2BPEEncoder::Tokenize(text);
+}
+
 CLIPEncoderStatesPybind _serialize_clip_encoder_pybind(
     const c10::intrusive_ptr<CLIPEncoder>& self) {
   return std::make_tuple(
