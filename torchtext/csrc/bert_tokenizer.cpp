@@ -1,5 +1,4 @@
 #include <torchtext/csrc/bert_tokenizer.h>
-#include "source/utf8.h"
 #include "utf8proc.h"
 
 namespace torchtext {
@@ -49,7 +48,7 @@ static bool _is_punct_char(uint16_t cp) {
   return (cate >= 12 && cate <= 18);
 }
 
-static std::string StripStringASCIIWhole(const std::string& str) {
+static std::string _strip_string_ASCII_whole(const std::string& str) {
   size_t nn = str.size();
   while (nn > 0 &&
          (str[nn - 1] == ' ' || str[nn - 1] == '\t' || str[nn - 1] == '\r' ||
@@ -76,6 +75,20 @@ static std::string StripStringASCIIWhole(const std::string& str) {
     }
   }
   return ret;
+}
+
+
+static UString _convert_to_unicode(const std::string& text) {
+    size_t i = 0;
+    UString ret;
+    while (i < text.size()) {
+        uint16_t codepoint;
+        utf8proc_ssize_t forward = utf8proc_iterate((utf8proc_uint8_t *)&text[i], text.size() - i, (utf8proc_int32_t*)&codepoint);
+        if (forward < 0) return UString();
+        ret.append(1,codepoint);
+        i += forward;
+    }
+    return ret;
 }
 
 BERTEncoder::BERTEncoder(const std::string& vocab_file) {
@@ -165,10 +178,13 @@ UString BertEncoder::_basic_tokenize(UString text) {
   return ret;
 }
 
+
+
+
 std::vector<string> BertEncoder::tokenize(std::string text) {
   std::vector<std::string> results;
 
-  text = StripStringASCIIWhole(text);
+  text = _strip_string_ASCII_whole(text);
 
   char* nfkcstr = reinterpret_cast<char*>(
       utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
@@ -184,10 +200,12 @@ std::vector<string> BertEncoder::tokenize(std::string text) {
     return std::tolower(c);
   });
 
-  UString unicodes;
+  // UString unicodes;
 
-  utf8::utf8to16(
-      text.c_str(), text.c_str() + text.size(), std::back_inserter(unicodes));
+  // utf8::utf8to16(
+  //     text.c_str(), text.c_str() + text.size(), std::back_inserter(unicodes));
+
+  UString unicodes = _convert_to_unicode(text);
 
   unicodes = _clean(unicodes);
 
