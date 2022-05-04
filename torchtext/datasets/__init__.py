@@ -4,6 +4,7 @@ from .ag_news import AG_NEWS
 from .amazonreviewfull import AmazonReviewFull
 from .amazonreviewpolarity import AmazonReviewPolarity
 from .cc100 import CC100
+from .cola import CoLA
 from .conll2000chunking import CoNLL2000Chunking
 from .dbpedia import DBpedia
 from .enwik9 import EnWik9
@@ -28,6 +29,7 @@ DATASETS = {
     "AmazonReviewFull": AmazonReviewFull,
     "AmazonReviewPolarity": AmazonReviewPolarity,
     "CC100": CC100,
+    "CoLA": CoLA,
     "CoNLL2000Chunking": CoNLL2000Chunking,
     "DBpedia": DBpedia,
     "EnWik9": EnWik9,
