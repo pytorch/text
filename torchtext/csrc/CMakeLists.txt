@@ -18,6 +18,7 @@ set(
   sentencepiece.cpp
   vectors.cpp
   vocab.cpp
+  bert_tokenizer.cpp
   )
 
 set(
