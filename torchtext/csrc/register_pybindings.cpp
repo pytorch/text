@@ -177,6 +177,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("seperator_", &GPT2BPEEncoder::seperator_)
       .def_property_readonly("byte_encoder_", &GPT2BPEEncoder::GetByteEncoder)
       .def("encode", &GPT2BPEEncoder::Encode)
+      .def("tokenize", &GPT2BPEEncoder::Tokenize)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self)
@@ -201,6 +202,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("seperator_", &CLIPEncoder::seperator_)
       .def_property_readonly("byte_encoder_", &CLIPEncoder::GetByteEncoder)
       .def("encode", &CLIPEncoder::Encode)
+      .def("tokenize", &CLIPEncoder::Tokenize)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<CLIPEncoder>& self)
