@@ -12,6 +12,7 @@ from .iwslt2016 import IWSLT2016
 from .iwslt2017 import IWSLT2017
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
+from .qqp import QQP
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
@@ -36,6 +37,7 @@ DATASETS = {
     "IWSLT2017": IWSLT2017,
     "Multi30k": Multi30k,
     "PennTreebank": PennTreebank,
+    "QQP": QQP,
     "SQuAD1": SQuAD1,
     "SQuAD2": SQuAD2,
     "SogouNews": SogouNews,
