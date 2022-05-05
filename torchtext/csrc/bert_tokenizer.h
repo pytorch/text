@@ -9,7 +9,7 @@ typedef std::basic_string<uint16_t> UString;
 struct BERTEncoder {
   BERTEncoder(const std::string& vocab_file);
   std::vector<std::string> tokenize(std::string text);
-  std::vector<std::string> encode(std::string text);
+  std::vector<int64_t> encode(std::string text);
 
  protected:
   Vocab vocab_;
@@ -20,6 +20,6 @@ struct BERTEncoder {
       std::string& str,
       std::vector<std::string>& tokens,
       const char& delimiter = ' ');
-  static std::string kUnkToken = "[UNK]";
+  static std::string kUnkToken;
 };
 } // namespace torchtext

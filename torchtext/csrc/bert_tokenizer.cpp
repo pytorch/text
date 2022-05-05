@@ -1,9 +1,10 @@
 #include <torchtext/csrc/bert_tokenizer.h>
-#include "utf8proc.h"
+#include <utf8proc.h>
 
 namespace torchtext {
 
-std::unordered_set<uint16_t> kChinesePunts =
+std::string BERTEncoder::kUnkToken = "[UNK]";
+static std::unordered_set<uint16_t> kChinesePunts =
     {12290, 65306, 65311, 8212, 8216, 12304, 12305, 12298, 12299, 65307};
 int kMaxCharsPerWords = 100;
 
@@ -77,23 +78,25 @@ static std::string _strip_string_ASCII_whole(const std::string& str) {
   return ret;
 }
 
-
 static UString _convert_to_unicode(const std::string& text) {
-    size_t i = 0;
-    UString ret;
-    while (i < text.size()) {
-        uint16_t codepoint;
-        utf8proc_ssize_t forward = utf8proc_iterate((utf8proc_uint8_t *)&text[i], text.size() - i, (utf8proc_int32_t*)&codepoint);
-        if (forward < 0) return UString();
-        ret.append(1,codepoint);
-        i += forward;
-    }
-    return ret;
+  size_t i = 0;
+  UString ret;
+  while (i < text.size()) {
+    uint16_t codepoint;
+    utf8proc_ssize_t forward = utf8proc_iterate(
+        (utf8proc_uint8_t*)&text[i],
+        text.size() - i,
+        (utf8proc_int32_t*)&codepoint);
+    if (forward < 0)
+      return UString();
+    ret.append(1, codepoint);
+    i += forward;
+  }
+  return ret;
 }
 
-BERTEncoder::BERTEncoder(const std::string& vocab_file) {
-  vocab_ = _load_vocab_from_file(vocab_file, 1, 1);
-}
+BERTEncoder::BERTEncoder(const std::string& vocab_file)
+    : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
 UString BERTEncoder::_clean(UString text) {
   size_t len = text.size();
@@ -116,7 +119,7 @@ UString BERTEncoder::_clean(UString text) {
 void BERTEncoder::split_(
     std::string& str,
     std::vector<std::string>& tokens,
-    const char& delimiter) const {
+    const char& delimiter) {
   std::stringstream ss(str);
   std::string token;
 
@@ -127,7 +130,7 @@ void BERTEncoder::split_(
   }
 }
 
-void BertTokenizer::max_seg_(std::string s, std::vector<std::string>& results) {
+void BERTEncoder::max_seg_(std::string s, std::vector<std::string>& results) {
   int end = s.size();
   int start = 0;
   bool firstOne = true;
@@ -143,7 +146,7 @@ void BertTokenizer::max_seg_(std::string s, std::vector<std::string>& results) {
       end = s.size();
       firstOne = false;
     } else {
-      end -= 1
+      end -= 1;
     }
   }
 
@@ -153,7 +156,7 @@ void BertTokenizer::max_seg_(std::string s, std::vector<std::string>& results) {
   }
 }
 
-UString BertEncoder::_basic_tokenize(UString text) {
+UString BERTEncoder::_basic_tokenize(UString text) {
   UString ret;
   size_t len = text.size();
   for (size_t i = 0; i < len; i++) {
@@ -178,10 +181,7 @@ UString BertEncoder::_basic_tokenize(UString text) {
   return ret;
 }
 
-
-
-
-std::vector<string> BertEncoder::tokenize(std::string text) {
+std::vector<std::string> BERTEncoder::tokenize(std::string text) {
   std::vector<std::string> results;
 
   text = _strip_string_ASCII_whole(text);
@@ -203,7 +203,8 @@ std::vector<string> BertEncoder::tokenize(std::string text) {
   // UString unicodes;
 
   // utf8::utf8to16(
-  //     text.c_str(), text.c_str() + text.size(), std::back_inserter(unicodes));
+  //     text.c_str(), text.c_str() + text.size(),
+  //     std::back_inserter(unicodes));
 
   UString unicodes = _convert_to_unicode(text);
 
@@ -213,10 +214,10 @@ std::vector<string> BertEncoder::tokenize(std::string text) {
 
   std::string newtext;
 
-  utf8::utf16to8(
-      reinterpret_cast<const uint16_t*>(unicodes.c_str()),
-      reinterpret_cast<const uint16_t*>(unicodes.c_str() + unicodes.size()),
-      std::back_inserter(newtext));
+  // utf8::utf16to8(
+  //     reinterpret_cast<const uint16_t*>(unicodes.c_str()),
+  //     reinterpret_cast<const uint16_t*>(unicodes.c_str() + unicodes.size()),
+  //     std::back_inserter(newtext));
 
   std::vector<std::string> tokens;
 
@@ -232,9 +233,13 @@ std::vector<string> BertEncoder::tokenize(std::string text) {
   return results;
 }
 
-std::vector<int> BERTEncoder::encode(std::string text) {
-  std::vector<string> tokens = tokenize(text);
-  return vocab_.lookup_indices(tokens);
+std::vector<int64_t> BERTEncoder::encode(std::string text) {
+  std::vector<std::string> tokens = tokenize(text);
+  std::vector<int64_t> indices(tokens.size());
+  for (size_t i = 0; i < tokens.size(); i++) {
+    indices[i] = vocab_.__getitem__(c10::string_view{tokens[i]});
+  }
+  return indices;
 }
 
 } // namespace torchtext
