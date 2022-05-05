@@ -16,6 +16,7 @@ from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
 from .sst2 import SST2
+from .stsb import STSB
 from .udpos import UDPOS
 from .wikitext103 import WikiText103
 from .wikitext2 import WikiText2
@@ -40,6 +41,7 @@ DATASETS = {
     "SQuAD2": SQuAD2,
     "SogouNews": SogouNews,
     "SST2": SST2,
+    "STSB": STSB,
     "UDPOS": UDPOS,
     "WikiText103": WikiText103,
     "WikiText2": WikiText2,
