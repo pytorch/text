@@ -112,14 +112,14 @@ class TransformerEncoder(Module):
         self.token_embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx)
         ffn_dimension = ffn_dimension or 4 * embedding_dim
         layer = torch.nn.TransformerEncoderLayer(
-                    d_model=embedding_dim,
-                    nhead=num_attention_heads,
-                    dim_feedforward=ffn_dimension,
-                    dropout=dropout,
-                    activation="gelu",
-                    batch_first=True,
-                    norm_first=normalize_before,
-                )
+            d_model=embedding_dim,
+            nhead=num_attention_heads,
+            dim_feedforward=ffn_dimension,
+            dropout=dropout,
+            activation="gelu",
+            batch_first=True,
+            norm_first=normalize_before,
+        )
         self.layers = torch.nn.TransformerEncoder(encoder_layer=layer, num_layers=num_encoder_layers)
         self.positional_embedding = PositionalEmbedding(max_seq_len, embedding_dim, padding_idx)
         self.embedding_layer_norm = nn.LayerNorm(embedding_dim)
@@ -172,7 +172,9 @@ class TransformerEncoder(Module):
                 encoded = self.embedding_layer_norm(encoded)
             return encoded
 
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+    ):
         better_to_old_names = {
             "self_attn.in_proj_weight": "attention.input_projection.weight",
             "self_attn.in_proj_bias": "attention.input_projection.bias",
@@ -200,5 +202,6 @@ class TransformerEncoder(Module):
                 elif strict:
                     missing_keys.append(better_name)
 
-        super(TransformerEncoder,
-            self)._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs)
+        super(TransformerEncoder, self)._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+        )
