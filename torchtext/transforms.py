@@ -7,7 +7,7 @@ import torch
 import torchtext  # noqa: F401
 from torch import Tensor
 from torch.nn import Module
-from torchtext._torchtext import CLIPEncoder as CLIPEncoderPyBind, GPT2BPEEncoder as GPT2BPEEncoderPyBind
+from torchtext._torchtext import CLIPEncoder as CLIPEncoderPyBind, GPT2BPEEncoder as GPT2BPEEncoderPyBind, BERTEncoder as BERTEncoderPyBind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
@@ -527,6 +527,74 @@ class CLIPTokenizer(Module):
             )
             return tokenizer_copy
         return self
+
+
+class BERTTokenizer(Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    """
+    Transform for BERT Tokenizer.
+    """
+
+    def __init__(self, vocab_path: str, return_tokens = False) -> None:
+        super().__init__()
+        self.bert_model = BERTEncoderPyBind(vocab_path)
+        self._return_tokens = return_tokens
+
+    @torch.jit.export
+    def _encode(self, text: str) -> List[str]:
+        """Encode text into a list of tokens IDs
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of token ids represents each sub-word
+
+        For example:
+            --> "Hello world!" --> token ids: [707, 5927, 11, 707, 68]
+        """
+        token_ids: List[int] = self.bert_model.encode(text)
+        tokens_ids_str: List[str] = [str(token_id) for token_id in token_ids]
+        return tokens_ids_str
+
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of tokens (sub-words)
+
+        For example:
+            --> "Hello World!": ["Hello", "World", "!"]
+        """
+        return self.bert_model.tokenize(text)
+
+    
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: tokenized text
+        :rtype: Union[List[str], List[List(str)]]
+        """
+        if torch.jit.isinstance(input, List[str]):
+            tokens: List[List[str]] = []
+            for text in input:
+                if self._return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self._encode(text))
+            return tokens
+        elif torch.jit.isinstance(input, str):
+            if self._return_tokens:
+                return self._tokenize(input)
+            else:
+                return self._encode(input)
+        else:
+            raise TypeError("Input type not supported")
 
 
 @lru_cache()
