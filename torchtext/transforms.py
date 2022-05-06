@@ -21,6 +21,8 @@ __all__ = [
     "LabelToIndex",
     "Truncate",
     "AddToken",
+    "PadTransform",
+    "StrToIntTransform",
     "GPT2BPETokenizer",
     "Sequential",
 ]
@@ -221,6 +223,50 @@ class AddToken(Module):
         return F.add_token(input, self.token, self.begin)
 
 
+class PadTransform(Module):
+    """Pad tensor to a fixed length with given padding value.
+
+    :param max_length: Maximum length to pad to
+    :type max_length: int
+    :param pad_value: Value to pad the tensor with
+    :type pad_value: bool
+    """
+
+    def __init__(self, max_length: int, pad_value: int):
+        super().__init__()
+        self.max_length = max_length
+        self.pad_value = float(pad_value)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        :param x: The tensor to pad
+        :type x: Tensor
+        :return: Tensor padded up to max_length with pad_value
+        :rtype: Tensor
+        """
+        max_encoded_length = x.size(-1)
+        if max_encoded_length < self.max_length:
+            pad_amount = self.max_length - max_encoded_length
+            x = torch.nn.functional.pad(x, (0, pad_amount), value=self.pad_value)
+        return x
+
+
+class StrToIntTransform(Module):
+    """Convert string tokens to integers (either single sequence or batch)."""
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: sequence or batch of string tokens to convert
+        :type input: Union[List[str], List[List[str]]]
+        :return: sequence or batch converted into corresponding token ids
+        :rtype: Union[List[int], List[List[int]]]
+        """
+        return F.str_to_int(input)
+
+
 class GPT2BPETokenizer(Module):
     __jit_unused_properties__ = ["is_jitable"]
     """
@@ -233,14 +279,12 @@ class GPT2BPETokenizer(Module):
     :type encoder_json_path: str
     :param vocab_bpe_path: Path to bpe vocab file.
     :type vocab_bpe_path: str
+    :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)
+    :type return_input: bool
     """
     _seperator: torch.jit.Final[str]
 
-    def __init__(
-        self,
-        encoder_json_path: str,
-        vocab_bpe_path: str,
-    ):
+    def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False):
         super().__init__()
         self._seperator = "\u0001"
         # load bpe encoder and bpe decoder
@@ -255,13 +299,15 @@ class GPT2BPETokenizer(Module):
         # Caching is enabled in Eager mode
         self.bpe = GPT2BPEEncoderPyBind(bpe_encoder, bpe_merge_ranks, self._seperator, bytes_to_unicode(), True)
 
+        self._return_tokens = return_tokens
+
     @property
     def is_jitable(self):
         return isinstance(self.bpe, torch._C.ScriptObject)
 
     @torch.jit.export
-    def _tokenize(self, text: str) -> List[str]:
-        """Encode text into a list of tokens
+    def _encode(self, text: str) -> List[str]:
+        """Encode text into a list of tokens IDs
 
         Args:
             text: An input text string.
@@ -281,6 +327,21 @@ class GPT2BPETokenizer(Module):
 
         return bpe_tokens
 
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
+        """
+        return self.bpe.tokenize(text)
+
     def forward(self, input: Any) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
@@ -291,10 +352,16 @@ class GPT2BPETokenizer(Module):
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
-                tokens.append(self._tokenize(text))
+                if self._return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self._encode(text))
             return tokens
         elif torch.jit.isinstance(input, str):
-            return self._tokenize(input)
+            if self._return_tokens:
+                return self._tokenize(input)
+            else:
+                return self._encode(input)
         else:
             raise TypeError("Input type not supported")
 
@@ -339,11 +406,19 @@ class CLIPTokenizer(Module):
     :type encoder_json_path: str
     :param num_merges: Optional, number of merges to read from the bpe merges file.
     :type num_merges: int
+    :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)
+    :type return_input: bool
     """
 
     _seperator: torch.jit.Final[str]
 
-    def __init__(self, merges_path: str, encoder_json_path: Optional[str] = None, num_merges: Optional[int] = None):
+    def __init__(
+        self,
+        merges_path: str,
+        encoder_json_path: Optional[str] = None,
+        num_merges: Optional[int] = None,
+        return_tokens: bool = False,
+    ):
         super().__init__()
         self._seperator = "\u0001"
         # load bpe merges
@@ -374,13 +449,15 @@ class CLIPTokenizer(Module):
         # Caching is enabled in Eager mode
         self.bpe = CLIPEncoderPyBind(bpe_encoder, bpe_merge_ranks, self._seperator, bytes_to_unicode(), True)
 
+        self._return_tokens = return_tokens
+
     @property
     def is_jitable(self):
         return isinstance(self.bpe, torch._C.ScriptObject)
 
     @torch.jit.export
-    def _tokenize(self, text: str) -> List[str]:
-        """Encode text into a list of tokens
+    def _encode(self, text: str) -> List[str]:
+        """Encode text into a list of tokens IDs
 
         Args:
             text: An input text string.
@@ -401,6 +478,22 @@ class CLIPTokenizer(Module):
 
         return bpe_tokens
 
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", "e"]
+        """
+        text = text.lower().strip()
+        return self.bpe.tokenize(text)
+
     def forward(self, input: Any) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
@@ -411,10 +504,16 @@ class CLIPTokenizer(Module):
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
-                tokens.append(self._tokenize(text))
+                if self._return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self._encode(text))
             return tokens
         elif torch.jit.isinstance(input, str):
-            return self._tokenize(input)
+            if self._return_tokens:
+                return self._tokenize(input)
+            else:
+                return self._encode(input)
         else:
             raise TypeError("Input type not supported")
 
