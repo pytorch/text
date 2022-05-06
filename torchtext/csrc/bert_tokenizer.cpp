@@ -95,6 +95,18 @@ static UString _convert_to_unicode(const std::string& text) {
   return ret;
 }
 
+static std::string _convert_from_unicode(const UString& text) {
+  char dst[64];
+  std::string ret;
+  for (auto ch : text) {
+    utf8proc_ssize_t num = utf8proc_encode_char(ch, (utf8proc_uint8_t*)dst);
+    if (num <= 0)
+      return "";
+    ret += std::string(dst, dst + num);
+  }
+  return ret;
+}
+
 BERTEncoder::BERTEncoder(const std::string& vocab_file)
     : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
@@ -181,7 +193,7 @@ UString BERTEncoder::_basic_tokenize(UString text) {
   return ret;
 }
 
-std::vector<std::string> BERTEncoder::tokenize(std::string text) {
+std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
 
   text = _strip_string_ASCII_whole(text);
@@ -212,7 +224,7 @@ std::vector<std::string> BERTEncoder::tokenize(std::string text) {
 
   unicodes = _basic_tokenize(unicodes);
 
-  std::string newtext;
+  std::string newtext = _convert_from_unicode(unicodes);
 
   // utf8::utf16to8(
   //     reinterpret_cast<const uint16_t*>(unicodes.c_str()),
@@ -233,8 +245,8 @@ std::vector<std::string> BERTEncoder::tokenize(std::string text) {
   return results;
 }
 
-std::vector<int64_t> BERTEncoder::encode(std::string text) {
-  std::vector<std::string> tokens = tokenize(text);
+std::vector<int64_t> BERTEncoder::Encode(std::string text) {
+  std::vector<std::string> tokens = Tokenize(text);
   std::vector<int64_t> indices(tokens.size());
   for (size_t i = 0; i < tokens.size(); i++) {
     indices[i] = vocab_.__getitem__(c10::string_view{tokens[i]});
