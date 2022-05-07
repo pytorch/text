@@ -1,9 +1,16 @@
 from argparse import ArgumentParser
 
 import torch
-import torchtext
 from benchmark.utils import Timer
 from torchtext.functional import to_tensor
+from torchtext.models import XLMR_BASE_ENCODER, XLMR_LARGE_ENCODER, ROBERTA_BASE_ENCODER, ROBERTA_LARGE_ENCODER
+
+ENCODERS = {
+    "xlmr_base": XLMR_BASE_ENCODER,
+    "xlmr_large": XLMR_LARGE_ENCODER,
+    "roberta_base": ROBERTA_BASE_ENCODER,
+    "roberta_large": ROBERTA_LARGE_ENCODER,
+}
 
 
 def basic_model_input(encoder):
@@ -19,35 +26,29 @@ def _train(model, model_input):
 
 
 def run(args):
-    encoder = args.encoder
+    encoder_name = args.encoder
     num_passes = args.num_passes
     warmup_passes = args.num_passes
     model_input = args.model_input
 
-    if encoder == "xlmr_base":
-        encoder = torchtext.models.XLMR_BASE_ENCODER
-    elif encoder == "xlmr_large":
-        encoder = torchtext.models.XLMR_LARGE_ENCODER
-    elif encoder == "roberta_base":
-        encoder = torchtext.models.ROBERTA_BASE_ENCODER
-    elif encoder == "roberta_large":
-        encoder = torchtext.models.ROBERTA_LARGE_ENCODER
+    encoder = ENCODERS.get(encoder_name, None)
+    if not encoder:
+        raise NotImplementedError("Given encoder [{}] is not available".format(encoder_name))
 
     model = encoder.get_model()
     if model_input == "basic":
         model_input = basic_model_input(encoder)
     else:
-        raise NotImplementedError("Given model input type is not implemented")
+        raise NotImplementedError("Given model input [{}] is not available".format(model_input))
 
     model.eval()
-
     for _ in range(warmup_passes):
-        _ = model(model_input)
+        model(model_input)
 
     with Timer("Executing model forward"):
         with torch.no_grad():
             for _ in range(num_passes):
-                _ = model(model_input)
+                model(model_input)
 
     model.train()
     with Timer("Executing model forward/backward"):

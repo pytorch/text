@@ -2,7 +2,9 @@ import time
 
 
 class Timer:
-    def __init__(self, text="") -> None:
+    """Basic utility class to calculate execution time. It can also be used a context manager."""
+
+    def __init__(self, text=""):
         self._text = text
         self._start = None
 
@@ -18,7 +20,7 @@ class Timer:
 
         elapsed = time.perf_counter() - self._start
 
-        print(self._text + " ... Total running time: {}".format(elapsed))
+        print("{} ... Total running time: {}".format(self._text, elapsed))
 
     def __enter__(self):
         self.start()
