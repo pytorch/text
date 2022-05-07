@@ -110,19 +110,17 @@ class TransformerEncoder(Module):
         super().__init__()
         self.padding_idx = padding_idx
         self.token_embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx)
-        self.layers = nn.ModuleList(
-            [
-                TransformerEncoderLayer(
-                    embedding_dim=embedding_dim,
-                    num_attention_heads=num_attention_heads,
-                    ffn_dimension=ffn_dimension,
-                    dropout=dropout,
-                    normalize_before=normalize_before,
-                    scaling=scaling,
-                )
-                for _ in range(num_encoder_layers)
-            ]
+        ffn_dimension = ffn_dimension or 4 * embedding_dim
+        layer = torch.nn.TransformerEncoderLayer(
+            d_model=embedding_dim,
+            nhead=num_attention_heads,
+            dim_feedforward=ffn_dimension,
+            dropout=dropout,
+            activation="gelu",
+            batch_first=True,
+            norm_first=normalize_before,
         )
+        self.layers = torch.nn.TransformerEncoder(encoder_layer=layer, num_layers=num_encoder_layers)
         self.positional_embedding = PositionalEmbedding(max_seq_len, embedding_dim, padding_idx)
         self.embedding_layer_norm = nn.LayerNorm(embedding_dim)
         self.dropout = nn.Dropout(dropout)
@@ -153,27 +151,57 @@ class TransformerEncoder(Module):
 
         padded_embedded = embedded * (1 - padding_mask.unsqueeze(-1).type_as(embedded))
 
-        encoded = padded_embedded.transpose(0, 1)
-
         if self.return_all_layers:
-            states = [encoded]
-
-            for layer in self.layers:
+            encoded = padded_embedded
+            # B x T x C
+            # Then transpose back to T x B x C
+            states = [encoded.transpose(1, 0)]
+            for layer in self.layers.layers:
                 encoded = layer(encoded, padding_mask, attn_mask)
-                states.append(encoded)
-
+                encoded_t = encoded.transpose(1, 0)
+                states.append(encoded_t)
             if self.normalize_before:
                 for i, state in enumerate(states):
                     states[i] = self.embedding_layer_norm(state)
-
-            # states are returned as T x B x C
             return states
         else:
-            for layer in self.layers:
-                encoded = layer(encoded, padding_mask, attn_mask)
-
+            # B x T x C
+            # Then transpose back to T x B x C
+            encoded = self.layers(padded_embedded).transpose(1, 0)
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
-
-            # states are returned as T x B x C
             return encoded
+
+    def _load_from_state_dict(
+        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+    ):
+        better_to_old_names = {
+            "self_attn.in_proj_weight": "attention.input_projection.weight",
+            "self_attn.in_proj_bias": "attention.input_projection.bias",
+            "self_attn.out_proj.weight": "attention.output_projection.weight",
+            "self_attn.out_proj.bias": "attention.output_projection.bias",
+            "linear1.weight": "residual_mlp.mlp.0.weight",
+            "linear1.bias": "residual_mlp.mlp.0.bias",
+            "linear2.weight": "residual_mlp.mlp.3.weight",
+            "linear2.bias": "residual_mlp.mlp.3.bias",
+            "norm1.weight": "attention_layer_norm.weight",
+            "norm1.bias": "attention_layer_norm.bias",
+            "norm2.weight": "final_layer_norm.weight",
+            "norm2.bias": "final_layer_norm.bias",
+        }
+        for i in range(self.layers.num_layers):
+            for better, old in better_to_old_names.items():
+                better_name = prefix + "layers.layers.{}.".format(i) + better
+                old_name = prefix + "layers.{}.".format(i) + old
+                if old_name in state_dict:
+                    state_dict[better_name] = state_dict[old_name]
+                    state_dict.pop(old_name)
+                elif better_name in state_dict:
+                    # Do nothing
+                    pass
+                elif strict:
+                    missing_keys.append(better_name)
+
+        super(TransformerEncoder, self)._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
+        )
