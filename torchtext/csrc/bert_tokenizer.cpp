@@ -107,10 +107,22 @@ static std::string _convert_from_unicode(const UString& text) {
   return ret;
 }
 
+static void _to_lower(UString& text) {
+  for (size_t i = 0; i < text.size(); i++) {
+    text[i] = utf8proc_tolower(text[i]);
+  }
+}
+
 BERTEncoder::BERTEncoder(const std::string& vocab_file)
     : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
 UString BERTEncoder::_clean(UString text) {
+  /* This function combines:
+      * cleaning
+      * strip accents
+    If we later want to add option for optional accents stripping, this require
+    refactoring
+  */
   size_t len = text.size();
   UString ret;
   for (size_t i = 0; i < len; i++) {
@@ -145,30 +157,39 @@ void BERTEncoder::split_(
 void BERTEncoder::max_seg_(std::string s, std::vector<std::string>& results) {
   int end = s.size();
   int start = 0;
-  bool firstOne = true;
+  std::vector<std::string> sub_tokens;
   while (start < end) {
     std::string test(s.c_str() + start, end - start);
-    if (!firstOne) {
+
+    if (start > 0) {
       test = std::string("##") + test;
     }
 
     if (vocab_.__contains__(test)) {
-      results.push_back(test);
+      sub_tokens.push_back(test);
       start = end;
       end = s.size();
-      firstOne = false;
     } else {
       end -= 1;
+      if (start == end) {
+        results.push_back(kUnkToken);
+        return;
+      }
     }
   }
 
-  // no-match
-  if (firstOne) {
-    results.push_back(kUnkToken);
+  for (auto& token : sub_tokens) {
+    results.push_back(token);
   }
 }
 
 UString BERTEncoder::_basic_tokenize(UString text) {
+  /*
+  This function enables white space based tokenization for following:
+    * chinese character
+    * punctuation
+  */
+
   UString ret;
   size_t len = text.size();
   for (size_t i = 0; i < len; i++) {
@@ -196,8 +217,10 @@ UString BERTEncoder::_basic_tokenize(UString text) {
 std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
 
+  // strip
   text = _strip_string_ASCII_whole(text);
 
+  // normalize
   char* nfkcstr = reinterpret_cast<char*>(
       utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
   if (nfkcstr == nullptr) {
@@ -208,33 +231,30 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
 
   free(nfkcstr);
 
-  std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c) {
-    return std::tolower(c);
-  });
-
-  // UString unicodes;
-
-  // utf8::utf8to16(
-  //     text.c_str(), text.c_str() + text.size(),
-  //     std::back_inserter(unicodes));
-
+  // convert to unicode codepoints
   UString unicodes = _convert_to_unicode(text);
 
+  // clean -> invalid character removal, whitespce cleanup, strip accents
   unicodes = _clean(unicodes);
 
+  // Add whitespace in front/back of tokens to enable splitting based on
+  // white-space Enables tokenization on chinese characters, Punctuations
   unicodes = _basic_tokenize(unicodes);
 
+  // Convert text to lower-case
+  _to_lower(unicodes);
+
+  // Convert back to string from code-points
   std::string newtext = _convert_from_unicode(unicodes);
 
-  // utf8::utf16to8(
-  //     reinterpret_cast<const uint16_t*>(unicodes.c_str()),
-  //     reinterpret_cast<const uint16_t*>(unicodes.c_str() + unicodes.size()),
-  //     std::back_inserter(newtext));
+  newtext = _strip_string_ASCII_whole(newtext);
 
   std::vector<std::string> tokens;
 
+  // split based on whitespace
   split_(newtext, tokens);
 
+  // Perform WORDPIECE tokenization
   for (auto s : tokens) {
     if (s.size() > kMaxCharsPerWords) {
       results.push_back(kUnkToken);
