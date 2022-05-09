@@ -1,4 +1,5 @@
 import os
+import csv
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -77,5 +78,5 @@ def STSB(root, split):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(delimiter='\t').filter(lambda x: len(x) >= 7).map(lambda x: (int(x[3]), float(x[4]), x[5], x[6]))
+    parsed_data = data_dp.parse_csv(delimiter='\t', quoting=csv.QUOTE_NONE).map(lambda x: (int(x[3]), float(x[4]), x[5], x[6]))
     return parsed_data
