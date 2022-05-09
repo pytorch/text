@@ -37,6 +37,7 @@ DATASETS = {
     "IWSLT2017": IWSLT2017,
     "Multi30k": Multi30k,
     "PennTreebank": PennTreebank,
+    "RTE": RTE,
     "SQuAD1": SQuAD1,
     "SQuAD2": SQuAD2,
     "SogouNews": SogouNews,
