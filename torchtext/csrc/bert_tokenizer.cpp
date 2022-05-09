@@ -20,7 +20,12 @@ static bool _is_control(uint16_t c) {
     return false;
   }
   utf8proc_category_t cat = utf8proc_category(c);
-  return (cat == UTF8PROC_CATEGORY_CC || cat == UTF8PROC_CATEGORY_CF);
+
+  // Fixed: HF referece: All categories starting with 'C'
+  return (
+      cat == UTF8PROC_CATEGORY_CC || cat == UTF8PROC_CATEGORY_CF ||
+      cat == UTF8PROC_CATEGORY_CN || cat == UTF8PROC_CATEGORY_CS ||
+      cat == UTF8PROC_CATEGORY_CO);
 }
 
 static bool _is_chinese_char(uint16_t cp) {
