@@ -54,35 +54,6 @@ static bool _is_punct_char(uint16_t cp) {
   return (cate >= 12 && cate <= 18);
 }
 
-static std::string _strip_string_ASCII_whole(const std::string& str) {
-  size_t nn = str.size();
-  while (nn > 0 &&
-         (str[nn - 1] == ' ' || str[nn - 1] == '\t' || str[nn - 1] == '\r' ||
-          str[nn - 1] == '\n')) {
-    nn -= 1;
-  }
-  size_t off = 0;
-  while (off < nn &&
-         (str[off] == ' ' || str[off] == '\t' || str[off] == '\r' ||
-          str[off] == '\n')) {
-    off += 1;
-  }
-  bool seeWhitespace = false;
-  std::string ret;
-  for (size_t k = off; k < nn; k++) {
-    if (str[k] == ' ' || str[k] == '\t' || str[k] == '\r' || str[k] == '\n') {
-      if (!seeWhitespace) {
-        seeWhitespace = true;
-        ret.append(1, ' ');
-      }
-    } else {
-      seeWhitespace = false;
-      ret.append(1, str[k]);
-    }
-  }
-  return ret;
-}
-
 static UString _convert_to_unicode(const std::string& text) {
   size_t i = 0;
   UString ret;
@@ -222,9 +193,6 @@ UString BERTEncoder::_basic_tokenize(UString text) {
 std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
 
-  // strip
-  text = _strip_string_ASCII_whole(text);
-
   // normalize
   char* nfkcstr = reinterpret_cast<char*>(
       utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
@@ -251,8 +219,6 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
 
   // Convert back to string from code-points
   std::string newtext = _convert_from_unicode(unicodes);
-
-  newtext = _strip_string_ASCII_whole(newtext);
 
   std::vector<std::string> tokens;
 

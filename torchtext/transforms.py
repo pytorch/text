@@ -7,7 +7,11 @@ import torch
 import torchtext  # noqa: F401
 from torch import Tensor
 from torch.nn import Module
-from torchtext._torchtext import CLIPEncoder as CLIPEncoderPyBind, GPT2BPEEncoder as GPT2BPEEncoderPyBind, BERTEncoder as BERTEncoderPyBind
+from torchtext._torchtext import (
+    CLIPEncoder as CLIPEncoderPyBind,
+    GPT2BPEEncoder as GPT2BPEEncoderPyBind,
+    BERTEncoder as BERTEncoderPyBind,
+)
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
@@ -535,7 +539,7 @@ class BERTTokenizer(Module):
     Transform for BERT Tokenizer.
     """
 
-    def __init__(self, vocab_path: str, return_tokens = False) -> None:
+    def __init__(self, vocab_path: str, return_tokens=False) -> None:
         super().__init__()
         self.bert_model = BERTEncoderPyBind(vocab_path)
         self._return_tokens = return_tokens
@@ -553,7 +557,7 @@ class BERTTokenizer(Module):
         For example:
             --> "Hello world!" --> token ids: [707, 5927, 11, 707, 68]
         """
-        token_ids: List[int] = self.bert_model.encode(text)
+        token_ids: List[int] = self.bert_model.encode(text.strip())
         tokens_ids_str: List[str] = [str(token_id) for token_id in token_ids]
         return tokens_ids_str
 
@@ -570,9 +574,8 @@ class BERTTokenizer(Module):
         For example:
             --> "Hello World!": ["Hello", "World", "!"]
         """
-        return self.bert_model.tokenize(text)
+        return self.bert_model.tokenize(text.strip())
 
-    
     def forward(self, input: Any) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
