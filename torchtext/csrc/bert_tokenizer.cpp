@@ -92,6 +92,10 @@ static void _to_lower(UString& text) {
 BERTEncoder::BERTEncoder(const std::string& vocab_file)
     : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
+
+BERTEncoder::BERTEncoder(Vocab vocab)
+    : vocab_{vocab} {}
+
 UString BERTEncoder::_clean(UString text) {
   /* This function combines:
       * cleaning
@@ -244,5 +248,43 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
   }
   return indices;
 }
+
+VocabStates _serialize_bert_encoder(const c10::intrusive_ptr<BERTEncoder>& self) {
+  
+  return _serialize_vocab(c10::make_intrusive<Vocab>(self->vocab_));
+
+}
+
+c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(VocabStates states) {
+  auto state_size = std::tuple_size<decltype(states)>::value;
+  TORCH_CHECK(
+      state_size == 4,
+      "Expected deserialized Vocab to have 4 states but found " +
+          std::to_string(state_size) + " states");
+
+  auto& version_str = std::get<0>(states);
+  auto& integers = std::get<1>(states);
+  auto& strings = std::get<2>(states);
+  auto& tensors = std::get<3>(states);
+
+  // check tensors are empty
+  TORCH_CHECK(tensors.size() == 0, "Expected `tensors` states to be empty");
+
+  // throw error if version is not compatible
+  TORCH_CHECK(
+      version_str.compare("0.0.2") >= 0,
+      "Found unexpected version for serialized Vocab: " + version_str);
+
+  c10::optional<int64_t> default_index = {};
+  if (integers.size() > 0) {
+    default_index = integers[0];
+  }
+  return c10::make_intrusive<BERTEncoder>(Vocab(std::move(strings), default_index));
+
+
+}
+
+  
+
 
 } // namespace torchtext

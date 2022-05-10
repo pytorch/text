@@ -1,4 +1,5 @@
 #include <torch/script.h>
+#include <torchtext/csrc/bert_tokenizer.h> // @manual
 #include <torchtext/csrc/clip_tokenizer.h> // @manual
 #include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
 #include <torchtext/csrc/regex.h>
@@ -6,7 +7,6 @@
 #include <torchtext/csrc/sentencepiece.h> // @manual
 #include <torchtext/csrc/vectors.h> // @manual
 #include <torchtext/csrc/vocab.h> // @manual
-#include <torchtext/csrc/bert_tokenizer.h> // @manual
 
 #include <iostream>
 namespace torchtext {
@@ -176,7 +176,17 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
   m.class_<BERTEncoder>("BERTEncoder")
       .def(torch::init<const std::string>())
       .def("encode", &BERTEncoder::Encode)
-      .def("tokenize", &BERTEncoder::Tokenize);
+      .def("tokenize", &BERTEncoder::Tokenize)
+      .def_pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<BERTEncoder>& self) -> VocabStates {
+            return _serialize_bert_encoder(self);
+          },
+          // __setstate__
+          [](VocabStates states) -> c10::intrusive_ptr<BERTEncoder> {
+            return _deserialize_bert_encoder(states);
+          });
+  ;
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);
   m.def("torchtext::load_sp_model", &load_sp_model);

@@ -594,7 +594,7 @@ class TestBERTTokenizer(TorchtextTestCase):
             tokenizer = torch.jit.script(tokenizer)
         return tokenizer
 
-    def _gpt2_bpe_tokenizer(self, tokenizer):
+    def _bert_tokenizer(self, tokenizer):
         sample_texts = [
             "Hello World!, how are you?",
             "Hélló  WoŕlḊ¿",
@@ -622,22 +622,22 @@ class TestBERTTokenizer(TorchtextTestCase):
 
 
     @nested_params([True, False], [True, False])
-    def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
+    def test_bert_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
+        self._bert_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
 
-    # def test_gpt2_bpe_tokenizer_save_load_pybind(self):
-    #     tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
-    #     tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
-    #     torch.save(tokenizer, tokenizer_path)
-    #     loaded_tokenizer = torch.load(tokenizer_path)
-    #     self._gpt2_bpe_tokenizer((loaded_tokenizer))
+    def test_bert_tokenizer_save_load_pybind(self):
+        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
+        tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_pybind.pt")
+        torch.save(tokenizer, tokenizer_path)
+        loaded_tokenizer = torch.load(tokenizer_path)
+        self._bert_tokenizer((loaded_tokenizer))
 
-    # def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
-    #     tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
-    #     tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
-    #     # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
-    #     # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-    #     torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
-    #     loaded_tokenizer = torch.load(tokenizer_path)
-    #     self._gpt2_bpe_tokenizer((loaded_tokenizer))
+    def test_bert_tokenizer_save_load_torchscript(self):
+        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
+        tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_torchscript.pt")
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
+        loaded_tokenizer = torch.load(tokenizer_path)
+        self._bert_tokenizer((loaded_tokenizer))

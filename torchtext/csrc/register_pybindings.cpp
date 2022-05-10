@@ -3,6 +3,7 @@
 #include <torch/csrc/jit/python/module_python.h> // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
+#include <torchtext/csrc/bert_tokenizer.h> // @manual
 #include <torchtext/csrc/clip_tokenizer.h> // @manual
 #include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
 #include <torchtext/csrc/regex.h>
@@ -11,7 +12,6 @@
 #include <torchtext/csrc/vectors.h> // @manual
 #include <torchtext/csrc/vocab.h> // @manual
 #include <torchtext/csrc/vocab_factory.h> // @manual
-#include <torchtext/csrc/bert_tokenizer.h> // @manual
 
 #include <iostream>
 
@@ -216,10 +216,19 @@ PYBIND11_MODULE(_torchtext, m) {
             return _deserialize_clip_encoder_pybind(states);
           }));
 
-    py::class_<BERTEncoder, c10::intrusive_ptr<BERTEncoder>>(m, "BERTEncoder")
-    .def(py::init<const std::string>())
-    .def("encode", &BERTEncoder::Encode)
-    .def("tokenize", &BERTEncoder::Tokenize);
+  py::class_<BERTEncoder, c10::intrusive_ptr<BERTEncoder>>(m, "BERTEncoder")
+      .def(py::init<const std::string>())
+      .def("encode", &BERTEncoder::Encode)
+      .def("tokenize", &BERTEncoder::Tokenize)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<BERTEncoder>& self) -> VocabStates {
+            return _serialize_bert_encoder(self);
+          },
+          // __setstate__
+          [](VocabStates states) -> c10::intrusive_ptr<BERTEncoder> {
+            return _deserialize_bert_encoder(states);
+          }));
 
   // Functions
   m.def(
