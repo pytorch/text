@@ -134,7 +134,7 @@ void BERTEncoder::split_(
   }
 }
 
-void BERTEncoder::max_seg_(std::string s, std::vector<std::string>& results) {
+void BERTEncoder::_max_seg(std::string s, std::vector<std::string>& results) {
   int end = s.size();
   int start = 0;
   std::vector<std::string> sub_tokens;
@@ -234,7 +234,7 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
     if (s.size() > kMaxCharsPerWords) {
       results.push_back(kUnkToken);
     } else {
-      max_seg_(s, results);
+      _max_seg(s, results);
     }
   }
   return results;
