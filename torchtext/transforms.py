@@ -543,6 +543,11 @@ class BERTTokenizer(Module):
         super().__init__()
         self.bert_model = BERTEncoderPyBind(vocab_path)
         self._return_tokens = return_tokens
+        self._vocab_path = vocab_path
+
+    @property
+    def is_jitable(self):
+        return isinstance(self.bert_model, torch._C.ScriptObject)
 
     @torch.jit.export
     def _encode(self, text: str) -> List[str]:
@@ -598,6 +603,15 @@ class BERTTokenizer(Module):
                 return self._encode(input)
         else:
             raise TypeError("Input type not supported")
+
+    def __prepare_scriptable__(self):
+
+        if not self.is_jitable:
+            tokenizer_copy = deepcopy(self)
+            tokenizer_copy.bert_model = torch.classes.torchtext.BERTEncoder(self._vocab_path)
+            return tokenizer_copy
+
+        return self
 
 
 @lru_cache()

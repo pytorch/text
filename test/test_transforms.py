@@ -590,8 +590,8 @@ class TestBERTTokenizer(TorchtextTestCase):
             vocab_path=get_asset_path(vocab_file),
             return_tokens=return_tokens,
         )
-        # if test_scripting:
-        #     tokenizer = torch.jit.script(tokenizer)
+        if test_scripting:
+            tokenizer = torch.jit.script(tokenizer)
         return tokenizer
 
     def _gpt2_bpe_tokenizer(self, tokenizer):
