@@ -79,7 +79,9 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    src_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+    cache_compressed_dp_1, cache_compressed_dp_2 = cache_compressed_dp.fork(num_instances=2)
+
+    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[0]}")
     )
     src_cache_decompressed_dp = (
@@ -89,7 +91,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     )
     src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    tgt_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[1]}")
     )
     tgt_cache_decompressed_dp = (
