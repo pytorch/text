@@ -4,7 +4,7 @@
 
 namespace torchtext {
 
-typedef std::basic_string<uint16_t> UString;
+typedef std::basic_string<uint32_t> UString;
 
 struct BERTEncoder:torch::CustomClassHolder {
   BERTEncoder(const std::string& vocab_file);

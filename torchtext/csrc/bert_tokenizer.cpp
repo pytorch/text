@@ -4,18 +4,18 @@
 namespace torchtext {
 
 std::string BERTEncoder::kUnkToken = "[UNK]";
-static std::unordered_set<uint16_t> kChinesePunts =
+static std::unordered_set<uint32_t> kChinesePunts =
     {12290, 65306, 65311, 8212, 8216, 12304, 12305, 12298, 12299, 65307};
 int kMaxCharsPerWords = 100;
 
-static bool _is_whitespace(uint16_t c) {
+static bool _is_whitespace(uint32_t c) {
   if (c == '\t' || c == '\n' || c == '\r' || c == ' ') {
     return true;
   }
   return (UTF8PROC_CATEGORY_ZS == utf8proc_category(c));
 }
 
-static bool _is_control(uint16_t c) {
+static bool _is_control(uint32_t c) {
   if (c == '\t' || c == '\n' || c == '\r') {
     return false;
   }
@@ -28,7 +28,7 @@ static bool _is_control(uint16_t c) {
       cat == UTF8PROC_CATEGORY_CO);
 }
 
-static bool _is_chinese_char(uint16_t cp) {
+static bool _is_chinese_char(uint32_t cp) {
   if ((cp >= 0x4E00 && cp <= 0x9FFF) || (cp >= 0x3400 && cp <= 0x4DBF) ||
       (cp >= 0x20000 && cp <= 0x2A6DF) || (cp >= 0x2A700 && cp <= 0x2B73F) ||
       (cp >= 0x2B740 && cp <= 0x2B81F) || (cp >= 0x2B820 && cp <= 0x2CEAF) ||
@@ -38,7 +38,7 @@ static bool _is_chinese_char(uint16_t cp) {
   return false;
 }
 
-static bool _is_punct_char(uint16_t cp) {
+static bool _is_punct_char(uint32_t cp) {
   if ((cp >= 33 && cp <= 47) || (cp >= 58 && cp <= 64) ||
       (cp >= 91 && cp <= 96) || (cp >= 123 && cp <= 126)) {
     return true;
@@ -58,7 +58,7 @@ static UString _convert_to_unicode(const std::string& text) {
   size_t i = 0;
   UString ret;
   while (i < text.size()) {
-    uint16_t codepoint;
+    uint32_t codepoint;
     utf8proc_ssize_t forward = utf8proc_iterate(
         (utf8proc_uint8_t*)&text[i],
         text.size() - i,
@@ -102,7 +102,7 @@ UString BERTEncoder::_clean(UString text) {
   size_t len = text.size();
   UString ret;
   for (size_t i = 0; i < len; i++) {
-    uint16_t c = text[i];
+    uint32_t c = text[i];
     if (c == 0 || c == 0xFFFD || _is_control(c) ||
         utf8proc_category(c) == UTF8PROC_CATEGORY_MN) {
       continue;
@@ -169,7 +169,7 @@ UString BERTEncoder::_basic_tokenize(UString text) {
   UString ret;
   size_t len = text.size();
   for (size_t i = 0; i < len; i++) {
-    uint16_t c = text[i];
+    uint32_t c = text[i];
     if (_is_chinese_char(c) || _is_punct_char(c)) {
       if (!ret.empty() && ret.back() != ' ') {
         ret.append(1, ' ');
