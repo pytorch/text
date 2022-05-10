@@ -14,7 +14,7 @@ struct BERTEncoder:torch::CustomClassHolder {
   Vocab vocab_;
  protected:
   UString _clean(UString text);
-  void max_seg_(std::string s, std::vector<std::string>& results);
+  void _max_seg(std::string s, std::vector<std::string>& results);
   UString _basic_tokenize(UString text);
   void split_(
       std::string& str,
