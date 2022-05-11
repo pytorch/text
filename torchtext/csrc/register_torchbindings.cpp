@@ -174,16 +174,16 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           });
 
   m.class_<BERTEncoder>("BERTEncoder")
-      .def(torch::init<const std::string, bool>())
+      .def(torch::init<const std::string>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)
       .def_pickle(
           // __getstate__
-          [](const c10::intrusive_ptr<BERTEncoder>& self) -> BERTEncoderStates {
+          [](const c10::intrusive_ptr<BERTEncoder>& self) -> VocabStates {
             return _serialize_bert_encoder(self);
           },
           // __setstate__
-          [](BERTEncoderStates states) -> c10::intrusive_ptr<BERTEncoder> {
+          [](VocabStates states) -> c10::intrusive_ptr<BERTEncoder> {
             return _deserialize_bert_encoder(states);
           });
   ;

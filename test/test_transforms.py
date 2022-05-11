@@ -586,10 +586,8 @@ class TestCLIPTokenizer(TorchtextTestCase):
 class TestBERTTokenizer(TorchtextTestCase):
     def _load_tokenizer(self, test_scripting: bool, return_tokens: bool):
         vocab_file = "bert_base_uncased_vocab.txt"
-        to_lower = True
         tokenizer = transforms.BERTTokenizer(
             vocab_path=get_asset_path(vocab_file),
-            to_lower=to_lower,
             return_tokens=return_tokens,
         )
         if test_scripting:
@@ -639,6 +637,6 @@ class TestBERTTokenizer(TorchtextTestCase):
         tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-        torch.save(torch.jit.script(tokenizer), tokenizer_path)
+        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._bert_tokenizer((loaded_tokenizer))
