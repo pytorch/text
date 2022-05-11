@@ -584,17 +584,18 @@ class TestCLIPTokenizer(TorchtextTestCase):
 
 
 class TestBERTTokenizer(TorchtextTestCase):
-    def _load_tokenizer(self, test_scripting: bool, return_tokens: bool):
+    def _load_tokenizer(self, test_scripting: bool, to_lower: bool, return_tokens: bool):
         vocab_file = "bert_base_uncased_vocab.txt"
         tokenizer = transforms.BERTTokenizer(
             vocab_path=get_asset_path(vocab_file),
+            to_lower=to_lower,
             return_tokens=return_tokens,
         )
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
         return tokenizer
 
-    def _bert_tokenizer(self, tokenizer):
+    def _bert_tokenizer(self, tokenizer, to_lower):
         sample_texts = [
             "Hello World!, how are you?",
             "Hélló  WoŕlḊ¿",
@@ -602,10 +603,17 @@ class TestBERTTokenizer(TorchtextTestCase):
             "Avdija Vršajević în",
         ]
 
-        expected_tokens = [['hello', 'world', '!', ',', 'how', 'are', 'you', '?'], ['hello', 'world', '¿'], [
-            'res', '##pu', '##bl', '##ica', 'superior', '##em'], ['av', '##di', '##ja', 'vr', '##sa', '##jevic', 'in']]
-        expected_token_ids = [['7592', '2088', '999', '1010', '2129', '2024', '2017', '1029'], ['7592', '2088', '1094'], [
-            '24501', '14289', '16558', '5555', '6020', '6633'], ['20704', '4305', '3900', '27830', '3736', '26782', '1999']]
+        if to_lower:
+            expected_tokens = [['hello', 'world', '!', ',', 'how', 'are', 'you', '?'], ['hello', 'world', '¿'], [
+                'res', '##pu', '##bl', '##ica', 'superior', '##em'], ['av', '##di', '##ja', 'vr', '##sa', '##jevic', 'in']]
+            expected_token_ids = [['7592', '2088', '999', '1010', '2129', '2024', '2017', '1029'], ['7592', '2088', '1094'], [
+                '24501', '14289', '16558', '5555', '6020', '6633'], ['20704', '4305', '3900', '27830', '3736', '26782', '1999']]
+
+        else:
+            expected_tokens = [['hello', 'world', '!', ',', 'how', 'are', 'you', '?'], ['hello', 'world', '¿'], [
+                'res', '##pu', '##bl', '##ica', 'superior', '##em'], ['av', '##di', '##ja', 'vr', '##sa', '##jevic', 'in']]
+            expected_token_ids = [['7592', '2088', '999', '1010', '2129', '2024', '2017', '1029'], ['7592', '2088', '1094'], [
+                '24501', '14289', '16558', '5555', '6020', '6633'], ['20704', '4305', '3900', '27830', '3736', '26782', '1999']]
 
         # test batch of sentences
         if tokenizer._return_tokens:
@@ -620,23 +628,26 @@ class TestBERTTokenizer(TorchtextTestCase):
             else:
                 self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
-    @nested_params([True, False], [True, False])
-    def test_bert_tokenizer(self, test_scripting, return_tokens):
+    @nested_params([True, False], [True, False], [True, False])
+    def test_bert_tokenizer(self, test_scripting, to_lower, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._bert_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
+        self._bert_tokenizer(self._load_tokenizer(test_scripting=test_scripting,
+                             to_lower=to_lower, return_tokens=return_tokens), to_lower=to_lower)
 
     def test_bert_tokenizer_save_load_pybind(self):
-        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
+        to_lower = True
+        tokenizer = self._load_tokenizer(test_scripting=False, to_lower=to_lower, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
-        self._bert_tokenizer((loaded_tokenizer))
+        self._bert_tokenizer((loaded_tokenizer), to_lower=to_lower)
 
     def test_bert_tokenizer_save_load_torchscript(self):
-        tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
+        to_lower = True
+        tokenizer = self._load_tokenizer(test_scripting=False, to_lower=to_lower, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
-        self._bert_tokenizer((loaded_tokenizer))
+        self._bert_tokenizer((loaded_tokenizer), to_lower=to_lower)

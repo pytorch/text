@@ -86,10 +86,14 @@ static void _to_lower(UString& text) {
   }
 }
 
-BERTEncoder::BERTEncoder(const std::string& vocab_file)
-    : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
+BERTEncoder::BERTEncoder(const std::string& vocab_file, bool to_lower)
+    : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {
+  to_lower_ = to_lower;
+}
 
-BERTEncoder::BERTEncoder(Vocab vocab) : vocab_{vocab} {}
+BERTEncoder::BERTEncoder(Vocab vocab, bool to_lower) : vocab_{vocab} {
+  to_lower_ = to_lower;
+}
 
 UString BERTEncoder::_clean(UString text) {
   /* This function combines:
@@ -214,7 +218,8 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   unicodes = _basic_tokenize(unicodes);
 
   // Convert text to lower-case
-  _to_lower(unicodes);
+  if (to_lower_)
+    _to_lower(unicodes);
 
   // Convert back to string from code-points
   std::string newtext = _convert_from_unicode(unicodes);
@@ -244,37 +249,22 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
   return indices;
 }
 
-VocabStates _serialize_bert_encoder(
+BERTEncoderStates _serialize_bert_encoder(
     const c10::intrusive_ptr<BERTEncoder>& self) {
-  return _serialize_vocab(c10::make_intrusive<Vocab>(self->vocab_));
+  return std::make_tuple(true, self->vocab_.itos_);
 }
 
-c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(VocabStates states) {
+c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
+    BERTEncoderStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   TORCH_CHECK(
-      state_size == 4,
-      "Expected deserialized Vocab to have 4 states but found " +
+      state_size == 2,
+      "Expected deserialized BERTEncoder to have 2 states but found " +
           std::to_string(state_size) + " states");
 
-  auto& version_str = std::get<0>(states);
-  auto& integers = std::get<1>(states);
-  auto& strings = std::get<2>(states);
-  auto& tensors = std::get<3>(states);
-
-  // check tensors are empty
-  TORCH_CHECK(tensors.size() == 0, "Expected `tensors` states to be empty");
-
-  // throw error if version is not compatible
-  TORCH_CHECK(
-      version_str.compare("0.0.2") >= 0,
-      "Found unexpected version for serialized Vocab: " + version_str);
-
-  c10::optional<int64_t> default_index = {};
-  if (integers.size() > 0) {
-    default_index = integers[0];
-  }
-  return c10::make_intrusive<BERTEncoder>(
-      Vocab(std::move(strings), default_index));
+  auto to_lower = std::get<0>(states);
+  auto strings = std::get<1>(states);
+  return c10::make_intrusive<BERTEncoder>(Vocab(std::move(strings)), to_lower);
 }
 
 } // namespace torchtext
