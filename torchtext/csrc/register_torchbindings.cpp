@@ -1,11 +1,11 @@
-#include <clip_tokenizer.h> // @manual
-#include <gpt2_bpe_tokenizer.h> // @manual
-#include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h> // @manual
+#include <torchtext/csrc/clip_tokenizer.h> // @manual
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
+#include <torchtext/csrc/regex.h>
+#include <torchtext/csrc/regex_tokenizer.h> // @manual
+#include <torchtext/csrc/sentencepiece.h> // @manual
+#include <torchtext/csrc/vectors.h> // @manual
+#include <torchtext/csrc/vocab.h> // @manual
 
 #include <iostream>
 namespace torchtext {
@@ -138,6 +138,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
            c10::Dict<int64_t, std::string>,
            bool>())
       .def("encode", &GPT2BPEEncoder::Encode)
+      .def("tokenize", &GPT2BPEEncoder::Tokenize)
       .def_pickle(
           // __getstate__
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self)
@@ -158,6 +159,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
            c10::Dict<int64_t, std::string>,
            bool>())
       .def("encode", &CLIPEncoder::Encode)
+      .def("tokenize", &CLIPEncoder::Tokenize)
       .def_pickle(
           // __getstate__
           [](const c10::intrusive_ptr<CLIPEncoder>& self)
