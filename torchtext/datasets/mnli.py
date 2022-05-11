@@ -22,7 +22,7 @@ MD5 = "0f70aaf66293b3c088a864891db51353"
 
 NUM_LINES = {
     "train": 392702,
-    "dev": 9714,
+    "dev_matched": 9815,
     "dev_mismatched": 9832,
 }
 
@@ -51,7 +51,7 @@ def MNLI(root, split):
 
     Number of lines per split:
         - train: 392702
-        - dev_matched: 9714
+        - dev_matched: 9815
         - dev_mismatched: 9832
 
     Args:
