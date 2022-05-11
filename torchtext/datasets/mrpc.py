@@ -23,7 +23,7 @@ MD5 = {
 }
 
 NUM_LINES = {
-    "train": 3668,
+    "train": 4076,
     "test": 1725,
 }
 
@@ -39,7 +39,7 @@ def MRPC(root: str, split: Union[Tuple[str], str]):
     For additional details refer to https://www.microsoft.com/en-us/download/details.aspx?id=52398
 
     Number of lines per split:
-        - train: 3668
+        - train: 4076
         - test: 1725
 
     Args:
