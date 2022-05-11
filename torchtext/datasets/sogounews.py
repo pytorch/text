@@ -73,7 +73,7 @@ def SogouNews(root: str, split: Union[Tuple[str], str]):
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
         filepath_fn=_filepath_fn,
-        hash_dict={os.path.join(root, _PATH): MD5},
+        hash_dict={_filepath_fn(): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
