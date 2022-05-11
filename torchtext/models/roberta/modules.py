@@ -112,15 +112,18 @@ class TransformerEncoder(Module):
         self.token_embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx)
         ffn_dimension = ffn_dimension or 4 * embedding_dim
         layer = torch.nn.TransformerEncoderLayer(
-            d_model=embedding_dim,
-            nhead=num_attention_heads,
-            dim_feedforward=ffn_dimension,
-            dropout=dropout,
-            activation="gelu",
-            batch_first=True,
-            norm_first=normalize_before,
-        )
-        self.layers = torch.nn.TransformerEncoder(encoder_layer=layer, num_layers=num_encoder_layers)
+                    d_model=embedding_dim,
+                    nhead=num_attention_heads,
+                    dim_feedforward=ffn_dimension,
+                    dropout=dropout,
+                    activation="gelu",
+                    batch_first=True,
+                    norm_first=normalize_before,
+                )
+        self.layers = torch.nn.TransformerEncoder(encoder_layer=layer,
+                num_layers=num_encoder_layers,
+                return_all_layers=return_all_layers,
+            )
         self.positional_embedding = PositionalEmbedding(max_seq_len, embedding_dim, padding_idx)
         self.embedding_layer_norm = nn.LayerNorm(embedding_dim)
         self.dropout = nn.Dropout(dropout)
@@ -150,24 +153,24 @@ class TransformerEncoder(Module):
         embedded = self.dropout(embedded)
 
         padded_embedded = embedded * (1 - padding_mask.unsqueeze(-1).type_as(embedded))
+        encoded = self.layers(padded_embedded)
 
         if self.return_all_layers:
-            encoded = padded_embedded
-            # B x T x C
-            # Then transpose back to T x B x C
-            states = [encoded.transpose(1, 0)]
-            for layer in self.layers.layers:
-                encoded = layer(encoded, padding_mask, attn_mask)
-                encoded_t = encoded.transpose(1, 0)
-                states.append(encoded_t)
-            if self.normalize_before:
-                for i, state in enumerate(states):
-                    states[i] = self.embedding_layer_norm(state)
-            return states
+            # (lengths * B) x T x C
+            batch_size = padded_embedded.size(0)
+            # [length, B x T x C]
+            encoded_list = encoded.split(batch_size)
+            for i in range(len(encoded_list)):
+                # T x B x C
+                encoded_list[i] = encoded_list[i].transpose(0, 1)
+                if self.normalize_before:
+                    encoded_list[i] = self.embedding_layer_norm(encoded_list[i])
+            # [length, T x B x C]
+            return encoded_list
         else:
             # B x T x C
             # Then transpose back to T x B x C
-            encoded = self.layers(padded_embedded).transpose(1, 0)
+            encoded = encoded.transpose(1, 0)
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
             return encoded
