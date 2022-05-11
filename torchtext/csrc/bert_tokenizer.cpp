@@ -4,8 +4,7 @@
 namespace torchtext {
 
 std::string BERTEncoder::kUnkToken = "[UNK]";
-static std::unordered_set<uint32_t> kChinesePunts =
-    {12290, 65306, 65311, 8212, 8216, 12304, 12305, 12298, 12299, 65307};
+
 int kMaxCharsPerWords = 100;
 
 static bool _is_whitespace(uint32_t c) {
@@ -43,13 +42,11 @@ static bool _is_punct_char(uint32_t cp) {
       (cp >= 91 && cp <= 96) || (cp >= 123 && cp <= 126)) {
     return true;
   }
+
   if (cp == ' ') {
     return false;
   }
-  // we can remove this part code  now !!!!
-  if (kChinesePunts.find(cp) != kChinesePunts.end()) {
-    return true;
-  }
+
   int cate = static_cast<int>(utf8proc_category(cp));
   return (cate >= 12 && cate <= 18);
 }
