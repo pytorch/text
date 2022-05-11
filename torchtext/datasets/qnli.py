@@ -1,5 +1,6 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import os
+import csv
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -78,5 +79,5 @@ def QNLI(root, split):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda x: (int(x[3]=="entailment"), x[1], x[2]))
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(lambda x: (int(x[3]=="entailment"), x[1], x[2]))
     return parsed_data
