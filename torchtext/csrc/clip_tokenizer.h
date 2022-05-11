@@ -1,7 +1,7 @@
 #ifndef CLIP_TOKENIZER_H_
 #define CLIP_TOKENIZER_H_
 
-#include <gpt2_bpe_tokenizer.h>
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h>
 
 namespace torchtext {
 
@@ -26,6 +26,7 @@ struct CLIPEncoder : GPT2BPEEncoder {
   using GPT2BPEEncoder::GPT2BPEEncoder;
 
   std::vector<int64_t> Encode(const std::string& text);
+  std::vector<std::string> Tokenize(const std::string& text);
 
  protected:
   std::vector<std::string> BPE_(

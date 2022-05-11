@@ -8,8 +8,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
     "train": r"http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz",
@@ -84,7 +84,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     )
     src_cache_decompressed_dp = (
         FileOpener(src_cache_decompressed_dp, mode="b")
-        .read_from_tar()
+        .load_from_tar()
         .filter(lambda x: f"{_PREFIX[split]}.{language_pair[0]}" in x[0])
     )
     src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
@@ -94,7 +94,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     )
     tgt_cache_decompressed_dp = (
         FileOpener(tgt_cache_decompressed_dp, mode="b")
-        .read_from_tar()
+        .load_from_tar()
         .filter(lambda x: f"{_PREFIX[split]}.{language_pair[1]}" in x[0])
     )
     tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
