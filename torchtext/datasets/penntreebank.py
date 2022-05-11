@@ -56,14 +56,20 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn(_=None):
+        return os.path.join(root, os.path.basename(URL[split]))
+
+    def _modify_res(t):
+        return t.strip()
+
     url_dp = IterableWrapper([URL[split]])
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5[split]},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_dp, encoding="utf-8")
     # remove single leading and trailing space from the dataset
-    return data_dp.readlines(return_path=False).map(lambda t: t.strip())
+    return data_dp.readlines(return_path=False).map(_modify_res)

@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -70,34 +71,35 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn(_=None):
+        return os.path.join(root, os.path.basename(URL[split]))
+
     url_dp = IterableWrapper([URL[split]])
 
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(URL[split])),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5[split]},
         hash_type="sha256",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     cache_compressed_dp_1, cache_compressed_dp_2 = cache_compressed_dp.fork(num_instances=2)
 
-    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[0]}")
-    )
+    def _decompressed_filepath_fn(i, _):
+        return os.path.join(root, f"{_PREFIX[split]}.{language_pair[i]}")
+
+    def _filter_fn(i, x):
+        return f"{_PREFIX[split]}.{language_pair[i]}" in x[0]
+
+    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, 0))
     src_cache_decompressed_dp = (
-        FileOpener(src_cache_decompressed_dp, mode="b")
-        .load_from_tar()
-        .filter(lambda x: f"{_PREFIX[split]}.{language_pair[0]}" in x[0])
+        FileOpener(src_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, 0))
     )
     src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[1]}")
-    )
+    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, 1))
     tgt_cache_decompressed_dp = (
-        FileOpener(tgt_cache_decompressed_dp, mode="b")
-        .load_from_tar()
-        .filter(lambda x: f"{_PREFIX[split]}.{language_pair[1]}" in x[0])
+        FileOpener(tgt_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, 1))
     )
     tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
