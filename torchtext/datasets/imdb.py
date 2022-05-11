@@ -7,8 +7,8 @@ from torchtext.data.datasets_utils import _create_dataset_directory
 from torchtext.data.datasets_utils import _wrap_split_argument
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
 
@@ -62,7 +62,7 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
         filepath_fn=lambda x: [os.path.join(root, decompressed_folder, split, label) for label in labels]
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
-    cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
+    cache_decompressed_dp = cache_decompressed_dp.load_from_tar()
 
     def filter_imdb_data(key, fname):
         # eg. fname = "aclImdb/train/neg/12416_3.txt"

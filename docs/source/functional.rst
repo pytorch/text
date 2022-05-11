@@ -23,3 +23,8 @@ add_token
 ---------
 
 .. autofunction:: add_token
+
+str_to_int
+----------
+
+.. autofunction:: str_to_int
