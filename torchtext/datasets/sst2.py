@@ -61,26 +61,37 @@ def SST2(root, split):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn():
+        return os.path.join(root, os.path.basename(URL))
+
+    def _extracted_filepath_fn():
+        return os.path.join(root, _EXTRACTED_FILES[split])
+
+    def _filter_fn(x):
+        return _EXTRACTED_FILES[split] in x[0]
+
+    def _modify_test_res(t):
+        return (t[1].strip(),)
+
+    def _modify_res(t):
+        return t[0].strip(), int(t[1])
+
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
-        hash_dict={os.path.join(root, os.path.basename(URL)): MD5},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
-    )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # test split for SST2 doesn't have labels
     if split == "test":
-        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda t: (t[1].strip(),))
+        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_test_res)
     else:
-        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda t: (t[0].strip(), int(t[1])))
+        parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_res)
     return parsed_data

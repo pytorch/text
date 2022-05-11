@@ -53,23 +53,33 @@ def YelpReviewPolarity(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn():
+        return os.path.join(root, _PATH)
+
+    def _extracted_filepath_fn():
+        return os.path.join(root, _EXTRACTED_FILES[split])
+
+    def _filter_fn(x):
+        return _EXTRACTED_FILES[split] in x[0]
+
+    def _modify_res(t):
+        return int(t[0]), " ".join(t[1:])
+
     url_dp = IterableWrapper([URL])
 
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _PATH),
-        hash_dict={os.path.join(root, _PATH): MD5},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
 
     cache_decompressed_dp = cache_decompressed_dp.load_from_tar()
 
-    cache_decompressed_dp = cache_decompressed_dp.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_decompressed_dp = cache_decompressed_dp.filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    return data_dp.parse_csv().map(lambda t: (int(t[0]), " ".join(t[1:])))
+    return data_dp.parse_csv().map(_modify_res)
