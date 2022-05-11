@@ -89,9 +89,7 @@ static void _to_lower(UString& text) {
 BERTEncoder::BERTEncoder(const std::string& vocab_file)
     : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
-
-BERTEncoder::BERTEncoder(Vocab vocab)
-    : vocab_{vocab} {}
+BERTEncoder::BERTEncoder(Vocab vocab) : vocab_{vocab} {}
 
 UString BERTEncoder::_clean(UString text) {
   /* This function combines:
@@ -246,10 +244,9 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
   return indices;
 }
 
-VocabStates _serialize_bert_encoder(const c10::intrusive_ptr<BERTEncoder>& self) {
-  
+VocabStates _serialize_bert_encoder(
+    const c10::intrusive_ptr<BERTEncoder>& self) {
   return _serialize_vocab(c10::make_intrusive<Vocab>(self->vocab_));
-
 }
 
 c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(VocabStates states) {
@@ -276,12 +273,8 @@ c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(VocabStates states) {
   if (integers.size() > 0) {
     default_index = integers[0];
   }
-  return c10::make_intrusive<BERTEncoder>(Vocab(std::move(strings), default_index));
-
-
+  return c10::make_intrusive<BERTEncoder>(
+      Vocab(std::move(strings), default_index));
 }
-
-  
-
 
 } // namespace torchtext

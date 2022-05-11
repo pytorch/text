@@ -6,12 +6,13 @@ namespace torchtext {
 
 typedef std::basic_string<uint32_t> UString;
 
-struct BERTEncoder:torch::CustomClassHolder {
+struct BERTEncoder : torch::CustomClassHolder {
   BERTEncoder(const std::string& vocab_file);
   BERTEncoder(Vocab vocab);
   std::vector<std::string> Tokenize(std::string text);
   std::vector<int64_t> Encode(std::string text);
   Vocab vocab_;
+
  protected:
   UString _clean(UString text);
   void _max_seg(std::string s, std::vector<std::string>& results);
@@ -23,6 +24,7 @@ struct BERTEncoder:torch::CustomClassHolder {
   static std::string kUnkToken;
 };
 
-VocabStates _serialize_bert_encoder(const c10::intrusive_ptr<BERTEncoder>& self);
+VocabStates _serialize_bert_encoder(
+    const c10::intrusive_ptr<BERTEncoder>& self);
 c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(VocabStates states);
 } // namespace torchtext
