@@ -91,15 +91,15 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     def _filter_fn(i, x):
         return f"{_PREFIX[split]}.{language_pair[i]}" in x[0]
 
-    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, i=0))
+    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, 0))
     src_cache_decompressed_dp = (
-        FileOpener(src_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, i=0))
+        FileOpener(src_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, 0))
     )
     src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, i=1))
+    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(filepath_fn=partial(_decompressed_filepath_fn, 1))
     tgt_cache_decompressed_dp = (
-        FileOpener(tgt_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, i=1))
+        FileOpener(tgt_cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, 1))
     )
     tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
