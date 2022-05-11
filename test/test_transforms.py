@@ -620,7 +620,6 @@ class TestBERTTokenizer(TorchtextTestCase):
             else:
                 self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
-
     @nested_params([True, False], [True, False])
     def test_bert_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
