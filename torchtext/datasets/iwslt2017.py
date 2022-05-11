@@ -103,7 +103,7 @@ DATASET_NAME = "IWSLT2017"
 # TODO: migrate this to dataset_utils.py once torchdata is a hard dependency to
 # avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
-    def _return_full_filepath():
+    def _return_full_filepath(_=None):
         return full_filepath
 
     def _filter_fn(x):
@@ -195,7 +195,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
         SUPPORTED_DATASETS["year"], src_language, tgt_language, valid_set, test_set
     )
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, _PATH)
 
     url_dp = IterableWrapper([URL])
@@ -217,7 +217,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
         "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo.tgz",
     )
 
-    def _inner_iwslt_tar_filepath_fn():
+    def _inner_iwslt_tar_filepath_fn(_=None):
         return inner_iwslt_tar
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_inner_iwslt_tar_filepath_fn)

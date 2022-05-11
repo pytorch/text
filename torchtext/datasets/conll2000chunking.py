@@ -55,10 +55,10 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, os.path.basename(URL[split]))
 
-    def _extracted_filepath_fn():
+    def _extracted_filepath_fn(_=None):
         return os.path.join(root, _EXTRACTED_FILES[split])
 
     url_dp = IterableWrapper([URL[split]])

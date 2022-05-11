@@ -61,10 +61,10 @@ def SST2(root, split):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, os.path.basename(URL))
 
-    def _extracted_filepath_fn():
+    def _extracted_filepath_fn(_=None):
         return os.path.join(root, _EXTRACTED_FILES[split])
 
     def _filter_fn(x):

@@ -124,7 +124,7 @@ DATASET_NAME = "IWSLT2016"
 # TODO: migrate this to dataset_utils.py once torchdata is a hard dependency to
 # avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
-    def _return_full_filepath():
+    def _return_full_filepath(_=None):
         return full_filepath
 
     def _filter_fn(x):
@@ -241,7 +241,7 @@ def IWSLT2016(
         SUPPORTED_DATASETS["year"], src_language, tgt_language, valid_set, test_set
     )
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, _PATH)
 
     url_dp = IterableWrapper([URL])
@@ -270,7 +270,7 @@ def IWSLT2016(
         + ".tgz"
     )
 
-    def _inner_iwslt_tar_filepath_fn():
+    def _inner_iwslt_tar_filepath_fn(_=None):
         return inner_iwslt_tar
 
     def _filter_fn(x):

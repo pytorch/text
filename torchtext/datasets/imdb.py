@@ -47,10 +47,10 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, _PATH)
 
-    def _decompressed_filepath_fn():
+    def _decompressed_filepath_fn(_=None):
         return [os.path.join(root, decompressed_folder, split, label) for label in labels]
 
     def _filter_fn(t):

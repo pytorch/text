@@ -151,7 +151,7 @@ def CC100(root: str, language_code: str = "en"):
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
-    def _filepath_fn():
+    def _filepath_fn(_=None):
         return os.path.join(root, os.path.basename(url))
 
     def _decompressed_filepath_fn(x):
