@@ -27,8 +27,8 @@ def QQP(root: str):
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
 
-    :returns: DataPipe that yields rows from CoLA dataset (idx (int), label (int), question1 (str), question2 (str))
-    :rtype: str
+    :returns: DataPipe that yields rows from CoLA dataset (label (int), question1 (str), question2 (str))
+    :rtype: (int, str, str)
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
@@ -44,5 +44,5 @@ def QQP(root: str):
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
     # some context stored at top of the file needs to be removed
-    parsed_data = cache_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda x: (int(x[0]), int(x[-1]), x[3], x[4]))
+    parsed_data = cache_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda x: (int(x[-1]), x[3], x[4]))
     return parsed_data
