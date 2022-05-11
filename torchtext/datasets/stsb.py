@@ -53,7 +53,7 @@ def STSB(root, split):
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`, `test`)
 
     :returns: DataPipe that yields tuple of (index (int), label (float), sentence1 (str), sentence2 (str))
-    :rtype: Union[(int, str), (str,)]
+    :rtype: (int, float, str, str)
     """
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):

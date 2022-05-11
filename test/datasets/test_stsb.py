@@ -25,11 +25,15 @@ def _get_mock_dataset(root_dir):
         with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
                 label = seed % 5 
-                rand_string = get_random_unicode(seed)
-                dataset_line = (label, label, rand_string, rand_string)
+                rand_string_1 = get_random_unicode(seed)
+                rand_string_2 = get_random_unicode(seed+1)
+                rand_string_3 = get_random_unicode(seed+2)
+                rand_string_4 = get_random_unicode(seed+3)
+                rand_string_5 = get_random_unicode(seed+4)
+                dataset_line = (i, label, rand_string_4, rand_string_5)
                 # append line to correct dataset split
                 mocked_data[name].append(dataset_line)
-                f.write(f'{rand_string}\t{rand_string}\t{rand_string}\t{label}\t{label}\t{rand_string}\t{rand_string}\n')
+                f.write(f'{rand_string_1}\t{rand_string_2}\t{rand_string_3}\t{i}\t{label}\t{rand_string_4}\t{rand_string_5}\n')
                 seed += 1
 
     compressed_dataset_path = os.path.join(base_dir, "Stsbenchmark.tar.gz")
