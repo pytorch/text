@@ -1,4 +1,5 @@
 import os
+import csv
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory, _wrap_split_argument
@@ -50,23 +51,38 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn(_=None):
+        return os.path.join(root, _PATH)
+
+    def _extracted_filepath_fn(_=None):
+        return os.path.join(root, _EXTRACTED_FILES[split])
+
+    def _filter_fn(x):
+        return _EXTRACTED_FILES[split] in x[0]
+
+    def _modify_res(t):
+        return (t[0], int(t[1]), t[3])
+
+    def _filter_res(x):
+        return len(x) == 4
+
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _PATH),
-        hash_dict={os.path.join(root, _PATH): MD5},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
+        filepath_fn=_extracted_filepath_fn
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(_filter_fn)
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # some context stored at top of the file needs to be removed
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").filter(lambda x: len(x) == 4).map(lambda t: (t[0], int(t[1]), t[3]))
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
     return parsed_data
