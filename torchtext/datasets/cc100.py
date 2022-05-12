@@ -151,18 +151,25 @@ def CC100(root: str, language_code: str = "en"):
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
 
+    def _filepath_fn(_=None):
+        return os.path.join(root, os.path.basename(url))
+
+    def _decompressed_filepath_fn(x):
+        return os.path.join(root, os.path.basename(x).rstrip(".xz"))
+
+    def _modify_res(x):
+        return language_code, x
+
     url = URL % language_code
     url_dp = IterableWrapper([url])
-    cache_compressed_dp = url_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, os.path.basename(url)))
+    cache_compressed_dp = url_dp.on_disk_cache(filepath_fn=_filepath_fn)
 
     cache_compressed_dp = HttpReader(cache_compressed_dp)
     cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(x).rstrip(".xz"))
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_decompressed_filepath_fn)
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_xz()
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8").readlines(return_path=False)
-    return data_dp.map(lambda x: (language_code, x))
+    return data_dp.map(_modify_res)
