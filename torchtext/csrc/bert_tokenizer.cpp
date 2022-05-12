@@ -80,34 +80,41 @@ static std::string _convert_from_unicode(const UString& text) {
   return ret;
 }
 
-static void _to_lower(UString& text) {
+static void to_lower(UString& text) {
   for (size_t i = 0; i < text.size(); i++) {
     text[i] = utf8proc_tolower(text[i]);
   }
 }
 
-BERTEncoder::BERTEncoder(const std::string& vocab_file, bool to_lower)
+BERTEncoder::BERTEncoder(
+    const std::string& vocab_file,
+    bool do_lower_case,
+    c10::optional<bool> strip_accents)
     : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {
-  to_lower_ = to_lower;
+  do_lower_case_ = do_lower_case;
+  strip_accents_ = strip_accents;
 }
 
-BERTEncoder::BERTEncoder(Vocab vocab, bool to_lower) : vocab_{vocab} {
-  to_lower_ = to_lower;
+BERTEncoder::BERTEncoder(
+    Vocab vocab,
+    bool do_lower_case,
+    c10::optional<bool> strip_accents)
+    : vocab_{vocab} {
+  do_lower_case_ = do_lower_case;
+  strip_accents_ = strip_accents;
 }
 
-UString BERTEncoder::_clean(UString text) {
+UString BERTEncoder::_clean(UString text, bool strip_accents) {
   /* This function combines:
-      * cleaning
-      * strip accents
-    If we later want to add option for optional accents stripping, this require
-    refactoring
-  */
+   * cleaning
+   * strip accents
+   */
   size_t len = text.size();
   UString ret;
   for (size_t i = 0; i < len; i++) {
     uint32_t c = text[i];
     if (c == 0 || c == 0xFFFD || _is_control(c) ||
-        utf8proc_category(c) == UTF8PROC_CATEGORY_MN) {
+        (utf8proc_category(c) == UTF8PROC_CATEGORY_MN && strip_accents)) {
       continue;
     }
     if (_is_whitespace(c)) {
@@ -197,29 +204,38 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
 
   // normalize
-  char* nfkcstr = reinterpret_cast<char*>(
-      utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
-  if (nfkcstr == nullptr) {
-    return {};
+
+  bool strip_accents = do_lower_case_;
+
+  if (strip_accents_.has_value()) {
+    strip_accents = strip_accents_.has_value();
   }
 
-  text.assign(nfkcstr, strlen(nfkcstr));
+  if (strip_accents) {
+    char* nfkcstr = reinterpret_cast<char*>(
+        utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
+    if (nfkcstr == nullptr) {
+      return {};
+    }
 
-  free(nfkcstr);
+    text.assign(nfkcstr, strlen(nfkcstr));
+
+    free(nfkcstr);
+  }
 
   // convert to unicode codepoints
   UString unicodes = _convert_to_unicode(text);
 
   // clean -> invalid character removal, whitespce cleanup, strip accents
-  unicodes = _clean(unicodes);
+  unicodes = _clean(unicodes, strip_accents);
 
   // Add whitespace in front/back of tokens to enable splitting based on
   // white-space Enables tokenization on chinese characters, Punctuations
   unicodes = _basic_tokenize(unicodes);
 
   // Convert text to lower-case
-  if (to_lower_)
-    _to_lower(unicodes);
+  if (do_lower_case_)
+    to_lower(unicodes);
 
   // Convert back to string from code-points
   std::string newtext = _convert_from_unicode(unicodes);
@@ -251,20 +267,17 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
 
 BERTEncoderStates _serialize_bert_encoder(
     const c10::intrusive_ptr<BERTEncoder>& self) {
-  return std::make_tuple(true, self->vocab_.itos_);
+  return std::make_tuple(
+      self->do_lower_case_, self->strip_accents_, self->vocab_.itos_);
 }
 
 c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
     BERTEncoderStates states) {
-  auto state_size = std::tuple_size<decltype(states)>::value;
-  TORCH_CHECK(
-      state_size == 2,
-      "Expected deserialized BERTEncoder to have 2 states but found " +
-          std::to_string(state_size) + " states");
-
-  auto to_lower = std::get<0>(states);
-  auto strings = std::get<1>(states);
-  return c10::make_intrusive<BERTEncoder>(Vocab(std::move(strings)), to_lower);
+  auto do_lower_case = std::get<0>(states);
+  auto strip_accents = std::get<1>(states);
+  auto strings = std::get<2>(states);
+  return c10::make_intrusive<BERTEncoder>(
+      Vocab(std::move(strings)), do_lower_case, strip_accents);
 }
 
 } // namespace torchtext

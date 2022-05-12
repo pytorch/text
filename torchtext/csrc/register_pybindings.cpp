@@ -217,7 +217,7 @@ PYBIND11_MODULE(_torchtext, m) {
           }));
 
   py::class_<BERTEncoder, c10::intrusive_ptr<BERTEncoder>>(m, "BERTEncoder")
-      .def(py::init<const std::string, bool>())
+      .def(py::init<const std::string, bool, c10::optional<bool>>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)
       .def(py::pickle(
