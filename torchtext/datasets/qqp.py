@@ -1,8 +1,7 @@
 import os
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import _create_dataset_directory, _wrap_split_argument
-from typing import Union, Tuple
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper
@@ -27,7 +26,7 @@ def QQP(root: str):
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
 
-    :returns: DataPipe that yields rows from CoLA dataset (label (int), question1 (str), question2 (str))
+    :returns: DataPipe that yields rows from QQP dataset (label (int), question1 (str), question2 (str))
     :rtype: (int, str, str)
     """
     if not is_module_available("torchdata"):
@@ -35,14 +34,20 @@ def QQP(root: str):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn(_=None):
+        return os.path.join(root, _PATH)
+
+    def _modify_res(x):
+        return (int(x[-1]), x[3], x[4])
+
     url_dp = IterableWrapper([URL])
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _PATH),
-        hash_dict={os.path.join(root, _PATH): MD5},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(): MD5},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
     # some context stored at top of the file needs to be removed
-    parsed_data = cache_dp.parse_csv(skip_lines=1, delimiter="\t").map(lambda x: (int(x[-1]), x[3], x[4]))
+    parsed_data = cache_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_res)
     return parsed_data
