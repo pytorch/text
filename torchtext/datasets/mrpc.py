@@ -46,7 +46,7 @@ def MRPC(root: str, split: Union[Tuple[str], str]):
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
 
-    :returns: DataPipe that yields data points from SQuaAD1 dataset which consist of label, sentence1, sentence2
+    :returns: DataPipe that yields data points from MRPC dataset which consist of label, sentence1, sentence2
     :rtype: (int, str, str)
     """
     if not is_module_available("torchdata"):
@@ -54,13 +54,19 @@ def MRPC(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
+    def _filepath_fn(x):
+        return os.path.join(root, os.path.basename(x))
+
+    def _modify_res(x):
+        return (int(x[0]), x[3], x[4])
+
     url_dp = IterableWrapper([URL[split]])
     # cache data on-disk with sanity check
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=_filepath_fn,
+        hash_dict={_filepath_fn(URL[split]): MD5[split]},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
-    return cache_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(lambda x: (int(x[0]), x[3], x[4]))
+    return cache_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
