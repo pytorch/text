@@ -539,12 +539,12 @@ class BERTTokenizer(Module):
     Transform for BERT Tokenizer.
     """
 
-    def __init__(self, vocab_path: str, to_lower: bool = True, return_tokens=False) -> None:
+    def __init__(self, vocab_path: str, do_lower_case: bool = True, return_tokens=False) -> None:
         super().__init__()
-        self.bert_model = BERTEncoderPyBind(vocab_path, to_lower)
+        self.bert_model = BERTEncoderPyBind(vocab_path, do_lower_case)
         self._return_tokens = return_tokens
         self._vocab_path = vocab_path
-        self._to_lower = to_lower
+        self._do_lower_case = do_lower_case
 
     @property
     def is_jitable(self):
@@ -609,7 +609,7 @@ class BERTTokenizer(Module):
 
         if not self.is_jitable:
             tokenizer_copy = deepcopy(self)
-            tokenizer_copy.bert_model = torch.classes.torchtext.BERTEncoder(self._vocab_path, self._to_lower)
+            tokenizer_copy.bert_model = torch.classes.torchtext.BERTEncoder(self._vocab_path, self._do_lower_case)
             return tokenizer_copy
 
         return self
