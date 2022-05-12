@@ -578,7 +578,7 @@ class TestCLIPTokenizer(TorchtextTestCase):
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
+        torch.save(torch.jit.script(tokenizer), tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._clip_tokenizer((loaded_tokenizer))
 
@@ -638,20 +638,17 @@ class TestBERTTokenizer(TorchtextTestCase):
         self._bert_tokenizer(self._load_tokenizer(test_scripting=test_scripting,
                              do_lower_case=do_lower_case, return_tokens=return_tokens), do_lower_case=do_lower_case)
 
-    def test_bert_tokenizer_save_load_pybind(self):
-        do_lower_case = True
-        tokenizer = self._load_tokenizer(test_scripting=False, do_lower_case=do_lower_case, return_tokens=False)
+    @nested_params([True, False], [True, False], [True, False])
+    def test_bert_tokenizer_save_load(self, test_scripting, do_lower_case, return_tokens):
+        tokenizer = self._load_tokenizer(test_scripting=test_scripting,
+                                         do_lower_case=do_lower_case, return_tokens=return_tokens)
         tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_pybind.pt")
-        torch.save(tokenizer, tokenizer_path)
-        loaded_tokenizer = torch.load(tokenizer_path)
-        self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)
+        if test_scripting:
+            torch.jit.save(tokenizer, tokenizer_path)
+            loaded_tokenizer = torch.jit.load(tokenizer_path)
+            self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)
+        else:
+            torch.save(tokenizer, tokenizer_path)
+            loaded_tokenizer = torch.load(tokenizer_path)
+            self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)
 
-    def test_bert_tokenizer_save_load_torchscript(self):
-        do_lower_case = True
-        tokenizer = self._load_tokenizer(test_scripting=False, do_lower_case=do_lower_case, return_tokens=False)
-        tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_torchscript.pt")
-        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
-        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
-        loaded_tokenizer = torch.load(tokenizer_path)
-        self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)

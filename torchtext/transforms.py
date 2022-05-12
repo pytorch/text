@@ -607,7 +607,6 @@ class BERTTokenizer(Module):
             raise TypeError("Input type not supported")
 
     def __prepare_scriptable__(self):
-
         if not self.is_jitable:
             tokenizer_copy = deepcopy(self)
             tokenizer_copy.bert_model = torch.classes.torchtext.BERTEncoder(self._vocab_path, self._do_lower_case, self._strip_accents)
