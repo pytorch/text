@@ -20,15 +20,15 @@ def _get_mock_dataset(root_dir):
     mocked_data = []
     print(txt_file)
     with open(txt_file, "w", encoding="utf-8") as f:
-        f.write(f"id\tqid1\tqid2\tquestion1\tquestion2\tis_duplicate\n")
+        f.write("id\tqid1\tqid2\tquestion1\tquestion2\tis_duplicate\n")
         for i in range(5):
             label = seed % 2
             rand_string_1 = get_random_unicode(seed)
-            rand_string_2 = get_random_unicode(seed+1)
+            rand_string_2 = get_random_unicode(seed + 1)
             dataset_line = (label, rand_string_1, rand_string_2)
             # append line to correct dataset split
             mocked_data.append(dataset_line)
-            f.write(f'{i}\t{i}\t{i}\t{rand_string_1}\t{rand_string_2}\t{label}\n')
+            f.write(f"{i}\t{i}\t{i}\t{rand_string_1}\t{rand_string_2}\t{label}\n")
             seed += 1
 
     return mocked_data
