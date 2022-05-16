@@ -1,4 +1,5 @@
 import os
+import random
 import tarfile
 from collections import defaultdict
 from unittest.mock import patch
@@ -24,17 +25,27 @@ def _get_mock_dataset(root_dir):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
-                label = seed % 5 
+                label = random.uniform(0, 5)
                 rand_string_1 = get_random_unicode(seed)
-                rand_string_2 = get_random_unicode(seed+1)
-                rand_string_3 = get_random_unicode(seed+2)
-                rand_string_4 = get_random_unicode(seed+3)
-                rand_string_5 = get_random_unicode(seed+4)
+                rand_string_2 = get_random_unicode(seed + 1)
+                rand_string_3 = get_random_unicode(seed + 2)
+                rand_string_4 = get_random_unicode(seed + 3)
+                rand_string_5 = get_random_unicode(seed + 4)
                 dataset_line = (i, label, rand_string_4, rand_string_5)
                 # append line to correct dataset split
                 mocked_data[name].append(dataset_line)
-                f.write(f'{rand_string_1}\t{rand_string_2}\t{rand_string_3}\t{i}\t{label}\t{rand_string_4}\t{rand_string_5}\n')
+                f.write(
+                    f"{rand_string_1}\t{rand_string_2}\t{rand_string_3}\t{i}\t{label}\t{rand_string_4}\t{rand_string_5}\n"
+                )
                 seed += 1
+            # case with quotes to test arg `quoting=csv.QUOTE_NONE`
+            dataset_line = (i, label, rand_string_4, rand_string_5)
+            # append line to correct dataset split
+            mocked_data[name].append(dataset_line)
+            f.write(
+                f'{rand_string_1}"\t"{rand_string_2}\t{rand_string_3}\t{i}\t{label}\t{rand_string_4}\t{rand_string_5}\n'
+            )
+
 
     compressed_dataset_path = os.path.join(base_dir, "Stsbenchmark.tar.gz")
     # create tar file from dataset folder

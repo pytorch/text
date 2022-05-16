@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -81,14 +81,10 @@ def STSB(root, split):
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=_extracted_filepath_fn
-    )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(_filter_fn)
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(delimiter='\t', quoting=csv.QUOTE_NONE).map(_modify_res)
+    parsed_data = data_dp.parse_csv(delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
     return parsed_data
