@@ -142,8 +142,8 @@ def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename
         filepath_fn=partial(_return_full_filepath, full_filepath)
     )
     cache_inner_decompressed_dp = cache_inner_decompressed_dp.open_files(mode="b").load_from_tar()
-    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(partial(uncleaned_filename, _filter_file_name_fn))
-    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(partial(full_filepath, _clean_files_wrapper))
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(partial(_filter_file_name_fn, uncleaned_filename))
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(partial(_clean_files_wrapper, full_filepath))
     cache_inner_decompressed_dp = cache_inner_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
     return cache_inner_decompressed_dp
 
