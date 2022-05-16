@@ -578,7 +578,7 @@ class TestCLIPTokenizer(TorchtextTestCase):
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
         # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-        torch.save(torch.jit.script(tokenizer), tokenizer_path)
+        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._clip_tokenizer((loaded_tokenizer))
 
