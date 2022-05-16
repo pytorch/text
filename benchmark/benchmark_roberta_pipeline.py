@@ -3,14 +3,42 @@ from functools import partial
 from typing import Dict, Any
 
 import torcharrow as ta
+import torcharrow._torcharrow as _ta
+import json
+from torchtext.utils import get_asset_local_path
 import torcharrow.dtypes as dt
 import torcharrow.pytorch as tap
 import torchtext.functional as F
 import torchtext.transforms as T
+from torcharrow import functional as ta_F
 from benchmark.utils import Timer
 from torch.hub import load_state_dict_from_url
 from torch.nn import Module
 from torchtext.datasets import DATASETS
+
+
+def init_bpe_encoder():
+    encoder_json_path = "https://download.pytorch.org/models/text/gpt2_bpe_encoder.json"
+    vocab_bpe_path = "https://download.pytorch.org/models/text/gpt2_bpe_vocab.bpe"
+    encoder_json_path = get_asset_local_path(encoder_json_path)
+    vocab_bpe_path = get_asset_local_path(vocab_bpe_path)
+    _seperator = "\u0001"
+
+    # load bpe encoder and bpe decoder
+    with open(encoder_json_path, "r", encoding="utf-8") as f:
+        bpe_encoder = json.load(f)
+    # load bpe vocab
+    with open(vocab_bpe_path, "r", encoding="utf-8") as f:
+        bpe_vocab = f.read()
+    bpe_merge_ranks = {
+        _seperator.join(merge_pair.split()): i
+        for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+    }
+    # Caching is enabled in Eager mode
+    bpe = _ta.GPT2BPEEncoder(
+        bpe_encoder, bpe_merge_ranks, _seperator, T.bytes_to_unicode(), True
+    )
+    return bpe
 
 
 class RobertaTransformDataPipe(Module):
@@ -53,6 +81,8 @@ class RobertaTransformDataFrame(Module):
         vocab_bpe_path = "https://download.pytorch.org/models/text/gpt2_bpe_vocab.bpe"
         self.tokenizer = T.GPT2BPETokenizer(encoder_json_path, vocab_bpe_path)
 
+        # self.tokenizer = init_bpe_encoder()
+
         # vocabulary converting tokens to IDs
         vocab_path = "https://download.pytorch.org/models/text/roberta.vocab.pt"
         self.vocab = T.VocabTransform(load_state_dict_from_url(vocab_path))
@@ -65,7 +95,9 @@ class RobertaTransformDataFrame(Module):
 
     def forward(self, input: ta.DataFrame) -> ta.DataFrame:
         input["tokens"] = input["text"].transform(self.tokenizer, dtype=dt.List(dt.string), format="python")
+        input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
         input["tokens"] = input["tokens"].list.slice(stop=254)
+        input["tokens"] = input["tokens"].map(lambda x: [str(i) for i in input], dtype=dt.List(dt.string))
         input["tokens"] = input["tokens"].transform(self.vocab, dtype=dt.List(dt.int32), format="python")
         input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
         input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
@@ -119,14 +151,14 @@ def benchmark_roberta_dataframe(args):
         # Apply transformation on DataFrame
         train_dp = train_dp.map(transform)
 
-        # Remove not required columns
-        train_dp = train_dp.map(lambda x: x.drop(["text"]))
+        # # Remove not required columns
+        # train_dp = train_dp.map(lambda x: x.drop(["text"]))
 
-        # convert DataFrame to tensor (This will yeild named tuple)
-        train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
+        # # convert DataFrame to tensor (This will yeild named tuple)
+        # train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
 
     with Timer("Execute Pipeline"):
-        list(train_dp)
+        list(train_dp.header(1))
 
 
 if __name__ == "__main__":
