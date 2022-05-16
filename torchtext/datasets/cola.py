@@ -44,7 +44,7 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
 
 
     :returns: DataPipe that yields rows from CoLA dataset (source (str), label (int), sentence (str))
-    :rtype: str
+    :rtype: (str, int, str)
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
