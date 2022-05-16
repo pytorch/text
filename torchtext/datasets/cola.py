@@ -1,9 +1,9 @@
-import os
 import csv
+import os
+from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory, _wrap_split_argument
-from typing import Union, Tuple
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper
@@ -33,8 +33,8 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
 
     For additional details refer to https://nyu-mll.github.io/CoLA/
 
-    Number of lines per split: 
-        - train: 8551 
+    Number of lines per split:
+        - train: 8551
         - dev: 527
         - test: 516
 
@@ -74,15 +74,13 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=_extracted_filepath_fn
-    )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(_filter_fn)
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # some context stored at top of the file needs to be removed
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
+    parsed_data = (
+        data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
+    )
     return parsed_data

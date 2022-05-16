@@ -26,7 +26,7 @@ def _get_mock_dataset(root_dir):
             for _ in range(5):
                 label = seed % 2
                 rand_string_1 = get_random_unicode(seed)
-                rand_string_2 = get_random_unicode(seed+1)
+                rand_string_2 = get_random_unicode(seed + 1)
                 dataset_line = (rand_string_1, label, rand_string_2)
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
