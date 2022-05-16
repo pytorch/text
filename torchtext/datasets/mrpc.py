@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
