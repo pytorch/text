@@ -42,7 +42,7 @@ class SentencePieceTokenizer(Module):
     :type sp_model_path: str
 
     Example
-        >>> from torchtext.transforms import SpmTokenizerTransform
+        >>> from torchtext.transforms import SentencePieceTokenizer
         >>> transform = SentencePieceTokenizer("spm_model")
         >>> transform(["hello world", "attention is all you need!"])
     """
