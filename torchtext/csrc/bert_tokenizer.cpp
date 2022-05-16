@@ -104,7 +104,7 @@ BERTEncoder::BERTEncoder(
   strip_accents_ = strip_accents;
 }
 
-UString BERTEncoder::_clean(UString text, bool strip_accents) {
+UString BERTEncoder::_clean(const UString& text, bool strip_accents) {
   /* This function combines:
    * cleaning
    * strip accents
@@ -127,7 +127,7 @@ UString BERTEncoder::_clean(UString text, bool strip_accents) {
 }
 
 void BERTEncoder::split_(
-    std::string& str,
+    const std::string& str,
     std::vector<std::string>& tokens,
     const char& delimiter) {
   std::stringstream ss(str);
@@ -140,7 +140,9 @@ void BERTEncoder::split_(
   }
 }
 
-void BERTEncoder::_max_seg(std::string s, std::vector<std::string>& results) {
+void BERTEncoder::_max_seg(
+    const std::string& s,
+    std::vector<std::string>& results) {
   int end = s.size();
   int start = 0;
   std::vector<std::string> sub_tokens;
@@ -169,7 +171,7 @@ void BERTEncoder::_max_seg(std::string s, std::vector<std::string>& results) {
   }
 }
 
-UString BERTEncoder::_basic_tokenize(UString text) {
+UString BERTEncoder::_basic_tokenize(const UString& text) {
   /*
   This function enables white space based tokenization for following:
     * chinese character

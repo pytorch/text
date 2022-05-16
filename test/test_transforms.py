@@ -608,16 +608,32 @@ class TestBERTTokenizer(TorchtextTestCase):
         ]
 
         if do_lower_case:
-            expected_tokens = [['hello', 'world', '!', ',', 'how', 'are', 'you', '?'], ['hello', 'world', '¿'], [
-                'res', '##pu', '##bl', '##ica', 'superior', '##em'], ['av', '##di', '##ja', 'vr', '##sa', '##jevic', 'in']]
-            expected_token_ids = [['7592', '2088', '999', '1010', '2129', '2024', '2017', '1029'], ['7592', '2088', '1094'], [
-                '24501', '14289', '16558', '5555', '6020', '6633'], ['20704', '4305', '3900', '27830', '3736', '26782', '1999']]
+            expected_tokens = [
+                ["hello", "world", "!", ",", "how", "are", "you", "?"],
+                ["hello", "world", "¿"],
+                ["res", "##pu", "##bl", "##ica", "superior", "##em"],
+                ["av", "##di", "##ja", "vr", "##sa", "##jevic", "in"],
+            ]
+            expected_token_ids = [
+                ["7592", "2088", "999", "1010", "2129", "2024", "2017", "1029"],
+                ["7592", "2088", "1094"],
+                ["24501", "14289", "16558", "5555", "6020", "6633"],
+                ["20704", "4305", "3900", "27830", "3736", "26782", "1999"],
+            ]
 
         else:
-            expected_tokens = [['Hello', 'World', '!', ',', 'how', 'are', 'you', '?'], ['H', '##é', '##ll', '##ó', '[UNK]', '¿'], [
-                'Re', '##sp', '##ub', '##lica', 'superior', '##em'], ['A', '##v', '##di', '##ja', 'V', '##r', '##ša', '##je', '##vić', 'î', '##n']]
-            expected_token_ids = [['8667', '1291', '106', '117', '1293', '1132', '1128', '136'], ['145', '2744', '2339', '7774', '100', '225'], [
-                '11336', '20080', '10354', '9538', '7298', '5521'], ['138', '1964', '3309', '3174', '159', '1197', '23834', '5561', '10225', '260', '1179']]
+            expected_tokens = [
+                ["Hello", "World", "!", ",", "how", "are", "you", "?"],
+                ["H", "##é", "##ll", "##ó", "[UNK]", "¿"],
+                ["Re", "##sp", "##ub", "##lica", "superior", "##em"],
+                ["A", "##v", "##di", "##ja", "V", "##r", "##ša", "##je", "##vić", "î", "##n"],
+            ]
+            expected_token_ids = [
+                ["8667", "1291", "106", "117", "1293", "1132", "1128", "136"],
+                ["145", "2744", "2339", "7774", "100", "225"],
+                ["11336", "20080", "10354", "9538", "7298", "5521"],
+                ["138", "1964", "3309", "3174", "159", "1197", "23834", "5561", "10225", "260", "1179"],
+            ]
 
         # test batch of sentences
         if tokenizer._return_tokens:
@@ -635,13 +651,18 @@ class TestBERTTokenizer(TorchtextTestCase):
     @nested_params([True, False], [True, False], [True, False])
     def test_bert_tokenizer(self, test_scripting, do_lower_case, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._bert_tokenizer(self._load_tokenizer(test_scripting=test_scripting,
-                             do_lower_case=do_lower_case, return_tokens=return_tokens), do_lower_case=do_lower_case)
+        self._bert_tokenizer(
+            self._load_tokenizer(
+                test_scripting=test_scripting, do_lower_case=do_lower_case, return_tokens=return_tokens
+            ),
+            do_lower_case=do_lower_case,
+        )
 
     @nested_params([True, False], [True, False], [True, False])
     def test_bert_tokenizer_save_load(self, test_scripting, do_lower_case, return_tokens):
-        tokenizer = self._load_tokenizer(test_scripting=test_scripting,
-                                         do_lower_case=do_lower_case, return_tokens=return_tokens)
+        tokenizer = self._load_tokenizer(
+            test_scripting=test_scripting, do_lower_case=do_lower_case, return_tokens=return_tokens
+        )
         tokenizer_path = os.path.join(self.test_dir, "bert_tokenizer_pybind.pt")
         if test_scripting:
             torch.jit.save(tokenizer, tokenizer_path)
@@ -651,4 +672,3 @@ class TestBERTTokenizer(TorchtextTestCase):
             torch.save(tokenizer, tokenizer_path)
             loaded_tokenizer = torch.load(tokenizer_path)
             self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)
-

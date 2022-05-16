@@ -25,11 +25,11 @@ struct BERTEncoder : torch::CustomClassHolder {
   c10::optional<bool> strip_accents_ = {};
 
  protected:
-  UString _clean(UString text, bool strip_accents);
-  void _max_seg(std::string s, std::vector<std::string>& results);
-  UString _basic_tokenize(UString text);
+  UString _clean(const UString& text, bool strip_accents);
+  void _max_seg(const std::string& s, std::vector<std::string>& results);
+  UString _basic_tokenize(const UString& text);
   void split_(
-      std::string& str,
+      const std::string& str,
       std::vector<std::string>& tokens,
       const char& delimiter = ' ');
   static std::string kUnkToken;
