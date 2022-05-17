@@ -52,6 +52,11 @@ IMDb
 
 .. autofunction:: IMDB
 
+QQP
+~~~~
+
+.. autofunction:: QQP
+
 SogouNews
 ~~~~~~~~~
 
