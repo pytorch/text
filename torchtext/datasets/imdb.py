@@ -53,6 +53,13 @@ def _modify_res(t):
     return Path(t[0]).parts[-1], t[1]
 
 
+def filter_imdb_data(key, fname):
+    labels = {"neg", "pos"}
+    # eg. fname = "aclImdb/train/neg/12416_3.txt"
+    *_, split, label, file = Path(fname).parts
+    return key == split and label in labels
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
@@ -92,12 +99,6 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
     cache_decompressed_dp = cache_decompressed_dp.load_from_tar()
-
-    def filter_imdb_data(key, fname):
-        # eg. fname = "aclImdb/train/neg/12416_3.txt"
-        *_, split, label, file = Path(fname).parts
-        return key == split and label in labels
-
     cache_decompressed_dp = cache_decompressed_dp.filter(partial(_filter_fn, filter_imdb_data, split))
 
     # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"
