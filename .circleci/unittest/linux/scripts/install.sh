@@ -5,7 +5,7 @@ unset PYTORCH_VERSION
 # so no need to set PYTORCH_VERSION.
 # In fact, keeping PYTORCH_VERSION forces us to hardcode PyTorch version in config.
 
-set -e
+set -ex
 
 case "$(uname -s)" in
     Darwin*) os=MacOSX;;
