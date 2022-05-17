@@ -274,4 +274,4 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
     src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
     tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
 
-    return src_lines.zip(tgt_lines)
+    return src_lines.zip(tgt_lines).shuffle().set_shuffle(False).sharding_filter()
