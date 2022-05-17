@@ -20,9 +20,11 @@ static bool _is_control(uint32_t c) {
   }
   utf8proc_category_t cat = utf8proc_category(c);
 
-  // unicodedata return 'Cn' whereas utf8proc return 'Lo' for following unicode point
-  // Explicitly checking for this unicode point to avoid above discrepency. 
-  if(c==3332) return true;
+  // unicodedata return 'Cn' whereas utf8proc return 'Lo' for following unicode
+  // point Explicitly checking for this unicode point to avoid above
+  // discrepency.
+  if (c == 3332)
+    return true;
   // Fixed: HF referece: All categories starting with 'C'
   return (
       cat == UTF8PROC_CATEGORY_CC || cat == UTF8PROC_CATEGORY_CF ||
