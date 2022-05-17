@@ -52,6 +52,11 @@ IMDb
 
 .. autofunction:: IMDB
 
+RTE
+~~~~
+
+.. autofunction:: RTE
+
 SogouNews
 ~~~~~~~~~
 
