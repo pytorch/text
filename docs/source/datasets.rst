@@ -62,6 +62,11 @@ SST2
 
 .. autofunction:: SST2
 
+STSB
+~~~~
+
+.. autofunction:: STSB
+
 YahooAnswers
 ~~~~~~~~~~~~
 
