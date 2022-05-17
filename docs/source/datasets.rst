@@ -52,6 +52,11 @@ IMDb
 
 .. autofunction:: IMDB
 
+MRPC
+~~~~
+
+.. autofunction:: MRPC
+
 SogouNews
 ~~~~~~~~~
 
