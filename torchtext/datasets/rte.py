@@ -71,7 +71,7 @@ def RTE(root, split):
         return _EXTRACTED_FILES[split] in x[0]
 
     def _modify_res(x):
-        if split == 'test':
+        if split == "test":
             return (x[1], x[2])
         else:
             return (int(x[3]), x[1], x[2])
@@ -84,12 +84,8 @@ def RTE(root, split):
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=_extracted_filepath_fn
-    )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(_filter_fn)
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")

@@ -23,11 +23,11 @@ def _get_mock_dataset(root_dir):
     for file_name in ("train.tsv", "test.tsv", "dev.tsv"):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w", encoding="utf-8") as f:
-            f.write(f"index\tsentence1\tsentence2\tlabel\n")
+            f.write("index\tsentence1\tsentence2\tlabel\n")
             for i in range(5):
                 label = seed % 2
                 rand_string_1 = get_random_unicode(seed)
-                rand_string_2 = get_random_unicode(seed+1)
+                rand_string_2 = get_random_unicode(seed + 1)
                 if file_name == "test.tsv":
                     dataset_line = (rand_string_1, rand_string_2)
                     f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\n")
