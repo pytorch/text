@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -31,6 +32,14 @@ _EXTRACTED_FILES = {"train": "train.txt", "test": "test.txt"}
 DATASET_NAME = "CoNLL2000Chunking"
 
 
+def _filepath_fn(root, split, _=None):
+    return os.path.join(root, os.path.basename(URL[split]))
+
+
+def _extracted_filepath_fn(root, split, _=None):
+    return os.path.join(root, _EXTRACTED_FILES[split])
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
@@ -59,18 +68,16 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
 
     # Cache and check HTTP response
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(URL[split])),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=partial(_filepath_fn, root, split),
+        hash_dict={_filepath_fn(root, split): MD5[split]},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     # Cache and check the gzip extraction for relevant split
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, split))
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").extract(file_type="gzip")
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    return data_dp.readlines().read_iob(sep=" ")
+    return data_dp.readlines().read_iob(sep=" ").shuffle().set_shuffle(False).sharding_filter()
