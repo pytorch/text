@@ -83,4 +83,4 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
     parsed_data = (
         data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
     )
-    return parsed_data
+    return parsed_data.shuffle().set_shuffle(False).sharding_filter()
