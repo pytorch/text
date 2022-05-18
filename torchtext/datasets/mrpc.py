@@ -1,4 +1,5 @@
 import csv
+from functools import cache
 import os
 from typing import Union, Tuple
 
@@ -69,4 +70,5 @@ def MRPC(root: str, split: Union[Tuple[str], str]):
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
-    return cache_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
+    cache_dp = cache_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
+    return cache_dp.shuffle().set_shuffle(False).sharding_filter()
