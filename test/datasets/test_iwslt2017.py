@@ -72,6 +72,7 @@ def _generate_uncleaned_test():
 
 
 def _generate_uncleaned_contents(split):
+    random.seed(1)
     return {
         "train": _generate_uncleaned_train(),
         "valid": _generate_uncleaned_valid(),

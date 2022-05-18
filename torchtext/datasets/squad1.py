@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -8,8 +9,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
     "train": "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
@@ -28,6 +29,10 @@ NUM_LINES = {
 
 
 DATASET_NAME = "SQuAD1"
+
+
+def _filepath_fn(root, split, _=None):
+    return os.path.join(root, os.path.basename(URL[split]))
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -56,10 +61,10 @@ def SQuAD1(root: str, split: Union[Tuple[str], str]):
     url_dp = IterableWrapper([URL[split]])
     # cache data on-disk with sanity check
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=partial(_filepath_fn, root, split),
+        hash_dict={_filepath_fn(root, split): MD5[split]},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
-    return cache_dp.parse_json_files().read_squad()
+    return cache_dp.parse_json_files().read_squad().shuffle().set_shuffle(False).sharding_filter()
