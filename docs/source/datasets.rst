@@ -62,6 +62,11 @@ MRPC
 
 .. autofunction:: MRPC
 
+QQP
+~~~~
+
+.. autofunction:: QQP
+
 SogouNews
 ~~~~~~~~~
 
