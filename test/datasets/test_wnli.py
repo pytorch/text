@@ -27,7 +27,7 @@ def _get_mock_dataset(root_dir):
             for i in range(5):
                 label = seed % 2
                 rand_string_1 = get_random_unicode(seed)
-                rand_string_2 = get_random_unicode(seed+1)
+                rand_string_2 = get_random_unicode(seed + 1)
                 if file_name == "test.tsv":
                     dataset_line = (rand_string_1, rand_string_2)
                     f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\n")

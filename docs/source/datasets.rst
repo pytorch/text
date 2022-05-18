@@ -65,7 +65,7 @@ SST2
 WNLI
 ~~~~
 
-.. autofunction:: WNLI    
+.. autofunction:: WNLI
 
 YahooAnswers
 ~~~~~~~~~~~~
