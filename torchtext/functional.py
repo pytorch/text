@@ -8,6 +8,7 @@ __all__ = [
     "to_tensor",
     "truncate",
     "add_token",
+    "str_to_int",
 ]
 
 
@@ -107,6 +108,31 @@ def add_token(input: Any, token_id: Any, begin: bool = True) -> Any:
             for ids in input:
                 output.append(ids + [token_id])
 
+        return output
+    else:
+        raise TypeError("Input type not supported")
+
+
+def str_to_int(input: Any) -> Any:
+    """Convert string tokens to integers (either single sequence or batch).
+
+    :param input: Input sequence or batch
+    :type input: Union[List[str], List[List[str]]]
+    :return: Sequence or batch of string tokens converted to integers
+    :rtype: Union[List[int], List[List[int]]]
+    """
+    if torch.jit.isinstance(input, List[str]):
+        output: List[int] = []
+        for element in input:
+            output.append(int(element))
+        return output
+    if torch.jit.isinstance(input, List[List[str]]):
+        output: List[List[int]] = []
+        for ids in input:
+            current: List[int] = []
+            for element in ids:
+                current.append(int(element))
+            output.append(current)
         return output
     else:
         raise TypeError("Input type not supported")

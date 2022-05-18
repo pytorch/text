@@ -279,6 +279,17 @@ std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
   return bpe_token_ids;
 }
 
+std::vector<std::string> GPT2BPEEncoder::Tokenize(const std::string& text) {
+  std::vector<std::string> bpe_tokens;
+  for (const auto& token : PreTokenize_(text)) {
+    auto byte_encoded_token = ByteEncode_(token);
+    for (const auto& bpe_token : BPE_(byte_encoded_token)) {
+      bpe_tokens.push_back(bpe_token);
+    }
+  }
+  return bpe_tokens;
+}
+
 std::unordered_map<std::string, int64_t> GPT2BPEEncoder::GetBPEEncoder() const {
   return _c10_dict_to_map(bpe_encoder_);
 }

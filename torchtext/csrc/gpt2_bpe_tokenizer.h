@@ -98,6 +98,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   //  --> result --> [707, 5927, 11, 707, 68]
   //
   std::vector<int64_t> Encode(const std::string& text);
+  std::vector<std::string> Tokenize(const std::string& text);
 
   std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
   std::unordered_map<std::string, int64_t> GetBPEMergeRanks() const;
