@@ -50,4 +50,4 @@ def QQP(root: str):
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
     # some context stored at top of the file needs to be removed
     parsed_data = cache_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_res)
-    return parsed_data
+    return parsed_data.shuffle().set_shuffle(False).sharding_filter()
