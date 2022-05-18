@@ -88,4 +88,4 @@ def YahooAnswers(root: str, split: Union[Tuple[str], str]):
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
 
-    return data_dp.parse_csv().map(_modify_res)
+    return data_dp.parse_csv().map(_modify_res).shuffle().set_shuffle(False).sharding_filter()

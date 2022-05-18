@@ -59,4 +59,4 @@ def EnWik9(root: str):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    return data_dp.readlines(return_path=False)
+    return data_dp.readlines(return_path=False).shuffle().set_shuffle(False).sharding_filter()

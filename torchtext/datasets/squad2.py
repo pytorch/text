@@ -68,4 +68,4 @@ def SQuAD2(root: str, split: Union[Tuple[str], str]):
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, encoding="utf-8")
-    return cache_dp.parse_json_files().read_squad()
+    return cache_dp.parse_json_files().read_squad().shuffle().set_shuffle(False).sharding_filter()
