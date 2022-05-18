@@ -42,6 +42,11 @@ AmazonReviewPolarity
 
 .. autofunction:: AmazonReviewPolarity
 
+CoLA
+~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: CoLA
+
 DBpedia
 ~~~~~~~
 
@@ -56,6 +61,16 @@ MNLI
 ~~~~
 
 .. autofunction:: MNLI
+
+MRPC
+~~~~
+
+.. autofunction:: MRPC
+
+QQP
+~~~~
+
+.. autofunction:: QQP
 
 SogouNews
 ~~~~~~~~~
