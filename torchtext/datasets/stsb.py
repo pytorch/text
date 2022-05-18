@@ -87,4 +87,4 @@ def STSB(root, split):
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     parsed_data = data_dp.parse_csv(delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
-    return parsed_data
+    return parsed_data.shuffle().set_shuffle(False).sharding_filter()
