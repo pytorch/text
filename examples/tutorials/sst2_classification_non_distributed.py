@@ -116,14 +116,14 @@ dev_dataloader = DataLoader(dev_datapipe, batch_size=None)
 #
 # ::
 #
-# def batch_transform(x):
-#     return {"token_ids": text_transform(x["text"]), "target": x["label"]}
+#   def batch_transform(x):
+#       return {"token_ids": text_transform(x["text"]), "target": x["label"]}
 #
 #
-# train_datapipe = train_datapipe.batch(batch_size).rows2columnar(["text", "label"])
-# train_datapipe = train_datapipe.map(lambda x: batch_transform)
-# dev_datapipe = dev_datapipe.batch(batch_size).rows2columnar(["text", "label"])
-# dev_datapipe = dev_datapipe.map(lambda x: batch_transform)
+#   train_datapipe = train_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+#   train_datapipe = train_datapipe.map(lambda x: batch_transform)
+#   dev_datapipe = dev_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+#   dev_datapipe = dev_datapipe.map(lambda x: batch_transform)
 #
 
 ######################################################################
