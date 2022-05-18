@@ -46,7 +46,6 @@ def _get_mock_dataset(root_dir):
                 f'{rand_string_1}"\t"{rand_string_2}\t{rand_string_3}\t{i}\t{label}\t{rand_string_4}\t{rand_string_5}\n'
             )
 
-
     compressed_dataset_path = os.path.join(base_dir, "Stsbenchmark.tar.gz")
     # create tar file from dataset folder
     with tarfile.open(compressed_dataset_path, "w:gz") as tar:
