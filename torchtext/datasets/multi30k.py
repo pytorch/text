@@ -121,4 +121,4 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         return_path=False, strip_newline=True
     )
 
-    return src_data_dp.zip(tgt_data_dp)
+    return src_data_dp.zip(tgt_data_dp).shuffle().set_shuffle(False).sharding_filter()

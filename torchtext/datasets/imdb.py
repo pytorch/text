@@ -112,4 +112,4 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # get label from cache file, eg. "aclImdb_v1/train/neg" -> "neg"
-    return data_dp.readlines().map(_modify_res)
+    return data_dp.readlines().map(_modify_res).shuffle().set_shuffle(False).sharding_filter()

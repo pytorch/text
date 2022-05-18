@@ -176,4 +176,4 @@ def CC100(root: str, language_code: str = "en"):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8").readlines(return_path=False)
-    return data_dp.map(partial(_modify_res, language_code))
+    return data_dp.map(partial(_modify_res, language_code)).shuffle().set_shuffle(False).sharding_filter()

@@ -75,4 +75,4 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
 
     data_dp = FileOpener(cache_dp, encoding="utf-8")
     # remove single leading and trailing space from the dataset
-    return data_dp.readlines(return_path=False).map(_modify_res)
+    return data_dp.readlines(return_path=False).map(_modify_res).shuffle().set_shuffle(False).sharding_filter()
