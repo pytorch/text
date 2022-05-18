@@ -42,6 +42,11 @@ AmazonReviewPolarity
 
 .. autofunction:: AmazonReviewPolarity
 
+CoLA
+~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: CoLA
+
 DBpedia
 ~~~~~~~
 
