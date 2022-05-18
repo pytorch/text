@@ -57,6 +57,11 @@ IMDb
 
 .. autofunction:: IMDB
 
+MNLI
+~~~~
+
+.. autofunction:: MNLI
+
 MRPC
 ~~~~
 
