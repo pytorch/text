@@ -1,6 +1,6 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-import os
 import csv
+import os
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -36,11 +36,8 @@ _EXTRACTED_FILES = {
     "dev_mismatched": "multinli_1.0_dev_mismatched.txt",
 }
 
-LABEL_TO_INT = {
-    "entailment": 0,
-    "neutral": 1,
-    "contradiction": 2
-}
+LABEL_TO_INT = {"entailment": 0, "neutral": 1, "contradiction": 2}
+
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev_matched", "dev_mismatched"))
@@ -90,14 +87,12 @@ def MNLI(root, split):
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=_extracted_filepath_fn
-    )
-    cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(_filter_fn)
-    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(_filter_fn)
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
+    parsed_data = (
+        data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
+    )
     return parsed_data.shuffle().set_shuffle(False).sharding_filter()

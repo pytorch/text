@@ -20,10 +20,7 @@ def _get_mock_dataset(root_dir):
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name in [
-        "multinli_1.0_train.txt", "multinli_1.0_dev_matched.txt", 
-        "multinli_1.0_dev_mismatched.txt"
-    ]:
+    for file_name in ["multinli_1.0_train.txt", "multinli_1.0_dev_matched.txt", "multinli_1.0_dev_mismatched.txt"]:
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w", encoding="utf-8") as f:
             f.write(
@@ -33,7 +30,9 @@ def _get_mock_dataset(root_dir):
                 label = seed % 3
                 rand_string = get_random_unicode(seed)
                 dataset_line = (label, rand_string, rand_string)
-                f.write(f"{label}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\n")
+                f.write(
+                    f"{label}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{rand_string}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\t{i}\n"
+                )
 
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
@@ -42,8 +41,7 @@ def _get_mock_dataset(root_dir):
     compressed_dataset_path = os.path.join(base_dir, "multinli_1.0.zip")
     # create zip file from dataset folder
     with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
-        for file_name in ("multinli_1.0_train.txt", "multinli_1.0_dev_matched.txt", 
-        "multinli_1.0_dev_mismatched.txt"):
+        for file_name in ("multinli_1.0_train.txt", "multinli_1.0_dev_matched.txt", "multinli_1.0_dev_mismatched.txt"):
             txt_file = os.path.join(temp_dataset_dir, file_name)
             zip_file.write(txt_file, arcname=os.path.join("multinli_1.0", file_name))
 
