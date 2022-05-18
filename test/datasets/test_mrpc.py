@@ -33,7 +33,6 @@ def _get_mock_dataset(root_dir):
                 mocked_data[file_type].append(dataset_line)
                 seed += 1
 
-    print(mocked_data)
     return mocked_data
 
 
@@ -60,10 +59,7 @@ class TestMRPC(TempDirMixin, TorchtextTestCase):
 
         samples = list(dataset)
         expected_samples = self.samples[split]
-        print(len(samples), len(expected_samples))
         for sample, expected_sample in zip_equal(samples, expected_samples):
-            print(sample)
-            print(expected_sample)
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test"])
