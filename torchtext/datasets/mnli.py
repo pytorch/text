@@ -95,7 +95,7 @@ def MNLI(root, split):
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root))
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(partial(_filter_fn, split))
+        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(partial(_filter_fn, split))
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 

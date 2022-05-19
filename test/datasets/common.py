@@ -10,8 +10,8 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDatasetPickling(TorchtextTestCase):
-    @parameterized.expand(list(DATASETS.items()))
-    def test_pickling(self, dataset_name, dataset_fn):
+    @parameterized.expand([(f,) for f in DATASETS.values()])
+    def test_pickling(self, dataset_fn):
         dp = dataset_fn()
         if type(dp) == tuple:
             dp = list(dp)
