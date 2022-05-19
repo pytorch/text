@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220513) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220519) &#x25BC</a>
     </div>
     
 
@@ -319,6 +319,7 @@
               
   <h1>Source code for torchtext.datasets.cc100</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -455,6 +456,18 @@
 <span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;CC100&quot;</span>
 
 
+<span class="k">def</span> <span class="nf">_filepath_fn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_decompressed_filepath_fn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.xz&quot;</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_modify_res</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">language_code</span><span class="p">,</span> <span class="n">x</span>
+
+
 <div class="viewcode-block" id="CC100"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CC100">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">CC100</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;CC100 Dataset</span>
@@ -471,28 +484,19 @@
     <span class="k">if</span> <span class="n">language_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_CODES</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid language code </span><span class="si">{</span><span class="n">language_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_filepath_fn</span><span class="p">(</span><span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_decompressed_filepath_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.xz&quot;</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_modify_res</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">language_code</span><span class="p">,</span> <span class="n">x</span>
-
     <span class="n">url</span> <span class="o">=</span> <span class="n">URL</span> <span class="o">%</span> <span class="n">language_code</span>
     <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">url</span><span class="p">])</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">_filepath_fn</span><span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">_filepath_fn</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
 
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">HttpReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span>
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">_decompressed_filepath_fn</span><span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">_decompressed_filepath_fn</span><span class="p">,</span> <span class="n">root</span><span class="p">))</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load_from_xz</span><span class="p">()</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
 
     <span class="n">data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">return_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_modify_res</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_modify_res</span><span class="p">,</span> <span class="n">language_code</span><span class="p">))</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span><span class="o">.</span><span class="n">set_shuffle</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sharding_filter</span><span class="p">()</span></div>
 </pre></div>
 
              </article>
