@@ -27,9 +27,9 @@ def _get_mock_dataset(root_dir):
             for i in range(5):
                 label = seed % 2
                 rand_string_1 = get_random_unicode(seed)
-                rand_string_2 = get_random_unicode(seed+1)
+                rand_string_2 = get_random_unicode(seed + 1)
                 dataset_line = (label, rand_string_1, rand_string_2)
-                label_str = 'entailment' if label == 1 else 'not_entailment'
+                label_str = "entailment" if label == 1 else "not_entailment"
                 f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\t{label_str}\n")
 
                 # append line to correct dataset split

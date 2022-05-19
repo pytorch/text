@@ -55,7 +55,7 @@ IMDb
 QNLI
 ~~~~
 
-.. autofunction:: QNLI    
+.. autofunction:: QNLI
 
 SogouNews
 ~~~~~~~~~
