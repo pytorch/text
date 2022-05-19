@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -8,8 +9,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
     "train": r"http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz",
@@ -36,6 +37,18 @@ NUM_LINES = {
 }
 
 DATASET_NAME = "Multi30k"
+
+
+def _filepath_fn(root, split, _=None):
+    return os.path.join(root, os.path.basename(URL[split]))
+
+
+def _decompressed_filepath_fn(root, split, language_pair, i, _):
+    return os.path.join(root, f"{_PREFIX[split]}.{language_pair[i]}")
+
+
+def _filter_fn(split, language_pair, i, x):
+    return f"{_PREFIX[split]}.{language_pair[i]}" in x[0]
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -73,29 +86,31 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
     url_dp = IterableWrapper([URL[split]])
 
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, os.path.basename(URL[split])),
-        hash_dict={os.path.join(root, os.path.basename(URL[split])): MD5[split]},
+        filepath_fn=partial(_filepath_fn, root, split),
+        hash_dict={_filepath_fn(root, split): MD5[split]},
         hash_type="sha256",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    src_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[0]}")
+    cache_compressed_dp_1, cache_compressed_dp_2 = cache_compressed_dp.fork(num_instances=2)
+
+    src_cache_decompressed_dp = cache_compressed_dp_1.on_disk_cache(
+        filepath_fn=partial(_decompressed_filepath_fn, root, split, language_pair, 0)
     )
     src_cache_decompressed_dp = (
         FileOpener(src_cache_decompressed_dp, mode="b")
-        .read_from_tar()
-        .filter(lambda x: f"{_PREFIX[split]}.{language_pair[0]}" in x[0])
+        .load_from_tar()
+        .filter(partial(_filter_fn, split, language_pair, 0))
     )
     src_cache_decompressed_dp = src_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    tgt_cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, f"{_PREFIX[split]}.{language_pair[1]}")
+    tgt_cache_decompressed_dp = cache_compressed_dp_2.on_disk_cache(
+        filepath_fn=partial(_decompressed_filepath_fn, root, split, language_pair, 1)
     )
     tgt_cache_decompressed_dp = (
         FileOpener(tgt_cache_decompressed_dp, mode="b")
-        .read_from_tar()
-        .filter(lambda x: f"{_PREFIX[split]}.{language_pair[1]}" in x[0])
+        .load_from_tar()
+        .filter(partial(_filter_fn, split, language_pair, 1))
     )
     tgt_cache_decompressed_dp = tgt_cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
@@ -106,4 +121,4 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         return_path=False, strip_newline=True
     )
 
-    return src_data_dp.zip(tgt_data_dp)
+    return src_data_dp.zip(tgt_data_dp).shuffle().set_shuffle(False).sharding_filter()
