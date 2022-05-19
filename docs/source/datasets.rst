@@ -42,6 +42,11 @@ AmazonReviewPolarity
 
 .. autofunction:: AmazonReviewPolarity
 
+CoLA
+~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: CoLA
+
 DBpedia
 ~~~~~~~
 
@@ -51,6 +56,21 @@ IMDb
 ~~~~
 
 .. autofunction:: IMDB
+
+MNLI
+~~~~
+
+.. autofunction:: MNLI
+
+MRPC
+~~~~
+
+.. autofunction:: MRPC
+
+QQP
+~~~~
+
+.. autofunction:: QQP
 
 RTE
 ~~~~
@@ -66,6 +86,11 @@ SST2
 ~~~~
 
 .. autofunction:: SST2
+
+STSB
+~~~~
+
+.. autofunction:: STSB
 
 YahooAnswers
 ~~~~~~~~~~~~

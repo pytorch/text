@@ -33,11 +33,14 @@ if [ ! -d "${env_dir}" ]; then
 fi
 conda activate "${env_dir}"
 
-# 3. Install Conda dependencies
+# 3. Install minimal build tools
+pip --quiet install cmake>=3.18.0 ninja
+
+# 4. Install Conda dependencies
 printf "* Installing dependencies (except PyTorch)\n"
 conda env update --file "${this_dir}/environment.yml" --prune
 
-# 4. Download
+# 5. Download
 printf "* Downloading SpaCy English models\n"
 python -m spacy download en_core_web_sm
 printf "* Downloading SpaCy German models\n"

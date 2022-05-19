@@ -1,16 +1,16 @@
-#include <clip_tokenizer.h> // @manual
-#include <gpt2_bpe_tokenizer.h> // @manual
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
-#include <torch/csrc/jit/python/pybind_utils.h> // @manual
+#include <torch/csrc/jit/python/module_python.h> // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h> // @manual
-#include <vocab_factory.h> // @manual
+#include <torchtext/csrc/clip_tokenizer.h> // @manual
+#include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
+#include <torchtext/csrc/regex.h>
+#include <torchtext/csrc/regex_tokenizer.h> // @manual
+#include <torchtext/csrc/sentencepiece.h> // @manual
+#include <torchtext/csrc/vectors.h> // @manual
+#include <torchtext/csrc/vocab.h> // @manual
+#include <torchtext/csrc/vocab_factory.h> // @manual
 
 #include <iostream>
 
@@ -177,6 +177,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("seperator_", &GPT2BPEEncoder::seperator_)
       .def_property_readonly("byte_encoder_", &GPT2BPEEncoder::GetByteEncoder)
       .def("encode", &GPT2BPEEncoder::Encode)
+      .def("tokenize", &GPT2BPEEncoder::Tokenize)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self)
@@ -201,6 +202,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("seperator_", &CLIPEncoder::seperator_)
       .def_property_readonly("byte_encoder_", &CLIPEncoder::GetByteEncoder)
       .def("encode", &CLIPEncoder::Encode)
+      .def("tokenize", &CLIPEncoder::Tokenize)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<CLIPEncoder>& self)

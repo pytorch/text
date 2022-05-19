@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -8,8 +9,8 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = {
     "train": "https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv",
@@ -27,6 +28,14 @@ NUM_LINES = {
 }
 
 DATASET_NAME = "AG_NEWS"
+
+
+def _filepath_fn(root, split, _=None):
+    return os.path.join(root, split + ".csv")
+
+
+def _modify_res(t):
+    return int(t[0]), " ".join(t[1:])
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -54,12 +63,12 @@ def AG_NEWS(root: str, split: Union[Tuple[str], str]):
 
     url_dp = IterableWrapper([URL[split]])
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, split + ".csv"),
-        hash_dict={os.path.join(root, split + ".csv"): MD5[split]},
+        filepath_fn=partial(_filepath_fn, root, split),
+        hash_dict={_filepath_fn(root, split): MD5[split]},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp)
     cache_dp = cache_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_dp, encoding="utf-8")
-    return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))
+    return data_dp.parse_csv().map(fn=_modify_res).shuffle().set_shuffle(False).sharding_filter()
