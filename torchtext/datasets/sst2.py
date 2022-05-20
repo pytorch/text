@@ -102,4 +102,4 @@ def SST2(root, split):
         parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_test_res)
     else:
         parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(_modify_res)
-    return parsed_data
+    return parsed_data.shuffle().set_shuffle(False).sharding_filter()
