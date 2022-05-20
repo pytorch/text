@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.dbpedia &mdash; Torchtext nightly documentation</title>
+  <title>torchtext.datasets.stsb &mdash; Torchtext nightly documentation</title>
   
 
   
@@ -287,7 +287,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.dbpedia</li>
+      <li>torchtext.datasets.stsb</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -317,73 +317,63 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.dbpedia</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+  <h1>Source code for torchtext.datasets.stsb</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_wrap_split_argument</span><span class="p">,</span>
     <span class="n">_create_dataset_directory</span><span class="p">,</span>
+    <span class="n">_wrap_split_argument</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">IterableWrapper</span>
-    <span class="kn">from</span> <span class="nn">torchtext._download_hooks</span> <span class="kn">import</span> <span class="n">GDriveReader</span>
 
-<span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k&quot;</span>
+    <span class="c1"># we import HttpReader from _download_hooks so we can swap out public URLs</span>
+    <span class="c1"># with interal URLs when the dataset is used within Facebook</span>
+    <span class="kn">from</span> <span class="nn">torchtext._download_hooks</span> <span class="kn">import</span> <span class="n">HttpReader</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="s2">&quot;dca7b1ae12b1091090db52aa7ec5ca64&quot;</span>
+
+<span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;http://ixa2.si.ehu.es/stswiki/images/4/48/Stsbenchmark.tar.gz&quot;</span>
+
+<span class="n">MD5</span> <span class="o">=</span> <span class="s2">&quot;4eb0065aba063ef77873d3a9c8088811&quot;</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="mi">560000</span><span class="p">,</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">70000</span><span class="p">,</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="mi">5749</span><span class="p">,</span>
+    <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">1379</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s2">&quot;dbpedia_csv.tar.gz&quot;</span>
+<span class="n">_PATH</span> <span class="o">=</span> <span class="s2">&quot;Stsbenchmark.tar.gz&quot;</span>
+
+<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;STSB&quot;</span>
 
 <span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;dbpedia_csv&quot;</span><span class="p">,</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;dbpedia_csv&quot;</span><span class="p">,</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;stsbenchmark&quot;</span><span class="p">,</span> <span class="s2">&quot;sts-train.csv&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;stsbenchmark&quot;</span><span class="p">,</span> <span class="s2">&quot;sts-dev.csv&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;stsbenchmark&quot;</span><span class="p">,</span> <span class="s2">&quot;sts-test.csv&quot;</span><span class="p">),</span>
 <span class="p">}</span>
 
-<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;DBpedia&quot;</span>
 
+<div class="viewcode-block" id="STSB"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.STSB">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
+<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">STSB</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;STSB Dataset</span>
 
-<span class="k">def</span> <span class="nf">_filepath_fn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_extracted_filepath_fn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">_filter_fn</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_modify_res</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-
-
-<div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">DBpedia</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;DBpedia Dataset</span>
-
-<span class="sd">    For additional details refer to https://www.dbpedia.org/resources/latest-core/</span>
+<span class="sd">    For additional details refer to https://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark</span>
 
 <span class="sd">    Number of lines per split:</span>
-<span class="sd">        - train: 560000</span>
-<span class="sd">        - test: 70000</span>
+<span class="sd">        - train: 5749</span>
+<span class="sd">        - dev: 1500</span>
+<span class="sd">        - test: 1379</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        root: Directory where the datasets are saved. Default: os.path.expanduser(&#39;~/.torchtext/cache&#39;)</span>
-<span class="sd">        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)</span>
+<span class="sd">        split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`, `test`)</span>
 
-<span class="sd">    :returns: DataPipe that yields tuple of label (1 to 14) and text containing the news title and contents</span>
-<span class="sd">    :rtype: (int, str)</span>
+<span class="sd">    :returns: DataPipe that yields tuple of (index (int), label (float), sentence1 (str), sentence2 (str))</span>
+<span class="sd">    :rtype: (int, float, str, str)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO Remove this after removing conditional dependency</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
@@ -391,22 +381,33 @@
             <span class="s2">&quot;Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_filepath_fn</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">_PATH</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_extracted_filepath_fn</span><span class="p">(</span><span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_filepath_fn</span><span class="p">(</span><span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_filter_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_modify_res</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+
     <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">URL</span><span class="p">])</span>
     <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
-        <span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">_filepath_fn</span><span class="p">,</span> <span class="n">root</span><span class="p">),</span>
-        <span class="n">hash_dict</span><span class="o">=</span><span class="p">{</span><span class="n">_filepath_fn</span><span class="p">(</span><span class="n">root</span><span class="p">):</span> <span class="n">MD5</span><span class="p">},</span>
+        <span class="n">filepath_fn</span><span class="o">=</span><span class="n">_filepath_fn</span><span class="p">,</span>
+        <span class="n">hash_dict</span><span class="o">=</span><span class="p">{</span><span class="n">_filepath_fn</span><span class="p">(</span><span class="n">URL</span><span class="p">):</span> <span class="n">MD5</span><span class="p">},</span>
         <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">GDriveReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">HttpReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">_extracted_filepath_fn</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">))</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load_from_tar</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_filter_fn</span><span class="p">,</span> <span class="n">split</span><span class="p">))</span>
-    <span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="n">_extracted_filepath_fn</span><span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_from_tar</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_filter_fn</span><span class="p">)</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">_modify_res</span><span class="p">)</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span><span class="o">.</span><span class="n">set_shuffle</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sharding_filter</span><span class="p">()</span></div>
+    <span class="n">parsed_data</span> <span class="o">=</span> <span class="n">data_dp</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONE</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_modify_res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parsed_data</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span><span class="o">.</span><span class="n">set_shuffle</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sharding_filter</span><span class="p">()</span></div>
 </pre></div>
 
              </article>
