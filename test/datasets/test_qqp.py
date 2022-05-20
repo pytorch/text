@@ -18,7 +18,6 @@ def _get_mock_dataset(root_dir):
     file_name = "quora_duplicate_questions.tsv"
     txt_file = os.path.join(base_dir, file_name)
     mocked_data = []
-    print(txt_file)
     with open(txt_file, "w", encoding="utf-8") as f:
         f.write("id\tqid1\tqid2\tquestion1\tquestion2\tis_duplicate\n")
         for i in range(5):
@@ -42,7 +41,6 @@ class TestQQP(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        print(cls.root_dir)
         cls.samples = _get_mock_dataset(cls.root_dir)
         cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
