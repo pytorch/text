@@ -10,8 +10,8 @@ from ..common.torchtext_test_case import TorchtextTestCase
 class TestShuffleShardDatasetWrapper(TorchtextTestCase):
     # Note that for order i.e shuffle before sharding, TorchData will provide linter warning
     # Modify this test when linter warning is available
-    @parameterized.expand(list(DATASETS.items()))
-    def test_shuffle_shard_wrapper(self, dataset_name, dataset_fn):
+    @parameterized.expand([(f,) for f in DATASETS.values()])
+    def test_shuffle_shard_wrapper(self, dataset_fn):
         dp = dataset_fn()
         if type(dp) == tuple:
             dp = list(dp)
