@@ -54,7 +54,9 @@
 #}
 
 {%- block footer %}
-
+    <script type="text/javascript">
+      var collapsedSections = [];
+    </script>
     {{ super() }}
     <script type="text/javascript">
       $(document).ready(function() {
@@ -69,6 +71,17 @@
 	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
 	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
 	  }
+
+          // Overwrite the link to GitHub project
+          var overwrite = function(_) {
+              if ($(this).length > 0) {
+                  $(this)[0].href = "https://github.com/pytorch/text"
+              }
+          }
+          // PC
+          $(".main-menu a:contains('GitHub')").each(overwrite);
+          // Mobile
+          $(".main-menu a:contains('Github')").each(overwrite);
       });
     </script>
 {% endblock %}
