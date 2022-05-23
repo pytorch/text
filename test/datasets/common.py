@@ -1,3 +1,5 @@
+import pickle
+
 from parameterized import parameterized
 from torch.utils.data.graph import traverse
 from torch.utils.data.graph_settings import get_all_graph_pipes
@@ -5,6 +7,19 @@ from torchdata.datapipes.iter import Shuffler, ShardingFilter
 from torchtext.datasets import DATASETS
 
 from ..common.torchtext_test_case import TorchtextTestCase
+
+
+class TestDatasetPickling(TorchtextTestCase):
+    @parameterized.expand([(f,) for f in DATASETS.values()])
+    def test_pickling(self, dataset_fn):
+        dp = dataset_fn()
+        if type(dp) == tuple:
+            dp = list(dp)
+        else:
+            dp = [dp]
+
+        for dp_split in dp:
+            pickle.loads(pickle.dumps(dp_split))
 
 
 class TestShuffleShardDatasetWrapper(TorchtextTestCase):
