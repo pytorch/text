@@ -1,4 +1,5 @@
 import os
+from functools import partial
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory
@@ -18,6 +19,14 @@ NUM_LINES = {"train": 404290}
 DATASET_NAME = "QQP"
 
 
+def _filepath_fn(root, _=None):
+    return os.path.join(root, _PATH)
+
+
+def _modify_res(x):
+    return (int(x[-1]), x[3], x[4])
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 def QQP(root: str):
     """QQP dataset
@@ -34,16 +43,10 @@ def QQP(root: str):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
-    def _filepath_fn(_=None):
-        return os.path.join(root, _PATH)
-
-    def _modify_res(x):
-        return (int(x[-1]), x[3], x[4])
-
     url_dp = IterableWrapper([URL])
     cache_dp = url_dp.on_disk_cache(
-        filepath_fn=_filepath_fn,
-        hash_dict={_filepath_fn(): MD5},
+        filepath_fn=partial(_filepath_fn, root),
+        hash_dict={_filepath_fn(root): MD5},
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
