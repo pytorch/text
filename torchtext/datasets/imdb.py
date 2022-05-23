@@ -1,4 +1,5 @@
 import os
+from functools import partial
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -24,6 +25,34 @@ _PATH = "aclImdb_v1.tar.gz"
 DATASET_NAME = "IMDB"
 
 
+def _filepath_fn(root, _=None):
+    return os.path.join(root, _PATH)
+
+
+def _decompressed_filepath_fn(root, decompressed_folder, split, labels, _=None):
+    return [os.path.join(root, decompressed_folder, split, label) for label in labels]
+
+
+def _filter_fn(filter_imdb_data, split, t):
+    return filter_imdb_data(split, t[0])
+
+
+def _path_map_fn(t):
+    return Path(t[0]).parts[-2], t[1]
+
+
+def _encode_map_fn(x):
+    return x[0], x[1].encode()
+
+
+def _cache_filepath_fn(root, decompressed_folder, split, x):
+    return os.path.join(root, decompressed_folder, split, x)
+
+
+def _modify_res(t):
+    return Path(t[0]).parts[-1], t[1]
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
@@ -47,39 +76,20 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
-    def _filepath_fn(_=None):
-        return os.path.join(root, _PATH)
-
-    def _decompressed_filepath_fn(_=None):
-        return [os.path.join(root, decompressed_folder, split, label) for label in labels]
-
-    def _filter_fn(t):
-        return filter_imdb_data(split, t[0])
-
-    def _path_map_fn(t):
-        return Path(t[0]).parts[-2], t[1]
-
-    def _encode_map_fn(x):
-        return x[0], x[1].encode()
-
-    def _cache_filepath_fn(x):
-        return os.path.join(root, decompressed_folder, split, x)
-
-    def _modify_res(t):
-        return Path(t[0]).parts[-1], t[1]
-
     url_dp = IterableWrapper([URL])
 
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=_filepath_fn,
-        hash_dict={_filepath_fn(): MD5},
+        filepath_fn=partial(_filepath_fn, root),
+        hash_dict={_filepath_fn(root): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     labels = {"neg", "pos"}
     decompressed_folder = "aclImdb_v1"
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_decompressed_filepath_fn)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=partial(_decompressed_filepath_fn, root, decompressed_folder, split, labels)
+    )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
     cache_decompressed_dp = cache_decompressed_dp.load_from_tar()
 
@@ -88,15 +98,17 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
         *_, split, label, file = Path(fname).parts
         return key == split and label in labels
 
-    cache_decompressed_dp = cache_decompressed_dp.filter(_filter_fn)
+    cache_decompressed_dp = cache_decompressed_dp.filter(partial(_filter_fn, filter_imdb_data, split))
 
     # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"
     cache_decompressed_dp = cache_decompressed_dp.map(_path_map_fn)
     cache_decompressed_dp = cache_decompressed_dp.readlines(decode=True)
     cache_decompressed_dp = cache_decompressed_dp.lines_to_paragraphs()  # group by label in cache file
     cache_decompressed_dp = cache_decompressed_dp.map(_encode_map_fn)
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", filepath_fn=_cache_filepath_fn, skip_read=True)
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(
+        mode="wb", filepath_fn=partial(_cache_filepath_fn, root, decompressed_folder, split), skip_read=True
+    )
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
     # get label from cache file, eg. "aclImdb_v1/train/neg" -> "neg"
-    return data_dp.readlines().map(_modify_res)
+    return data_dp.readlines().map(_modify_res).shuffle().set_shuffle(False).sharding_filter()

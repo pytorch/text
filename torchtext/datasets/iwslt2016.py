@@ -1,4 +1,5 @@
 import os
+from functools import partial
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -121,24 +122,42 @@ SET_NOT_EXISTS = {
 DATASET_NAME = "IWSLT2016"
 
 
+def _return_full_filepath(full_filepath, _=None):
+    return full_filepath
+
+
+def _filter_file_name_fn(uncleaned_filename, x):
+    return os.path.basename(uncleaned_filename) in x[0]
+
+
+def _clean_files_wrapper(full_filepath, x):
+    return _clean_files(full_filepath, x[0], x[1])
+
+
 # TODO: migrate this to dataset_utils.py once torchdata is a hard dependency to
 # avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
-    def _return_full_filepath(_=None):
-        return full_filepath
 
-    def _filter_fn(x):
-        return os.path.basename(uncleaned_filename) in x[0]
-
-    def _clean_files_wrapper(x):
-        return _clean_files(full_filepath, x[0], x[1])
-
-    cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=_return_full_filepath)
+    cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(
+        filepath_fn=partial(_return_full_filepath, full_filepath)
+    )
     cache_inner_decompressed_dp = cache_inner_decompressed_dp.open_files(mode="b").load_from_tar()
-    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(_filter_fn)
-    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(_clean_files_wrapper)
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(partial(_filter_file_name_fn, uncleaned_filename))
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(partial(_clean_files_wrapper, full_filepath))
     cache_inner_decompressed_dp = cache_inner_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
     return cache_inner_decompressed_dp
+
+
+def _filepath_fn(root, _=None):
+    return os.path.join(root, _PATH)
+
+
+def _inner_iwslt_tar_filepath_fn(inner_iwslt_tar, _=None):
+    return inner_iwslt_tar
+
+
+def _filter_fn(inner_iwslt_tar, x):
+    return os.path.basename(inner_iwslt_tar) in x[0]
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -241,13 +260,10 @@ def IWSLT2016(
         SUPPORTED_DATASETS["year"], src_language, tgt_language, valid_set, test_set
     )
 
-    def _filepath_fn(_=None):
-        return os.path.join(root, _PATH)
-
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=_filepath_fn,
-        hash_dict={_filepath_fn(): MD5},
+        filepath_fn=partial(_filepath_fn, root),
+        hash_dict={_filepath_fn(root): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp)
@@ -270,15 +286,11 @@ def IWSLT2016(
         + ".tgz"
     )
 
-    def _inner_iwslt_tar_filepath_fn(_=None):
-        return inner_iwslt_tar
-
-    def _filter_fn(x):
-        return os.path.basename(inner_iwslt_tar) in x[0]
-
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_inner_iwslt_tar_filepath_fn)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=partial(_inner_iwslt_tar_filepath_fn, inner_iwslt_tar)
+    )
     cache_decompressed_dp = cache_decompressed_dp.open_files(mode="b").load_from_tar()
-    cache_decompressed_dp = cache_decompressed_dp.filter(_filter_fn)
+    cache_decompressed_dp = cache_decompressed_dp.filter(partial(_filter_fn, inner_iwslt_tar))
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
     cache_decompressed_dp_1, cache_decompressed_dp_2 = cache_decompressed_dp.fork(num_instances=2)
 
@@ -310,4 +322,4 @@ def IWSLT2016(
     src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
     tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
 
-    return src_lines.zip(tgt_lines)
+    return src_lines.zip(tgt_lines).shuffle().set_shuffle(False).sharding_filter()
