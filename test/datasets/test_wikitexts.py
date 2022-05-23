@@ -57,19 +57,19 @@ class TestWikiTexts(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
-    @ classmethod
+    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
-    @ classmethod
+    @classmethod
     def tearDownClass(cls):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @ nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
+    @nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
     def test_wikitexts(self, wikitext_dataset, split):
         expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=wikitext_dataset.__name__)[split]
 
@@ -78,7 +78,7 @@ class TestWikiTexts(TempDirMixin, TorchtextTestCase):
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
-    @ nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
+    @nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
     def test_wikitexts_split_argument(self, wikitext_dataset, split):
         # call `_get_mock_dataset` to create mock dataset files
         _ = _get_mock_dataset(self.root_dir, wikitext_dataset.__name__)
