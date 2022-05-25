@@ -18,6 +18,7 @@ set(
   sentencepiece.cpp
   vectors.cpp
   vocab.cpp
+  bert_tokenizer.cpp
   )
 
 set(
@@ -26,6 +27,7 @@ set(
   ${PROJECT_SOURCE_DIR}/third_party/sentencepiece/src
   $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
   $<TARGET_PROPERTY:double-conversion,INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:utf8proc,INCLUDE_DIRECTORIES>
   )
 
 set(
@@ -35,6 +37,7 @@ set(
   double-conversion
   sentencepiece
   sentencepiece_train
+  utf8proc
   )
 
 set(
@@ -119,6 +122,7 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
     ${PROJECT_SOURCE_DIR}/third_party/sentencepiece/src
     $<TARGET_PROPERTY:re2,INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:double-conversion,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:utf8proc,INCLUDE_DIRECTORIES>
     )
 
   set(
