@@ -4,7 +4,7 @@ import os
 from torchtext import _extension  # noqa: F401
 
 _TEXT_BUCKET = "https://download.pytorch.org/models/text/"
-_CACHE_DIR = os.path.expanduser("~/.torchtext/cache")
+_CACHE_DIR = os.path.expanduser("~/.cache/torch/text")
 
 from . import data, datasets, experimental, functional, models, nn, transforms, utils, vocab
 
