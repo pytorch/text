@@ -272,7 +272,6 @@ class StrToIntTransform(Module):
 
 
 class GPT2BPETokenizer(Module):
-    __jit_unused_properties__ = ["is_jitable"]
     """
     Transform for GPT-2 BPE Tokenizer.
 
@@ -286,6 +285,8 @@ class GPT2BPETokenizer(Module):
     :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)
     :type return_input: bool
     """
+
+    __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
     def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False):
@@ -382,7 +383,6 @@ class GPT2BPETokenizer(Module):
 
 
 class CLIPTokenizer(Module):
-    __jit_unused_properties__ = ["is_jitable"]
     """
     Transform for CLIP Tokenizer. Based on Byte-Level BPE.
 
@@ -414,6 +414,7 @@ class CLIPTokenizer(Module):
     :type return_input: bool
     """
 
+    __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
     def __init__(
@@ -534,23 +535,25 @@ class CLIPTokenizer(Module):
 
 
 class BERTTokenizer(Module):
-    __jit_unused_properties__ = ["is_jitable"]
     """
     Transform for BERT Tokenizer.
 
     Based on WordPiece algorithm introduced in paper:
     https://static.googleusercontent.com/media/research.google.com/ja//pubs/archive/37842.pdf
 
-    The backend kernel implementation is the modified form of https://github.com/LieluoboAi/radish.
-    See https://github.com/pytorch/text/pull/1707 summary for more details.
+    The backend kernel implementation is taken and modified from https://github.com/LieluoboAi/radish.
+
+    See PR https://github.com/pytorch/text/pull/1707 summary for more details.
 
     The below code snippet shows how to use the BERT tokenizer using the pre-trained vocab files.
+
     Example
         >>> from torchtext.transforms import BERTTokenizer
         >>> VOCAB_FILE = "https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt"
         >>> tokenizer = BERTTokenizer(vocab_path=VOCAB_FILE, do_lower_case=True, return_tokens=True)
         >>> tokenizer("Hello World, How are you!") # single sentence input
         >>> tokenizer(["Hello World","How are you!"]) # batch input
+
     :param vocab_path: Path to pre-trained vocabulary file. The path can be either local or URL.
     :type vocab_path: str
     :param do_lower_case: Indicate whether to do lower case. (default: True)
@@ -560,6 +563,8 @@ class BERTTokenizer(Module):
     :param return_tokens: Indicate whether to return tokens. If false, returns corresponding token IDs as strings (default: False)
     :type return_tokens: bool
     """
+
+    __jit_unused_properties__ = ["is_jitable"]
 
     def __init__(
         self, vocab_path: str, do_lower_case: bool = True, strip_accents: Optional[bool] = None, return_tokens=False
