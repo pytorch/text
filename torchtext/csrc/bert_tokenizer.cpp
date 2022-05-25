@@ -95,18 +95,17 @@ BERTEncoder::BERTEncoder(
     const std::string& vocab_file,
     bool do_lower_case,
     c10::optional<bool> strip_accents)
-    : vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {
-  do_lower_case_ = do_lower_case;
-  strip_accents_ = strip_accents;
-}
+    : do_lower_case_{do_lower_case},
+      strip_accents_{strip_accents_},
+      vocab_{_load_vocab_from_file(vocab_file, 1, 1)} {}
 
 BERTEncoder::BERTEncoder(
     Vocab vocab,
     bool do_lower_case,
     c10::optional<bool> strip_accents)
-    : vocab_{vocab} {
-  do_lower_case_ = do_lower_case;
-  strip_accents_ = strip_accents;
+    : do_lower_case_{do_lower_case_},
+      strip_accents_{strip_accents},
+      vocab_{vocab} {
 }
 
 UString BERTEncoder::_clean(const UString& text, bool strip_accents) {
