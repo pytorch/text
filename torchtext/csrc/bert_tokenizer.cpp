@@ -105,8 +105,7 @@ BERTEncoder::BERTEncoder(
     c10::optional<bool> strip_accents)
     : do_lower_case_{do_lower_case_},
       strip_accents_{strip_accents},
-      vocab_{vocab} {
-}
+      vocab_{vocab} {}
 
 UString BERTEncoder::_clean(const UString& text, bool strip_accents) {
   /* This function combines:
