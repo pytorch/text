@@ -21,7 +21,7 @@ def _get_mock_dataset(root_dir):
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name, name in zip(["sts-train.csv", "sts-dev.csv" "sts-test.csv"], ["train", "dev", "test"]):
+    for file_name, name in zip(["sts-train.csv", "sts-dev.csv", "sts-test.csv"], ["train", "dev", "test"]):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w", encoding="utf-8") as f:
             for i in range(5):
