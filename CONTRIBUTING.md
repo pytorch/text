@@ -84,11 +84,13 @@ Steps to register an operator:
 2. Add the new source files to the
    [`LIBTORCHTEXT_SOURCES`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/CMakeLists.txt#L11)
    list.
-3. Register the operators with torchbind and pybind. Torchbind registration happens in the
-   [`register_torchbindings.cpp`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/register_torchbindings.cpp#L14)
-   file. Pybind registration happens in the
-   [`register_pybindings.cpp`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/register_pybindings.cpp#L34)
-   file.
+3. Register the operators with torchbind and pybind
+   - Torchbind registration happens in the
+     [`register_torchbindings.cpp`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/register_torchbindings.cpp#L14)
+     file
+   - Pybind registration happens in the
+     [`register_pybindings.cpp`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/register_pybindings.cpp#L34)
+     file.
 4. Write a Python wrapper class that is responsible for exposing the torchbind/pybind registered operators via Python.
    You can find some examples of this in the
    [`torchtext/transforms.py`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/transforms.py#L274)
