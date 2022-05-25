@@ -660,7 +660,6 @@ class TestBERTTokenizer(TorchtextTestCase):
 
     @nested_params([True, False], [True, False], [True, False])
     def test_bert_tokenizer_save_load(self, test_scripting, do_lower_case, return_tokens):
-        """test saving and loading of BERT tokenizer both for scripted and non-scripted version"""
         tokenizer = self._load_tokenizer(
             test_scripting=test_scripting, do_lower_case=do_lower_case, return_tokens=return_tokens
         )

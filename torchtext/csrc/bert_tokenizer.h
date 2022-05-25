@@ -6,7 +6,6 @@ namespace torchtext {
 
 typedef std::basic_string<uint32_t> UString;
 
-// stores (do_lower_case, strip_accents, list of tokens in vocabulary)
 typedef std::tuple<bool, c10::optional<bool>, std::vector<std::string>>
     BERTEncoderStates;
 
