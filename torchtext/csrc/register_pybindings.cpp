@@ -220,6 +220,32 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::init<const std::string, bool, c10::optional<bool>>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)
+      .def(
+          "batch_encode",
+          [](const c10::intrusive_ptr<BERTEncoder>& self,
+             const py::list& items) {
+            std::vector<std::vector<int64_t>> ids(items.size());
+            int64_t counter = 0;
+            for (const auto& item : items) {
+              Py_ssize_t length;
+              const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
+              ids[counter++] = self->Encode(std::string(buffer));
+            }
+            return ids;
+          })
+      .def(
+          "batch_tokenize",
+          [](const c10::intrusive_ptr<BERTEncoder>& self,
+             const py::list& items) {
+            std::vector<std::vector<std::string>> tokens(items.size());
+            int64_t counter = 0;
+            for (const auto& item : items) {
+              Py_ssize_t length;
+              const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
+              tokens[counter++] = self->Tokenize(std::string(buffer));
+            }
+            return tokens;
+          })
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<BERTEncoder>& self) -> BERTEncoderStates {
