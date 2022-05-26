@@ -52,7 +52,7 @@ where `$CLANG_FORMAT` denotes the path to the downloaded binary.
 
 The following steps outline how to add third party libraries to torchtext:
 
-1. Add the git repo you care about as a submodule. Here is a great
+1. Add the third party library as a submodule. Here is a great
    [tutorial](https://www.atlassian.com/git/tutorials/git-submodule) on working with submodules in git.
    - Navigate to `third_party/` folder and run `git submodule add <repo-URL>`
    - Verify the newly added module is present in the
@@ -65,8 +65,9 @@ The following steps outline how to add third party libraries to torchtext:
      [`​​LIBTORCHTEXT_INCLUDE_DIRS`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/CMakeLists.txt#L24)
      and to
      [`EXTENSION_INCLUDE_DIRS`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/CMakeLists.txt#L119)
-   - Add the submodule name to
+   - Add the "targets" name defined by the third party library's `CMakeLists` file to
      [`LIBTORCHTEXT_LINK_LIBRARIES`](https://github.com/pytorch/text/blob/70fc1040ee40faf129604557107cc59fd51c4fe2/torchtext/csrc/CMakeLists.txt#L33)
+   - Note that the third party libraries are linked statically with torchtext
 4. Verify the torchtext build works by running `python setup.py develop`
 
 ## Adding a Custom C++ Operator
