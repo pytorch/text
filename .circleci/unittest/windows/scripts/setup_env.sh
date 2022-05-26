@@ -48,4 +48,4 @@ python -m spacy download de_core_news_sm
 
 # 6. Post install script for pywin32
 curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.p
-python3 pywin32_postinstall.py -install
+python pywin32_postinstall.py -install
