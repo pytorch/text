@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220525) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220526) &#x25BC</a>
     </div>
     
 
@@ -396,10 +396,12 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data_metrics.html#torchtext.data.metrics.bleu_score">bleu_score() (in module torchtext.data.metrics)</a>
+      <li><a href="transforms.html#torchtext.transforms.BERTTokenizer">BERTTokenizer (class in torchtext.transforms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data_metrics.html#torchtext.data.metrics.bleu_score">bleu_score() (in module torchtext.data.metrics)</a>
+</li>
       <li><a href="vocab.html#torchtext.vocab.build_vocab_from_iterator">build_vocab_from_iterator() (in module torchtext.vocab)</a>
 </li>
   </ul></td>
@@ -464,6 +466,8 @@
         <li><a href="nn_modules.html#torchtext.nn.ScaledDotProduct.forward">(torchtext.nn.ScaledDotProduct method)</a>
 </li>
         <li><a href="transforms.html#torchtext.transforms.AddToken.forward">(torchtext.transforms.AddToken method)</a>
+</li>
+        <li><a href="transforms.html#torchtext.transforms.BERTTokenizer.forward">(torchtext.transforms.BERTTokenizer method)</a>
 </li>
         <li><a href="transforms.html#torchtext.transforms.CLIPTokenizer.forward">(torchtext.transforms.CLIPTokenizer method)</a>
 </li>
@@ -895,7 +899,9 @@
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
+    <script type="text/javascript">
+      var collapsedSections = [];
+    </script>
      
     <script type="text/javascript">
       $(document).ready(function() {
@@ -910,6 +916,17 @@
 	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
 	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
 	  }
+
+          // Overwrite the link to GitHub project
+          var overwrite = function(_) {
+              if ($(this).length > 0) {
+                  $(this)[0].href = "https://github.com/pytorch/text"
+              }
+          }
+          // PC
+          $(".main-menu a:contains('GitHub')").each(overwrite);
+          // Mobile
+          $(".main-menu a:contains('Github')").each(overwrite);
       });
     </script>
 

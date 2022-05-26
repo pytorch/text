@@ -196,7 +196,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220525) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220526) &#x25BC</a>
     </div>
     
 
@@ -373,7 +373,19 @@
 <dl class="py class">
 <dt id="torchtext.transforms.GPT2BPETokenizer">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">GPT2BPETokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder_json_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocab_bpe_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#GPT2BPETokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.GPT2BPETokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Transform for GPT-2 BPE Tokenizer.</p>
+<p>Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation
+<a class="reference external" href="https://github.com/openai/gpt-2/blob/master/src/encoder.py">https://github.com/openai/gpt-2/blob/master/src/encoder.py</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoder_json_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to GPT-2 BPE encoder json file.</p></li>
+<li><p><strong>vocab_bpe_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to bpe vocab file.</p></li>
+<li><p><strong>return_tokens</strong> – Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="torchtext.transforms.GPT2BPETokenizer.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#GPT2BPETokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.GPT2BPETokenizer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -397,9 +409,88 @@
 <dl class="py class">
 <dt id="torchtext.transforms.CLIPTokenizer">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">CLIPTokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">merges_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_json_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_merges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#CLIPTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.CLIPTokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Transform for CLIP Tokenizer. Based on Byte-Level BPE.</p>
+<p>Reimplements CLIP Tokenizer in TorchScript. Original implementation:
+<a class="reference external" href="https://github.com/mlfoundations/open_clip/blob/main/src/clip/tokenizer.py">https://github.com/mlfoundations/open_clip/blob/main/src/clip/tokenizer.py</a></p>
+<p>This tokenizer has been trained to treat spaces like parts of the tokens
+(a bit like sentencepiece) so a word will be encoded differently whether it
+is at the beginning of the sentence (without space) or not.</p>
+<p>The below code snippet shows how to use the CLIP tokenizer with encoder and merges file
+taken from the original paper implementation.</p>
+<dl>
+<dt>Example</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.transforms</span> <span class="kn">import</span> <span class="n">CLIPTokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MERGES_FILE</span> <span class="o">=</span> <span class="s2">&quot;http://download.pytorch.org/models/text/clip_merges.bpe&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ENCODER_FILE</span> <span class="o">=</span> <span class="s2">&quot;http://download.pytorch.org/models/text/clip_encoder.json&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">CLIPTokenizer</span><span class="p">(</span><span class="n">merges_path</span><span class="o">=</span><span class="n">MERGES_FILE</span><span class="p">,</span> <span class="n">encoder_json_path</span><span class="o">=</span><span class="n">ENCODER_FILE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;the quick brown fox jumped over the lazy dog&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>merges_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to bpe merges file.</p></li>
+<li><p><strong>encoder_json_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Optional, path to BPE encoder json file. When specified, this is used
+to infer num_merges.</p></li>
+<li><p><strong>num_merges</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Optional, number of merges to read from the bpe merges file.</p></li>
+<li><p><strong>return_tokens</strong> – Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="torchtext.transforms.CLIPTokenizer.forward">
 <code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#CLIPTokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.CLIPTokenizer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>]</em>) – Input sentence or list of sentences on which to apply tokenizer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tokenized text</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>], List[List(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="berttokenizer">
+<h2>BERTTokenizer<a class="headerlink" href="#berttokenizer" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.BERTTokenizer">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">BERTTokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_lower_case</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_accents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#BERTTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.BERTTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform for BERT Tokenizer.</p>
+<p>Based on WordPiece algorithm introduced in paper:
+<a class="reference external" href="https://static.googleusercontent.com/media/research.google.com/ja//pubs/archive/37842.pdf">https://static.googleusercontent.com/media/research.google.com/ja//pubs/archive/37842.pdf</a></p>
+<p>The backend kernel implementation is taken and modified from <a class="reference external" href="https://github.com/LieluoboAi/radish">https://github.com/LieluoboAi/radish</a>.</p>
+<p>See PR <a class="reference external" href="https://github.com/pytorch/text/pull/1707">https://github.com/pytorch/text/pull/1707</a> summary for more details.</p>
+<p>The below code snippet shows how to use the BERT tokenizer using the pre-trained vocab files.</p>
+<dl>
+<dt>Example</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.transforms</span> <span class="kn">import</span> <span class="n">BERTTokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VOCAB_FILE</span> <span class="o">=</span> <span class="s2">&quot;https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">BERTTokenizer</span><span class="p">(</span><span class="n">vocab_path</span><span class="o">=</span><span class="n">VOCAB_FILE</span><span class="p">,</span> <span class="n">do_lower_case</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;Hello World, How are you!&quot;</span><span class="p">)</span> <span class="c1"># single sentence input</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">([</span><span class="s2">&quot;Hello World&quot;</span><span class="p">,</span><span class="s2">&quot;How are you!&quot;</span><span class="p">])</span> <span class="c1"># batch input</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Path to pre-trained vocabulary file. The path can be either local or URL.</p></li>
+<li><p><strong>do_lower_case</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>]</em>) – Indicate whether to do lower case. (default: True)</p></li>
+<li><p><strong>strip_accents</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>]</em>) – Indicate whether to strip accents. (default: None)</p></li>
+<li><p><strong>return_tokens</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Indicate whether to return tokens. If false, returns corresponding token IDs as strings (default: False)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="torchtext.transforms.BERTTokenizer.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#BERTTokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.BERTTokenizer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>input</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>]</em>) – Input sentence or list of sentences on which to apply tokenizer.</p>
@@ -733,6 +824,7 @@ but not both.</p></li>
 <li><a class="reference internal" href="#sentencepiecetokenizer">SentencePieceTokenizer</a></li>
 <li><a class="reference internal" href="#gpt2bpetokenizer">GPT2BPETokenizer</a></li>
 <li><a class="reference internal" href="#cliptokenizer">CLIPTokenizer</a></li>
+<li><a class="reference internal" href="#berttokenizer">BERTTokenizer</a></li>
 <li><a class="reference internal" href="#vocabtransform">VocabTransform</a></li>
 <li><a class="reference internal" href="#totensor">ToTensor</a></li>
 <li><a class="reference internal" href="#labeltoindex">LabelToIndex</a></li>
@@ -775,7 +867,9 @@ but not both.</p></li>
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
+    <script type="text/javascript">
+      var collapsedSections = [];
+    </script>
      
     <script type="text/javascript">
       $(document).ready(function() {
@@ -790,6 +884,17 @@ but not both.</p></li>
 	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
 	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
 	  }
+
+          // Overwrite the link to GitHub project
+          var overwrite = function(_) {
+              if ($(this).length > 0) {
+                  $(this)[0].href = "https://github.com/pytorch/text"
+              }
+          }
+          // PC
+          $(".main-menu a:contains('GitHub')").each(overwrite);
+          // Mobile
+          $(".main-menu a:contains('Github')").each(overwrite);
       });
     </script>
 

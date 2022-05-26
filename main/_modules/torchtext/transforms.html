@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220525) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220526) &#x25BC</a>
     </div>
     
 
@@ -327,7 +327,11 @@
 <span class="kn">import</span> <span class="nn">torchtext</span>  <span class="c1"># noqa: F401</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Module</span>
-<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">CLIPEncoder</span> <span class="k">as</span> <span class="n">CLIPEncoderPyBind</span><span class="p">,</span> <span class="n">GPT2BPEEncoder</span> <span class="k">as</span> <span class="n">GPT2BPEEncoderPyBind</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CLIPEncoder</span> <span class="k">as</span> <span class="n">CLIPEncoderPyBind</span><span class="p">,</span>
+    <span class="n">GPT2BPEEncoder</span> <span class="k">as</span> <span class="n">GPT2BPEEncoderPyBind</span><span class="p">,</span>
+    <span class="n">BERTEncoder</span> <span class="k">as</span> <span class="n">BERTEncoderPyBind</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">get_asset_local_path</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
@@ -588,7 +592,6 @@
 
 
 <div class="viewcode-block" id="GPT2BPETokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.GPT2BPETokenizer">[docs]</a><span class="k">class</span> <span class="nc">GPT2BPETokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for GPT-2 BPE Tokenizer.</span>
 
@@ -602,6 +605,8 @@
 <span class="sd">    :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs as strings (default: False)</span>
 <span class="sd">    :type return_input: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="n">_seperator</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder_json_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vocab_bpe_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -698,7 +703,6 @@
 
 
 <div class="viewcode-block" id="CLIPTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.CLIPTokenizer">[docs]</a><span class="k">class</span> <span class="nc">CLIPTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for CLIP Tokenizer. Based on Byte-Level BPE.</span>
 
@@ -730,6 +734,7 @@
 <span class="sd">    :type return_input: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="n">_seperator</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -849,6 +854,118 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+<div class="viewcode-block" id="BERTTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.BERTTokenizer">[docs]</a><span class="k">class</span> <span class="nc">BERTTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform for BERT Tokenizer.</span>
+
+<span class="sd">    Based on WordPiece algorithm introduced in paper:</span>
+<span class="sd">    https://static.googleusercontent.com/media/research.google.com/ja//pubs/archive/37842.pdf</span>
+
+<span class="sd">    The backend kernel implementation is taken and modified from https://github.com/LieluoboAi/radish.</span>
+
+<span class="sd">    See PR https://github.com/pytorch/text/pull/1707 summary for more details.</span>
+
+<span class="sd">    The below code snippet shows how to use the BERT tokenizer using the pre-trained vocab files.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.transforms import BERTTokenizer</span>
+<span class="sd">        &gt;&gt;&gt; VOCAB_FILE = &quot;https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt&quot;</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = BERTTokenizer(vocab_path=VOCAB_FILE, do_lower_case=True, return_tokens=True)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer(&quot;Hello World, How are you!&quot;) # single sentence input</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer([&quot;Hello World&quot;,&quot;How are you!&quot;]) # batch input</span>
+
+<span class="sd">    :param vocab_path: Path to pre-trained vocabulary file. The path can be either local or URL.</span>
+<span class="sd">    :type vocab_path: str</span>
+<span class="sd">    :param do_lower_case: Indicate whether to do lower case. (default: True)</span>
+<span class="sd">    :type do_lower_case: Optional[bool]</span>
+<span class="sd">    :param strip_accents: Indicate whether to strip accents. (default: None)</span>
+<span class="sd">    :type strip_accents: Optional[bool]</span>
+<span class="sd">    :param return_tokens: Indicate whether to return tokens. If false, returns corresponding token IDs as strings (default: False)</span>
+<span class="sd">    :type return_tokens: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">vocab_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">do_lower_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">strip_accents</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_tokens</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span> <span class="o">=</span> <span class="n">BERTEncoderPyBind</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">vocab_path</span><span class="p">),</span> <span class="n">do_lower_case</span><span class="p">,</span> <span class="n">strip_accents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_return_tokens</span> <span class="o">=</span> <span class="n">return_tokens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vocab_path</span> <span class="o">=</span> <span class="n">vocab_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_lower_case</span> <span class="o">=</span> <span class="n">do_lower_case</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strip_accents</span> <span class="o">=</span> <span class="n">strip_accents</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">)</span>
+
+    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: An input text string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of token ids represents each sub-word</span>
+
+<span class="sd">        For example:</span>
+<span class="sd">            --&gt; &quot;Hello world!&quot; --&gt; token ids: [707, 5927, 11, 707, 68]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">token_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">tokens_ids_str</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">token_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">token_ids</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">tokens_ids_str</span>
+
+    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: An input text string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of tokens (sub-words)</span>
+
+<span class="sd">        For example:</span>
+<span class="sd">            --&gt; &quot;Hello World!&quot;: [&quot;Hello&quot;, &quot;World&quot;, &quot;!&quot;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<div class="viewcode-block" id="BERTTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.BERTTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
+<span class="sd">        :type input: Union[str, List[str]]</span>
+<span class="sd">        :return: tokenized text</span>
+<span class="sd">        :rtype: Union[List[str], List[List(str)]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+            <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_tokens</span><span class="p">:</span>
+                    <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">tokens</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_tokens</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
+            <span class="n">tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">tokenizer_copy</span><span class="o">.</span><span class="n">bert_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">BERTEncoder</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vocab_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_lower_case</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_accents</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">tokenizer_copy</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
 <span class="nd">@lru_cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">bytes_to_unicode</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -952,7 +1069,9 @@
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
+    <script type="text/javascript">
+      var collapsedSections = [];
+    </script>
      
     <script type="text/javascript">
       $(document).ready(function() {
@@ -967,6 +1086,17 @@
 	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
 	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
 	  }
+
+          // Overwrite the link to GitHub project
+          var overwrite = function(_) {
+              if ($(this).length > 0) {
+                  $(this)[0].href = "https://github.com/pytorch/text"
+              }
+          }
+          // PC
+          $(".main-menu a:contains('GitHub')").each(overwrite);
+          // Mobile
+          $(".main-menu a:contains('Github')").each(overwrite);
       });
     </script>
 

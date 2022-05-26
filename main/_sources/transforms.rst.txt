@@ -30,6 +30,14 @@ CLIPTokenizer
 
    .. automethod:: forward
 
+BERTTokenizer
+----------------------
+
+.. autoclass:: BERTTokenizer
+
+   .. automethod:: forward
+
+
 VocabTransform
 --------------
 
