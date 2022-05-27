@@ -155,7 +155,9 @@ class TestIWSLT2017(TorchtextTestCase):
     def test_iwslt2017(self, split, src, tgt):
 
         with tempfile.TemporaryDirectory() as root_dir:
-            expected_samples = _get_mock_dataset(root_dir, split, src, tgt, "dev2010", "tst2010")
+            expected_samples = _get_mock_dataset(
+                os.path.join(root_dir, "datasets"), split, src, tgt, "dev2010", "tst2010"
+            )
 
             dataset = IWSLT2017(root=root_dir, split=split, language_pair=(src, tgt))
 
@@ -170,7 +172,9 @@ class TestIWSLT2017(TorchtextTestCase):
             language_pair = ("de", "en")
             valid_set = "dev2010"
             test_set = "tst2010"
-            _ = _get_mock_dataset(root_dir, split, language_pair[0], language_pair[1], valid_set, test_set)
+            _ = _get_mock_dataset(
+                os.path.join(root_dir, "datasets"), split, language_pair[0], language_pair[1], valid_set, test_set
+            )
             dataset1 = IWSLT2017(root=root_dir, split=split, language_pair=language_pair)
             (dataset2,) = IWSLT2017(root=root_dir, split=(split,), language_pair=language_pair)
 
