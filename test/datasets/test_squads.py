@@ -87,7 +87,7 @@ class TestSQuADs(TempDirMixin, TorchtextTestCase):
 
     @nested_params([SQuAD1, SQuAD2], ["train", "dev"])
     def test_squads(self, squad_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, squad_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(os.path.join(self.root_dir, "datasets"), squad_dataset.__name__)[split]
         dataset = squad_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
 

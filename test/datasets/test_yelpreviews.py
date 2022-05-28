@@ -70,7 +70,9 @@ class TestYelpReviews(TempDirMixin, TorchtextTestCase):
 
     @nested_params([YelpReviewPolarity, YelpReviewFull], ["train", "test"])
     def test_yelpreviews(self, yelp_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=yelp_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(
+            os.path.join(self.root_dir, "datasets"), base_dir_name=yelp_dataset.__name__
+        )[split]
 
         dataset = yelp_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
