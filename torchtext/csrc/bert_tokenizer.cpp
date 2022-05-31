@@ -13,11 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-Original code is taken from https://github.com/LieluoboAi/radish/blob/master/radish/bert/bert_tokenizer.cc
+Original code is taken from
+https://github.com/LieluoboAi/radish/blob/master/radish/bert/bert_tokenizer.cc
 
-The code is modified and summary is provided in this PR https://github.com/pytorch/text/pull/1707
+The code is modified and summary is provided in this PR
+https://github.com/pytorch/text/pull/1707
 */
-
 
 #include <torchtext/csrc/bert_tokenizer.h>
 #include <utf8proc.h>
