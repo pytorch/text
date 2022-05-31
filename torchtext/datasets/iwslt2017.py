@@ -177,7 +177,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     valid_set = "dev2010"
