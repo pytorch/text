@@ -71,7 +71,9 @@ class TestWikiTexts(TempDirMixin, TorchtextTestCase):
 
     @nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
     def test_wikitexts(self, wikitext_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=wikitext_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(
+            os.path.join(self.root_dir, "datasets"), base_dir_name=wikitext_dataset.__name__
+        )[split]
 
         dataset = wikitext_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
