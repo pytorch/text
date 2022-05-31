@@ -47,5 +47,6 @@ printf "* Downloading SpaCy German models\n"
 python -m spacy download de_core_news_sm
 
 # 6. Post install script for pywin32
-curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
-python pywin32_postinstall.py -install
+pip install --upgrade pywin32==225
+# curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
+# python pywin32_postinstall.py -install
