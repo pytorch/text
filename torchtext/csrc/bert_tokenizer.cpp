@@ -1,5 +1,3 @@
-
-
 /* Copyright (c) Meta Platforms, Inc. and affiliates.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +17,7 @@ Original code is taken from https://github.com/LieluoboAi/radish/blob/master/rad
 
 The code is modified and summary is provided in this PR https://github.com/pytorch/text/pull/1707
 */
+
 
 #include <torchtext/csrc/bert_tokenizer.h>
 #include <utf8proc.h>
