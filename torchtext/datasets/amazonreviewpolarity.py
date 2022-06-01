@@ -69,7 +69,7 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])
