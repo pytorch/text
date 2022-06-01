@@ -1,34 +1,44 @@
-import csv
+# Copyright (c) Facebook, Inc. and its affiliates.
 import os
 from functools import partial
-from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import _create_dataset_directory, _wrap_split_argument
+from torchtext.data.datasets_utils import (
+    _create_dataset_directory,
+    _wrap_split_argument,
+)
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper
+
+    # we import HttpReader from _download_hooks so we can swap out public URLs
+    # with interal URLs when the dataset is used within Facebook
     from torchtext._download_hooks import HttpReader
 
-URL = "https://nyu-mll.github.io/CoLA/cola_public_1.1.zip"
 
-MD5 = "9f6d88c3558ec424cd9d66ea03589aba"
+URL = "https://dl.fbaipublicfiles.com/glue/data/RTE.zip"
 
-_PATH = "cola_public_1.1.zip"
+MD5 = "bef554d0cafd4ab6743488101c638539"
 
-NUM_LINES = {"train": 8551, "dev": 527, "test": 516}
-
-_EXTRACTED_FILES = {
-    "train": os.path.join("cola_public", "raw", "in_domain_train.tsv"),
-    "dev": os.path.join("cola_public", "raw", "in_domain_dev.tsv"),
-    "test": os.path.join("cola_public", "raw", "out_of_domain_dev.tsv"),
+NUM_LINES = {
+    "train": 67349,
+    "dev": 872,
+    "test": 1821,
 }
 
-DATASET_NAME = "CoLA"
+_PATH = "RTE.zip"
+
+DATASET_NAME = "RTE"
+
+_EXTRACTED_FILES = {
+    "train": os.path.join("RTE", "train.tsv"),
+    "dev": os.path.join("RTE", "dev.tsv"),
+    "test": os.path.join("RTE", "test.tsv"),
+}
 
 
-def _filepath_fn(root, _=None):
-    return os.path.join(root, _PATH)
+def _filepath_fn(root, x=None):
+    return os.path.join(root, os.path.basename(x))
 
 
 def _extracted_filepath_fn(root, split, _=None):
@@ -39,43 +49,42 @@ def _filter_fn(split, x):
     return _EXTRACTED_FILES[split] in x[0]
 
 
-def _modify_res(t):
-    return (t[0], int(t[1]), t[3])
-
-
-def _filter_res(x):
-    return len(x) == 4
+def _modify_res(split, x):
+    if split == "test":
+        return (x[1], x[2])
+    else:
+        return (int(x[3]), x[1], x[2])
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
-def CoLA(root: str, split: Union[Tuple[str], str]):
-    """CoLA dataset
+def RTE(root, split):
+    """RTE Dataset
 
-    For additional details refer to https://nyu-mll.github.io/CoLA/
+    For additional details refer to https://aclweb.org/aclwiki/Recognizing_Textual_Entailment
 
     Number of lines per split:
-        - train: 8551
-        - dev: 527
-        - test: 516
+        - train: 67349
+        - dev: 872
+        - test: 1821
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`, `test`)
 
-
-    :returns: DataPipe that yields rows from CoLA dataset (source (str), label (int), sentence (str))
-    :rtype: (str, int, str)
+    :returns: DataPipe that yields tuple of text and/or label (0 and 1). The `test` split only returns text.
+    :rtype: Union[(int, str, str), (str, str)]
     """
+    # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
         filepath_fn=partial(_filepath_fn, root),
-        hash_dict={_filepath_fn(root): MD5},
+        hash_dict={_filepath_fn(root, URL): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
@@ -87,8 +96,5 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    # some context stored at top of the file needs to be removed
-    parsed_data = (
-        data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).filter(_filter_res).map(_modify_res)
-    )
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(partial(_modify_res, split))
     return parsed_data.shuffle().set_shuffle(False).sharding_filter()

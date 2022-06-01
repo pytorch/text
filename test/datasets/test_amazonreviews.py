@@ -69,7 +69,9 @@ class TestAmazonReviews(TempDirMixin, TorchtextTestCase):
 
     @nested_params([AmazonReviewFull, AmazonReviewPolarity], ["train", "test"])
     def test_amazon_reviews(self, amazon_review_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, amazon_review_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(os.path.join(self.root_dir, "datasets"), amazon_review_dataset.__name__)[
+            split
+        ]
         dataset = amazon_review_dataset(root=self.root_dir, split=split)
         samples = list(dataset)
 
