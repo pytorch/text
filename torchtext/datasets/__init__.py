@@ -15,6 +15,7 @@ from .mnli import MNLI
 from .mrpc import MRPC
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
+from .qnli import QNLI
 from .qqp import QQP
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
@@ -44,6 +45,7 @@ DATASETS = {
     "MRPC": MRPC,
     "Multi30k": Multi30k,
     "PennTreebank": PennTreebank,
+    "QNLI": QNLI,
     "QQP": QQP,
     "SQuAD1": SQuAD1,
     "SQuAD2": SQuAD2,

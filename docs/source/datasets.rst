@@ -67,6 +67,11 @@ MRPC
 
 .. autofunction:: MRPC
 
+QNLI
+~~~~
+
+.. autofunction:: QNLI
+
 QQP
 ~~~~
 
