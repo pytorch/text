@@ -77,6 +77,11 @@ QQP
 
 .. autofunction:: QQP
 
+RTE
+~~~~
+
+.. autofunction:: RTE
+
 SogouNews
 ~~~~~~~~~
 

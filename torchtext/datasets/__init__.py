@@ -17,6 +17,7 @@ from .multi30k import Multi30k
 from .penntreebank import PennTreebank
 from .qnli import QNLI
 from .qqp import QQP
+from .rte import RTE
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
@@ -47,6 +48,7 @@ DATASETS = {
     "PennTreebank": PennTreebank,
     "QNLI": QNLI,
     "QQP": QQP,
+    "RTE": RTE,
     "SQuAD1": SQuAD1,
     "SQuAD2": SQuAD2,
     "SogouNews": SogouNews,
