@@ -41,7 +41,15 @@ torchtext.datasets
 
       - All workers (DDP workers *and* DataLoader workers) see a different part
         of the data. You might need to call ``dp = dp.apply_sharding(world_size,
-        rank)``.
+        rank)`` after wrapping the datapipe into a `ShardingFilter
+        <https://pytorch.org/data/main/generated/torchdata.datapipes.iter.ShardingFilter.html>`_.
+        You'll want to do that early in the datapipe, to avoid needlessly
+        processing samples that eventually get dropped by the workers.
+      - All DDP workers work on the same number of samples. This can be done by
+        limiting the size of the datapipe within each worker to
+        ``len(datapipe) // num_ddp_workers``. This is similar to using
+        ``drop_last=True``, but affects the DDP workers instead of the
+        DataLoader workers.
       - The shuffling seed is the same across all workers. You might need to
         call ``torch.utils.data.graph_settings.apply_shuffle_seed(dp, rng)``
       - The suffling seed is different across epochs.
