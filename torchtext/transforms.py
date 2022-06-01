@@ -599,17 +599,7 @@ class BERTTokenizer(Module):
 
     @torch.jit.export
     def _batch_encode(self, text: List[str]) -> List[List[str]]:
-        """Encode text into a list of tokens IDs
-
-        Args:
-            text: An input text string.
-
-        Returns:
-            A list of token ids represents each sub-word
-
-        For example:
-            --> "Hello world!" --> token ids: [707, 5927, 11, 707, 68]
-        """
+        """Batch version of _encode i.e operate on list of str"""
         token_ids: List[List[int]] = self.bert_model.batch_encode([t.strip() for t in text])
         tokens_ids_str: List[List[str]] = [[str(t) for t in token_id] for token_id in token_ids]
         return tokens_ids_str
@@ -631,17 +621,7 @@ class BERTTokenizer(Module):
 
     @torch.jit.export
     def _batch_tokenize(self, text: List[str]) -> List[List[str]]:
-        """Tokenize text into a list of tokens
-
-        Args:
-            text: An input text string.
-
-        Returns:
-            A list of tokens (sub-words)
-
-        For example:
-            --> "Hello World!": ["Hello", "World", "!"]
-        """
+        """Batch version of _tokenize i.e operate on list of str"""
         return self.bert_model.batch_tokenize([t.strip() for t in text])
 
     def forward(self, input: Any) -> Any:

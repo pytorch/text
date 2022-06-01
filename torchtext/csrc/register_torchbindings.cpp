@@ -181,23 +181,13 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           "batch_encode",
           [](const c10::intrusive_ptr<BERTEncoder>& self,
              const std::vector<std::string>& items) {
-            std::vector<std::vector<int64_t>> ids(items.size());
-            int64_t counter = 0;
-            for (const auto& item : items) {
-              ids[counter++] = self->Encode(item);
-            }
-            return ids;
+            return self->BatchEncode(items);
           })
       .def(
           "batch_tokenize",
           [](const c10::intrusive_ptr<BERTEncoder>& self,
              const std::vector<std::string>& items) {
-            std::vector<std::vector<std::string>> tokens(items.size());
-            int64_t counter = 0;
-            for (const auto& item : items) {
-              tokens[counter++] = self->Tokenize(item);
-            }
-            return tokens;
+            return self->BatchTokenize(items);
           })
       .def_pickle(
           // __getstate__

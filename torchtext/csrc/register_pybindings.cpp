@@ -224,27 +224,25 @@ PYBIND11_MODULE(_torchtext, m) {
           "batch_encode",
           [](const c10::intrusive_ptr<BERTEncoder>& self,
              const py::list& items) {
-            std::vector<std::vector<int64_t>> ids(items.size());
-            int64_t counter = 0;
+            std::vector<std::string> input;
             for (const auto& item : items) {
               Py_ssize_t length;
               const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
-              ids[counter++] = self->Encode(std::string(buffer));
+              input.push_back(std::string(buffer));
             }
-            return ids;
+            return self->BatchEncode(input);
           })
       .def(
           "batch_tokenize",
           [](const c10::intrusive_ptr<BERTEncoder>& self,
              const py::list& items) {
-            std::vector<std::vector<std::string>> tokens(items.size());
-            int64_t counter = 0;
+            std::vector<std::string> input;
             for (const auto& item : items) {
               Py_ssize_t length;
               const char* buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
-              tokens[counter++] = self->Tokenize(std::string(buffer));
+              input.push_back(std::string(buffer));
             }
-            return tokens;
+            return self->BatchTokenize(input);
           })
       .def(py::pickle(
           // __getstate__
