@@ -45,11 +45,10 @@ torchtext.datasets
         <https://pytorch.org/data/main/generated/torchdata.datapipes.iter.ShardingFilter.html>`_.
         You'll want to do that early in the datapipe, to avoid needlessly
         processing samples that eventually get dropped by the workers.
-      - All DDP workers work on the same number of samples. This can be done by
-        limiting the size of the datapipe within each worker to
-        ``len(datapipe) // num_ddp_workers``. This is similar to using
-        ``drop_last=True``, but affects the DDP workers instead of the
-        DataLoader workers.
+      - All DDP workers work on the same number of batches. One way to do this
+        is to by limit the size of the datapipe within each worker to
+        ``len(datapipe) // num_ddp_workers``, but this might not suit all
+        use-cases.
       - The shuffling seed is the same across all workers. You might need to
         call ``torch.utils.data.graph_settings.apply_shuffle_seed(dp, rng)``
       - The suffling seed is different across epochs.
