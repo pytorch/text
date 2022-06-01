@@ -45,6 +45,13 @@ def _extracted_filepath_fn(root, split, _=None):
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     """CoNLL2000Chunking Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://www.clips.uantwerpen.be/conll2000/chunking/
 
     Number of lines per split:

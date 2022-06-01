@@ -58,6 +58,13 @@ def _modify_res(x):
 def STSB(root, split):
     """STSB Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark
 
     Number of lines per split:

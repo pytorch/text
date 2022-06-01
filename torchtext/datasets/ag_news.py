@@ -43,6 +43,13 @@ def _modify_res(t):
 def AG_NEWS(root: str, split: Union[Tuple[str], str]):
     """AG_NEWS Dataset
 
+    .. warning::
+
+        Using datapipes is still currently subject to a few caveats. If you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://paperswithcode.com/dataset/ag-news
 
     Number of lines per split:

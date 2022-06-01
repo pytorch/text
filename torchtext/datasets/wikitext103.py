@@ -48,6 +48,13 @@ def _filter_fn(split, x):
 def WikiText103(root: str, split: Union[Tuple[str], str]):
     """WikiText103 Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://blog.salesforceairesearch.com/the-wikitext-long-term-dependency-language-modeling-dataset/
 
     Number of lines per split:
