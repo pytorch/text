@@ -17,7 +17,9 @@ torchtext.datasets
     Here are a few recommendations regarding the use of datapipes:
 
     - For shuffling the datapipe, do that in the DataLoader: ``DataLoader(dp, shuffle=True)``.
-      You do not need to call ``dp.shuffle()``.
+      You do not need to call ``dp.shuffle()``, because ``torchtext`` has
+      already done that for you. Note however that the datapipe won't be
+      shuffled unless you explicitly pass ``shuffle=True`` to the DataLoader.
 
     - When using multi-processing (``num_workers=N``), use the builtin ``worker_init_fn``::
 
