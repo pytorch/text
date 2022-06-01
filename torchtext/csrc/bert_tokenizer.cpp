@@ -292,6 +292,24 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
   return indices;
 }
 
+std::vector<std::vector<std::string>> BERTEncoder::BatchTokenize(
+    std::vector<std::string> text) {
+  std::vector<std::vector<std::string>> output;
+  for (const auto& t : text) {
+    output.push_back(Tokenize(t));
+  }
+  return output;
+}
+
+std::vector<std::vector<int64_t>> BERTEncoder::BatchEncode(
+    std::vector<std::string> text) {
+  std::vector<std::vector<int64_t>> output;
+  for (const auto& t : text) {
+    output.push_back(Encode(t));
+  }
+  return output;
+}
+
 BERTEncoderStates _serialize_bert_encoder(
     const c10::intrusive_ptr<BERTEncoder>& self) {
   return std::make_tuple(
