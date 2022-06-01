@@ -45,6 +45,8 @@ torchtext.datasets
       - The shuffling seed is the same across all workers. You might need to
         call ``torch.utils.data.graph_settings.apply_shuffle_seed(dp, rng)``
       - The suffling seed is different across epochs.
+      - The rest of the RNG (typically used for transformations) is
+        **different** across workers, for maximal entropy and optimal accuracy.
 
 General use cases are as follows: ::
 
