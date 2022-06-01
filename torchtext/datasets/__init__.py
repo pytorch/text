@@ -26,6 +26,7 @@ from .stsb import STSB
 from .udpos import UDPOS
 from .wikitext103 import WikiText103
 from .wikitext2 import WikiText2
+from .wnli import WNLI
 from .yahooanswers import YahooAnswers
 from .yelpreviewfull import YelpReviewFull
 from .yelpreviewpolarity import YelpReviewPolarity
@@ -57,6 +58,7 @@ DATASETS = {
     "UDPOS": UDPOS,
     "WikiText103": WikiText103,
     "WikiText2": WikiText2,
+    "WNLI": WNLI,
     "YahooAnswers": YahooAnswers,
     "YelpReviewFull": YelpReviewFull,
     "YelpReviewPolarity": YelpReviewPolarity,

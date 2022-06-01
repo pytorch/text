@@ -97,6 +97,11 @@ STSB
 
 .. autofunction:: STSB
 
+WNLI
+~~~~
+
+.. autofunction:: WNLI
+
 YahooAnswers
 ~~~~~~~~~~~~
 
