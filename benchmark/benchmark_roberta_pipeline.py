@@ -96,8 +96,9 @@ class RobertaTransformDataFrame(Module):
     def forward(self, input: ta.DataFrame) -> ta.DataFrame:
         input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
         input["tokens"] = input["tokens"].list.slice(stop=254)
-        input["tokens"] = ta_F.lookup_indices(self.vocab, input["tokens"])
-        input["tokens"]._dtype = dt.List(dt.int64)
+        token_ids = ta_F.lookup_indices(self.vocab, input["tokens"])
+        token_ids._dtype = dt.List(dt.int64)
+        input["tokens"] = token_ids
         input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
         input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
         return input
@@ -162,8 +163,8 @@ def benchmark_roberta_dataframe(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--batch-size", default=4, type=int)
+    parser.add_argument("--batch-size", default=32, type=int)
     parser.add_argument("--dataset-name", default="SST2", type=str)
     parser.add_argument("--columns", default=["text", "label"], nargs="+")
-    # benchmark_roberta_datapipe(parser.parse_args())
+    benchmark_roberta_datapipe(parser.parse_args())
     benchmark_roberta_dataframe(parser.parse_args())
