@@ -9,7 +9,7 @@ from torchtext.datasets.rte import RTE
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
-LABELS = ["not_entailment", "entailment"]
+LABELS = ["entailment", "not_entailment"]
 
 
 def _get_mock_dataset(root_dir):

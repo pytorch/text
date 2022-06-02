@@ -36,6 +36,8 @@ _EXTRACTED_FILES = {
     "test": os.path.join("RTE", "test.tsv"),
 }
 
+MAP_LABELS = {"not_entailment": 1, "entailment": 0}
+
 
 def _filepath_fn(root, x=None):
     return os.path.join(root, os.path.basename(x))
@@ -53,7 +55,7 @@ def _modify_res(split, x):
     if split == "test":
         return (x[1], x[2])
     else:
-        return (int(x[3]), x[1], x[2])
+        return (MAP_LABELS[x[3]], x[1], x[2])
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
