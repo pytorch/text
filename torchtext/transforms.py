@@ -598,6 +598,13 @@ class BERTTokenizer(Module):
         return tokens_ids_str
 
     @torch.jit.export
+    def _batch_encode(self, text: List[str]) -> List[List[str]]:
+        """Batch version of _encode i.e operate on list of str"""
+        token_ids: List[List[int]] = self.bert_model.batch_encode([t.strip() for t in text])
+        tokens_ids_str: List[List[str]] = [[str(t) for t in token_id] for token_id in token_ids]
+        return tokens_ids_str
+
+    @torch.jit.export
     def _tokenize(self, text: str) -> List[str]:
         """Tokenize text into a list of tokens
 
@@ -612,6 +619,11 @@ class BERTTokenizer(Module):
         """
         return self.bert_model.tokenize(text.strip())
 
+    @torch.jit.export
+    def _batch_tokenize(self, text: List[str]) -> List[List[str]]:
+        """Batch version of _tokenize i.e operate on list of str"""
+        return self.bert_model.batch_tokenize([t.strip() for t in text])
+
     def forward(self, input: Any) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
@@ -621,11 +633,10 @@ class BERTTokenizer(Module):
         """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
-            for text in input:
-                if self._return_tokens:
-                    tokens.append(self._tokenize(text))
-                else:
-                    tokens.append(self._encode(text))
+            if self._return_tokens:
+                tokens = self._batch_tokenize(input)
+            else:
+                tokens = self._batch_encode(input)
             return tokens
         elif torch.jit.isinstance(input, str):
             if self._return_tokens:
