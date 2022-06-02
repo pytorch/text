@@ -40,11 +40,14 @@ torchtext.datasets
       that:
 
       - All workers (DDP workers *and* DataLoader workers) see a different part
-        of the data. You might need to call ``dp = dp.apply_sharding(world_size,
-        rank)`` after wrapping the datapipe into a `ShardingFilter
-        <https://pytorch.org/data/main/generated/torchdata.datapipes.iter.ShardingFilter.html>`_.
-        You'll want to do that early in the datapipe, to avoid needlessly
-        processing samples that eventually get dropped by the workers.
+        of the data. The datasets are already wrapped inside  `ShardingFilter
+        <https://pytorch.org/data/main/generated/torchdata.datapipes.iter.ShardingFilter.html>`_
+        and you may need to call ``dp.apply_sharing(num_shards, shard_id)`` in order to shard the 
+        data across ranks (DDP workers) and DataLoader workers. One way to do this
+        is to create ``worker_init_fn`` that calls ``apply_sharding`` with appropriate 
+        number of shards (DDP workers * DataLoader workers) and shard id (inferred through rank
+        and worker ID of corresponding DataLoader withing rank). Note however, that this assumes
+        equal number of DataLoader workers for all the ranks. 
       - All DDP workers work on the same number of batches. One way to do this
         is to by limit the size of the datapipe within each worker to
         ``len(datapipe) // num_ddp_workers``, but this might not suit all
