@@ -1,4 +1,4 @@
-import csv
+# Copyright (c) Facebook, Inc. and its affiliates.
 import os
 from functools import partial
 
@@ -16,73 +16,69 @@ if is_module_available("torchdata"):
     from torchtext._download_hooks import HttpReader
 
 
-URL = "http://ixa2.si.ehu.es/stswiki/images/4/48/Stsbenchmark.tar.gz"
+URL = "https://dl.fbaipublicfiles.com/glue/data/RTE.zip"
 
-MD5 = "4eb0065aba063ef77873d3a9c8088811"
+MD5 = "bef554d0cafd4ab6743488101c638539"
 
 NUM_LINES = {
-    "train": 5749,
-    "dev": 1500,
-    "test": 1379,
+    "train": 67349,
+    "dev": 872,
+    "test": 1821,
 }
 
-_PATH = "Stsbenchmark.tar.gz"
+_PATH = "RTE.zip"
 
-DATASET_NAME = "STSB"
+DATASET_NAME = "RTE"
 
 _EXTRACTED_FILES = {
-    "train": os.path.join("stsbenchmark", "sts-train.csv"),
-    "dev": os.path.join("stsbenchmark", "sts-dev.csv"),
-    "test": os.path.join("stsbenchmark", "sts-test.csv"),
+    "train": os.path.join("RTE", "train.tsv"),
+    "dev": os.path.join("RTE", "dev.tsv"),
+    "test": os.path.join("RTE", "test.tsv"),
 }
 
 
-def _filepath_fn(root, x=_PATH):
+def _filepath_fn(root, x=None):
     return os.path.join(root, os.path.basename(x))
 
 
 def _extracted_filepath_fn(root, split, _=None):
-    return _filepath_fn(root, _EXTRACTED_FILES[split])
+    return os.path.join(root, _EXTRACTED_FILES[split])
 
 
 def _filter_fn(split, x):
     return _EXTRACTED_FILES[split] in x[0]
 
 
-def _modify_res(x):
-    return (int(x[3]), float(x[4]), x[5], x[6])
+def _modify_res(split, x):
+    if split == "test":
+        return (x[1], x[2])
+    else:
+        return (int(x[3]), x[1], x[2])
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
-def STSB(root, split):
-    """STSB Dataset
+def RTE(root, split):
+    """RTE Dataset
 
-    .. warning::
-
-        using datapipes is still currently subject to a few caveats. if you wish
-        to use this dataset with shuffling, multi-processing, or distributed
-        learning, please see :ref:`this note <datapipes_warnings>` for further
-        instructions.
-
-    For additional details refer to https://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark
+    For additional details refer to https://aclweb.org/aclwiki/Recognizing_Textual_Entailment
 
     Number of lines per split:
-        - train: 5749
-        - dev: 1500
-        - test: 1379
+        - train: 67349
+        - dev: 872
+        - test: 1821
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `dev`, `test`)
 
-    :returns: DataPipe that yields tuple of (index (int), label (float), sentence1 (str), sentence2 (str))
-    :rtype: (int, float, str, str)
+    :returns: DataPipe that yields tuple of text and/or label (0 and 1). The `test` split only returns text.
+    :rtype: Union[(int, str, str), (str, str)]
     """
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
+            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
         )
 
     url_dp = IterableWrapper([URL])
@@ -95,10 +91,10 @@ def STSB(root, split):
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, split))
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(partial(_filter_fn, split))
+        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(partial(_filter_fn, split))
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(delimiter="\t", quoting=csv.QUOTE_NONE).map(_modify_res)
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(partial(_modify_res, split))
     return parsed_data.shuffle().set_shuffle(False).sharding_filter()

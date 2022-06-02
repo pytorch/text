@@ -219,7 +219,7 @@ def IWSLT2016(
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):

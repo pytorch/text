@@ -21,6 +21,10 @@ struct BERTEncoder : torch::CustomClassHolder {
       c10::optional<bool> strip_accents);
   std::vector<std::string> Tokenize(std::string text);
   std::vector<int64_t> Encode(std::string text);
+  std::vector<std::vector<std::string>> BatchTokenize(
+      std::vector<std::string> text);
+  std::vector<std::vector<int64_t>> BatchEncode(std::vector<std::string> text);
+
   Vocab vocab_;
   bool do_lower_case_;
   c10::optional<bool> strip_accents_ = {};
