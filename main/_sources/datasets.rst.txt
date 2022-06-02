@@ -67,10 +67,20 @@ MRPC
 
 .. autofunction:: MRPC
 
+QNLI
+~~~~
+
+.. autofunction:: QNLI
+
 QQP
 ~~~~
 
 .. autofunction:: QQP
+
+RTE
+~~~~
+
+.. autofunction:: RTE
 
 SogouNews
 ~~~~~~~~~
@@ -86,6 +96,11 @@ STSB
 ~~~~
 
 .. autofunction:: STSB
+
+WNLI
+~~~~
+
+.. autofunction:: WNLI
 
 YahooAnswers
 ~~~~~~~~~~~~
