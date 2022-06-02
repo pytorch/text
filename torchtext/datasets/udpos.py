@@ -45,6 +45,13 @@ def _filter_fn(split, x):
 def UDPOS(root: str, split: Union[Tuple[str], str]):
     """UDPOS Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     Number of lines per split:
         - train: 12543
         - valid: 2002
