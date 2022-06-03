@@ -37,6 +37,8 @@ _EXTRACTED_FILES = {
     "test": os.path.join("QNLI", "test.tsv"),
 }
 
+MAP_LABELS = {"not_entailment": 1, "entailment": 0}
+
 
 def _filepath_fn(root, x=None):
     return os.path.join(root, os.path.basename(x))
@@ -50,12 +52,11 @@ def _filter_fn(split, x):
     return _EXTRACTED_FILES[split] in x[0]
 
 
-def _modify_test_res(x):
-    return (x[1], x[2])
-
-
-def _modify_res(x):
-    return (int(x[3] == "entailment"), x[1], x[2])
+def _modify_res(split, x):
+    if split == "test":
+        return (x[1], x[2])
+    else:
+        return (MAP_LABELS[x[3]], x[1], x[2])
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -98,7 +99,7 @@ def QNLI(root, split):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-
-    modify_res_fn = _modify_test_res if split == "test" else _modify_res
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(modify_res_fn)
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(
+        partial(_modify_res, split)
+    )
     return parsed_data.shuffle().set_shuffle(False).sharding_filter()
