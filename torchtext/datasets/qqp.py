@@ -30,6 +30,14 @@ def _modify_res(x):
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 def QQP(root: str):
     """QQP dataset
+
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs
 
     Args:

@@ -9,6 +9,8 @@ from torchtext.datasets.rte import RTE
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
+LABELS = ["entailment", "not_entailment"]
+
 
 def _get_mock_dataset(root_dir):
     """
@@ -25,14 +27,14 @@ def _get_mock_dataset(root_dir):
         with open(txt_file, "w", encoding="utf-8") as f:
             f.write("index\tsentence1\tsentence2\tlabel\n")
             for i in range(5):
-                label = seed % 2
+                label = LABELS[seed % 2]
                 rand_string_1 = get_random_unicode(seed)
                 rand_string_2 = get_random_unicode(seed + 1)
                 if file_name == "test.tsv":
                     dataset_line = (rand_string_1, rand_string_2)
                     f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\n")
                 else:
-                    dataset_line = (label, rand_string_1, rand_string_2)
+                    dataset_line = (seed % 2, rand_string_1, rand_string_2)
                     f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\t{label}\n")
 
                 # append line to correct dataset split
@@ -49,7 +51,7 @@ def _get_mock_dataset(root_dir):
     return mocked_data
 
 
-class TestSST2(TempDirMixin, TorchtextTestCase):
+class TestRTE(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
@@ -57,7 +59,7 @@ class TestSST2(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.samples = _get_mock_dataset(cls.root_dir)
+        cls.samples = _get_mock_dataset(os.path.join(cls.root_dir, "datasets"))
         cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
