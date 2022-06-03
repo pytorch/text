@@ -54,7 +54,7 @@ class TestQNLI(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.samples = _get_mock_dataset(os.path.join(cls.root_dir, "datasets"))
+        cls.samples = _get_mock_dataset(cls.root_dir)
         cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
