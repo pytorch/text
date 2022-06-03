@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
+import csv
 import os
 from functools import partial
 
@@ -98,5 +99,7 @@ def RTE(root, split):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t").map(partial(_modify_res, split))
+    parsed_data = data_dp.parse_csv(skip_lines=1, delimiter="\t", quoting=csv.QUOTE_NONE).map(
+        partial(_modify_res, split)
+    )
     return parsed_data.shuffle().set_shuffle(False).sharding_filter()
