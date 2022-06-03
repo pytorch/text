@@ -109,7 +109,7 @@ Alternately we can also use transform shipped with pre-trained model that does a
   text_transform = XLMR_BASE_ENCODER.transform()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-89
+.. GENERATED FROM PYTHON SOURCE LINES 80-93
 
 Dataset
 -------
@@ -119,9 +119,13 @@ datapipes and hence support standard flow-control and mapping/transformation usi
 and transforms. Below, we demonstrate how to use text and label processing transforms to pre-process the
 SST-2 dataset.
 
+.. note::
+      Using datapipes is still currently subject to a few caveats. If you wish
+      to extend this example to include shuffling, multi-processing, or
+      distributed learning, please see :ref:`this note <datapipes_warnings>`
+      for further instructions.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 89-114
+.. GENERATED FROM PYTHON SOURCE LINES 93-118
 
 .. code-block:: default
 
@@ -151,7 +155,7 @@ SST-2 dataset.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-128
+.. GENERATED FROM PYTHON SOURCE LINES 119-132
 
 Alternately we can also use batched API (i.e apply transformation on the whole batch)
 
@@ -167,7 +171,7 @@ Alternately we can also use batched API (i.e apply transformation on the whole b
   dev_datapipe = dev_datapipe.map(lambda x: batch_transform)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-140
+.. GENERATED FROM PYTHON SOURCE LINES 134-144
 
 Model Preparation
 -----------------
@@ -180,7 +184,7 @@ please refer to documentation at https://pytorch.org/text/main/models.html
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-151
+.. GENERATED FROM PYTHON SOURCE LINES 144-155
 
 .. code-block:: default
 
@@ -196,7 +200,7 @@ please refer to documentation at https://pytorch.org/text/main/models.html
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-158
+.. GENERATED FROM PYTHON SOURCE LINES 156-162
 
 Training methods
 ----------------
@@ -205,7 +209,7 @@ Let's now define the standard optimizer and training criteria as well as some he
 for training and evaluation
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-200
+.. GENERATED FROM PYTHON SOURCE LINES 162-204
 
 .. code-block:: default
 
@@ -252,7 +256,7 @@ for training and evaluation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-209
+.. GENERATED FROM PYTHON SOURCE LINES 205-213
 
 Train
 -----
@@ -263,7 +267,7 @@ thanks to the batching datapipe we have applied. For distributed training, we wo
 take care of data-sharding.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 209-222
+.. GENERATED FROM PYTHON SOURCE LINES 213-226
 
 .. code-block:: default
 
@@ -281,7 +285,7 @@ take care of data-sharding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-235
+.. GENERATED FROM PYTHON SOURCE LINES 227-239
 
 Output
 ------

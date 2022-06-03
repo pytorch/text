@@ -85,7 +85,11 @@ from torch.utils.data import DataLoader
 # and transforms. Below, we demonstrate how to use text and label processing transforms to pre-process the
 # SST-2 dataset.
 #
-#
+# .. note::
+#       Using datapipes is still currently subject to a few caveats. If you wish
+#       to extend this example to include shuffling, multi-processing, or
+#       distributed learning, please see :ref:`this note <datapipes_warnings>`
+#       for further instructions.
 
 from torchtext.datasets import SST2
 
