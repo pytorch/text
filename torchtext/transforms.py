@@ -30,7 +30,6 @@ __all__ = [
     "StrToIntTransform",
     "GPT2BPETokenizer",
     "RegexTokenizer",
-    "regex_tokenizer",
     "Sequential",
 ]
 
@@ -693,30 +692,6 @@ class RegexTokenizer(Module):
             self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
         )
         return RegexTokenizer(regex_tokenizer)
-
-
-def regex_tokenizer(patterns_list):
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-
-    Args:
-        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
-        as the first element and the replacement string as the second element.
-
-    Examples:
-        >>> import torch
-        >>> from torchtext.experimental.transforms import regex_tokenizer
-        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
-        >>> patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', '')]
-        >>> reg_tokenizer = regex_tokenizer(patterns_list)
-        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
-        >>> tokens = jit_reg_tokenizer(test_sample)
-    """
-
-    patterns = [pair[0] for pair in patterns_list]
-    replacements = [pair[1] for pair in patterns_list]
-    return RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
 
 
 @lru_cache()

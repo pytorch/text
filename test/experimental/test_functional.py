@@ -4,8 +4,9 @@ import unittest
 
 import torch
 import torchtext.data as data
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.experimental.transforms import basic_english_normalize
-from torchtext.transforms import regex_tokenizer
+from torchtext.transforms import RegexTokenizer
 
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -144,7 +145,9 @@ class TestFunctional(TorchtextTestCase):
             (r"\s+", " "),
         ]
 
-        r_tokenizer = regex_tokenizer(patterns_list)
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        r_tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
         eager_tokens = r_tokenizer(test_sample)
 
         jit_r_tokenizer = torch.jit.script(r_tokenizer)
@@ -201,7 +204,10 @@ class TestFunctional(TorchtextTestCase):
 
         with self.subTest("pybind"):
             save_path = os.path.join(self.test_dir, "regex_pybind.pt")
-            tokenizer = regex_tokenizer(patterns_list)
+
+            patterns = [pair[0] for pair in patterns_list]
+            replacements = [pair[1] for pair in patterns_list]
+            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)
             results = loaded_tokenizer(test_sample)
@@ -211,7 +217,9 @@ class TestFunctional(TorchtextTestCase):
             save_path = os.path.join(self.test_dir, "regex_torchscript.pt")
             # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
             # Not expect users to use the torchbind version on eager mode but still need a CI test here.
-            tokenizer = regex_tokenizer(patterns_list).__prepare_scriptable__()
+            patterns = [pair[0] for pair in patterns_list]
+            replacements = [pair[1] for pair in patterns_list]
+            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False)).__prepare_scriptable__()
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)
             results = loaded_tokenizer(test_sample)
