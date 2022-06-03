@@ -1,8 +1,12 @@
 import os
+import platform
+import unittest
 from collections import OrderedDict
 
 import torch
 from torchtext import transforms
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
+from torchtext.transforms import RegexTokenizer
 from torchtext.vocab import vocab
 
 from .common.assets import get_asset_path
@@ -673,3 +677,128 @@ class TestBERTTokenizer(TorchtextTestCase):
             torch.save(tokenizer, tokenizer_path)
             loaded_tokenizer = torch.load(tokenizer_path)
             self._bert_tokenizer((loaded_tokenizer), do_lower_case=do_lower_case)
+
+
+class TestRegexTokenizer(TorchtextTestCase):
+    # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_RegexTokenizer(self):
+        test_sample = "'\".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   '\".<br />,()!?;:"
+        ref_results = [
+            "'",
+            ".",
+            ",",
+            "(",
+            ")",
+            "!",
+            "?",
+            "Basic",
+            "Regex",
+            "Tokenization",
+            "for",
+            "a",
+            "Line",
+            "of",
+            "Text",
+            "'",
+            ".",
+            ",",
+            "(",
+            ")",
+            "!",
+            "?",
+        ]
+        patterns_list = [
+            (r"\'", " '  "),
+            (r"\"", ""),
+            (r"\.", " . "),
+            (r"<br \/>", " "),
+            (r",", " , "),
+            (r"\(", " ( "),
+            (r"\)", " ) "),
+            (r"\!", " ! "),
+            (r"\?", " ? "),
+            (r"\;", " "),
+            (r"\:", " "),
+            (r"\s+", " "),
+        ]
+
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        r_tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
+        eager_tokens = r_tokenizer(test_sample)
+
+        jit_r_tokenizer = torch.jit.script(r_tokenizer)
+        jit_tokens = jit_r_tokenizer(test_sample)
+
+        assert not r_tokenizer.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert r_tokenizer.__prepare_scriptable__().is_jitable
+
+        self.assertEqual(eager_tokens, ref_results)
+        self.assertEqual(jit_tokens, ref_results)
+
+    def test_load_and_save(self):
+        test_sample = "'\".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   '\".<br />,()!?;:"
+        ref_results = [
+            "'",
+            ".",
+            ",",
+            "(",
+            ")",
+            "!",
+            "?",
+            "Basic",
+            "Regex",
+            "Tokenization",
+            "for",
+            "a",
+            "Line",
+            "of",
+            "Text",
+            "'",
+            ".",
+            ",",
+            "(",
+            ")",
+            "!",
+            "?",
+        ]
+        patterns_list = [
+            (r"\'", " '  "),
+            (r"\"", ""),
+            (r"\.", " . "),
+            (r"<br \/>", " "),
+            (r",", " , "),
+            (r"\(", " ( "),
+            (r"\)", " ) "),
+            (r"\!", " ! "),
+            (r"\?", " ? "),
+            (r"\;", " "),
+            (r"\:", " "),
+            (r"\s+", " "),
+        ]
+
+        with self.subTest("pybind"):
+            save_path = os.path.join(self.test_dir, "regex_pybind.pt")
+
+            patterns = [pair[0] for pair in patterns_list]
+            replacements = [pair[1] for pair in patterns_list]
+            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
+            torch.save(tokenizer, save_path)
+            loaded_tokenizer = torch.load(save_path)
+            results = loaded_tokenizer(test_sample)
+            self.assertEqual(results, ref_results)
+
+        with self.subTest("torchscript"):
+            save_path = os.path.join(self.test_dir, "regex_torchscript.pt")
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            patterns = [pair[0] for pair in patterns_list]
+            replacements = [pair[1] for pair in patterns_list]
+            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False)).__prepare_scriptable__()
+            torch.save(tokenizer, save_path)
+            loaded_tokenizer = torch.load(save_path)
+            results = loaded_tokenizer(test_sample)
+            self.assertEqual(results, ref_results)
