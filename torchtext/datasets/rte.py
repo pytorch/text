@@ -36,7 +36,7 @@ _EXTRACTED_FILES = {
     "test": os.path.join("RTE", "test.tsv"),
 }
 
-MAP_LABELS = {"not_entailment": 1, "entailment": 0}
+MAP_LABELS = {"entailment": 0, "not_entailment": 1}
 
 
 def _filepath_fn(root, x=None):
