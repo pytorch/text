@@ -40,6 +40,13 @@ def _filepath_fn(root, split, _=None):
 def SQuAD1(root: str, split: Union[Tuple[str], str]):
     """SQuAD1 Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://rajpurkar.github.io/SQuAD-explorer/
 
     Number of lines per split:

@@ -46,6 +46,13 @@ def _modify_res(t):
 def PennTreebank(root, split: Union[Tuple[str], str]):
     """PennTreebank Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://catalog.ldc.upenn.edu/docs/LDC95T7/cl93.html
 
     Number of lines per split:

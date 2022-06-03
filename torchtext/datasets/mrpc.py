@@ -45,6 +45,13 @@ def _modify_res(x):
 def MRPC(root: str, split: Union[Tuple[str], str]):
     """MRPC Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://www.microsoft.com/en-us/download/details.aspx?id=52398
 
     Number of lines per split:
