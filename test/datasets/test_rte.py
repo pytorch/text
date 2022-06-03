@@ -51,7 +51,7 @@ def _get_mock_dataset(root_dir):
     return mocked_data
 
 
-class TestSST2(TempDirMixin, TorchtextTestCase):
+class TestRTE(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
