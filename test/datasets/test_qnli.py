@@ -10,6 +10,9 @@ from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
+LABELS = ["entailment", "not_entailment"]
+
+
 def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
@@ -28,9 +31,14 @@ def _get_mock_dataset(root_dir):
                 label = seed % 2
                 rand_string_1 = get_random_unicode(seed)
                 rand_string_2 = get_random_unicode(seed + 1)
-                dataset_line = (label, rand_string_1, rand_string_2)
-                label_str = "entailment" if label == 1 else "not_entailment"
-                f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\t{label_str}\n")
+                label_str = LABELS[label]
+
+                if file_name == "test.tsv":
+                    dataset_line = (rand_string_1, rand_string_2)
+                    f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\n")
+                else:
+                    dataset_line = (label, rand_string_1, rand_string_2)
+                    f.write(f"{i}\t{rand_string_1}\t{rand_string_2}\t{label_str}\n")
 
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
@@ -54,7 +62,7 @@ class TestQNLI(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.samples = _get_mock_dataset(cls.root_dir)
+        cls.samples = _get_mock_dataset(os.path.join(cls.root_dir, "datasets"))
         cls.patcher = patch("torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True)
         cls.patcher.start()
 
