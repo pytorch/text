@@ -11,7 +11,6 @@ __all__ = [
     "basic_english_normalize",
     "regex_tokenizer",
     "BasicEnglishNormalize",
-    "RegexTokenizer",
     "PRETRAINED_SP_MODEL",
     "load_sp_model",
     "sentencepiece_tokenizer",
@@ -129,41 +128,6 @@ class BasicEnglishNormalize(nn.Module):
             self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True
         )
         return BasicEnglishNormalize(regex_tokenizer)
-
-
-class RegexTokenizer(nn.Module):
-    __jit_unused_properties__ = ["is_jitable"]
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-
-    Args:
-        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
-    """
-
-    def __init__(self, regex_tokenzier):
-        super(RegexTokenizer, self).__init__()
-        self.regex_tokenizer = regex_tokenzier
-
-    @property
-    def is_jitable(self):
-        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
-
-    def forward(self, line: str) -> List[str]:
-        r"""
-        Args:
-            lines (str): a text string to tokenize.
-
-        Returns:
-            List[str]: a token list after regex.
-        """
-
-        return self.regex_tokenizer.forward(line)
-
-    def __prepare_scriptable__(self):
-        r"""Return a JITable RegexTokenizer."""
-        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
-            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
-        )
-        return RegexTokenizer(regex_tokenizer)
 
 
 PRETRAINED_SP_MODEL = {

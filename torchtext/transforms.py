@@ -12,6 +12,7 @@ from torchtext._torchtext import (
     GPT2BPEEncoder as GPT2BPEEncoderPyBind,
     BERTEncoder as BERTEncoderPyBind,
 )
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
@@ -28,6 +29,7 @@ __all__ = [
     "PadTransform",
     "StrToIntTransform",
     "GPT2BPETokenizer",
+    "RegexTokenizer",
     "Sequential",
 ]
 
@@ -655,6 +657,41 @@ class BERTTokenizer(Module):
             return tokenizer_copy
 
         return self
+
+
+class RegexTokenizer(nn.Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
+
+    Args:
+        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
+    """
+
+    def __init__(self, regex_tokenzier):
+        super(RegexTokenizer, self).__init__()
+        self.regex_tokenizer = regex_tokenzier
+
+    @property
+    def is_jitable(self):
+        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
+
+    def forward(self, line: str) -> List[str]:
+        r"""
+        Args:
+            lines (str): a text string to tokenize.
+
+        Returns:
+            List[str]: a token list after regex.
+        """
+
+        return self.regex_tokenizer.forward(line)
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable RegexTokenizer."""
+        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
+        )
+        return RegexTokenizer(regex_tokenizer)
 
 
 @lru_cache()
