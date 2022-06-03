@@ -4,7 +4,8 @@ import unittest
 
 import torch
 import torchtext.data as data
-from torchtext.experimental.transforms import basic_english_normalize, regex_tokenizer
+from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.transforms import regex_tokenizer
 
 from ..common.torchtext_test_case import TorchtextTestCase
 
