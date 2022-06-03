@@ -56,6 +56,13 @@ def _filter_fn(split, language_pair, i, x):
 def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str] = ("de", "en")):
     """Multi30k dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://www.statmt.org/wmt16/multimodal-task.html#task1
 
     Number of lines per split:

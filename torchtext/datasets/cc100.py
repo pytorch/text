@@ -152,6 +152,13 @@ def _modify_res(language_code, x):
 def CC100(root: str, language_code: str = "en"):
     """CC100 Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://data.statmt.org/cc-100/
 
     Args:

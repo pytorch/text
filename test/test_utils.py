@@ -3,8 +3,10 @@
 import os
 import shutil
 import unittest
+from urllib.parse import urljoin
 
 from test.common.assets import get_asset_path
+from torchtext import _TEXT_BUCKET
 from torchtext import utils
 
 from .common.torchtext_test_case import TorchtextTestCase
@@ -23,7 +25,7 @@ class TestUtils(TorchtextTestCase):
             os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
-        url = "http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz"
+        url = urljoin(_TEXT_BUCKET, "assets/validation.tar.gz")
         target_archive_path = os.path.join(root, "validation.tar.gz")
         conditional_remove(target_archive_path)
 
@@ -132,7 +134,7 @@ class TestUtils(TorchtextTestCase):
             os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
-        url = "http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz"
+        url = urljoin(_TEXT_BUCKET, "assets/validation.tar.gz")
         target_archive_path = os.path.join(root, "validation.tar.gz")
         conditional_remove(target_archive_path)
 

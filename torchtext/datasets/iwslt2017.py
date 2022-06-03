@@ -140,6 +140,13 @@ def _inner_iwslt_tar_filepath_fn(inner_iwslt_tar, _=None):
 def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de", "en")):
     """IWSLT2017 dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://wit3.fbk.eu/2017-01
 
     The available datasets include following:
