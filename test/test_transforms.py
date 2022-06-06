@@ -5,7 +5,6 @@ from collections import OrderedDict
 
 import torch
 from torchtext import transforms
-from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.transforms import RegexTokenizer
 from torchtext.vocab import vocab
 
@@ -682,7 +681,7 @@ class TestBERTTokenizer(TorchtextTestCase):
 class TestRegexTokenizer(TorchtextTestCase):
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_RegexTokenizer(self):
+    def test_regex_tokenizer(self):
         test_sample = "'\".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   '\".<br />,()!?;:"
         ref_results = [
             "'",
@@ -723,9 +722,7 @@ class TestRegexTokenizer(TorchtextTestCase):
             (r"\s+", " "),
         ]
 
-        patterns = [pair[0] for pair in patterns_list]
-        replacements = [pair[1] for pair in patterns_list]
-        r_tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
+        r_tokenizer = RegexTokenizer(patterns_list)
         eager_tokens = r_tokenizer(test_sample)
 
         jit_r_tokenizer = torch.jit.script(r_tokenizer)
@@ -739,7 +736,7 @@ class TestRegexTokenizer(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
 
-    def test_load_and_save(self):
+    def test_regex_tokenizer_save_load(self):
         test_sample = "'\".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   '\".<br />,()!?;:"
         ref_results = [
             "'",
@@ -783,9 +780,7 @@ class TestRegexTokenizer(TorchtextTestCase):
         with self.subTest("pybind"):
             save_path = os.path.join(self.test_dir, "regex_pybind.pt")
 
-            patterns = [pair[0] for pair in patterns_list]
-            replacements = [pair[1] for pair in patterns_list]
-            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
+            tokenizer = RegexTokenizer(patterns_list)
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)
             results = loaded_tokenizer(test_sample)
@@ -795,9 +790,7 @@ class TestRegexTokenizer(TorchtextTestCase):
             save_path = os.path.join(self.test_dir, "regex_torchscript.pt")
             # Call the __prepare_scriptable__() func and convert the operator to the torchbind version
             # We don't expect users to use the torchbind version on eager mode but still need a CI test here.
-            patterns = [pair[0] for pair in patterns_list]
-            replacements = [pair[1] for pair in patterns_list]
-            tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False)).__prepare_scriptable__()
+            tokenizer = RegexTokenizer(patterns_list).__prepare_scriptable__()
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)
             results = loaded_tokenizer(test_sample)

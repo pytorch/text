@@ -664,12 +664,26 @@ class RegexTokenizer(Module):
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
 
     Args:
-        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+        as the first element and the replacement string as the second element.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.transforms import regex_tokenizer
+        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+        >>> patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', '')]
+        >>> reg_tokenizer = regex_tokenizer(patterns_list)
+        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+        >>> tokens = jit_reg_tokenizer(test_sample)
     """
 
-    def __init__(self, regex_tokenzier):
+    def __init__(self, patterns_list):
         super(RegexTokenizer, self).__init__()
-        self.regex_tokenizer = regex_tokenzier
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, False)
 
     @property
     def is_jitable(self):
@@ -688,10 +702,15 @@ class RegexTokenizer(Module):
 
     def __prepare_scriptable__(self):
         r"""Return a JITable RegexTokenizer."""
-        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
-            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
-        )
-        return RegexTokenizer(regex_tokenizer)
+
+        if not self.is_jitable:
+            regex_tokenizer_copy = deepcopy(self)
+            regex_tokenizer_copy.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+                self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
+            )
+            return regex_tokenizer_copy
+
+        return self
 
 
 @lru_cache()
