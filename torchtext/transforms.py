@@ -669,12 +669,12 @@ class RegexTokenizer(Module):
 
     Examples:
         >>> import torch
-        >>> from torchtext.transforms import regex_tokenizer
+        >>> from torchtext.transforms import RegexTokenizer
         >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
         >>> patterns_list = [
             (r'\'', ' \'  '),
             (r'\"', '')]
-        >>> reg_tokenizer = regex_tokenizer(patterns_list)
+        >>> reg_tokenizer = RegexTokenizer(patterns_list)
         >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
         >>> tokens = jit_reg_tokenizer(test_sample)
     """
