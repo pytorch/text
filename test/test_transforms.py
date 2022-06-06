@@ -732,8 +732,8 @@ class TestRegexTokenizer(TorchtextTestCase):
         jit_tokens = jit_r_tokenizer(test_sample)
 
         assert not r_tokenizer.is_jitable
-        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
-        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        # Call the __prepare_scriptable__() func and convert the operator to the torchbind version
+        # We don't expect users to use the torchbind version on eager mode but still need a CI test here.
         assert r_tokenizer.__prepare_scriptable__().is_jitable
 
         self.assertEqual(eager_tokens, ref_results)
@@ -793,8 +793,8 @@ class TestRegexTokenizer(TorchtextTestCase):
 
         with self.subTest("torchscript"):
             save_path = os.path.join(self.test_dir, "regex_torchscript.pt")
-            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
-            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            # Call the __prepare_scriptable__() func and convert the operator to the torchbind version
+            # We don't expect users to use the torchbind version on eager mode but still need a CI test here.
             patterns = [pair[0] for pair in patterns_list]
             replacements = [pair[1] for pair in patterns_list]
             tokenizer = RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False)).__prepare_scriptable__()
