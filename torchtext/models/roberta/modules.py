@@ -157,7 +157,7 @@ class TransformerEncoder(Module):
             # Then transpose back to T x B x C
             states = [encoded.transpose(1, 0)]
             for layer in self.layers.layers:
-                encoded = layer(encoded, padding_mask, attn_mask)
+                encoded = layer(encoded, src_key_padding_mask=padding_mask, src_mask=attn_mask)
                 encoded_t = encoded.transpose(1, 0)
                 states.append(encoded_t)
             if self.normalize_before:
@@ -167,7 +167,7 @@ class TransformerEncoder(Module):
         else:
             # B x T x C
             # Then transpose back to T x B x C
-            encoded = self.layers(padded_embedded).transpose(1, 0)
+            encoded = self.layers(padded_embedded, src_key_padding_mask=padding_mask).transpose(1, 0)
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
             return encoded
