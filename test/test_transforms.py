@@ -1,6 +1,4 @@
 import os
-import platform
-import unittest
 from collections import OrderedDict
 
 import torch
@@ -679,8 +677,6 @@ class TestBERTTokenizer(TorchtextTestCase):
 
 
 class TestRegexTokenizer(TorchtextTestCase):
-    # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_regex_tokenizer(self):
         test_sample = "'\".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   '\".<br />,()!?;:"
         ref_results = [
