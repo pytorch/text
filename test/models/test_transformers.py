@@ -50,7 +50,3 @@ class TestTransformers(TorchtextTestCase):
 
         output_no_pad, output_pad = encoder_inference(model, input_lst, with_no_grad)
         torch.testing.assert_close(output_no_pad, output_pad[:, :data_len, :])
-
-
-
-    
