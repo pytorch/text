@@ -1,5 +1,4 @@
 import torch
-import torchtext
 
 from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
