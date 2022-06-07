@@ -28,6 +28,7 @@ jobs:
           set -ex
           . packaging/pkg_helpers.bash
           setup_build_version
+          git submodule update --init --recursive
           WHL_NAME=torchtext-${BUILD_VERSION}-cp${PY_VERS/.}-cp${PY_VERS/.}-macosx_11_0_arm64.whl
           conda create -yp ${ENV_NAME} python=${PY_VERS} numpy cmake ninja wheel pkg-config
           conda run -p ${ENV_NAME} python3 -mpip install torch --pre --extra-index-url=https://download.pytorch.org/whl/nightly
