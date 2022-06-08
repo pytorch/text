@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220607) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.13.0.dev20220608) &#x25BC</a>
     </div>
     
 
@@ -332,6 +332,7 @@
     <span class="n">GPT2BPEEncoder</span> <span class="k">as</span> <span class="n">GPT2BPEEncoderPyBind</span><span class="p">,</span>
     <span class="n">BERTEncoder</span> <span class="k">as</span> <span class="n">BERTEncoderPyBind</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">RegexTokenizer</span> <span class="k">as</span> <span class="n">RegexTokenizerPybind</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">get_asset_local_path</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
@@ -348,6 +349,7 @@
     <span class="s2">&quot;PadTransform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;StrToIntTransform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;GPT2BPETokenizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RegexTokenizer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Sequential&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -975,6 +977,60 @@
             <span class="k">return</span> <span class="n">tokenizer_copy</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<span class="k">class</span> <span class="nc">RegexTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string</span>
+<span class="sd">        as the first element and the replacement string as the second element.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.transforms import RegexTokenizer</span>
+<span class="sd">        &gt;&gt;&gt; test_sample = &#39;Basic Regex Tokenization for a Line of Text&#39;</span>
+<span class="sd">        &gt;&gt;&gt; patterns_list = [</span>
+<span class="sd">            (r&#39;\&#39;&#39;, &#39; \&#39;  &#39;),</span>
+<span class="sd">            (r&#39;\&quot;&#39;, &#39;&#39;)]</span>
+<span class="sd">        &gt;&gt;&gt; reg_tokenizer = RegexTokenizer(patterns_list)</span>
+<span class="sd">        &gt;&gt;&gt; jit_reg_tokenizer = torch.jit.script(reg_tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; tokens = jit_reg_tokenizer(test_sample)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RegexTokenizer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">RegexTokenizerPybind</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="n">replacements</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="p">,</span> <span class="n">RegexTokenizerPybind</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lines (str): a text string to tokenize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: a token list after regex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable RegexTokenizer.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
+            <span class="n">regex_tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">regex_tokenizer_copy</span><span class="o">.</span><span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">patterns_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">replacements_</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">regex_tokenizer_copy</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
 
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
