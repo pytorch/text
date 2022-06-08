@@ -12,6 +12,7 @@ from torchtext._torchtext import (
     GPT2BPEEncoder as GPT2BPEEncoderPyBind,
     BERTEncoder as BERTEncoderPyBind,
 )
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
@@ -28,6 +29,7 @@ __all__ = [
     "PadTransform",
     "StrToIntTransform",
     "GPT2BPETokenizer",
+    "RegexTokenizer",
     "Sequential",
 ]
 
@@ -653,6 +655,60 @@ class BERTTokenizer(Module):
                 self._vocab_path, self._do_lower_case, self._strip_accents
             )
             return tokenizer_copy
+
+        return self
+
+
+class RegexTokenizer(Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
+
+    Args:
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+        as the first element and the replacement string as the second element.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.transforms import RegexTokenizer
+        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+        >>> patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', '')]
+        >>> reg_tokenizer = RegexTokenizer(patterns_list)
+        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+        >>> tokens = jit_reg_tokenizer(test_sample)
+    """
+
+    def __init__(self, patterns_list):
+        super(RegexTokenizer, self).__init__()
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, False)
+
+    @property
+    def is_jitable(self):
+        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
+
+    def forward(self, line: str) -> List[str]:
+        r"""
+        Args:
+            lines (str): a text string to tokenize.
+
+        Returns:
+            List[str]: a token list after regex.
+        """
+
+        return self.regex_tokenizer.forward(line)
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable RegexTokenizer."""
+
+        if not self.is_jitable:
+            regex_tokenizer_copy = deepcopy(self)
+            regex_tokenizer_copy.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+                self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
+            )
+            return regex_tokenizer_copy
 
         return self
 
