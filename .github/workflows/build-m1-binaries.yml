@@ -70,13 +70,17 @@ jobs:
           conda run --cwd /tmp -p ${ENV_NAME} python3 -c "import torchtext;print('torchtext version is ', torchtext.__version__)"
           conda env remove -p ${ENV_NAME}
       - name: Upload wheel to GitHub
-        if: ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref, 'refs/tags/')) }}
+        if:
+          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          'refs/tags/')) }}
         uses: actions/upload-artifact@v3
         with:
           name: torchtext-py${{ matrix.py_vers }}-macos11-m1
           path: dist/
       - name: Upload wheel to S3
-        if: ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref, 'refs/tags/')) }}
+        if:
+          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          'refs/tags/')) }}
         shell: arch -arch arm64 bash {0}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_PYTORCH_UPLOADER_ACCESS_KEY_ID }}
