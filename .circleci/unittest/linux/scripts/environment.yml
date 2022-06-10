@@ -6,6 +6,7 @@ dependencies:
   - pip:
       - dataclasses
       - nltk
+      - numpy
       - requests
       - revtok
       - pytest
