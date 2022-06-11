@@ -370,6 +370,9 @@ class MaskTransform(nn.Module):
                 ["[BOS]", "a", "b", "c", "d"],
                 ["[BOS]", "a", "b", "[PAD]", "[PAD]"]
             ]
+        >>> sample_token_ids = torch.tensor([
+                [6, 0, 1, 2, 3], [6, 0, 1, 4, 4]
+            ])
         >>> mask_transform = MaskTransform(
                 vocab_len = 7,
                 mask_idx = 4,
@@ -378,16 +381,14 @@ class MaskTransform(nn.Module):
                 mask_bos = False,
                 mask_prob = 0.15
             )
-        >>> masked_tokens, target_tokens, mask = mask_transform(sample_tokens)
+        >>> masked_tokens, target_tokens, mask = mask_transform(sample_token_ids)
     """
 
-    # maks_mask_thresh should be 1 - prob. of replacing token with [MASK]
-    # ex. If want to replace 80% of chosen tokens to [MASK], then set mask_mask_thresh = 1 - 0.8 = 0.2
-    mask_mask_thresh = 0.2
+    # maks_mask_prob is prob. of replacing a token with [MASK] (ex. 80%)
+    mask_mask_prob = 0.8
 
-    # rand_mask_thresh is prob. of replacing a token with a random token.
-    # ex. If want to replace 10% of chosen tokens with random tokens, then set rand_mask_prob = 0.1
-    rand_mask_thresh = 0.1
+    # rand_mask_thresh is prob. of replacing a token with a random token. (ex.10%)
+    rand_mask_prob = 0.1
 
     def __init__(
         self,
@@ -477,9 +478,9 @@ class MaskTransform(nn.Module):
 
         probs = torch.rand_like(tokens, dtype=torch.float)
         # (1) the [MASK] token 80% of the time
-        mask_mask = (probs >= self.mask_mask_thresh).long() * mask
+        mask_mask = (probs >= (1 - self.mask_mask_prob)).long() * mask
         # (2) a random token 10% of the time
-        rand_mask = (probs < self.rand_mask_thresh).long() * mask
+        rand_mask = (probs < self.rand_mask_prob).long() * mask
         return mask, mask_mask, rand_mask
 
     def _mask_input(self, tokens: torch.Tensor, mask: torch.Tensor, replacement) -> torch.Tensor:

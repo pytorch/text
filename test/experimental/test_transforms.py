@@ -180,10 +180,9 @@ class TestMaskTransform(TorchtextTestCase):
         # when mask_prob = 0, we expect the first token of the first sample sequence to be chosen for replacement
         if test_mask_prob == 0.0:
 
-            # when mask_mask_thresh, rand_mask_thresh = 0,0 we expect only the first token of the first sample sequence
-            # to be changed, and it will have the token id for [MASK]
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 0.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 0.0
+            # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
@@ -192,26 +191,25 @@ class TestMaskTransform(TorchtextTestCase):
 
                 self.assertEqual(exp_tokens, masked_tokens)
 
-            # when mask_mask_thresh, rand_mask_thresh = 1,0 none of the tokens selected for replacement
-            # will be replaced with [MASK] or random token. Therefore, we expect the input and output to be the same
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 1.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 0.0
+            # when mask_mask_prob, rand_mask_prob = 0,0 no tokens should change
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
                 self.assertEqual(self.sample_token_ids, masked_tokens)
 
-            # when mask_mask_thresh, rand_mask_thresh = 0,1 we expect only the first token of the first sample sequence
-            # to be changed and it will be replaced with a random token_id
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 0.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 1.0
+            # when mask_mask_prob, rand_mask_prob = 0,1 we expect all tokens selected for replacement to be
+            # changed to a random token_id
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 1.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
 
                 # first token in first sequence should be different
                 self.assertNotEqual(masked_tokens[0, 0], self.sample_token_ids[0, 0])
-                # replaced token id should still be in vocab
+                # replaced token id should still be in vocab, not including [BOS]
                 assert masked_tokens[0, 0] in range(self.vocab_len - 1)
 
                 # all other tokens except for first token of first sequence should remain the same
@@ -219,13 +217,12 @@ class TestMaskTransform(TorchtextTestCase):
                 self.assertEqual(self.sample_token_ids[1], masked_tokens[1])
 
         # when mask_prob = 1, we expect all tokens that are not [BOS] or [PAD] to be chosen for replacement
-        # (under default condition that mask_transform.mask_bos=False)
+        # (under the default condition that mask_transform.mask_bos=False)
         if test_mask_prob == 1.0:
 
-            # when mask_mask_thresh, rand_mask_thresh = 0,0 we expect all tokens chosen for replacement
-            # to be changed to the token id for [MASK]
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 0.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 0.0
+            # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
@@ -234,21 +231,20 @@ class TestMaskTransform(TorchtextTestCase):
 
                 self.assertEqual(exp_tokens, masked_tokens)
 
-            # when mask_mask_thresh, rand_mask_thresh = 1,0 none of the tokens selected for replacement
-            # will be replaced with [MASK] or random token. Therefore, we expect the input and output to be the same
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 1.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 0.0
+            # when mask_mask_prob, rand_mask_prob = 0,0 no tokens should change
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
                 self.assertEqual(self.sample_token_ids, masked_tokens)
 
-            # when mask_mask_thresh, rand_mask_thresh = 0,1 we expect all tokens selected for replacement
-            # to be changed to random token_ids. It it possible that the randomly selected token id is the same
+            # when mask_mask_prob, rand_mask_prob = 0,1 we expect all tokens selected for replacement
+            # to be changed to random token_ids. It is possible that the randomly selected token id is the same
             # as the original token id, however we know deterministically that [BOS] and [PAD] tokens
             # in the sequences will remain unchanged.
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 0.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 1.0
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 1.0
             ):
 
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
@@ -264,10 +260,9 @@ class TestMaskTransform(TorchtextTestCase):
             self.vocab_len - 1, self.mask_idx, self.bos_idx, self.pad_idx, mask_bos=True, mask_prob=1.0
         )
 
-        # when mask_mask_thresh, rand_mask_thres = 0,0 we expect all tokens chosen for replacement
-        # to be changed to the token id for [MASK]
-        with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_thresh", 0.0), patch(
-            "torchtext.experimental.transforms.MaskTransform.rand_mask_thresh", 0.0
+        # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
+        with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
+            "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
         ):
 
             masked_tokens, _, _ = mask_transform(self.sample_token_ids)
