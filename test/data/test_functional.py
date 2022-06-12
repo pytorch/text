@@ -125,7 +125,7 @@ class TestFunctional(TorchtextTestCase):
 
 
 class ScriptableSP(torch.jit.ScriptModule):
-    def __init__(self, model_path):
+    def __init__(self, model_path) -> None:
         super().__init__()
         self.spm = load_sp_model(model_path)
 

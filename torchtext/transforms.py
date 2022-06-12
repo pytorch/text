@@ -49,7 +49,7 @@ class SentencePieceTokenizer(Module):
         >>> transform(["hello world", "attention is all you need!"])
     """
 
-    def __init__(self, sp_model_path: str):
+    def __init__(self, sp_model_path: str) -> None:
         super().__init__()
         self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
 
@@ -87,7 +87,7 @@ class VocabTransform(Module):
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
-    def __init__(self, vocab: Vocab):
+    def __init__(self, vocab: Vocab) -> None:
         super().__init__()
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
@@ -151,7 +151,7 @@ class LabelToIndex(Module):
         label_names: Optional[List[str]] = None,
         label_path: Optional[str] = None,
         sort_names=False,
-    ):
+    ) -> None:
         assert label_names or label_path, "label_names or label_path is required"
         assert not (label_names and label_path), "label_names and label_path are mutually exclusive"
         super().__init__()
@@ -238,7 +238,7 @@ class PadTransform(Module):
     :type pad_value: bool
     """
 
-    def __init__(self, max_length: int, pad_value: int):
+    def __init__(self, max_length: int, pad_value: int) -> None:
         super().__init__()
         self.max_length = max_length
         self.pad_value = float(pad_value)
@@ -260,7 +260,7 @@ class PadTransform(Module):
 class StrToIntTransform(Module):
     """Convert string tokens to integers (either single sequence or batch)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def forward(self, input: Any) -> Any:
@@ -291,7 +291,7 @@ class GPT2BPETokenizer(Module):
     __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
-    def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False):
+    def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False) -> None:
         super().__init__()
         self._seperator = "\u0001"
         # load bpe encoder and bpe decoder
@@ -425,7 +425,7 @@ class CLIPTokenizer(Module):
         encoder_json_path: Optional[str] = None,
         num_merges: Optional[int] = None,
         return_tokens: bool = False,
-    ):
+    ) -> None:
         super().__init__()
         self._seperator = "\u0001"
         # load bpe merges
@@ -679,7 +679,7 @@ class RegexTokenizer(Module):
         >>> tokens = jit_reg_tokenizer(test_sample)
     """
 
-    def __init__(self, patterns_list):
+    def __init__(self, patterns_list) -> None:
         super(RegexTokenizer, self).__init__()
         patterns = [pair[0] for pair in patterns_list]
         replacements = [pair[1] for pair in patterns_list]
