@@ -1,0 +1,91 @@
+name: Build on M1
+on:
+  pull_request:
+    paths:
+      - .github/workflows/build-m1-binaries.yml
+  push:
+    branches:
+      - nightly
+    tags:
+      # NOTE: Binary build pipelines should only get triggered on release candidate builds
+      # Release candidate tags look like: v1.11.0-rc1
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+  workflow_dispatch:
+env:
+  CHANNEL: "nightly"
+jobs:
+  build_wheels:
+    name: "Build TorchText M1 wheels"
+    runs-on: macos-m1-11
+    strategy:
+      matrix:
+        py_vers: ["3.8", "3.9", "3.10"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set CHANNEL (only for tagged pushes)
+        if: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/') }}
+        run: |
+          # reference ends with an RC suffix
+          if [[ ${GITHUB_REF_NAME} = *-rc[0-9]* ]]; then
+            echo "CHANNEL=test" >> "$GITHUB_ENV"
+          fi
+      - name: Build TorchText M1 wheel
+        shell: arch -arch arm64 bash {0}
+        env:
+          ENV_NAME: conda-env-${{ github.run_id }}
+          PY_VERS: ${{ matrix.py_vers }}
+        run: |
+          echo $PATH
+          . ~/miniconda3/etc/profile.d/conda.sh
+          set -ex
+          . packaging/pkg_helpers.bash
+          # if we are uploading to test channell, our version consist only of the base: 0.x.x - no date string or suffix added
+          if [[ $CHANNEL == "test" ]]; then
+            setup_base_build_version
+          else
+            setup_build_version
+          fi
+          git submodule update --init --recursive
+          WHL_NAME=torchtext-${BUILD_VERSION}-cp${PY_VERS/.}-cp${PY_VERS/.}-macosx_11_0_arm64.whl
+          conda create -yp ${ENV_NAME} python=${PY_VERS} numpy cmake ninja wheel pkg-config
+          conda run -p ${ENV_NAME} python3 -mpip install torch --pre --extra-index-url=https://download.pytorch.org/whl/${CHANNEL}
+          conda run -p ${ENV_NAME} python3 -mpip install delocate
+          conda run -p ${ENV_NAME} python3 setup.py bdist_wheel
+          export PYTORCH_VERSION="$(conda run -p ${ENV_NAME} python3 -mpip show torch | grep ^Version: | sed 's/Version: *//')"
+          conda run -p ${ENV_NAME} DYLD_FALLBACK_LIBRARY_PATH="${ENV_NAME}/lib" delocate-wheel -v --ignore-missing-dependencies dist/${WHL_NAME}
+          conda env remove -p ${ENV_NAME}
+      - name: Test wheel
+        shell: arch -arch arm64 bash {0}
+        env:
+          ENV_NAME: conda-test-env-${{ github.run_id }}
+          PY_VERS: ${{ matrix.py_vers }}
+        run: |
+          . ~/miniconda3/etc/profile.d/conda.sh
+          set -ex
+          conda create -yp ${ENV_NAME} python=${PY_VERS} numpy
+          conda run -p ${ENV_NAME} python3 -mpip install torch --pre --extra-index-url=https://download.pytorch.org/whl/${CHANNEL}
+          conda run -p ${ENV_NAME} python3 -mpip install dist/*.whl
+          # Test torch is importable, by changing cwd and running import commands
+          conda run --cwd /tmp -p ${ENV_NAME} python3 -c "import torchtext;print('torchtext version is ', torchtext.__version__)"
+          conda env remove -p ${ENV_NAME}
+      - name: Upload wheel to GitHub
+        if:
+          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          'refs/tags/')) }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: torchtext-py${{ matrix.py_vers }}-macos11-m1
+          path: dist/
+      - name: Upload wheel to S3
+        if:
+          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          'refs/tags/')) }}
+        shell: arch -arch arm64 bash {0}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_PYTORCH_UPLOADER_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_PYTORCH_UPLOADER_SECRET_ACCESS_KEY }}
+        run: |
+          for pkg in dist/*; do
+            aws s3 cp "$pkg" "s3://pytorch/whl/${CHANNEL}/cpu/" --acl public-read
+          done
