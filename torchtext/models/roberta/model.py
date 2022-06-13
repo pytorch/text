@@ -109,7 +109,9 @@ class RobertaModel(Module):
         >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
     """
 
-    def __init__(self, encoder_conf: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False) -> None:
+    def __init__(
+        self, encoder_conf: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False
+    ) -> None:
         super().__init__()
         assert isinstance(encoder_conf, RobertaEncoderConf)
 
