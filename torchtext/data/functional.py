@@ -295,7 +295,7 @@ def to_map_style_dataset(iter_data):
 
     # Inner class to convert iterable-style to map-style dataset
     class _MapStyleDataset(torch.utils.data.Dataset):
-        def __init__(self, iter_data):
+        def __init__(self, iter_data) -> None:
             # TODO Avoid list issue #1296
             self._data = list(iter_data)
 
