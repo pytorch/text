@@ -71,7 +71,7 @@ jobs:
           conda env remove -p ${ENV_NAME}
       - name: Upload wheel to GitHub
         if:
-          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          ${{ github.event_name == 'push' && (github.event.ref == 'refs/heads/nightly' || startsWith(github.event.ref,
           'refs/tags/')) }}
         uses: actions/upload-artifact@v3
         with:
@@ -79,7 +79,7 @@ jobs:
           path: dist/
       - name: Upload wheel to S3
         if:
-          ${{ github.event_name == 'push' && (github.event.ref == 'ref/heads/nightly' || startsWith(github.event.ref,
+          ${{ github.event_name == 'push' && (github.event.ref == 'refs/heads/nightly' || startsWith(github.event.ref,
           'refs/tags/')) }}
         shell: arch -arch arm64 bash {0}
         env:

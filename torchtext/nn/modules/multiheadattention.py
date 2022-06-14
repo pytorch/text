@@ -4,7 +4,7 @@ import torch
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, nhead, in_proj_container, attention_layer, out_proj, batch_first=False):
+    def __init__(self, nhead, in_proj_container, attention_layer, out_proj, batch_first=False) -> None:
         r"""A multi-head attention container
 
         Args:
@@ -119,7 +119,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
 
 
 class ScaledDotProduct(torch.nn.Module):
-    def __init__(self, dropout=0.0, batch_first=False):
+    def __init__(self, dropout=0.0, batch_first=False) -> None:
         r"""Processes a projected query and key-value pair to apply
         scaled dot product attention.
 
@@ -236,7 +236,7 @@ class ScaledDotProduct(torch.nn.Module):
 
 
 class InProjContainer(torch.nn.Module):
-    def __init__(self, query_proj, key_proj, value_proj):
+    def __init__(self, query_proj, key_proj, value_proj) -> None:
         r"""A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
         the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
         Fig 2 of Attention Is All You Need paper. Also check the usage example
