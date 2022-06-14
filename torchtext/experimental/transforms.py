@@ -451,7 +451,7 @@ class MaskTransform(nn.Module):
         batch_size, seq_len = tokens.size()
         num_masked_per_seq = int(seq_len * mask_prob)
 
-        mask = torch.zeros((batch_size, seq_len), dtype=torch.int)
+        mask = torch.zeros((batch_size, seq_len), dtype=torch.int).to(tokens.device)
         mask[:, :num_masked_per_seq] = 1
         for i in range(batch_size):
             mask[i] = mask[i, torch.randperm(seq_len)]
