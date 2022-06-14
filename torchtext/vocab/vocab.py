@@ -13,7 +13,7 @@ class Vocab(nn.Module):
         vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 
-    def __init__(self, vocab):
+    def __init__(self, vocab) -> None:
         super(Vocab, self).__init__()
         self.vocab = vocab
         _log_class_usage(__class__)

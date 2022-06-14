@@ -207,7 +207,7 @@ class Vectors(nn.Module):
         vectors (torch.classes.torchtext.Vectors or torchtext._torchtext.Vectors): a cpp vectors object.
     """
 
-    def __init__(self, vectors):
+    def __init__(self, vectors) -> None:
         super(Vectors, self).__init__()
         self.vectors = vectors
 
