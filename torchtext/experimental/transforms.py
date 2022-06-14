@@ -353,8 +353,6 @@ class MaskTransform(nn.Module):
     (2) a random token 10% of the time
     (3) the unchanged i-th token 10% of the time.
 
-    NOTE: this transform is not torchscriptible.
-
     Args:
         vocab_len (int): the length of the vocabulary, including special tokens such as [BOS], [PAD], [MASK]
         mask_idx (int): index assigned to mask token in vocabulary
@@ -400,19 +398,19 @@ class MaskTransform(nn.Module):
         mask_prob: float = 0.15,
     ):
         super().__init__()
-        self.vocab_len: int = vocab_len
-        self.mask_idx: int = mask_idx
-        self.bos_idx: int = bos_idx
-        self.pad_idx: int = pad_idx
-        self.mask_prob: float = mask_prob
-        self.mask_bos: bool = mask_bos
+        self.vocab_len = vocab_len
+        self.mask_idx = mask_idx
+        self.bos_idx = bos_idx
+        self.pad_idx = pad_idx
+        self.mask_prob = mask_prob
+        self.mask_bos = mask_bos
 
     def forward(self, tokens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Applies mask to input tokens.
 
         Inputs:
-            tokens: Tensor with token ids of shape (batch_size x seq_len)
+            tokens: Tensor with token ids of shape (batch_size x seq_len). Includes token ids for special tokens such as [BOS] and [PAD]
 
         Outputs:
             masked_tokens: Tensor of tokens after masking has been applied
@@ -462,7 +460,6 @@ class MaskTransform(nn.Module):
         return mask
 
     def _select_tokens_to_mask(self, tokens: torch.Tensor, mask_prob: float) -> torch.Tensor:
-        # TODO: implement MaskingStrategy.FREQUENCY
         mask = self._random_masking(tokens, mask_prob)
         if not self.mask_bos:
             mask *= (tokens != self.bos_idx).long()
