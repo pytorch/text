@@ -1,7 +1,6 @@
 import io
 from typing import List, Tuple
 
-import numpy as np
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -452,11 +451,11 @@ class MaskTransform(nn.Module):
         batch_size, seq_len = tokens.size()
         num_masked_per_seq = int(seq_len * mask_prob)
 
-        mask = np.zeros((batch_size, seq_len), dtype=np.int_)
+        mask = torch.zeros((batch_size, seq_len), dtype=torch.int)
         mask[:, :num_masked_per_seq] = 1
-        for row in mask:
-            np.random.shuffle(row)
-        mask = torch.from_numpy(mask).to(tokens.device)
+        for i in range(batch_size):
+            mask[i] = mask[i, torch.randperm(seq_len)]
+
         return mask
 
     def _select_tokens_to_mask(self, tokens: torch.Tensor, mask_prob: float) -> torch.Tensor:
