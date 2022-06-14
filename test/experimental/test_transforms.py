@@ -174,28 +174,16 @@ class TestMaskTransform(TorchtextTestCase):
         # In practice, however, the actual vocab length should be provided as the input parameter so that random
         # replacement selects from all possible tokens in the vocab.
         mask_transform = MaskTransform(
-            self.vocab_len - 1, self.mask_idx, self.bos_idx, self.pad_idx, mask_prob=test_mask_prob
+            self.vocab_len - 1, self.mask_idx, self.bos_idx, self.pad_idx, mask_bos=False, mask_prob=test_mask_prob
         )
 
         # when mask_prob = 0, we expect the first token of the first sample sequence to be chosen for replacement
         if test_mask_prob == 0.0:
 
-            # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
-            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
-                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
-            ):
-
-                masked_tokens, _, _ = mask_transform(self.sample_token_ids)
-
-                exp_tokens = torch.tensor([[5, 0, 1, 2, 3], [6, 0, 1, 4, 4]])
-
-                self.assertEqual(exp_tokens, masked_tokens)
-
             # when mask_mask_prob, rand_mask_prob = 0,0 no tokens should change
             with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
                 "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
-
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
                 self.assertEqual(self.sample_token_ids, masked_tokens)
 
@@ -204,7 +192,6 @@ class TestMaskTransform(TorchtextTestCase):
             with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
                 "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 1.0
             ):
-
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
 
                 # first token in first sequence should be different
@@ -216,26 +203,22 @@ class TestMaskTransform(TorchtextTestCase):
                 self.assertEqual(self.sample_token_ids[0, 1:], masked_tokens[0, 1:])
                 self.assertEqual(self.sample_token_ids[1], masked_tokens[1])
 
-        # when mask_prob = 1, we expect all tokens that are not [BOS] or [PAD] to be chosen for replacement
-        # (under the default condition that mask_transform.mask_bos=False)
-        if test_mask_prob == 1.0:
-
             # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
             with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
                 "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
-
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
-
-                exp_tokens = torch.tensor([[6, 5, 5, 5, 5], [6, 5, 5, 4, 4]])
-
+                exp_tokens = torch.tensor([[5, 0, 1, 2, 3], [6, 0, 1, 4, 4]])
                 self.assertEqual(exp_tokens, masked_tokens)
+
+        # when mask_prob = 1, we expect all tokens that are not [BOS] or [PAD] to be chosen for replacement
+        # (under the default condition that mask_transform.mask_bos=False)
+        if test_mask_prob == 1.0:
 
             # when mask_mask_prob, rand_mask_prob = 0,0 no tokens should change
             with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
                 "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
             ):
-
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
                 self.assertEqual(self.sample_token_ids, masked_tokens)
 
@@ -246,11 +229,17 @@ class TestMaskTransform(TorchtextTestCase):
             with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 0.0), patch(
                 "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 1.0
             ):
-
                 masked_tokens, _, _ = mask_transform(self.sample_token_ids)
-
                 self.assertEqual(masked_tokens[:, 0], 6 * torch.ones_like(masked_tokens[:, 0]))
                 self.assertEqual(masked_tokens[1, 3:], 4 * torch.ones_like(masked_tokens[1, 3:]))
+
+            # when mask_mask_prob, rand_mask_prob = 1,0 we expect all tokens selected for replacement to be changed to [MASK]
+            with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
+                "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
+            ):
+                masked_tokens, _, _ = mask_transform(self.sample_token_ids)
+                exp_tokens = torch.tensor([[6, 5, 5, 5, 5], [6, 5, 5, 4, 4]])
+                self.assertEqual(exp_tokens, masked_tokens)
 
     def test_mask_transform_mask_bos(self):
         # MaskTransform has boolean parameter mask_bos to indicate whether or not [BOS] tokens
@@ -264,9 +253,6 @@ class TestMaskTransform(TorchtextTestCase):
         with patch("torchtext.experimental.transforms.MaskTransform.mask_mask_prob", 1.0), patch(
             "torchtext.experimental.transforms.MaskTransform.rand_mask_prob", 0.0
         ):
-
             masked_tokens, _, _ = mask_transform(self.sample_token_ids)
-
             exp_tokens = torch.tensor([[5, 5, 5, 5, 5], [5, 5, 5, 4, 4]])
-
             self.assertEqual(exp_tokens, masked_tokens)
