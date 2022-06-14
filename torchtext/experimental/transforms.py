@@ -441,7 +441,7 @@ class MaskTransform(nn.Module):
         Function to mask tokens randomly.
 
         Inputs:
-            1) tokens: Tensor with token ids of shape (batch_size x seq_len)
+            1) tokens: Tensor with token ids of shape (batch_size x seq_len). Includes token ids for special tokens such as [BOS] and [PAD]
             2) mask_prob: Probability of masking a particular token
 
         Outputs:
