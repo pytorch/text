@@ -41,7 +41,7 @@ class RobertaEncoder(Module):
         scaling: Optional[float] = None,
         normalize_before: bool = False,
         freeze: bool = False,
-    ):
+    ) -> None:
         super().__init__()
         if not scaling:
             head_dim = embedding_dim // num_attention_heads
@@ -79,7 +79,7 @@ class RobertaEncoder(Module):
 class RobertaClassificationHead(nn.Module):
     def __init__(
         self, num_classes, input_dim, inner_dim: Optional[int] = None, dropout: float = 0.1, activation=nn.ReLU
-    ):
+    ) -> None:
         super().__init__()
         if not inner_dim:
             inner_dim = input_dim
@@ -109,7 +109,9 @@ class RobertaModel(Module):
         >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
     """
 
-    def __init__(self, encoder_conf: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
+    def __init__(
+        self, encoder_conf: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False
+    ) -> None:
         super().__init__()
         assert isinstance(encoder_conf, RobertaEncoderConf)
 

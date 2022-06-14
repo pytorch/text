@@ -78,7 +78,7 @@ class BasicEnglishNormalize(nn.Module):
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
 
-    def __init__(self, regex_tokenizer):
+    def __init__(self, regex_tokenizer) -> None:
         super(BasicEnglishNormalize, self).__init__()
         self.regex_tokenizer = regex_tokenizer
 
@@ -185,7 +185,7 @@ class SentencePieceTokenizer(nn.Module):
        spm_model: the sentencepiece model instance
     """
 
-    def __init__(self, spm_model):
+    def __init__(self, spm_model) -> None:
         super(SentencePieceTokenizer, self).__init__()
         self.sp_model = spm_model
 
@@ -245,7 +245,7 @@ class SentencePieceProcessor(nn.Module):
        spm_model: the sentencepiece model instance
     """
 
-    def __init__(self, spm_model):
+    def __init__(self, spm_model) -> None:
         super(SentencePieceProcessor, self).__init__()
         self.sp_model = spm_model
 
@@ -293,7 +293,7 @@ class VocabTransform(nn.Module):
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
-    def __init__(self, vocab):
+    def __init__(self, vocab) -> None:
         super(VocabTransform, self).__init__()
         self.vocab = vocab
 
@@ -324,7 +324,7 @@ class VectorTransform(nn.Module):
         >>> jit_vector_transform = torch.jit.script(vector_transform)
     """
 
-    def __init__(self, vector):
+    def __init__(self, vector) -> None:
         super(VectorTransform, self).__init__()
         self.vector = vector
 
