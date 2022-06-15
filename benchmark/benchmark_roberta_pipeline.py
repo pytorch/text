@@ -78,7 +78,7 @@ def init_ta_gpt2bpe_vocab():
     return ta_vocab
 
 
-class RobertaTransformDataFrame(Module):
+class RobertaTransformDataFrameNativeOps(Module):
     def __init__(self) -> None:
         super().__init__()
         # Tokenizer to split input text into tokens
@@ -96,9 +96,36 @@ class RobertaTransformDataFrame(Module):
     def forward(self, input: ta.DataFrame) -> ta.DataFrame:
         input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
         input["tokens"] = input["tokens"].list.slice(stop=254)
-        token_ids = ta_F.lookup_indices(self.vocab, input["tokens"])
-        token_ids._dtype = dt.List(dt.int64)
-        input["tokens"] = token_ids
+        input["tokens"] = ta_F.lookup_indices(self.vocab, input["tokens"])
+        input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
+        input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
+        return input
+
+
+class RobertaTransformDataFrameUDF(Module):
+    def __init__(self) -> None:
+        super().__init__()
+        # Instantiate various transforms
+
+        # Tokenizer to split input text into tokens
+        encoder_json_path = "https://download.pytorch.org/models/text/gpt2_bpe_encoder.json"
+        vocab_bpe_path = "https://download.pytorch.org/models/text/gpt2_bpe_vocab.bpe"
+        self.tokenizer = T.GPT2BPETokenizer(encoder_json_path, vocab_bpe_path)
+
+        # vocabulary converting tokens to IDs
+        vocab_path = "https://download.pytorch.org/models/text/roberta.vocab.pt"
+        self.vocab = T.VocabTransform(load_state_dict_from_url(vocab_path))
+
+        # Add BOS token to the beginning of sentence
+        self.add_bos = T.AddToken(token=0, begin=True)
+
+        # Add EOS token to the end of sentence
+        self.add_eos = T.AddToken(token=2, begin=False)
+
+    def forward(self, input: ta.DataFrame) -> ta.DataFrame:
+        input["tokens"] = input["text"].transform(self.tokenizer, dtype=dt.List(dt.string), format="python")
+        input["tokens"] = input["tokens"].list.slice(stop=254)
+        input["tokens"] = input["tokens"].transform(self.vocab, dtype=dt.List(dt.int32), format="python")
         input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
         input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
         return input
@@ -130,15 +157,23 @@ def benchmark_roberta_datapipe(args):
         list(train_dp)
 
 
-def benchmark_roberta_dataframe(args):
+def benchmark_roberta_dataframe(args, native_ops):
     print("****************Running Benchmark using TorchArrow Dataframes*********************\n")
     batch_size = args.batch_size
     dataset_name = args.dataset_name
     columns = args.columns
 
+    if native_ops:
+        append_text = "as native ops"
+    else:
+        append_text = "as UDF"
+
     # Instantiate transform
-    with Timer("Initialize Roberta Transform (for DataFrame)"):
-        transform = RobertaTransformDataFrame()
+    with Timer("Initialize Roberta Transform (for DataFrame) {}".format(append_text)):
+        if native_ops:
+            transform = RobertaTransformDataFrameNativeOps()
+        else:
+            transform = RobertaTransformDataFrameUDF()
 
     with Timer("Initialize Pipeline"):
         # Create SST2 datapipe and apply pre-processing
@@ -167,4 +202,5 @@ if __name__ == "__main__":
     parser.add_argument("--dataset-name", default="SST2", type=str)
     parser.add_argument("--columns", default=["text", "label"], nargs="+")
     benchmark_roberta_datapipe(parser.parse_args())
-    benchmark_roberta_dataframe(parser.parse_args())
+    benchmark_roberta_dataframe(parser.parse_args(), native_ops=False)
+    benchmark_roberta_dataframe(parser.parse_args(), native_ops=True)
