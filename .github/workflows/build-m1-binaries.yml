@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - nightly
+      - release/*
     tags:
       # NOTE: Binary build pipelines should only get triggered on release candidate builds
       # Release candidate tags look like: v1.11.0-rc1
@@ -30,6 +31,12 @@ jobs:
           if [[ ${GITHUB_REF_NAME} = *-rc[0-9]* ]]; then
             echo "CHANNEL=test" >> "$GITHUB_ENV"
           fi
+      - name: Set Release CHANNEL (for release)
+        if:
+          ${{ (github.event_name == 'pull_request' && startsWith(github.base_ref, 'release')) || startsWith(github.ref,
+          'release') }}
+        run: |
+          echo "CHANNEL=test" >> "$GITHUB_ENV"
       - name: Build TorchText M1 wheel
         shell: arch -arch arm64 bash {0}
         env:
