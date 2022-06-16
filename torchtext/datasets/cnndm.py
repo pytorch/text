@@ -1,9 +1,5 @@
-import collections
 import hashlib
 import os
-import struct
-import subprocess
-import sys
 from functools import partial
 from typing import Union, Tuple
 
@@ -18,10 +14,8 @@ if is_module_available("torchdata"):
         FileOpener,
         IterableWrapper,
         OnlineReader,
-        FileLister,
         GDriveReader,
     )
-    from torchtext._download_hooks import HttpReader
 
 
 dm_single_close_quote = "\u2019"  # unicode
@@ -124,7 +118,7 @@ def _get_art_abs(story_file):
     # Lowercase everything
     lines = [line.decode().lower() for line in lines]
 
-    # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods; 
+    # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods;
     # consequently they end up in the body of the article as run-on sentences)
     lines = [_fix_missing_period(line) for line in lines]
 
@@ -149,10 +143,10 @@ def _get_art_abs(story_file):
     abstract = " ".join(["%s %s %s" % (SENTENCE_START, sent, SENTENCE_END) for sent in highlights])
 
     return article, abstract
-  
 
-def _load_stories(root: str, source:str):
-    
+
+def _load_stories(root: str, source: str):
+
     story_dp = IterableWrapper([STORIES_LIST[source]])
 
     cache_compressed_dp = story_dp.on_disk_cache(
@@ -166,6 +160,7 @@ def _load_stories(root: str, source:str):
     cache_decompressed_dp = FileOpener(cache_compressed_dp, mode="b").load_from_tar()
 
     return cache_decompressed_dp
+
 
 # commented out because currently not being used
 # def _get_story_files(url_hash):
@@ -196,28 +191,27 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
     #     return _get_art_abs(story_file)
 
     # return story_fnames.map(_parse_story_file)
-    
+
     # TODO: store story_fnames on disk
     urls = list(_get_url_list(split))
     url_hashes = _get_url_hashes(urls)
-    story_fnames = set(s+".story" for s in url_hashes)
+    story_fnames = set(s + ".story" for s in url_hashes)
 
-
-    cnn_dp = _load_stories(root, 'cnn')
-    dailymail_dp = _load_stories(root, 'dailymail')
+    cnn_dp = _load_stories(root, "cnn")
+    dailymail_dp = _load_stories(root, "dailymail")
     data_dp = cnn_dp.concat(dailymail_dp)
-    
+
     data_dp = data_dp.filter(partial(_filter_fn, story_fnames))
     data_dp = data_dp.map(lambda t: _get_art_abs(t[1]))
-    
+
     return data_dp.shuffle().set_shuffle(False).sharding_filter()
 
 
 if __name__ == "__main__":
+    print("start")
+    # out = CNNDM(os.path.expanduser("~/.torchtext/cache"), "val")
+    # ex = iter(out)
+    # ex = next(ex)
 
-    #out = CNNDM(os.path.expanduser("~/.torchtext/cache"), "val")
-    #ex = iter(out)
-    #ex = next(ex)
-
-    #print(f"article:\n{ex[0]}")
-    #print(f"abstract:\n{ex[1]}")
+    # print(f"article:\n{ex[0]}")
+    # print(f"abstract:\n{ex[1]}")
