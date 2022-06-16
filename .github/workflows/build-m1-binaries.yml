@@ -96,7 +96,7 @@ jobs:
           for pkg in dist/*; do
             aws s3 cp "$pkg" "s3://pytorch/whl/${CHANNEL}/cpu/" --acl public-read
           done
-build_conda:
+  build_conda:
     name: "Build TorchText M1 conda packages"
     runs-on: macos-m1
     strategy:
