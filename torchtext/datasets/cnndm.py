@@ -1,5 +1,9 @@
+import collections
 import hashlib
 import os
+import struct
+import subprocess
+import sys
 from functools import partial
 from typing import Union, Tuple
 
@@ -13,6 +17,7 @@ if is_module_available("torchdata"):
         FileLister,
         GDriveReader,
     )
+    from torchtext._download_hooks import HttpReader
 
 
 dm_single_close_quote = "\u2019"  # unicode
@@ -31,6 +36,7 @@ END_TOKENS = [
 ]  # acceptable ways to end a sentence
 SENTENCE_START = "<s>"
 SENTENCE_END = "</s>"
+DATASET_NAME = "CNNDM"
 
 URL_LIST = {
     "train": "https://raw.githubusercontent.com/abisee/cnn-dailymail/master/url_lists/all_train.txt",
@@ -56,9 +62,9 @@ PATH_LIST = {
 
 STORIES_MD5 = {"cnn": "85ac23a1926a831e8f46a6b8eaf57263", "dailymail": "f9c5f565e8abe86c38bfa4ae8f96fd72"}
 
-_EXTRACTED_FILES = {
-    "cnn": os.path.join("cnn_stories.tgz", "cnn", "stories"),
-    "daily_mail": os.path.join("dailymail_stories.tgz", "dailymail", "stories"),
+_EXTRACTED_FOLDERS = {
+    "cnn": os.path.join("cnn", "stories"),
+    "daily_mail": os.path.join("dailymail", "stories"),
 }
 
 
@@ -66,8 +72,8 @@ def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
 
 
-def _extracted_filepath_fn(root: str, source: str, _=None):
-    return os.path.join(root, _EXTRACTED_FILES[source])
+def _extracted_file_path_fn(root: str, source: str, t):
+    return os.path.join(root, _EXTRACTED_FOLDERS[source])
 
 
 def _modify_res(t):
@@ -82,7 +88,6 @@ def _get_url_list(split: str):
 
 
 def _get_stories(root: str, source: str):
-
     story_dp = IterableWrapper([STORIES_LIST[source]])
 
     cache_compressed_dp = story_dp.on_disk_cache(
@@ -92,20 +97,13 @@ def _get_stories(root: str, source: str):
     )
 
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, source))
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_tar()
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
-
-    stories = FileLister(cache_compressed_dp)
-    stories = FileOpener(stories, mode="b")
-    stories = stories.load_from_tar()
-
-    stories_dict = {}
-
-    for filename, stream in stories:
-        stories_dict[filename] = stream
-
-    return stories_dict
+    # cache_decompressed_dp = cache_compressed_dp.on_disk_cache()
+    cache_decompressed_dp = FileOpener(cache_compressed_dp, mode="b").load_from_tar()
+    # .map(lambda t: (os.path.join(root, source, "stories", os.path.basename(t[0])), t[1]))
+    # cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=False)
+    stories = cache_decompressed_dp
+    stories = stories.map(lambda t: _get_art_abs(t[1]))
+    return stories
 
 
 def _hashhex(s):
@@ -117,16 +115,6 @@ def _hashhex(s):
 
 def _get_url_hashes(url_list):
     return [_hashhex(url) for url in url_list]
-
-
-def _read_text_file(text_file):
-
-    lines = []
-    with open(text_file, "r") as f:
-        for line in f:
-            lines.append(line.strip())
-
-    return lines
 
 
 def _fix_missing_period(line):
@@ -142,7 +130,6 @@ def _fix_missing_period(line):
 
 
 def _get_art_abs(story_file):
-    # lines = _read_text_file(story_file)
     lines = story_file.readlines()
     # Lowercase everything
     lines = [line.decode().lower() for line in lines]
@@ -173,19 +160,33 @@ def _get_art_abs(story_file):
     return article, abstract
 
 
+def _get_story_files(url_hash):
+    return url_hash + ".story"
+
+
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(("train", "test"))
 def CNNDM(root: str, split: Union[Tuple[str], str]):
-
     urls = list(_get_url_list(split))
-
+    
     cnn_stories = _get_stories(root, "cnn")
-    dm_stories = _get_stories(root, "dailymail")
+    # dm_stories = _get_stories(root, 'dailymail')
+
+    # Things to figure out
+    # * combine the contents of cnn/dm tars to get all (filepaths, streams)
+    # * filter files based on which split we're working with
+    # * gow to split up these helper functions
+    # * store the .story filenames corresponding to each split on disk so we can pass that into the filepath_fn of the on_disk_cache_dp which caches the files extracted from the tar
+    # * how to cache the contents of the extracted tar file
+
+    return cnn_stories
 
     url_hashes = _get_url_hashes(urls)
-    story_fnames = [s + ".story" for s in url_hashes]
-    # num_stories = len(story_fnames)
+    story_fnames = url_hashes.map(_get_story_files)
+    # story_fnames = [s+".story" for s in url_hashes]
 
-    for story in story_fnames:
-
+    # for story in story_fnames:
+    def _parse_story_file(story):
         if os.path.join(root, _EXTRACTED_FILES["cnn"], story) in cnn_stories:
             story_file = cnn_stories[os.path.join(root, _EXTRACTED_FILES["cnn"], story)]
         elif os.path.join(root, _EXTRACTED_FILES["dailymail"], story) in cnn_stories:
@@ -195,12 +196,9 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
                 f"Error: Couldn't find story file {story} in either cnn or dailymail directories. Was there an error when loading the files?"
             )
 
-        article, abstract = _get_art_abs(story_file)
-        print(f"article: {article}\n\n")
-        print(f"abstract: {abstract}")
-        break
+        return _get_art_abs(story_file)
 
-    return cnn_stories
+    return story_fnames.map(_parse_story_file)
 
 
 if __name__ == "__main__":
