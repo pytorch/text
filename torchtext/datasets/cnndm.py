@@ -8,16 +8,11 @@ from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
-from torchtext.data.datasets_utils import (
-    _wrap_split_argument,
-    _create_dataset_directory,
-)
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import (
         FileOpener,
         IterableWrapper,
-        StreamReader,
         OnlineReader,
         FileLister,
         GDriveReader,
@@ -41,7 +36,6 @@ END_TOKENS = [
 ]  # acceptable ways to end a sentence
 SENTENCE_START = "<s>"
 SENTENCE_END = "</s>"
-
 DATASET_NAME = "CNNDM"
 
 URL_LIST = {
@@ -174,7 +168,7 @@ def _get_story_files(url_hash):
 @_wrap_split_argument(("train", "test"))
 def CNNDM(root: str, split: Union[Tuple[str], str]):
     urls = list(_get_url_list(split))
-
+    
     cnn_stories = _get_stories(root, "cnn")
     # dm_stories = _get_stories(root, 'dailymail')
 

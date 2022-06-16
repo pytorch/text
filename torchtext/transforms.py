@@ -12,6 +12,7 @@ from torchtext._torchtext import (
     GPT2BPEEncoder as GPT2BPEEncoderPyBind,
     BERTEncoder as BERTEncoderPyBind,
 )
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
@@ -28,6 +29,7 @@ __all__ = [
     "PadTransform",
     "StrToIntTransform",
     "GPT2BPETokenizer",
+    "RegexTokenizer",
     "Sequential",
 ]
 
@@ -47,7 +49,7 @@ class SentencePieceTokenizer(Module):
         >>> transform(["hello world", "attention is all you need!"])
     """
 
-    def __init__(self, sp_model_path: str):
+    def __init__(self, sp_model_path: str) -> None:
         super().__init__()
         self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
 
@@ -85,7 +87,7 @@ class VocabTransform(Module):
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
-    def __init__(self, vocab: Vocab):
+    def __init__(self, vocab: Vocab) -> None:
         super().__init__()
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
@@ -149,7 +151,7 @@ class LabelToIndex(Module):
         label_names: Optional[List[str]] = None,
         label_path: Optional[str] = None,
         sort_names=False,
-    ):
+    ) -> None:
         assert label_names or label_path, "label_names or label_path is required"
         assert not (label_names and label_path), "label_names and label_path are mutually exclusive"
         super().__init__()
@@ -236,7 +238,7 @@ class PadTransform(Module):
     :type pad_value: bool
     """
 
-    def __init__(self, max_length: int, pad_value: int):
+    def __init__(self, max_length: int, pad_value: int) -> None:
         super().__init__()
         self.max_length = max_length
         self.pad_value = float(pad_value)
@@ -258,7 +260,7 @@ class PadTransform(Module):
 class StrToIntTransform(Module):
     """Convert string tokens to integers (either single sequence or batch)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def forward(self, input: Any) -> Any:
@@ -289,7 +291,7 @@ class GPT2BPETokenizer(Module):
     __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
-    def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False):
+    def __init__(self, encoder_json_path: str, vocab_bpe_path: str, return_tokens: bool = False) -> None:
         super().__init__()
         self._seperator = "\u0001"
         # load bpe encoder and bpe decoder
@@ -423,7 +425,7 @@ class CLIPTokenizer(Module):
         encoder_json_path: Optional[str] = None,
         num_merges: Optional[int] = None,
         return_tokens: bool = False,
-    ):
+    ) -> None:
         super().__init__()
         self._seperator = "\u0001"
         # load bpe merges
@@ -653,6 +655,60 @@ class BERTTokenizer(Module):
                 self._vocab_path, self._do_lower_case, self._strip_accents
             )
             return tokenizer_copy
+
+        return self
+
+
+class RegexTokenizer(Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
+
+    Args:
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+        as the first element and the replacement string as the second element.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.transforms import RegexTokenizer
+        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+        >>> patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', '')]
+        >>> reg_tokenizer = RegexTokenizer(patterns_list)
+        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+        >>> tokens = jit_reg_tokenizer(test_sample)
+    """
+
+    def __init__(self, patterns_list) -> None:
+        super(RegexTokenizer, self).__init__()
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, False)
+
+    @property
+    def is_jitable(self):
+        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
+
+    def forward(self, line: str) -> List[str]:
+        r"""
+        Args:
+            lines (str): a text string to tokenize.
+
+        Returns:
+            List[str]: a token list after regex.
+        """
+
+        return self.regex_tokenizer.forward(line)
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable RegexTokenizer."""
+
+        if not self.is_jitable:
+            regex_tokenizer_copy = deepcopy(self)
+            regex_tokenizer_copy.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
+                self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
+            )
+            return regex_tokenizer_copy
 
         return self
 

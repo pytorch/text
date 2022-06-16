@@ -9,9 +9,7 @@ from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind, Sentenc
 
 __all__ = [
     "basic_english_normalize",
-    "regex_tokenizer",
     "BasicEnglishNormalize",
-    "RegexTokenizer",
     "PRETRAINED_SP_MODEL",
     "load_sp_model",
     "sentencepiece_tokenizer",
@@ -72,30 +70,6 @@ def basic_english_normalize():
     return BasicEnglishNormalize(RegexTokenizerPybind(patterns, replacements, True))
 
 
-def regex_tokenizer(patterns_list):
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-
-    Args:
-        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
-        as the first element and the replacement string as the second element.
-
-    Examples:
-        >>> import torch
-        >>> from torchtext.experimental.transforms import regex_tokenizer
-        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
-        >>> patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', '')]
-        >>> reg_tokenizer = regex_tokenizer(patterns_list)
-        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
-        >>> tokens = jit_reg_tokenizer(test_sample)
-    """
-
-    patterns = [pair[0] for pair in patterns_list]
-    replacements = [pair[1] for pair in patterns_list]
-    return RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
-
-
 class BasicEnglishNormalize(nn.Module):
     __jit_unused_properties__ = ["is_jitable"]
     r"""Basic normalization for a string sentence.
@@ -104,7 +78,7 @@ class BasicEnglishNormalize(nn.Module):
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
 
-    def __init__(self, regex_tokenizer):
+    def __init__(self, regex_tokenizer) -> None:
         super(BasicEnglishNormalize, self).__init__()
         self.regex_tokenizer = regex_tokenizer
 
@@ -129,41 +103,6 @@ class BasicEnglishNormalize(nn.Module):
             self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True
         )
         return BasicEnglishNormalize(regex_tokenizer)
-
-
-class RegexTokenizer(nn.Module):
-    __jit_unused_properties__ = ["is_jitable"]
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-
-    Args:
-        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
-    """
-
-    def __init__(self, regex_tokenzier):
-        super(RegexTokenizer, self).__init__()
-        self.regex_tokenizer = regex_tokenzier
-
-    @property
-    def is_jitable(self):
-        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
-
-    def forward(self, line: str) -> List[str]:
-        r"""
-        Args:
-            lines (str): a text string to tokenize.
-
-        Returns:
-            List[str]: a token list after regex.
-        """
-
-        return self.regex_tokenizer.forward(line)
-
-    def __prepare_scriptable__(self):
-        r"""Return a JITable RegexTokenizer."""
-        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(
-            self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False
-        )
-        return RegexTokenizer(regex_tokenizer)
 
 
 PRETRAINED_SP_MODEL = {
@@ -246,7 +185,7 @@ class SentencePieceTokenizer(nn.Module):
        spm_model: the sentencepiece model instance
     """
 
-    def __init__(self, spm_model):
+    def __init__(self, spm_model) -> None:
         super(SentencePieceTokenizer, self).__init__()
         self.sp_model = spm_model
 
@@ -306,7 +245,7 @@ class SentencePieceProcessor(nn.Module):
        spm_model: the sentencepiece model instance
     """
 
-    def __init__(self, spm_model):
+    def __init__(self, spm_model) -> None:
         super(SentencePieceProcessor, self).__init__()
         self.sp_model = spm_model
 
@@ -354,7 +293,7 @@ class VocabTransform(nn.Module):
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
-    def __init__(self, vocab):
+    def __init__(self, vocab) -> None:
         super(VocabTransform, self).__init__()
         self.vocab = vocab
 
@@ -385,7 +324,7 @@ class VectorTransform(nn.Module):
         >>> jit_vector_transform = torch.jit.script(vector_transform)
     """
 
-    def __init__(self, vector):
+    def __init__(self, vector) -> None:
         super(VectorTransform, self).__init__()
         self.vector = vector
 
