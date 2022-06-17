@@ -101,7 +101,7 @@ jobs:
     runs-on: macos-m1
     strategy:
       matrix:
-        py_vers: [ "3.8", "3.9", "3.10" ]
+        py_vers: ["3.8", "3.9", "3.10"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -113,7 +113,9 @@ jobs:
             echo "CHANNEL=test" >> "$GITHUB_ENV"
           fi
       - name: Set CHANNEL Release (for release)
-        if: ${{ (github.event_name == 'pull_request' && startsWith(github.base_ref, 'release')) || startsWith(github.ref, 'refs/heads/release') }}
+        if:
+          ${{ (github.event_name == 'pull_request' && startsWith(github.base_ref, 'release')) || startsWith(github.ref,
+          'refs/heads/release') }}
         run: |
           echo "CHANNEL=test" >> "$GITHUB_ENV"
       - name: Install conda-build and purge previous artifacts
@@ -155,7 +157,9 @@ jobs:
           name: torchtext-py${{ matrix.py_vers }}-macos11-m1-conda
           path: dist/
       - name: Upload package to conda
-        if: ${{ github.event_name == 'push' && (github.event.ref == 'refs/heads/nightly' || startsWith(github.event.ref, 'refs/tags/')) }}
+        if:
+          ${{ github.event_name == 'push' && (github.event.ref == 'refs/heads/nightly' || startsWith(github.event.ref,
+          'refs/tags/')) }}
         shell: arch -arch arm64 bash {0}
         env:
           CONDA_PYTORCHBOT_TOKEN: ${{ secrets.CONDA_PYTORCHBOT_TOKEN }}
