@@ -70,7 +70,7 @@ def benchmark_roberta_dataframe(args, native_ops):
         # Remove not required columns
         train_dp = train_dp.map(lambda x: x.drop(["text"]))
 
-        # convert DataFrame to tensor (This will yeild named tuple)
+        # convert DataFrame to tensor (This will yield named tuple)
         train_dp = train_dp.map(lambda x: x.to_tensor({"tokens": tap.PadSequence(padding_value=1)}))
 
     with Timer("Execute Pipeline"):
