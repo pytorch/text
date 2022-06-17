@@ -48,17 +48,22 @@ _EXTRACTED_FOLDERS = {
     "daily_mail": os.path.join("dailymail", "stories"),
 }
 
+
 def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
+
 
 def _extracted_filepath_fn(root: str, source: str, t):
     return os.path.join(root, _EXTRACTED_FOLDERS[source])
 
+
 def _modify_res(t):
     return t[1]
 
+
 def _filter_fn(story_fnames, x):
     return os.path.basename(x[0]) in story_fnames
+
 
 def _get_url_list(split: str):
 
@@ -66,14 +71,17 @@ def _get_url_list(split: str):
     online_dp = OnlineReader(url_dp)
     return online_dp.readlines().map(_modify_res)
 
+
 def _hashhex(s):
     """Returns a heximal formated SHA1 hash of the input string."""
     h = hashlib.sha1()
     h.update(s)
     return h.hexdigest()
 
+
 def _get_url_hashes(url_list):
     return [_hashhex(url) for url in url_list]
+
 
 def _load_stories(root: str, source: str):
 
@@ -91,10 +99,11 @@ def _load_stories(root: str, source: str):
 
     return cache_decompressed_dp
 
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "val", "test"))
 def CNNDM(root: str, split: Union[Tuple[str], str]):
-    # TODO: store the .story filenames corresponding to each split on disk so we can pass that into the filepath_fn 
+    # TODO: store the .story filenames corresponding to each split on disk so we can pass that into the filepath_fn
     # of the on_disk_cache_dp which caches the files extracted from the tar
     urls = list(_get_url_list(split))
     url_hashes = _get_url_hashes(urls)
@@ -111,9 +120,9 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
 
 if __name__ == "__main__":
     print("start")
-    #out = CNNDM(os.path.expanduser("~/.torchtext/cache"), "val")
-    #ex = iter(out)
-    #ex = next(ex)
+    # out = CNNDM(os.path.expanduser("~/.torchtext/cache"), "val")
+    # ex = iter(out)
+    # ex = next(ex)
 
-    #print(f"article:\n{ex[0]}")
-    #print(f"abstract:\n{ex[1]}")
+    # print(f"article:\n{ex[0]}")
+    # print(f"abstract:\n{ex[1]}")

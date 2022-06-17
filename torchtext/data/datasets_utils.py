@@ -311,6 +311,7 @@ class _ParseIOBData(IterDataPipe):
         if len(columns) > 0:
             yield columns
 
+
 @functional_datapipe("parse_cnndm")
 class _ParseCNNDMData(IterDataPipe):
     """Iterable DataPipe to parse the article and abstract from a stream"""
@@ -348,14 +349,14 @@ class _ParseCNNDMData(IterDataPipe):
         return line + " ."
 
     def __iter__(self):
-        
+
         for _, stream in self.source_datapipe:
-            
+
             lines = stream.readlines()
             # Lowercase everything
             lines = [line.decode().lower() for line in lines]
 
-            # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods; 
+            # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods;
             # consequently they end up in the body of the article as run-on sentences)
             lines = [self._fix_missing_period(line) for line in lines]
 
