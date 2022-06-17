@@ -1,4 +1,3 @@
-import hashlib
 import os
 from functools import partial
 from typing import Union, Tuple
@@ -57,30 +56,15 @@ def _extracted_filepath_fn(root: str, source: str, t):
     return os.path.join(root, _EXTRACTED_FOLDERS[source])
 
 
-def _modify_res(t):
-    return t[1]
-
-
 def _filter_fn(story_fnames, x):
     return os.path.basename(x[0]) in story_fnames
 
 
-def _get_url_list(split: str):
+def _get_split_list(split: str):
 
     url_dp = IterableWrapper([URL_LIST[split]])
     online_dp = OnlineReader(url_dp)
-    return online_dp.readlines().map(_modify_res)
-
-
-def _hashhex(s):
-    """Returns a heximal formated SHA1 hash of the input string."""
-    h = hashlib.sha1()
-    h.update(s)
-    return h.hexdigest()
-
-
-def _get_url_hashes(url_list):
-    return [_hashhex(url) for url in url_list]
+    return online_dp.readlines().parse_cnndm_split()
 
 
 def _load_stories(root: str, source: str):
@@ -105,9 +89,7 @@ def _load_stories(root: str, source: str):
 def CNNDM(root: str, split: Union[Tuple[str], str]):
     # TODO: store the .story filenames corresponding to each split on disk so we can pass that into the filepath_fn
     # of the on_disk_cache_dp which caches the files extracted from the tar
-    urls = list(_get_url_list(split))
-    url_hashes = _get_url_hashes(urls)
-    story_fnames = set(s + ".story" for s in url_hashes)
+    story_fnames = set(_get_split_list(split))
 
     cnn_dp = _load_stories(root, "cnn")
     dailymail_dp = _load_stories(root, "dailymail")
@@ -115,14 +97,4 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
 
     data_dp = data_dp.filter(partial(_filter_fn, story_fnames))
 
-    return data_dp.parse_cnndm().shuffle().set_shuffle(False).sharding_filter()
-
-
-if __name__ == "__main__":
-    print("start")
-    # out = CNNDM(os.path.expanduser("~/.torchtext/cache"), "val")
-    # ex = iter(out)
-    # ex = next(ex)
-
-    # print(f"article:\n{ex[0]}")
-    # print(f"abstract:\n{ex[1]}")
+    return data_dp.parse_cnndm_data().shuffle().set_shuffle(False).sharding_filter()

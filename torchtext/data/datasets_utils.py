@@ -1,6 +1,7 @@
 import codecs
 import functools
 import inspect
+import hashlib
 import os
 
 from torch.utils.data import functional_datapipe, IterDataPipe
@@ -312,9 +313,9 @@ class _ParseIOBData(IterDataPipe):
             yield columns
 
 
-@functional_datapipe("parse_cnndm")
+@functional_datapipe("parse_cnndm_data")
 class _ParseCNNDMData(IterDataPipe):
-    """Iterable DataPipe to parse the article and abstract from a stream"""
+    """Iterable DataPipe to parse the article and abstract from a CNNDM data stream"""
 
     dm_single_close_quote = "\u2019"  # unicode
     dm_double_close_quote = "\u201d"
@@ -381,3 +382,26 @@ class _ParseCNNDMData(IterDataPipe):
             abstract = " ".join(["%s %s %s" % (self.SENTENCE_START, sent, self.SENTENCE_END) for sent in highlights])
 
             yield article, abstract
+
+
+@functional_datapipe("parse_cnndm_split")
+class _ParseCNNDMSplit(IterDataPipe):
+    """Iterable DataPipe to parse the url list for files in the target split"""
+
+    def __init__(self, source_datapipe) -> None:
+        self.source_datapipe = source_datapipe
+
+    def _hashhex(self, s):
+        """Returns a heximal formated SHA1 hash of the input string."""
+        h = hashlib.sha1()
+        h.update(s)
+        return h.hexdigest()
+
+    def __iter__(self):
+
+        for _, url in self.source_datapipe:
+
+            url_hash = self._hashhex(url)
+            story_fname = url_hash + ".story"
+
+            yield story_fname
