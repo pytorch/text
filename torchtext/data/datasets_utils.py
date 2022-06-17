@@ -1,7 +1,7 @@
 import codecs
 import functools
-import inspect
 import hashlib
+import inspect
 import os
 
 from torch.utils.data import functional_datapipe, IterDataPipe
