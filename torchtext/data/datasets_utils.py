@@ -339,7 +339,7 @@ class _ParseCNNDMData(IterDataPipe):
     def __iter__(self):
         for _, stream in self.source_datapipe:
             lines = stream.readlines()
-            lines = [line.decode("utf-8") for line in lines]
+            lines = [line.decode("utf-8").strip() for line in lines]
 
             # put periods on the ends of lines that are missing them
             # this is a problem in the dataset because many image captions don't end in periods

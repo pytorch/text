@@ -36,7 +36,7 @@ def _get_mock_dataset(root_dir):
             with open(txt_file, "w", encoding=("utf-8")) as f:
                 article = get_random_unicode(seed) + "."
                 abstract = get_random_unicode(seed + 1) + "."
-                dataset_line = (article + "\n", abstract)
+                dataset_line = (article, abstract)
                 f.writelines([article, "\n@highlight\n", abstract])
                 # append line to correct dataset split
                 mocked_data[split].append(dataset_line)
