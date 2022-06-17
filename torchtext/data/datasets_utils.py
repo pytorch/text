@@ -321,19 +321,7 @@ class _ParseCNNDMData(IterDataPipe):
     dm_single_close_quote = "\u2019"  # unicode
     dm_double_close_quote = "\u201d"
     # acceptable ways to end a sentence
-    END_TOKENS = [
-        ".",
-        "!",
-        "?",
-        "...",
-        "'",
-        "`",
-        '"',
-        dm_single_close_quote,
-        dm_double_close_quote,
-        ")",
-        "\n"
-    ]
+    END_TOKENS = [".", "!", "?", "...", "'", "`", '"', dm_single_close_quote, dm_double_close_quote, ")", "\n"]
 
     def __init__(self, source_datapipe) -> None:
         self.source_datapipe = source_datapipe
