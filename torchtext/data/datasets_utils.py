@@ -315,10 +315,12 @@ class _ParseIOBData(IterDataPipe):
 
 @functional_datapipe("parse_cnndm_data")
 class _ParseCNNDMData(IterDataPipe):
-    """Iterable DataPipe to parse the article and abstract from a CNNDM data stream"""
+    """Iterable DataPipe to parse the article and abstract from a CNNDM data stream.
+    Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py"""
 
     dm_single_close_quote = "\u2019"  # unicode
     dm_double_close_quote = "\u201d"
+    # acceptable ways to end a sentence
     END_TOKENS = [
         ".",
         "!",
@@ -330,10 +332,8 @@ class _ParseCNNDMData(IterDataPipe):
         dm_single_close_quote,
         dm_double_close_quote,
         ")",
-        "\n",
-    ]  # acceptable ways to end a sentence
-    SENTENCE_START = "<s>"
-    SENTENCE_END = "</s>"
+        "\n"
+    ]
 
     def __init__(self, source_datapipe) -> None:
         self.source_datapipe = source_datapipe
@@ -346,19 +346,16 @@ class _ParseCNNDMData(IterDataPipe):
             return line
         if line[-1] in self.END_TOKENS:
             return line
-        # print line[-1]
         return line + " ."
 
     def __iter__(self):
-
         for _, stream in self.source_datapipe:
-
             lines = stream.readlines()
-            # Lowercase everything
-            lines = [line.decode().lower() for line in lines]
+            lines = [line.decode("utf-8") for line in lines]
 
-            # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods;
-            # consequently they end up in the body of the article as run-on sentences)
+            # put periods on the ends of lines that are missing them
+            # this is a problem in the dataset because many image captions don't end in periods
+            # consequently they end up in the body of the article as run-on sentences
             lines = [self._fix_missing_period(line) for line in lines]
 
             # Separate out article and abstract sentences
@@ -375,18 +372,15 @@ class _ParseCNNDMData(IterDataPipe):
                 else:
                     article_lines.append(line)
 
-            # Make article into a single string
             article = " ".join(article_lines)
-
-            # Make abstract into a single string, putting <s> and </s> tags around the sentences
-            abstract = " ".join(["%s %s %s" % (self.SENTENCE_START, sent, self.SENTENCE_END) for sent in highlights])
-
+            abstract = " ".join(highlights)
             yield article, abstract
 
 
 @functional_datapipe("parse_cnndm_split")
 class _ParseCNNDMSplit(IterDataPipe):
-    """Iterable DataPipe to parse the url list for files in the target split"""
+    """Iterable DataPipe to parse the url list for files in the target split.
+    Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py"""
 
     def __init__(self, source_datapipe) -> None:
         self.source_datapipe = source_datapipe
@@ -398,10 +392,7 @@ class _ParseCNNDMSplit(IterDataPipe):
         return h.hexdigest()
 
     def __iter__(self):
-
         for _, url in self.source_datapipe:
-
             url_hash = self._hashhex(url)
             story_fname = url_hash + ".story"
-
             yield story_fname
