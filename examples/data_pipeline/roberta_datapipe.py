@@ -64,9 +64,8 @@ def main(args):
         if i == train_steps:
             break
 
-        model_input = batch["tokens"]
-        target = batch["label"]
-        print(model_input, target)
+        # model_input = batch["tokens"]
+        # target = batch["label"]
         ...
 
 
