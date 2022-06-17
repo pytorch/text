@@ -88,15 +88,3 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         print(expected_samples)
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
-
-
-
-
-
-
-
-
-
-
-
-
