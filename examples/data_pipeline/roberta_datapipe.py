@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from torchtext.datasets import SST2
 
 
-class RobertaTransform(Module):
+class RobertaTransformDataPipe(Module):
     def __init__(self) -> None:
         super().__init__()
         # Instantiate various transforms
@@ -42,7 +42,7 @@ class RobertaTransform(Module):
 
 def main(args):
     # Instantiate transform
-    transform = RobertaTransform()
+    transform = RobertaTransformDataPipe()
 
     # Create SST2 datapipe and apply pre-processing
     batch_size = args.batch_size
@@ -64,8 +64,9 @@ def main(args):
         if i == train_steps:
             break
 
-        # model_input = batch["tokens"]
-        # target = batch["label"]
+        model_input = batch["tokens"]
+        target = batch["label"]
+        print(model_input, target)
         ...
 
 
