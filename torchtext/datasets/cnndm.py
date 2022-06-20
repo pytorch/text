@@ -111,6 +111,5 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
     # TODO: store the .story filenames corresponding to each split on disk so we can pass that into the filepath_fn
     # of the on_disk_cache_dp which caches the files extracted from the tar
     story_fnames = set(_get_split_list(split))
-    print(len(story_fnames))
     data_dp = data_dp.filter(partial(_filter_fn, story_fnames))
     return data_dp.parse_cnndm_data().shuffle().set_shuffle(False).sharding_filter()

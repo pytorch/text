@@ -85,8 +85,6 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         dataset = CNNDM(root=self.root_dir, split=split)
         samples = list(dataset)
         expected_samples = self.samples[split]
-        print(samples)
-        print(expected_samples)
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
