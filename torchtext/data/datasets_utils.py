@@ -1,6 +1,5 @@
 import codecs
 import functools
-import hashlib
 import inspect
 import os
 
@@ -363,24 +362,3 @@ class _ParseCNNDMData(IterDataPipe):
             article = " ".join(article_lines)
             abstract = " ".join(highlights)
             yield article, abstract
-
-
-@functional_datapipe("parse_cnndm_split")
-class _ParseCNNDMSplit(IterDataPipe):
-    """Iterable DataPipe to parse the url list for files in the target split.
-    Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py"""
-
-    def __init__(self, source_datapipe) -> None:
-        self.source_datapipe = source_datapipe
-
-    def _hashhex(self, s):
-        """Returns a heximal formated SHA1 hash of the input string."""
-        h = hashlib.sha1()
-        h.update(s)
-        return h.hexdigest()
-
-    def __iter__(self):
-        for _, url in self.source_datapipe:
-            url_hash = self._hashhex(url)
-            story_fname = url_hash + ".story"
-            yield story_fname

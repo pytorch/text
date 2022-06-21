@@ -1,3 +1,4 @@
+import hashlib
 import os
 from functools import partial
 from typing import Union, Tuple
@@ -47,7 +48,7 @@ def _filepath_fn(root: str, source: str, _=None):
 
 
 # this function will be used to cache the contents of the tar file
-def _extracted_filepath_fn(root: str, source: str, t):
+def _extracted_filepath_fn(root: str, source: str):
     return os.path.join(root, _EXTRACTED_FOLDERS[source])
 
 
@@ -55,10 +56,23 @@ def _filter_fn(story_fnames, x):
     return os.path.basename(x[0]) in story_fnames
 
 
+def _hash_urls(s):
+    """
+    Returns story filename as a heximal formated SHA1 hash of the input url string.
+    Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py
+    """
+    url = s[1]
+    h = hashlib.sha1()
+    h.update(url)
+    url_hash = h.hexdigest()
+    story_fname = url_hash + ".story"
+    return story_fname
+
+
 def _get_split_list(split: str):
     url_dp = IterableWrapper([URL_LIST[split]])
     online_dp = OnlineReader(url_dp)
-    return online_dp.readlines().parse_cnndm_split()
+    return online_dp.readlines().map(fn=_hash_urls)
 
 
 def _load_stories(root: str, source: str):
