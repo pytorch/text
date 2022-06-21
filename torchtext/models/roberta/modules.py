@@ -149,10 +149,8 @@ class TransformerEncoder(Module):
             embedded = self.embedding_layer_norm(embedded)
         embedded = self.dropout(embedded)
 
-        padded_embedded = embedded * (1 - padding_mask.unsqueeze(-1).type_as(embedded))
-
         if self.return_all_layers:
-            encoded = padded_embedded
+            encoded = embedded
             # B x T x C
             # Then transpose back to T x B x C
             states = [encoded.transpose(1, 0)]
@@ -167,7 +165,7 @@ class TransformerEncoder(Module):
         else:
             # B x T x C
             # Then transpose back to T x B x C
-            encoded = self.layers(padded_embedded, src_key_padding_mask=padding_mask).transpose(1, 0)
+            encoded = self.layers(embedded, src_key_padding_mask=padding_mask).transpose(1, 0)
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
             return encoded
