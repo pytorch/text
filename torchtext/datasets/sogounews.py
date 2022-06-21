@@ -57,6 +57,13 @@ def _modify_res(t):
 def SogouNews(root: str, split: Union[Tuple[str], str]):
     """SogouNews Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://arxiv.org/abs/1509.01626
 
      Number of lines per split:
@@ -72,7 +79,7 @@ def SogouNews(root: str, split: Union[Tuple[str], str]):
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])

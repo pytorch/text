@@ -25,12 +25,12 @@ def _get_mock_dataset(root_dir, base_dir_name):
     file_names = ("wiki.train.tokens", "wiki.valid.tokens", "wiki.test.tokens")
     for file_name in file_names:
         csv_file = os.path.join(temp_dataset_dir, file_name)
-        mocked_lines = mocked_data[os.path.splitext(file_name)[0]]
+        mocked_lines = mocked_data[file_name.split(".")[1]]
         with open(csv_file, "w", encoding="utf-8") as f:
             for i in range(5):
                 rand_string = get_random_unicode(seed)
-                dataset_line = rand_string
-                f.write(f"{rand_string}\n")
+                dataset_line = f"{rand_string}\n"
+                f.write(dataset_line)
 
                 # append line to correct dataset split
                 mocked_lines.append(dataset_line)
@@ -38,15 +38,17 @@ def _get_mock_dataset(root_dir, base_dir_name):
 
     if base_dir_name == WikiText103.__name__:
         compressed_file = "wikitext-103-v1"
+        arcname_folder = "wikitext-103"
     else:
         compressed_file = "wikitext-2-v1"
+        arcname_folder = "wikitext-2"
 
     compressed_dataset_path = os.path.join(base_dir, compressed_file + ".zip")
     # create zip file from dataset folder
     with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
         for file_name in file_names:
             txt_file = os.path.join(temp_dataset_dir, file_name)
-            zip_file.write(txt_file, arcname=compressed_file)
+            zip_file.write(txt_file, arcname=os.path.join(arcname_folder, file_name))
 
     return mocked_data
 
@@ -69,7 +71,9 @@ class TestWikiTexts(TempDirMixin, TorchtextTestCase):
 
     @nested_params([WikiText103, WikiText2], ["train", "valid", "test"])
     def test_wikitexts(self, wikitext_dataset, split):
-        expected_samples = _get_mock_dataset(self.root_dir, base_dir_name=wikitext_dataset.__name__)[split]
+        expected_samples = _get_mock_dataset(
+            os.path.join(self.root_dir, "datasets"), base_dir_name=wikitext_dataset.__name__
+        )[split]
 
         dataset = wikitext_dataset(root=self.root_dir, split=split)
         samples = list(dataset)

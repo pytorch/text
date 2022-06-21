@@ -10,3 +10,6 @@
 	path = third_party/double-conversion
 	url = https://github.com/google/double-conversion
 	ignore = dirty
+[submodule "third_party/utf8proc"]
+	path = third_party/utf8proc
+	url = https://github.com/JuliaStrings/utf8proc

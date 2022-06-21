@@ -171,6 +171,13 @@ def IWSLT2016(
 ):
     """IWSLT2016 dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://wit3.fbk.eu/2016-01
 
     The available datasets include following:
@@ -212,7 +219,7 @@ def IWSLT2016(
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):

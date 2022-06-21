@@ -1,5 +1,6 @@
 import csv
 import os
+from functools import partial
 from typing import Union, Tuple
 
 from torchtext._internal.module_utils import is_module_available
@@ -26,10 +27,37 @@ _EXTRACTED_FILES = {
 DATASET_NAME = "CoLA"
 
 
+def _filepath_fn(root, _=None):
+    return os.path.join(root, _PATH)
+
+
+def _extracted_filepath_fn(root, split, _=None):
+    return os.path.join(root, _EXTRACTED_FILES[split])
+
+
+def _filter_fn(split, x):
+    return _EXTRACTED_FILES[split] in x[0]
+
+
+def _modify_res(t):
+    return (t[0], int(t[1]), t[3])
+
+
+def _filter_res(x):
+    return len(x) == 4
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
 def CoLA(root: str, split: Union[Tuple[str], str]):
     """CoLA dataset
+
+    .. warning::
+
+        Using datapipes is still currently subject to a few caveats. If you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
 
     For additional details refer to https://nyu-mll.github.io/CoLA/
 
@@ -48,34 +76,21 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
-
-    def _filepath_fn(_=None):
-        return os.path.join(root, _PATH)
-
-    def _extracted_filepath_fn(_=None):
-        return os.path.join(root, _EXTRACTED_FILES[split])
-
-    def _filter_fn(x):
-        return _EXTRACTED_FILES[split] in x[0]
-
-    def _modify_res(t):
-        return (t[0], int(t[1]), t[3])
-
-    def _filter_res(x):
-        return len(x) == 4
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=_filepath_fn,
-        hash_dict={_filepath_fn(): MD5},
+        filepath_fn=partial(_filepath_fn, root),
+        hash_dict={_filepath_fn(root): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(_filter_fn)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, split))
+    cache_decompressed_dp = (
+        FileOpener(cache_decompressed_dp, mode="b").load_from_zip().filter(partial(_filter_fn, split))
+    )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")

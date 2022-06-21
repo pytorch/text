@@ -1,5 +1,6 @@
 import csv
 import os
+from functools import partial
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -36,10 +37,33 @@ _EXTRACTED_FILES = {
 }
 
 
+def _filepath_fn(root, x=_PATH):
+    return os.path.join(root, os.path.basename(x))
+
+
+def _extracted_filepath_fn(root, split, _=None):
+    return _filepath_fn(root, _EXTRACTED_FILES[split])
+
+
+def _filter_fn(split, x):
+    return _EXTRACTED_FILES[split] in x[0]
+
+
+def _modify_res(x):
+    return (int(x[3]), float(x[4]), x[5], x[6])
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
 def STSB(root, split):
     """STSB Dataset
+
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
 
     For additional details refer to https://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark
 
@@ -58,31 +82,21 @@ def STSB(root, split):
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
-
-    def _filepath_fn(x=_PATH):
-        return os.path.join(root, os.path.basename(x))
-
-    def _extracted_filepath_fn(_=None):
-        return _filepath_fn(_EXTRACTED_FILES[split])
-
-    def _filter_fn(x):
-        return _EXTRACTED_FILES[split] in x[0]
-
-    def _modify_res(x):
-        return (int(x[3]), float(x[4]), x[5], x[6])
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=_filepath_fn,
-        hash_dict={_filepath_fn(URL): MD5},
+        filepath_fn=partial(_filepath_fn, root),
+        hash_dict={_filepath_fn(root, URL): MD5},
         hash_type="md5",
     )
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=_extracted_filepath_fn)
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(_filter_fn)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, split))
+    cache_decompressed_dp = (
+        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(partial(_filter_fn, split))
+    )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")

@@ -1,4 +1,5 @@
 #include <torch/script.h>
+#include <torchtext/csrc/bert_tokenizer.h> // @manual
 #include <torchtext/csrc/clip_tokenizer.h> // @manual
 #include <torchtext/csrc/gpt2_bpe_tokenizer.h> // @manual
 #include <torchtext/csrc/regex.h>
@@ -171,6 +172,33 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
               -> c10::intrusive_ptr<CLIPEncoder> {
             return _deserialize_clip_encoder_torchbind(states);
           });
+
+  m.class_<BERTEncoder>("BERTEncoder")
+      .def(torch::init<const std::string, bool, c10::optional<bool>>())
+      .def("encode", &BERTEncoder::Encode)
+      .def("tokenize", &BERTEncoder::Tokenize)
+      .def(
+          "batch_encode",
+          [](const c10::intrusive_ptr<BERTEncoder>& self,
+             const std::vector<std::string>& items) {
+            return self->BatchEncode(items);
+          })
+      .def(
+          "batch_tokenize",
+          [](const c10::intrusive_ptr<BERTEncoder>& self,
+             const std::vector<std::string>& items) {
+            return self->BatchTokenize(items);
+          })
+      .def_pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<BERTEncoder>& self) -> BERTEncoderStates {
+            return _serialize_bert_encoder(self);
+          },
+          // __setstate__
+          [](BERTEncoderStates states) -> c10::intrusive_ptr<BERTEncoder> {
+            return _deserialize_bert_encoder(states);
+          });
+  ;
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);
   m.def("torchtext::load_sp_model", &load_sp_model);

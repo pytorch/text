@@ -18,8 +18,12 @@ conda activate ./env
 printf "* Installing PyTorch\n"
 conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly
 
-printf "Installing torchdata nightly\n"
+printf "* Installing torchdata nightly\n"
 pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+
+printf "* Installing pywin32_postinstall script\n"
+curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
+python pywin32_postinstall.py -install
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive

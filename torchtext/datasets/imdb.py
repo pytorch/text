@@ -53,10 +53,24 @@ def _modify_res(t):
     return Path(t[0]).parts[-1], t[1]
 
 
+def filter_imdb_data(key, fname):
+    labels = {"neg", "pos"}
+    # eg. fname = "aclImdb/train/neg/12416_3.txt"
+    *_, split, label, file = Path(fname).parts
+    return key == split and label in labels
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def IMDB(root: str, split: Union[Tuple[str], str]):
     """IMDB Dataset
+
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
 
     For additional details refer to http://ai.stanford.edu/~amaas/data/sentiment/
 
@@ -73,7 +87,7 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])
@@ -92,12 +106,6 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
     cache_decompressed_dp = cache_decompressed_dp.load_from_tar()
-
-    def filter_imdb_data(key, fname):
-        # eg. fname = "aclImdb/train/neg/12416_3.txt"
-        *_, split, label, file = Path(fname).parts
-        return key == split and label in labels
-
     cache_decompressed_dp = cache_decompressed_dp.filter(partial(_filter_fn, filter_imdb_data, split))
 
     # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"

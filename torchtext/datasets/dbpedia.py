@@ -52,6 +52,13 @@ def _modify_res(t):
 def DBpedia(root: str, split: Union[Tuple[str], str]):
     """DBpedia Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://www.dbpedia.org/resources/latest-core/
 
     Number of lines per split:
@@ -68,7 +75,7 @@ def DBpedia(root: str, split: Union[Tuple[str], str]):
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])

@@ -1,10 +1,13 @@
 import os
 
+from torch.hub import _get_torch_home
+
 # the following import has to happen first in order to load the torchtext C++ library
 from torchtext import _extension  # noqa: F401
 
 _TEXT_BUCKET = "https://download.pytorch.org/models/text/"
-_CACHE_DIR = os.path.expanduser("~/.torchtext/cache")
+
+_CACHE_DIR = os.path.expanduser(os.path.join(_get_torch_home(), "text"))
 
 from . import data, datasets, experimental, functional, models, nn, transforms, utils, vocab
 

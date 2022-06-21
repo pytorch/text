@@ -53,6 +53,13 @@ def _modify_res(t):
 def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     """AmazonReviewPolarity Dataset
 
+    .. warning::
+
+        Using datapipes is still currently subject to a few caveats. If you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to https://arxiv.org/abs/1509.01626
 
     Number of lines per split:
@@ -69,7 +76,7 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])

@@ -31,6 +31,13 @@ def _extracted_filepath_fn(root, _=None):
 def EnWik9(root: str):
     """EnWik9 dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     For additional details refer to http://mattmahoney.net/dc/textdata.html
 
     Number of lines in dataset: 13147026
@@ -43,7 +50,7 @@ def EnWik9(root: str):
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])

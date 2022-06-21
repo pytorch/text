@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class PositionalEmbedding(Module):
-    def __init__(self, num_embeddings: int, embedding_dim: int, pad_index: int):
+    def __init__(self, num_embeddings: int, embedding_dim: int, pad_index: int) -> None:
         super().__init__()
         self.embedding = nn.Embedding(num_embeddings, embedding_dim, pad_index)
         self.pad_index = pad_index
@@ -38,7 +38,7 @@ class TransformerEncoderLayer(Module):
         dropout: float = 0.1,
         normalize_before: bool = False,
         scaling: Optional[float] = None,
-    ):
+    ) -> None:
         super().__init__()
         # TODO Manually setting scaling is not allowed
         ffn_dimension = ffn_dimension or embedding_dim * 4
@@ -106,7 +106,7 @@ class TransformerEncoder(Module):
         normalize_before: bool = False,
         scaling: Optional[float] = None,
         return_all_layers: bool = False,
-    ):
+    ) -> None:
         super().__init__()
         self.padding_idx = padding_idx
         self.token_embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx)
@@ -157,7 +157,7 @@ class TransformerEncoder(Module):
             # Then transpose back to T x B x C
             states = [encoded.transpose(1, 0)]
             for layer in self.layers.layers:
-                encoded = layer(encoded, padding_mask, attn_mask)
+                encoded = layer(encoded, src_key_padding_mask=padding_mask, src_mask=attn_mask)
                 encoded_t = encoded.transpose(1, 0)
                 states.append(encoded_t)
             if self.normalize_before:
@@ -167,7 +167,7 @@ class TransformerEncoder(Module):
         else:
             # B x T x C
             # Then transpose back to T x B x C
-            encoded = self.layers(padded_embedded).transpose(1, 0)
+            encoded = self.layers(padded_embedded, src_key_padding_mask=padding_mask).transpose(1, 0)
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
             return encoded

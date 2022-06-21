@@ -85,15 +85,35 @@ setup_cuda() {
 #   BUILD_VERSION (e.g., 0.2.0.dev20190807+cpu)
 #
 # Fill BUILD_VERSION if it doesn't exist already with a nightly string
-# Usage: setup_build_version 0.2.0
+# Usage: setup_build_version
 setup_build_version() {
   if [[ -z "$BUILD_VERSION" ]]; then
-    export BUILD_VERSION="$1.dev$(date "+%Y%m%d")$VERSION_SUFFIX"
+    if [[ -z "$1" ]]; then
+      setup_base_build_version
+    else
+      BUILD_VERSION="$1"
+    fi
+    BUILD_VERSION="$BUILD_VERSION.dev$(date "+%Y%m%d")$VERSION_SUFFIX"
   else
-    export BUILD_VERSION="$BUILD_VERSION$VERSION_SUFFIX"
+    BUILD_VERSION="$BUILD_VERSION$VERSION_SUFFIX"
   fi
+
+  # Set build version based on tag if on tag
+  if [[ -n "${CIRCLE_TAG}" ]]; then
+    # Strip tag
+    BUILD_VERSION="$(echo "${CIRCLE_TAG}" | sed -e 's/^v//' -e 's/-.*$//')${VERSION_SUFFIX}"
+  fi
+
+  export BUILD_VERSION
 }
 
+setup_base_build_version() {
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  # version.txt for some reason has `a` character after major.minor.rev
+  # command below yields 0.10.0 from version.txt containing 0.10.0a0
+  BUILD_VERSION=$( cut -f 1 -d a "$SCRIPT_DIR/../version.txt" )
+  export BUILD_VERSION
+}
 # Set some useful variables for OS X, if applicable
 setup_macos() {
   if [[ "$(uname)" == Darwin ]]; then
@@ -103,10 +123,10 @@ setup_macos() {
 
 # Top-level entry point for things every package will need to do
 #
-# Usage: setup_env 0.2.0
+# Usage: setup_env
 setup_env() {
   setup_cuda
-  setup_build_version "$1"
+  setup_build_version
   setup_macos
 }
 
@@ -194,8 +214,11 @@ setup_conda_pytorch_constraint() {
   fi
   # TODO: Remove me later, see https://github.com/pytorch/pytorch/issues/62424 for more details
   if [[ "$(uname)" == Darwin ]]; then
-    # Use less than equal to avoid version conflict in python=3.6 environment
-    export CONDA_EXTRA_BUILD_CONSTRAINT="- mkl<=2021.2.0"
+    arch_name="$(uname -m)"
+    if [ "${arch_name}" != "arm64" ]; then
+      # Use less than equal to avoid version conflict in python=3.6 environment
+      export CONDA_EXTRA_BUILD_CONSTRAINT="- mkl<=2021.2.0"
+    fi
   fi
 }
 

@@ -45,6 +45,13 @@ def _filter_fn(split, x):
 def UDPOS(root: str, split: Union[Tuple[str], str]):
     """UDPOS Dataset
 
+    .. warning::
+
+        using datapipes is still currently subject to a few caveats. if you wish
+        to use this dataset with shuffling, multi-processing, or distributed
+        learning, please see :ref:`this note <datapipes_warnings>` for further
+        instructions.
+
     Number of lines per split:
         - train: 12543
         - valid: 2002
@@ -59,7 +66,7 @@ def UDPOS(root: str, split: Union[Tuple[str], str]):
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
 
     url_dp = IterableWrapper([URL])
