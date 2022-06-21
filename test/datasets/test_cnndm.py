@@ -25,23 +25,25 @@ def _get_mock_dataset(root_dir):
     for source in ["cnn", "dailymail"]:
         source_dir = os.path.join(temp_dataset_dir, source, "stories")
         os.makedirs(source_dir, exist_ok=True)
-
         for split in ["train", "val", "test"]:
-            url = source + "_" + split
-            h = hashlib.sha1()
-            h.update(url.encode())
-            filename = h.hexdigest() + ".story"
-            txt_file = os.path.join(source_dir, filename)
-
-            with open(txt_file, "w", encoding=("utf-8")) as f:
-                article = get_random_unicode(seed) + "."
-                abstract = get_random_unicode(seed + 1) + "."
-                dataset_line = (article, abstract)
-                f.writelines([article, "\n@highlight\n", abstract])
-                # append line to correct dataset split
-                mocked_data[split].append(dataset_line)
-
-            seed += 2
+            stories = []
+            for i in range(5):
+                url = '_'.join([source, split, str(i)])
+                h = hashlib.sha1()
+                h.update(url.encode())
+                filename = h.hexdigest() + ".story"
+                txt_file = os.path.join(source_dir, filename)
+                with open(txt_file, "w", encoding=("utf-8")) as f:
+                    article = get_random_unicode(seed) + "."
+                    abstract = get_random_unicode(seed + 1) + "."
+                    dataset_line = (article, abstract)
+                    f.writelines([article, "\n@highlight\n", abstract])
+                    stories.append((txt_file, dataset_line))
+                seed += 2
+            
+            # append stories to correct dataset split, must be in legixographic order of filenames per dataset
+            stories.sort(key=lambda x: x[0])
+            mocked_data[split] += [t[1] for t in stories]
 
         compressed_dataset_path = os.path.join(base_dir, f"{source}_stories.tgz")
         # create zip file from dataset folder
@@ -71,11 +73,12 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
     def _mock_split_list(split):
         story_fnames = []
         for source in ["cnn", "dailymail"]:
-            url = source + "_" + split
-            h = hashlib.sha1()
-            h.update(url.encode())
-            filename = h.hexdigest() + ".story"
-            story_fnames.append(filename)
+            for i in range(5):
+                url = '_'.join([source, split, str(i)])
+                h = hashlib.sha1()
+                h.update(url.encode())
+                filename = h.hexdigest() + ".story"
+                story_fnames.append(filename)
 
         return story_fnames
 
