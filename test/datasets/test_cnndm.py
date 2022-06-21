@@ -28,7 +28,7 @@ def _get_mock_dataset(root_dir):
         for split in ["train", "val", "test"]:
             stories = []
             for i in range(5):
-                url = '_'.join([source, split, str(i)])
+                url = "_".join([source, split, str(i)])
                 h = hashlib.sha1()
                 h.update(url.encode())
                 filename = h.hexdigest() + ".story"
@@ -40,7 +40,7 @@ def _get_mock_dataset(root_dir):
                     f.writelines([article, "\n@highlight\n", abstract])
                     stories.append((txt_file, dataset_line))
                 seed += 2
-            
+
             # append stories to correct dataset split, must be in legixographic order of filenames per dataset
             stories.sort(key=lambda x: x[0])
             mocked_data[split] += [t[1] for t in stories]
@@ -74,7 +74,7 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         story_fnames = []
         for source in ["cnn", "dailymail"]:
             for i in range(5):
-                url = '_'.join([source, split, str(i)])
+                url = "_".join([source, split, str(i)])
                 h = hashlib.sha1()
                 h.update(url.encode())
                 filename = h.hexdigest() + ".story"
