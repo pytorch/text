@@ -29,7 +29,7 @@ def run_torchtext_ops():
         tokenized_text = tokenizer(text_list)
 
     with Timer("Running torchtext's vocab query"):
-        _ = vocab(tokenized_text)
+        tokens = vocab(tokenized_text)
 
 
 def run_torcharrow_ops():
@@ -44,11 +44,12 @@ def run_torcharrow_ops():
     text_list = list(train_dp.map(lambda x: x[0]))
     data_frame = ta.dataframe({"text": text_list})
 
-    with Timer("Running torchtext's GPT2BPE tokenizer"):
+    with Timer("Running torcharrow's GPT2BPE tokenizer"):
         data_frame["tokens"] = ta_F.bpe_tokenize(tokenizer, data_frame["text"])
 
-    with Timer("Running torchtext's vocab query"):
+    with Timer("Running torcharrow's vocab query"):
         data_frame["token_ids"] = ta_F.lookup_indices(vocab, data_frame["tokens"])
+
 
 
 if __name__ == "__main__":
