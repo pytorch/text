@@ -310,3 +310,55 @@ class _ParseIOBData(IterDataPipe):
                     columns[i].append(column)
         if len(columns) > 0:
             yield columns
+
+
+@functional_datapipe("parse_cnndm_data")
+class _ParseCNNDMData(IterDataPipe):
+    """Iterable DataPipe to parse the article and abstract from a CNNDM data stream.
+    Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py"""
+
+    dm_single_close_quote = "\u2019"  # unicode
+    dm_double_close_quote = "\u201d"
+    # acceptable ways to end a sentence
+    END_TOKENS = [".", "!", "?", "...", "'", "`", '"', dm_single_close_quote, dm_double_close_quote, ")", "\n"]
+
+    def __init__(self, source_datapipe) -> None:
+        self.source_datapipe = source_datapipe
+
+    def _fix_missing_period(self, line):
+        """Adds a period to a line that is missing a period"""
+        if "@highlight" in line:
+            return line
+        if line == "":
+            return line
+        if line[-1] in self.END_TOKENS:
+            return line
+        return line + " ."
+
+    def __iter__(self):
+        for _, stream in self.source_datapipe:
+            lines = stream.readlines()
+            lines = [line.decode("utf-8").strip() for line in lines]
+
+            # put periods on the ends of lines that are missing them
+            # this is a problem in the dataset because many image captions don't end in periods
+            # consequently they end up in the body of the article as run-on sentences
+            lines = [self._fix_missing_period(line) for line in lines]
+
+            # Separate out article and abstract sentences
+            article_lines = []
+            highlights = []
+            next_is_highlight = False
+            for idx, line in enumerate(lines):
+                if line == "":
+                    continue  # empty line
+                elif line.startswith("@highlight"):
+                    next_is_highlight = True
+                elif next_is_highlight:
+                    highlights.append(line)
+                else:
+                    article_lines.append(line)
+
+            article = " ".join(article_lines)
+            abstract = " ".join(highlights)
+            yield article, abstract
