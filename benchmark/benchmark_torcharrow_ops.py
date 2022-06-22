@@ -29,7 +29,7 @@ def run_torchtext_ops():
         tokenized_text = tokenizer(text_list)
 
     with Timer("Running torchtext's vocab query"):
-        tokens = vocab(tokenized_text)
+        _ = vocab(tokenized_text)
 
 
 def run_torcharrow_ops():
@@ -49,7 +49,6 @@ def run_torcharrow_ops():
 
     with Timer("Running torcharrow's vocab query"):
         data_frame["token_ids"] = ta_F.lookup_indices(vocab, data_frame["tokens"])
-
 
 
 if __name__ == "__main__":
