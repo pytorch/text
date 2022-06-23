@@ -1,4 +1,5 @@
 #include <torch/script.h>
+#include <torchtext/csrc/export.h>
 
 namespace torchtext {
 
@@ -14,7 +15,7 @@ typedef std::tuple<
     std::vector<torch::Tensor>>
     VectorsStates;
 
-struct Vectors : torch::CustomClassHolder {
+TORCHTEXT_API struct Vectors : torch::CustomClassHolder {
  public:
   const std::string version_str_ = "0.0.1";
   IndexMap stoi_;
