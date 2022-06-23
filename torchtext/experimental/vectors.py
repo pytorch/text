@@ -6,7 +6,7 @@ def __getattr__(name):
         import warnings
 
         warnings.warn(
-            "experimental package has been moved to prototype. You may change all imports from `experimental` to `prototype`",
+            "experimental package has been moved to prototype. You may change all imports from `torchtext.experimental` to `torchtext.prototype`",
             UserWarning,
         )
 
