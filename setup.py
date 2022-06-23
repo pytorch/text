@@ -2,9 +2,9 @@
 import distutils.command.clean
 import io
 import os
-import sys
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from build_tools import setup_helpers
