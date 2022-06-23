@@ -26,7 +26,6 @@ curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/
 python pywin32_postinstall.py -install
 
 printf "* Installing torchtext\n"
-git submodule update --init --recursive
 "$root_dir/packaging/vc_env_helper.bat" python setup.py develop
 
 printf "* Installing parameterized\n"
