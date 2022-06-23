@@ -9,11 +9,22 @@ _TEXT_BUCKET = "https://download.pytorch.org/models/text/"
 
 _CACHE_DIR = os.path.expanduser(os.path.join(_get_torch_home(), "text"))
 
-from . import data, datasets, prototype, functional, models, nn, transforms, utils, vocab
+from . import data, datasets, prototype, functional, models, nn, transforms, utils, vocab, experimental
 
 try:
     from .version import __version__, git_version  # noqa: F401
 except ImportError:
     pass
 
-__all__ = ["data", "nn", "datasets", "utils", "vocab", "transforms", "functional", "models", "prototype"]
+__all__ = [
+    "data",
+    "nn",
+    "datasets",
+    "utils",
+    "vocab",
+    "transforms",
+    "functional",
+    "models",
+    "prototype",
+    "experimental",
+]
