@@ -35,7 +35,7 @@ test:
     - torchtext
     - torchtext.datasets
     - torchtext.data
-    - torchtext.experimental
+    - torchtext.prototype
 
   source_files:
     - test

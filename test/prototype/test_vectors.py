@@ -5,7 +5,7 @@ import unittest
 
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.vectors import build_vectors
+from torchtext.prototype.vectors import build_vectors
 
 
 class TestVectors(TorchtextTestCase):

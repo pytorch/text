@@ -1,8 +1,8 @@
 import time
 
 import torch
-from torchtext.experimental.datasets import AG_NEWS
-from torchtext.experimental.vectors import FastText as FastTextExperimental
+from torchtext.prototype.datasets import AG_NEWS
+from torchtext.prototype.vectors import FastText as FastTextExperimental
 from torchtext.vocab import FastText
 
 

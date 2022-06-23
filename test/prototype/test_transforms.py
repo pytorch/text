@@ -6,13 +6,13 @@ from unittest.mock import patch
 import torch
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.transforms import (
+from torchtext.prototype.transforms import (
     sentencepiece_processor,
     sentencepiece_tokenizer,
     VectorTransform,
     MaskTransform,
 )
-from torchtext.experimental.vectors import FastText
+from torchtext.prototype.vectors import FastText
 
 from ..common.parameterized_utils import nested_params
 

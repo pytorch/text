@@ -5,8 +5,8 @@ from collections import Counter, OrderedDict
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.datasets import DATASETS
-from torchtext.experimental.transforms import basic_english_normalize
-from torchtext.experimental.vocab_factory import build_vocab_from_text_file, load_vocab_from_file
+from torchtext.prototype.transforms import basic_english_normalize
+from torchtext.prototype.vocab_factory import build_vocab_from_text_file, load_vocab_from_file
 from torchtext.vocab import build_vocab_from_iterator, vocab as VocabNew
 
 
