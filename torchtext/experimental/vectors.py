@@ -7,7 +7,7 @@ def __getattr__(name):
 
         warnings.warn(
             "experimental package has been moved to prototype. You may change all imports from `experimental` to `prototype`",
-            DeprecationWarning,
+            UserWarning,
         )
 
         if name == "FastText":
