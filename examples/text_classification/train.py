@@ -9,7 +9,7 @@ from torch.utils.data.dataset import random_split
 from torchtext.data.functional import to_map_style_dataset
 from torchtext.data.utils import get_tokenizer, ngrams_iterator
 from torchtext.datasets import DATASETS
-from torchtext.experimental.transforms import load_sp_model, PRETRAINED_SP_MODEL, SentencePieceTokenizer
+from torchtext.prototype.transforms import load_sp_model, PRETRAINED_SP_MODEL, SentencePieceTokenizer
 from torchtext.utils import download_from_url
 from torchtext.vocab import build_vocab_from_iterator
 

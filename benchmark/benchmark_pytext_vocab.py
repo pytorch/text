@@ -12,7 +12,7 @@ import torch
 from pytext.data.utils import Vocabulary as PytextVocabulary
 from pytext.torchscript.vocab import ScriptVocabulary as PytextScriptVocabulary
 from pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
-from torchtext.experimental.datasets import AG_NEWS
+from torchtext.prototype.datasets import AG_NEWS
 
 
 def _run_benchmark_lookup(tokens, vocab, num_iters=1):
