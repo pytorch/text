@@ -7,8 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from build_tools import setup_helpers
 from setuptools import find_packages, setup
+from tools import setup_helpers
 
 ROOT_DIR = Path(__file__).parent.resolve()
 
@@ -108,7 +108,7 @@ setup_info = dict(
         "Programming Language :: Python :: 3.9",
     ],
     # Package info
-    packages=find_packages(exclude=("test*", "build_tools*")),
+    packages=find_packages(exclude=("test*", "tools*")),
     zip_safe=False,
     # Extension info
     # If you are trying to use torchtext.so and see no registered op.
