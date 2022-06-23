@@ -1,6 +1,7 @@
 #pragma once
 #include <c10/util/string_view.h>
 #include <torch/script.h>
+#include <torchtext/csrc/export.h>
 #include <algorithm>
 
 namespace torchtext {
@@ -27,7 +28,7 @@ struct CompareTokens {
   }
 };
 
-int64_t _infer_lines(const std::string& file_path);
+TORCHTEXT_API int64_t _infer_lines(const std::string& file_path);
 
 struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
@@ -40,23 +41,23 @@ struct Vocab : torch::CustomClassHolder {
   // TODO: [can we remove this?] we need to keep this constructor, otherwise
   // torch binding gets compilation error: no matching constructor for
   // initialization of 'torchtext::Vocab'
-  explicit Vocab(StringList tokens);
-  explicit Vocab(
+  TORCHTEXT_API explicit Vocab(StringList tokens);
+  TORCHTEXT_API explicit Vocab(
       StringList tokens,
       const c10::optional<int64_t>& default_index);
-  int64_t __len__() const;
-  int64_t __getitem__(const c10::string_view& token) const;
-  bool __contains__(const c10::string_view& token) const;
-  void set_default_index(c10::optional<int64_t> index);
-  c10::optional<int64_t> get_default_index() const;
-  void insert_token(std::string token, const int64_t& index);
-  void append_token(std::string token);
-  std::string lookup_token(const int64_t& index);
-  std::vector<std::string> lookup_tokens(const std::vector<int64_t>& indices);
+  TORCHTEXT_API int64_t __len__() const;
+  TORCHTEXT_API int64_t __getitem__(const c10::string_view& token) const;
+  TORCHTEXT_API bool __contains__(const c10::string_view& token) const;
+  TORCHTEXT_API void set_default_index(c10::optional<int64_t> index);
+  TORCHTEXT_API c10::optional<int64_t> get_default_index() const;
+  TORCHTEXT_API void insert_token(std::string token, const int64_t& index);
+  TORCHTEXT_API void append_token(std::string token);
+  TORCHTEXT_API std::string lookup_token(const int64_t& index);
+  TORCHTEXT_API std::vector<std::string> lookup_tokens(const std::vector<int64_t>& indices);
   std::vector<int64_t> lookup_indices(
       const std::vector<c10::string_view>& tokens);
-  std::unordered_map<std::string, int64_t> get_stoi() const;
-  std::vector<std::string> get_itos() const;
+  TORCHTEXT_API std::unordered_map<std::string, int64_t> get_stoi() const;
+  TORCHTEXT_API std::vector<std::string> get_itos() const;
 
  protected:
   uint32_t _hash(const c10::string_view& str) const {
@@ -86,14 +87,14 @@ struct Vocab : torch::CustomClassHolder {
   }
 };
 
-VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab>& self);
-c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
+TORCHTEXT_API VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab>& self);
+TORCHTEXT_API c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
-Vocab _load_vocab_from_file(
+TORCHTEXT_API Vocab _load_vocab_from_file(
     const std::string& file_path,
     const int64_t min_freq,
     const int64_t num_cpus);
-Vocab _build_vocab_from_text_file(
+TORCHTEXT_API Vocab _build_vocab_from_text_file(
     const std::string& file_path,
     const int64_t min_freq,
     const int64_t num_cpus,

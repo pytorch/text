@@ -1,6 +1,7 @@
 #ifndef CLIP_TOKENIZER_H_
 #define CLIP_TOKENIZER_H_
 
+#include <torchtext/csrc/export.h>
 #include <torchtext/csrc/gpt2_bpe_tokenizer.h>
 
 namespace torchtext {
@@ -25,21 +26,21 @@ struct CLIPEncoder : GPT2BPEEncoder {
  public:
   using GPT2BPEEncoder::GPT2BPEEncoder;
 
-  std::vector<int64_t> Encode(const std::string& text);
-  std::vector<std::string> Tokenize(const std::string& text);
+  TORCHTEXT_API std::vector<int64_t> Encode(const std::string& text);
+  TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
 
  protected:
-  std::vector<std::string> BPE_(
+  TORCHTEXT_API std::vector<std::string> BPE_(
       const std::vector<std::string>& token_list) override;
 
-  std::vector<std::string> PreTokenize_(std::string input) override;
+  TORCHTEXT_API std::vector<std::string> PreTokenize_(std::string input) override;
 };
 
-CLIPEncoderStatesPybind _serialize_clip_encoder_pybind(
+TORCHTEXT_API CLIPEncoderStatesPybind _serialize_clip_encoder_pybind(
     const c10::intrusive_ptr<CLIPEncoder>& self);
 CLIPEncoderStatesTorchbind _serialize_clip_encoder_torchbind(
     const c10::intrusive_ptr<CLIPEncoder>& self);
-c10::intrusive_ptr<CLIPEncoder> _deserialize_clip_encoder_pybind(
+TORCHTEXT_API c10::intrusive_ptr<CLIPEncoder> _deserialize_clip_encoder_pybind(
     CLIPEncoderStatesPybind states);
 c10::intrusive_ptr<CLIPEncoder> _deserialize_clip_encoder_torchbind(
     CLIPEncoderStatesTorchbind states);

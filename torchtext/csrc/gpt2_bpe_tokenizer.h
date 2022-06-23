@@ -2,6 +2,7 @@
 #define GPT2_BPE_TOKENIZER_H_
 
 #include <torch/script.h>
+#include <torchtext/csrc/export.h>
 
 #include <cstdint>
 #include <string>
@@ -79,7 +80,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
       const c10::Dict<int64_t, std::string>& byte_encoder,
       bool caching_enabled = false);
 
-  explicit GPT2BPEEncoder(
+  TORCHTEXT_API explicit GPT2BPEEncoder(
       const std::unordered_map<std::string, int64_t>& bpe_encoder,
       const std::unordered_map<std::string, int64_t>& bpe_merge_ranks,
       const std::string& seperator,
@@ -97,19 +98,19 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   //  --> bpe encode --> bpe token ids: [707, 5927], [11], [707, 68]
   //  --> result --> [707, 5927, 11, 707, 68]
   //
-  std::vector<int64_t> Encode(const std::string& text);
-  std::vector<std::string> Tokenize(const std::string& text);
+  TORCHTEXT_API std::vector<int64_t> Encode(const std::string& text);
+  TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
 
-  std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
-  std::unordered_map<std::string, int64_t> GetBPEMergeRanks() const;
-  std::unordered_map<int64_t, std::string> GetByteEncoder() const;
+  TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
+  TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEMergeRanks() const;
+  TORCHTEXT_API std::unordered_map<int64_t, std::string> GetByteEncoder() const;
 };
 
-GPT2BPEEncoderStatesPybind _serialize_gpt2_bpe_encoder_pybind(
+TORCHTEXT_API GPT2BPEEncoderStatesPybind _serialize_gpt2_bpe_encoder_pybind(
     const c10::intrusive_ptr<GPT2BPEEncoder>& self);
 GPT2BPEEncoderStatesTorchbind _serialize_gpt2_bpe_encoder_torchbind(
     const c10::intrusive_ptr<GPT2BPEEncoder>& self);
-c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
+TORCHTEXT_API c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
     GPT2BPEEncoderStatesPybind states);
 c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states);
