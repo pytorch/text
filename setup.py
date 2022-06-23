@@ -2,6 +2,7 @@
 import distutils.command.clean
 import io
 import os
+import sys
 import shutil
 import subprocess
 from pathlib import Path
@@ -44,6 +45,18 @@ def _export_version(version, sha):
         fileobj.write("git_version = {}\n".format(repr(sha)))
 
 
+def _init_submodule():
+    print(" --- Initializing submodules")
+    try:
+        subprocess.check_call(["git", "submodule", "init"])
+        subprocess.check_call(["git", "submodule", "update"])
+    except Exception:
+        print(" --- Submodule initalization failed")
+        print("Please run:\n\tgit submodule update --init --recursive")
+        sys.exit(1)
+    print(" --- Initialized submodule")
+
+
 VERSION, SHA = _get_version()
 _export_version(VERSION, SHA)
 
@@ -76,6 +89,7 @@ class clean(distutils.command.clean.clean):
                 shutil.rmtree(str(path), ignore_errors=True)
 
 
+_init_submodule()
 setup_info = dict(
     # Metadata
     name="torchtext",
