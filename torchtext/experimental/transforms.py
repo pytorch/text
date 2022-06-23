@@ -18,7 +18,7 @@ def __getattr__(name):
 
         warnings.warn(
             "experimental package has been moved to prototype. You may change all imports from `torchtext.experimental` to `torchtext.prototype`",
-            DeprecationWarning,
+            UserWarning,
         )
 
         if name == "basic_english_normalize":
