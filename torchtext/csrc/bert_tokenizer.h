@@ -1,5 +1,5 @@
-#include <torchtext/csrc/vocab.h>
 #include <torchtext/csrc/export.h>
+#include <torchtext/csrc/vocab.h>
 #include <string>
 #include <vector>
 
@@ -24,7 +24,8 @@ struct BERTEncoder : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<int64_t> Encode(std::string text);
   TORCHTEXT_API std::vector<std::vector<std::string>> BatchTokenize(
       std::vector<std::string> text);
-  TORCHTEXT_API std::vector<std::vector<int64_t>> BatchEncode(std::vector<std::string> text);
+  TORCHTEXT_API std::vector<std::vector<int64_t>> BatchEncode(
+      std::vector<std::string> text);
 
   Vocab vocab_;
   bool do_lower_case_;
@@ -41,8 +42,8 @@ struct BERTEncoder : torch::CustomClassHolder {
   static std::string kUnkToken;
 };
 
-TORCHTEXT_API BERTEncoderStates _serialize_bert_encoder(
-    const c10::intrusive_ptr<BERTEncoder>& self);
+TORCHTEXT_API BERTEncoderStates
+_serialize_bert_encoder(const c10::intrusive_ptr<BERTEncoder>& self);
 TORCHTEXT_API c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
     BERTEncoderStates states);
 } // namespace torchtext

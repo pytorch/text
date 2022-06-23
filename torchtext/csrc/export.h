@@ -6,14 +6,15 @@
 //
 // In the context of torchtext, the logic is simpler at the moment.
 //
-// The torchtext custom operations are implemented in `torchtext/lib/libtorchtext.[so|pyd]`.
-// Some symbols are referred from `torchtext._torchtext`.
+// The torchtext custom operations are implemented in
+// `torchtext/lib/libtorchtext.[so|pyd]`. Some symbols are referred from
+// `torchtext._torchtext`.
 //
-// In Windows, default visibility of dynamically library are hidden, while in Linux/macOS,
-// they are visible.
+// In Windows, default visibility of dynamically library are hidden, while in
+// Linux/macOS, they are visible.
 //
-// At the moment we do not expect torchtext libraries to be built/linked statically.
-// We assume they are always shared.
+// At the moment we do not expect torchtext libraries to be built/linked
+// statically. We assume they are always shared.
 
 #ifdef _WIN32
 #define TORCHTEXT_EXPORT __declspec(dllexport)

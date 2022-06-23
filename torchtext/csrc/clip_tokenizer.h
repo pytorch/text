@@ -33,11 +33,12 @@ struct CLIPEncoder : GPT2BPEEncoder {
   TORCHTEXT_API std::vector<std::string> BPE_(
       const std::vector<std::string>& token_list) override;
 
-  TORCHTEXT_API std::vector<std::string> PreTokenize_(std::string input) override;
+  TORCHTEXT_API std::vector<std::string> PreTokenize_(
+      std::string input) override;
 };
 
-TORCHTEXT_API CLIPEncoderStatesPybind _serialize_clip_encoder_pybind(
-    const c10::intrusive_ptr<CLIPEncoder>& self);
+TORCHTEXT_API CLIPEncoderStatesPybind
+_serialize_clip_encoder_pybind(const c10::intrusive_ptr<CLIPEncoder>& self);
 CLIPEncoderStatesTorchbind _serialize_clip_encoder_torchbind(
     const c10::intrusive_ptr<CLIPEncoder>& self);
 TORCHTEXT_API c10::intrusive_ptr<CLIPEncoder> _deserialize_clip_encoder_pybind(

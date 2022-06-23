@@ -27,8 +27,8 @@ struct RegexTokenizer : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<std::string> forward(std::string str) const;
 };
 
-TORCHTEXT_API RegexTokenizerStates _serialize_regex_tokenizer(
-    const c10::intrusive_ptr<RegexTokenizer>& self);
+TORCHTEXT_API RegexTokenizerStates
+_serialize_regex_tokenizer(const c10::intrusive_ptr<RegexTokenizer>& self);
 TORCHTEXT_API c10::intrusive_ptr<RegexTokenizer> _deserialize_regex_tokenizer(
     RegexTokenizerStates&& states);
 

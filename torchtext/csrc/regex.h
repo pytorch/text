@@ -14,10 +14,12 @@ struct Regex : torch::CustomClassHolder {
 
   TORCHTEXT_API Regex(const std::string& re_str);
   TORCHTEXT_API std::string Sub(std::string str, const std::string& repl) const;
-  TORCHTEXT_API bool FindAndConsume(re2::StringPiece* input, std::string* text) const;
+  TORCHTEXT_API bool FindAndConsume(re2::StringPiece* input, std::string* text)
+      const;
 };
 
-TORCHTEXT_API std::string _serialize_regex(const c10::intrusive_ptr<Regex>& self);
+TORCHTEXT_API std::string _serialize_regex(
+    const c10::intrusive_ptr<Regex>& self);
 TORCHTEXT_API c10::intrusive_ptr<Regex> _deserialize_regex(std::string&& state);
 
 } // namespace torchtext

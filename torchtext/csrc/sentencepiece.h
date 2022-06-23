@@ -19,10 +19,13 @@ struct SentencePiece : torch::CustomClassHolder {
 
   TORCHTEXT_API explicit SentencePiece(const std::string& content);
   TORCHTEXT_API std::vector<std::string> Encode(const std::string& input) const;
-  TORCHTEXT_API std::vector<int64_t> EncodeAsIds(const std::string& input) const;
+  TORCHTEXT_API std::vector<int64_t> EncodeAsIds(
+      const std::string& input) const;
   TORCHTEXT_API std::string DecodeIds(const std::vector<int64_t>& ids) const;
-  TORCHTEXT_API std::vector<std::string> EncodeAsPieces(const std::string& input) const;
-  TORCHTEXT_API std::string DecodePieces(const std::vector<std::string>& pieces) const;
+  TORCHTEXT_API std::vector<std::string> EncodeAsPieces(
+      const std::string& input) const;
+  TORCHTEXT_API std::string DecodePieces(
+      const std::vector<std::string>& pieces) const;
   TORCHTEXT_API int64_t GetPieceSize() const;
   TORCHTEXT_API int64_t unk_id() const;
   TORCHTEXT_API int64_t PieceToId(const std::string& piece) const;

@@ -53,7 +53,8 @@ struct Vocab : torch::CustomClassHolder {
   TORCHTEXT_API void insert_token(std::string token, const int64_t& index);
   TORCHTEXT_API void append_token(std::string token);
   TORCHTEXT_API std::string lookup_token(const int64_t& index);
-  TORCHTEXT_API std::vector<std::string> lookup_tokens(const std::vector<int64_t>& indices);
+  TORCHTEXT_API std::vector<std::string> lookup_tokens(
+      const std::vector<int64_t>& indices);
   std::vector<int64_t> lookup_indices(
       const std::vector<c10::string_view>& tokens);
   TORCHTEXT_API std::unordered_map<std::string, int64_t> get_stoi() const;
@@ -87,7 +88,8 @@ struct Vocab : torch::CustomClassHolder {
   }
 };
 
-TORCHTEXT_API VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab>& self);
+TORCHTEXT_API VocabStates
+_serialize_vocab(const c10::intrusive_ptr<Vocab>& self);
 TORCHTEXT_API c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
 TORCHTEXT_API Vocab _load_vocab_from_file(

@@ -102,7 +102,8 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
 
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
-  TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEMergeRanks() const;
+  TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEMergeRanks()
+      const;
   TORCHTEXT_API std::unordered_map<int64_t, std::string> GetByteEncoder() const;
 };
 
@@ -110,8 +111,8 @@ TORCHTEXT_API GPT2BPEEncoderStatesPybind _serialize_gpt2_bpe_encoder_pybind(
     const c10::intrusive_ptr<GPT2BPEEncoder>& self);
 GPT2BPEEncoderStatesTorchbind _serialize_gpt2_bpe_encoder_torchbind(
     const c10::intrusive_ptr<GPT2BPEEncoder>& self);
-TORCHTEXT_API c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
-    GPT2BPEEncoderStatesPybind states);
+TORCHTEXT_API c10::intrusive_ptr<GPT2BPEEncoder>
+_deserialize_gpt2_bpe_encoder_pybind(GPT2BPEEncoderStatesPybind states);
 c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states);
 } // namespace torchtext
