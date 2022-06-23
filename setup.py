@@ -6,8 +6,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from tools import setup_helpers
 from setuptools import find_packages, setup
+from tools import setup_helpers
 
 ROOT_DIR = Path(__file__).parent.resolve()
 
