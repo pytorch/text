@@ -3,7 +3,7 @@ import time
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.datasets import AG_NEWS
-from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.prototype.transforms import basic_english_normalize
 
 
 def benchmark_basic_english_normalize():

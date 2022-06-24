@@ -3,7 +3,7 @@ import sys
 
 import torch
 from torchtext.data.utils import get_tokenizer, ngrams_iterator
-from torchtext.experimental.transforms import load_sp_model, PRETRAINED_SP_MODEL, SentencePieceTokenizer
+from torchtext.prototype.transforms import load_sp_model, PRETRAINED_SP_MODEL, SentencePieceTokenizer
 from torchtext.utils import download_from_url
 
 
