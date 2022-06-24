@@ -2,6 +2,9 @@ import hashlib
 import os
 from functools import partial
 from typing import Union, Tuple
+from timeit import timeit
+from benchmark.utils import Timer
+from functools import lru_cache
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -69,6 +72,13 @@ def _hash_urls(s):
     return story_fname
 
 
+@lru_cache()
+def _get_split_list_cache(split: str):
+    url_dp = IterableWrapper([URL_LIST[split]])
+    online_dp = OnlineReader(url_dp)
+    return online_dp.readlines().map(fn=_hash_urls)
+
+
 def _get_split_list(split: str):
     url_dp = IterableWrapper([URL_LIST[split]])
     online_dp = OnlineReader(url_dp)
@@ -88,8 +98,8 @@ def _load_stories(root: str, source: str):
     return cache_decompressed_dp
 
 
-@_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(("train", "val", "test"))
+#@_create_dataset_directory(dataset_name=DATASET_NAME)
+#@_wrap_split_argument(("train", "val", "test"))
 def CNNDM(root: str, split: Union[Tuple[str], str]):
     """CNNDM Dataset
 
@@ -127,3 +137,12 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
     story_fnames = set(_get_split_list(split))
     data_dp = data_dp.filter(partial(_filter_fn, story_fnames))
     return data_dp.parse_cnndm_data().shuffle().set_shuffle(False).sharding_filter()
+
+if __name__ == '__main__':
+
+    for split in ('train', 'val', 'test'):
+        with Timer(f"{split} w/out cache"):
+            _get_split_list(split)
+        
+        with Timer(f"{split} w/ cache"):
+            _get_split_list_cache(split)
