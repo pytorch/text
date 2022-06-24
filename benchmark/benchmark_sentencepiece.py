@@ -3,7 +3,7 @@ import time
 
 from torchtext.data.functional import load_sp_model as load_torchbind_sp_model
 from torchtext.datasets import DATASETS
-from torchtext.experimental.transforms import load_sp_model as load_pybind_sp_model
+from torchtext.prototype.transforms import load_sp_model as load_pybind_sp_model
 from torchtext.utils import download_from_url
 
 
