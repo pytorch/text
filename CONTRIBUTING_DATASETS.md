@@ -2,7 +2,7 @@
 
 ## Background
 
-TorchText datasets are based on and are built using composition of TorchData’s DataPipes.
+Torchtext datasets are based on and are built using composition of TorchData’s DataPipes.
 [TorchData](https://github.com/pytorch/data) is a library that provides modular/composable primitives, allowing users to
 load and transform data in performant data pipelines. With DataPipes, users can easily do data manipulation and
 preprocessing using user-defined functions and transformations in a functional style programming. Datasets backed by
@@ -26,13 +26,13 @@ things to take into account.
   that it is very important to take the dataset relevance into account before adding it to the repository. Some of the
   reference points may include:
   - Whether the dataset provide a good reference benchmarks for any given NLP/Multi-Modal related tasks
-  - Number of Citations received by the dataset
+  - Number of citations received by the dataset
   - Community needs
 - `Licensing concerns:` Last, but not least, make sure there are no licensing concerns over providing access to the
-  dataset through torchtext’s Datasets API. We have a disclaimer
+  dataset through torchtext’s datasets API. We have a disclaimer
   [here](https://github.com/pytorch/text#disclaimer-on-datasets) on this too.
 
-If you have any questions or concerns, do not hesitate to open the github issue for seeking feedback from community and
+If you have any questions or concerns, do not hesitate to open a github issue for seeking feedback from community and
 torchtext’s library maintainers.
 
 ### Let’s get started!
@@ -53,7 +53,7 @@ following decorators to your function:
 Sample code to add function definition:
 
 ```python
-DATASET_NAME = “MyDataName”
+DATASET_NAME = "MyDataName"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", “dev”,"test"))
@@ -70,9 +70,9 @@ abstractions that are necessary to compose the stack. A typical workflow may loo
 
 Data download (+Caching) -> Hash check -> Extraction (+Caching) ->File parsing -> Data organization -> Dataset samples.
 
-We already have a healthy collection of datasets implementations based on DataPipes. It provides a great starter’s guide
-to implement new dataset since they share many of the components. For reference, it is highly recommended to look at
-some of these existing datasets implementations. Furthermore, please refer to official torchdata
+We already have a healthy collection of dataset implementations based on DataPipes. It provides a great starter guide to
+implement new dataset since they share many of the components. For reference, it is highly recommended to look at some
+of these existing datasets implementations. Furthermore, please refer to official torchdata
 [documentation](https://pytorch.org/data/beta/index.html) to learn more about available
 [Iterable Style DataPipes](https://pytorch.org/data/beta/torchdata.datapipes.iter.html).
 
@@ -81,7 +81,7 @@ Below we provide a bit more details on what each of these components are and how
 #### Download from source
 
 Typically the first step is to download the dataset from the host to the local machine. The dataset may be present on
-different stores like google drive, AWS S3 etc and may require different reading mechanisms. TorchData implements a
+different stores like Google Drive, AWS S3 etc and may require different reading mechanisms. TorchData implements a
 number of commonly downloading mechanisms like HTTPReader and GDriveReader and can be used for data download. Refer to
 the [IO Data Pipes](https://pytorch.org/data/beta/torchdata.datapipes.iter.html#io-datapipes) section for more details.
 
@@ -93,8 +93,8 @@ Dataset). TorchData provides
 and
 [EndofDiskCashHolder](https://pytorch.org/data/beta/generated/torchdata.datapipes.iter.EndOnDiskCacheHolder.html#torchdata.datapipes.iter.EndOnDiskCacheHolder)
 DataPipes to facilitate caching. In short, the datapipe checks whether the file is already available on the local
-filesystem and shall trigger download only when it is not present. It is quite important to use the caching, otherwise
-the data will be downloaded at every epoch. The Datapipe also facilitates data integrity check via hash checking. It is
+filesystem and shall trigger download only when it is not present. It is quite important to use caching, otherwise the
+data will be downloaded at every epoch. The Datapipe also facilitates data integrity check via hash checking. It is
 recommended to do this to ensure that we do not silently ignore changes made in the hosted dataset.
 
 #### Unarchiving and caching compressed files
@@ -130,18 +130,20 @@ this [issue](https://github.com/pytorch/text/issues/1727) for additional details
 We use mocking to implement end-2-end testing for the implemented dataset. We avoid testing using a real dataset since
 it is expensive to download and/or cache the dataset for testing purposes.
 
-To implement the dataset test, create the corresponding testing file `test_<datasetname>.py` under tests/datasets
+To implement the dataset test, create the corresponding testing file `test_<datasetname>.py` under `tests/datasets`
 directory. Do the following:
 
-- Create a function `_get_mock_dataset` that writes the replica of the dataset (albeit with a much smaller number of
+- Create a function `_get_mock_dataset` that writes a replica of the dataset (albeit with a much smaller number of
   samples, typically 10) in a temporary directory and returns the dataset samples for comparison during testing
 - Create the dataset test class `Test<DataSetName>` that tests implementation on following two accounts:
   - Samples returned on iterating over the dataset
   - Dataset returned by passing split argument as `tuple` and as `str`
 
-For detailed examples on how to write the test, please follow the existing test suite under tests/datasets directory.
+For detailed examples on how to write the test, please follow the existing test suite under `tests/datasets` directory.
 
 For additional reference, you may also refer to [github issue #1493](https://github.com/pytorch/text/issues/1493) where
-we migrated testing of all the datasets from real datasets (that were cached) to mocked one. Contribute
+we migrated testing of all the datasets from real datasets (that were cached) to mocked one.
+
+### Contribute
 
 Simply create the PR and the torchtext team will help with reviews and get it landed on to the main branch!
