@@ -38,8 +38,8 @@ def run_torchtext_ops():
         token_ids = vocab(tokenized_text)
 
     with Timer("Running torchtext's add tokens operation (string)"):
-        add_bos_str(token_ids)
-        add_eos_str(token_ids)
+        add_bos_str(tokenized_text)
+        add_eos_str(tokenized_text)
 
     with Timer("Running torchtext's add tokens operation (int)"):
         add_bos_int(token_ids)
