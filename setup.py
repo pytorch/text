@@ -4,10 +4,11 @@ import io
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
-from build_tools import setup_helpers
 from setuptools import find_packages, setup
+from tools import setup_helpers
 
 ROOT_DIR = Path(__file__).parent.resolve()
 
@@ -44,6 +45,18 @@ def _export_version(version, sha):
         fileobj.write("git_version = {}\n".format(repr(sha)))
 
 
+def _init_submodule():
+    print(" --- Initializing submodules")
+    try:
+        subprocess.check_call(["git", "submodule", "init"])
+        subprocess.check_call(["git", "submodule", "update"])
+    except Exception:
+        print(" --- Submodule initalization failed")
+        print("Please run:\n\tgit submodule update --init --recursive")
+        sys.exit(1)
+    print(" --- Initialized submodule")
+
+
 VERSION, SHA = _get_version()
 _export_version(VERSION, SHA)
 
@@ -76,6 +89,7 @@ class clean(distutils.command.clean.clean):
                 shutil.rmtree(str(path), ignore_errors=True)
 
 
+_init_submodule()
 setup_info = dict(
     # Metadata
     name="torchtext",
@@ -94,7 +108,7 @@ setup_info = dict(
         "Programming Language :: Python :: 3.9",
     ],
     # Package info
-    packages=find_packages(exclude=("test*", "build_tools*")),
+    packages=find_packages(exclude=("test*", "tools*")),
     zip_safe=False,
     # Extension info
     # If you are trying to use torchtext.so and see no registered op.
