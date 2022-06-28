@@ -43,6 +43,8 @@ _EXTRACTED_FOLDERS = {
     "daily_mail": os.path.join("dailymail", "stories"),
 }
 
+story_fnames = None
+
 
 def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
@@ -54,7 +56,9 @@ def _extracted_filepath_fn(root: str, source: str):
 
 
 def _filter_fn(split, x):
-    story_fnames = set(_get_split_list(split))
+    global story_fnames
+    if not story_fnames:
+        story_fnames = set(_get_split_list(split))
     return os.path.basename(x[0]) in story_fnames
 
 
@@ -69,6 +73,12 @@ def _hash_urls(s):
     url_hash = h.hexdigest()
     story_fname = url_hash + ".story"
     return story_fname
+
+
+def _get_split_list_cache(split: str):
+    url_dp = IterableWrapper([URL_LIST[split]])
+    online_dp = OnlineReader(url_dp)
+    return online_dp.readlines().map(fn=_hash_urls)
 
 
 def _get_split_list(split: str):
