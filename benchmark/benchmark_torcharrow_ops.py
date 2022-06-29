@@ -2,7 +2,7 @@ import sys, os
 
 import torcharrow as ta
 import torchtext.transforms as T
-from .utils import Timer
+from benchmark.utils import Timer
 from torcharrow import functional as ta_F
 from torchtext._download_hooks import load_state_dict_from_url
 from torchtext.datasets import SST2
