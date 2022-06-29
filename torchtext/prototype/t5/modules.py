@@ -1,6 +1,6 @@
 import math
 import warnings
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union, Callable
 
 import torch
 import torch.nn as nn
@@ -611,3 +611,45 @@ class T5LayerNorm(nn.Module):
             hidden_states = hidden_states.to(self.weight.dtype)
 
         return self.weight * hidden_states
+
+
+class T5EncoderLayer(nn.TransformerEncoderLayer):
+    def __init__(
+        self,
+        d_model: int,
+        nhead: int,
+        dim_feedforward: int = 2048,
+        dropout: float = 0.1,
+        activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
+        layer_norm_eps: float = 1e-5,
+        batch_first: bool = False,
+        norm_first: bool = True,
+        has_relative_attention_bias: bool = True,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        device=None,
+        dtype=None,
+    ) -> None:
+        super(T5EncoderLayer, self).__init__(
+            d_model, nhead, dim_feedforward, dropout, activation, layer_norm_eps, batch_first, norm_first, device, dtype
+        )
+
+        self.self_attn = T5MultiheadAttention(
+            d_model,
+            nhead,
+            dropout=dropout,
+            batch_first=batch_first,
+            has_relative_attention_bias=has_relative_attention_bias,
+            relative_attention_num_buckets=relative_attention_num_buckets,
+            relative_attention_max_distance=relative_attention_max_distance,
+        )
+        self.norm1 = T5LayerNorm(d_model, eps=layer_norm_eps)
+        self.norm2 = T5LayerNorm(d_model, eps=layer_norm_eps)
+
+    def forward():
+        pass
+
+
+class T5Encoder(nn.TransformerEncoder):
+
+    pass
