@@ -1,3 +1,4 @@
+import copy
 import math
 import warnings
 from typing import Optional, Tuple, Union, Callable
@@ -461,19 +462,14 @@ def t5_multi_head_attention_forward(
             attn_output = attn_output.squeeze(1)
             attn_output_weights = attn_output_weights.squeeze(0)
 
-        if has_relative_attention_bias:
-            return attn_output, attn_output_weights, position_bias
-        else:
-            return attn_output, attn_output_weights, None
+        return attn_output, attn_output_weights, position_bias
+
     else:
         if not is_batched:
             # squeeze the output if input was unbatched
             attn_output = attn_output.squeeze(1)
 
-        if has_relative_attention_bias:
-            return attn_output, None, position_bias
-        else:
-            return attn_output, None, None
+        return attn_output, None, position_bias
 
 
 class T5MultiheadAttention(nn.MultiheadAttention):
@@ -481,7 +477,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         self,
         embed_dim,
         num_heads,
-        dropout=0.0,
+        dropout=0.1,
         bias=True,
         add_bias_kv=False,
         add_zero_attn=False,
@@ -490,22 +486,11 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         batch_first=False,
         device=None,
         dtype=None,
-        has_relative_attention_bias=False,
-        relative_attention_num_buckets=None,
-        relative_attention_max_distance=None,
     ) -> None:
 
         super(T5MultiheadAttention, self).__init__(
             embed_dim, num_heads, dropout, bias, add_bias_kv, add_zero_attn, kdim, vdim, batch_first, device, dtype
         )
-
-        self.has_relative_attention_bias = has_relative_attention_bias
-        if self.has_relative_attention_bias:
-            assert relative_attention_num_buckets
-            assert relative_attention_max_distance
-            self.relative_attention_num_buckets = relative_attention_num_buckets
-            self.relative_attention_max_distance = relative_attention_max_distance
-            self.relative_attention_bias = nn.Embedding(self.relative_attention_num_buckets, self.num_heads)
 
     def forward(
         self,
@@ -516,6 +501,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = True,
+        has_relative_attention_bias=False,
+        relative_attention_num_buckets=32,
+        relative_attention_max_distance=128,
         position_bias: Optional[Tensor] = None,
     ) -> Tuple[Tensor, Optional[Tensor]]:
 
@@ -523,6 +511,11 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
         if self.batch_first and is_batched:
             query, key, value = [x.transpose(1, 0) for x in (query, key, value)]
+
+        if has_relative_attention_bias:
+            relative_attention_bias = nn.Embedding(relative_attention_num_buckets, self.num_heads)
+        else:
+            relative_attention_bias = None
 
         if not self._qkv_same_embed_dim:
             attn_output, attn_output_weights, position_bias = t5_multi_head_attention_forward(
@@ -539,10 +532,10 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 self.dropout,
                 self.out_proj.weight,
                 self.out_proj.bias,
-                self.has_relative_attention_bias,
-                self.relative_attention_num_buckets,
-                self.relative_attention_max_distance,
-                self.relative_attention_bias,
+                has_relative_attention_bias=has_relative_attention_bias,
+                relative_attention_num_buckets=relative_attention_num_buckets,
+                relative_attention_max_distance=relative_attention_max_distance,
+                relative_attention_bias=relative_attention_bias,
                 position_bias=position_bias,
                 training=self.training,
                 key_padding_mask=key_padding_mask,
@@ -569,10 +562,10 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 self.dropout,
                 self.out_proj.weight,
                 self.out_proj.bias,
-                self.has_relative_attention_bias,
-                self.relative_attention_num_buckets,
-                self.relative_attention_max_distance,
-                self.relative_attention_bias,
+                has_relative_attention_bias=has_relative_attention_bias,
+                relative_attention_num_buckets=relative_attention_num_buckets,
+                relative_attention_max_distance=relative_attention_max_distance,
+                relative_attention_bias=relative_attention_bias,
                 position_bias=position_bias,
                 training=self.training,
                 key_padding_mask=key_padding_mask,
@@ -588,12 +581,12 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
 # NOTE: Taken from HF
 class T5LayerNorm(nn.Module):
-    def __init__(self, hidden_size, eps=1e-6):
+    def __init__(self, d_model, eps=1e-6):
         """
         Construct a layernorm module in the T5 style. No bias and no subtraction of mean.
         """
         super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.weight = nn.Parameter(torch.ones(d_model))
         self.variance_epsilon = eps
 
     def forward(self, hidden_states):
@@ -616,15 +609,15 @@ class T5LayerNorm(nn.Module):
 class T5EncoderLayer(nn.TransformerEncoderLayer):
     def __init__(
         self,
-        d_model: int,
-        nhead: int,
+        d_model: int = 512,
+        nhead: int = 8,
         dim_feedforward: int = 2048,
         dropout: float = 0.1,
         activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
-        layer_norm_eps: float = 1e-5,
+        layer_norm_eps: float = 1e-6,
         batch_first: bool = False,
         norm_first: bool = True,
-        has_relative_attention_bias: bool = True,
+        has_relative_attention_bias: bool = False,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
         device=None,
@@ -634,22 +627,134 @@ class T5EncoderLayer(nn.TransformerEncoderLayer):
             d_model, nhead, dim_feedforward, dropout, activation, layer_norm_eps, batch_first, norm_first, device, dtype
         )
 
-        self.self_attn = T5MultiheadAttention(
-            d_model,
-            nhead,
-            dropout=dropout,
-            batch_first=batch_first,
-            has_relative_attention_bias=has_relative_attention_bias,
-            relative_attention_num_buckets=relative_attention_num_buckets,
-            relative_attention_max_distance=relative_attention_max_distance,
-        )
+        self.has_relative_attention_bias = has_relative_attention_bias
+        self.relative_attention_num_buckets = relative_attention_num_buckets
+        self.relative_attention_max_distance = relative_attention_max_distance
+
+        self.self_attn = T5MultiheadAttention(d_model, nhead, dropout=dropout, batch_first=batch_first)
         self.norm1 = T5LayerNorm(d_model, eps=layer_norm_eps)
         self.norm2 = T5LayerNorm(d_model, eps=layer_norm_eps)
 
-    def forward():
-        pass
+    def forward(
+        self,
+        src: Tensor,
+        src_mask: Optional[Tensor] = None,
+        src_key_padding_mask: Optional[Tensor] = None,
+        position_bias: Optional[Tensor] = None,
+    ) -> Tensor:
+        r"""Pass the input through the encoder layer.
+        Args:
+            src: the sequence to the encoder layer (required).
+            src_mask: the mask for the src sequence (optional).
+            src_key_padding_mask: the mask for the src keys per batch (optional).
+        Shape:
+            see the docs in Transformer class.
+        """
+
+        # see Fig. 1 of https://arxiv.org/pdf/2002.04745v1.pdf
+        x = src
+        if self.norm_first:
+            attn_out, position_bias = self._sa_block(self.norm1(x), src_mask, src_key_padding_mask, position_bias)
+            # residual connection
+            x = x + attn_out
+            x = x + self._ff_block(self.norm2(x))
+        else:
+            attn_out, position_bias = self._sa_block(x, src_mask, src_key_padding_mask, position_bias)
+            x, position_bias = self.norm1(x + attn_out)
+            x = self.norm2(x + self._ff_block(x))
+
+        return x, position_bias
+
+    # self-attention block
+    def _sa_block(
+        self,
+        x: Tensor,
+        attn_mask: Optional[Tensor],
+        key_padding_mask: Optional[Tensor],
+        position_bias: Optional[Tensor],
+    ) -> Tensor:
+        attn = self.self_attn(
+            x,
+            x,
+            x,
+            attn_mask=attn_mask,
+            key_padding_mask=key_padding_mask,
+            need_weights=False,
+            has_relative_attention_bias=self.has_relative_attention_bias,
+            relative_attention_num_buckets=self.relative_attention_num_buckets,
+            relative_attention_max_distance=self.relative_attention_max_distance,
+            position_bias=position_bias,
+        )
+
+        x = attn[0]
+        if self.has_relative_attention_bias and position_bias is None:
+            position_bias = attn[2]
+
+        return self.dropout1(x), position_bias
+
+    # feed forward block
+    def _ff_block(self, x: Tensor) -> Tensor:
+        x = self.linear2(self.dropout(self.activation(self.linear1(x))))
+        return self.dropout2(x)
 
 
 class T5Encoder(nn.TransformerEncoder):
 
-    pass
+    r"""TransformerEncoder is a stack of N encoder layers. Users can build the
+    BERT(https://arxiv.org/abs/1810.04805) model with corresponding parameters.
+    Args:
+        encoder_layer: an instance of the TransformerEncoderLayer() class (required).
+        num_layers: the number of sub-encoder-layers in the encoder (required).
+        norm: the layer normalization component (optional).
+        enable_nested_tensor: if True, input will automatically convert to nested tensor
+            (and convert back on output). This will improve the overall performance of
+            TransformerEncoder when padding rate is high. Default: ``True`` (enabled).
+    Examples::
+        >>> encoder_layer = T5EncoderLayer(d_model=512, nhead=8, batch_first=True)
+        >>> t5_norm = T5LayerNorm(d_model=512)
+        >>> t5_encoder = T5Encoder(encoder_layer, num_layers=6, norm=t5_norm)
+        >>> src = torch.rand(10, 32, 512)
+        >>> out = t5_encoder(src)
+    """
+    __constants__ = ["norm"]
+
+    def __init__(self, encoder_layer, num_layers=6, norm=None, enable_nested_tensor=True):
+        super(T5Encoder, self).__init__(encoder_layer, num_layers, norm, enable_nested_tensor)
+
+        first_layer = copy.deepcopy(encoder_layer)
+        first_layer.has_relative_attention_bias = True
+        self.layers = nn.ModuleList([first_layer] + [copy.deepcopy(encoder_layer) for i in range(num_layers - 1)])
+        self.num_layers = num_layers
+        self.norm = norm
+        self.enable_nested_tensor = enable_nested_tensor
+
+    def forward(
+        self, src: Tensor, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None
+    ) -> Tensor:
+        r"""Pass the input through the encoder layers in turn.
+        Args:
+            src: the sequence to the encoder (required).
+            mask: the mask for the src sequence (optional).
+            src_key_padding_mask: the mask for the src keys per batch (optional).
+        Shape:
+            see the docs in Transformer class.
+        """
+        output = src
+        convert_to_nested = False
+
+        position_bias = None
+        for mod in self.layers:
+            if convert_to_nested:
+                output, position_bias = mod(output, src_mask=mask, position_bias=position_bias)
+            else:
+                output, position_bias = mod(
+                    output, src_mask=mask, src_key_padding_mask=src_key_padding_mask, position_bias=position_bias
+                )
+
+        if convert_to_nested:
+            output = output.to_padded_tensor(0.0)
+
+        if self.norm is not None:
+            output = self.norm(output)
+
+        return output
