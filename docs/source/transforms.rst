@@ -30,6 +30,13 @@ CLIPTokenizer
 
    .. automethod:: forward
 
+RegexTokenizer
+----------------------
+
+.. autoclass:: RegexTokenizer
+
+   .. automethod:: forward
+
 BERTTokenizer
 ----------------------
 
