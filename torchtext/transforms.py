@@ -683,7 +683,7 @@ class RegexTokenizer(Module):
         >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
         >>> tokens = jit_reg_tokenizer(test_sample)
 
-            Regex tokenization based on `(single_pattern, " ")` list.
+        Regex tokenization based on `(single_pattern, " ")` list.
         >>> import torch
         >>> from torchtext.transforms import RegexTokenizer
         >>> test_sample = 'Basic.Regex,Tokenization_for+a..Line,,of  Text'
