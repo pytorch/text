@@ -660,8 +660,8 @@ class BERTTokenizer(Module):
 
 
 class RegexTokenizer(Module):
-    __jit_unused_properties__ = ["is_jitable"]
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list. It is backed by the `C++ RE2 regular expression engine <https://github.com/google/re2>`_ from Google.
+    """
+    Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list. It is backed by the `C++ RE2 regular expression engine <https://github.com/google/re2>`_ from Google.
 
     Args:
         patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
@@ -692,8 +692,9 @@ class RegexTokenizer(Module):
         >>> reg_tokenizer = RegexTokenizer(patterns_list)
         >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
         >>> tokens = jit_reg_tokenizer(test_sample)
-
     """
+
+    __jit_unused_properties__ = ["is_jitable"]
 
     def __init__(self, patterns_list) -> None:
         super(RegexTokenizer, self).__init__()

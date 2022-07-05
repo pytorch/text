@@ -44,7 +44,6 @@ BERTTokenizer
 
    .. automethod:: forward
 
-
 VocabTransform
 --------------
 
