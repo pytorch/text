@@ -667,31 +667,29 @@ class RegexTokenizer(Module):
         patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
         as the first element and the replacement string as the second element.
 
-    Caveats:
+    Caveats
         - The RE2 library does not support arbitrary lookahead or lookbehind assertions, nor does it support backreferences. Look at the `docs <https://swtch.com/~rsc/regexp/regexp3.html#caveats>`_ here for more info.
         - The final tokenization step always uses spaces as seperators. To split strings based on a specific regex pattern, similar to Python's `re.split <https://docs.python.org/3/library/re.html#re.split>`_, a tuple of `("<regex_pattern>", " ")` can be provided.
 
-    Examples:
+    Example
         Regex tokenization based on `(patterns, replacements)` list.
-        >>> import torch
-        >>> from torchtext.transforms import RegexTokenizer
-        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
-        >>> patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', '')]
-        >>> reg_tokenizer = RegexTokenizer(patterns_list)
-        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
-        >>> tokens = jit_reg_tokenizer(test_sample)
-
-        Regex tokenization based on `(single_pattern, " ")` list.
-        >>> import torch
-        >>> from torchtext.transforms import RegexTokenizer
-        >>> test_sample = 'Basic.Regex,Tokenization_for+a..Line,,of  Text'
-        >>> patterns_list = [
-                (r'[,._+ ]+', r' ')]
-        >>> reg_tokenizer = RegexTokenizer(patterns_list)
-        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
-        >>> tokens = jit_reg_tokenizer(test_sample)
+            >>> import torch
+            >>> from torchtext.transforms import RegexTokenizer
+            >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+            >>> patterns_list = [
+                (r'\'', ' \'  '),
+                (r'\"', '')]
+            >>> reg_tokenizer = RegexTokenizer(patterns_list)
+            >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+            >>> tokens = jit_reg_tokenizer(test_sample)
+        Regex tokenization based on `(single_pattern, ' ')` list.
+            >>> import torch
+            >>> from torchtext.transforms import RegexTokenizer
+            >>> test_sample = 'Basic.Regex,Tokenization_for+a..Line,,of  Text'
+            >>> patterns_list = [(r'[,._+ ]+', r' ')]
+            >>> reg_tokenizer = RegexTokenizer(patterns_list)
+            >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+            >>> tokens = jit_reg_tokenizer(test_sample)
     """
 
     __jit_unused_properties__ = ["is_jitable"]
