@@ -17,26 +17,32 @@ SentencePieceTokenizer
    .. automethod:: forward
 
 GPT2BPETokenizer
-----------------------
+----------------
 
 .. autoclass:: GPT2BPETokenizer
 
    .. automethod:: forward
 
 CLIPTokenizer
-----------------------
+-------------
 
 .. autoclass:: CLIPTokenizer
 
    .. automethod:: forward
 
+RegexTokenizer
+--------------
+
+.. autoclass:: RegexTokenizer
+
+   .. automethod:: forward
+
 BERTTokenizer
-----------------------
+-------------
 
 .. autoclass:: BERTTokenizer
 
    .. automethod:: forward
-
 
 VocabTransform
 --------------
