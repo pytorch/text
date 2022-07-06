@@ -53,7 +53,7 @@ story_fnames = defaultdict(set)
 def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
 
-
+# called once per tar file, therefore no duplicate processing
 def _extracted_folder_fn(root: str, source: str, split: str, _=None):
     global story_fnames
     key = source + '_' + split
@@ -103,12 +103,12 @@ def _load_stories(root: str, source: str, split: str):
         FileOpener(cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, source, split))
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", filepath_fn=partial(_extracted_filepath_fn, root, source))
-    data_dp = FileOpener(cache_decompressed_dp, encoding="utf-8")
-    return cache_decompressed_dp
+    data_dp = FileOpener(cache_decompressed_dp, mode='b')
+    return data_dp
 
 
-#@_create_dataset_directory(dataset_name=DATASET_NAME)
-#@_wrap_split_argument(("train", "val", "test"))
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(("train", "val", "test"))
 def CNNDM(root: str, split: Union[Tuple[str], str]):
     """CNNDM Dataset
 
@@ -142,13 +142,3 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
     dailymail_dp = _load_stories(root, "dailymail", split)
     data_dp = cnn_dp.concat(dailymail_dp)
     return data_dp.parse_cnndm_data().shuffle().set_shuffle(False).sharding_filter()
-
-if __name__ == '__main__':
-
-    out = CNNDM(os.path.expanduser('~/.torchtext/cache'), 'train')
-    with Timer(f"initialize dataset"):
-        ex = iter(out)
-    
-    for i in range(2):
-        with Timer(f"iteration: {i}"):
-            next(ex)
