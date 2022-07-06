@@ -12,6 +12,7 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper
     from torchtext._download_hooks import HttpReader
 
+# TODO: Update URL to original once the server is back up (see https://github.com/pytorch/text/issues/1756)
 URL = {
     "train": r"https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/training.tar.gz",
     "valid": r"https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/validation.tar.gz",
