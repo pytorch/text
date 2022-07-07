@@ -1,6 +1,6 @@
 # Tokenizer
 
-This example demonstrates how you can use torchtext's GPT2BPE tokenizer in a C++ environment.
+This example demonstrates how you can use torchtext's `GPT2BPETokenizer` in a C++ environment.
 
 ## Steps
 
@@ -22,7 +22,7 @@ Please refer to [the top level README.md](../README.md)
 
 ### 3. Run the application
 
-Now we run the C++ application `tokenizer`, with the TorchScript object we created in Step.1. The tokenizer is run with
+Now we run the C++ application `tokenizer`, with the TorchScript object we created in Step 1. The tokenizer is run with
 the following sentence as input and we verify that the output is the same as that of Step 1.
 
 In [the top level directory](../)
