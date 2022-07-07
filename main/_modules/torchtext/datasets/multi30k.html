@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220706) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220707) &#x25BC</a>
     </div>
     
 
@@ -332,16 +332,17 @@
     <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">IterableWrapper</span>
     <span class="kn">from</span> <span class="nn">torchtext._download_hooks</span> <span class="kn">import</span> <span class="n">HttpReader</span>
 
+<span class="c1"># TODO: Update URL to original once the server is back up (see https://github.com/pytorch/text/issues/1756)</span>
 <span class="n">URL</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/mmt16_task1_test.tar.gz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/training.tar.gz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/validation.tar.gz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/mmt16_task1_test.tar.gz&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="s2">&quot;20140d013d05dd9a72dfde46478663ba05737ce983f478f960c1123c6671be5e&quot;</span><span class="p">,</span>
     <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;a7aa20e9ebd5ba5adce7909498b94410996040857154dab029851af3a866da8c&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;0681be16a532912288a91ddd573594fbdd57c0fbb81486eff7c55247e35326c2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;6d1ca1dba99e2c5dd54cae1226ff11c2551e6ce63527ebb072a1f70f72a5cd36&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">_PREFIX</span> <span class="o">=</span> <span class="p">{</span>
