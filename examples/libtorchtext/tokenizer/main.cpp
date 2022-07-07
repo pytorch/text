@@ -1,4 +1,3 @@
-
 #include <torch/script.h>
 #include <torch/nn/functional/activation.h>
 

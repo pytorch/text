@@ -11,7 +11,7 @@ on a sample sentence and verify that the output is the same before and after sav
 next steps we will load and execute the tokenizer in our C++ application. The C++ code is found in
 [`main.cpp`](./main.cpp).
 
-```python
+```bash
 tokenizer_file="tokenizer.pt"
 python create_tokenizer.py --tokenizer-file "${tokenizer_file}"
 ```
