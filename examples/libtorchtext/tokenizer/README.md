@@ -1,15 +1,32 @@
-## GPT2BPE Tokenizer
+# Tokenizer
 
-This example demonstrates how you can use torchtext's tokenizer in a C++ environment.
+This example demonstrates how you can use torchtext's GPT2BPE tokenizer in a C++ environment.
 
-### Steps
+## Steps
 
-Compile example mkdir build && cd build
+### 1. Create augmentation pipeline TorchScript file.
 
-    make -j
+First we create our tokenizer object, and save it as a TorchScript object. We also print out the output of the tokenizer
+on a sample sentence and verify that the output is the same before and after saving and re-loading the tokenizer. In the
+next steps we will load and execute the tokenizer in our C++ application. The C++ code is found in
+[`main.cpp`](./main.cpp).
 
-Run example
+```python
+tokenizer_file="tokenizer.pt"
+python create_tokenizer.py --tokenizer-file "${tokenizer_file}"
+```
 
-    python test_tokenizers.py
+### 2. Build the application
 
-    ./torchtext_kernels ../tokenizer.pt
+Please refer to [the top level README.md](../README.md)
+
+### 3. Run the application
+
+Now we run the C++ application `tokenizer`, with the TorchScript object we created in Step.1. The tokenizer is run with
+the following sentence as input and we verify that the output is the same as that of Step 1.
+
+In [the top level directory](../)
+
+```bash
+./build/tokenizer/tokenize "tokenizer/${tokenizer_file}"
+```

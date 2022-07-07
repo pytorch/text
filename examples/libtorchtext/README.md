@@ -18,8 +18,11 @@ The following commands will build `libtorchtext` and applications.
 git submodule update
 mkdir build
 cd build
-cmake -GNinja \
+cmake \
       -DCMAKE_PREFIX_PATH="$(python -c 'import torch;print(torch.utils.cmake_prefix_path)')" \
+      -DRE2_BUILD_TESTING:BOOL=OFF \
+      -DBUILD_TESTING:BOOL=OFF \
+      -DSPM_ENABLE_SHARED=OFF  \
       ..
 cmake --build .
 ```
