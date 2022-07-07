@@ -114,7 +114,8 @@ def _t5_scaled_dot_product_attention(
             have shape :math:`(B, Nt, Ns)`
     """
     B, Nt, E = q.shape
-    q = q / math.sqrt(E)
+    # NOTE: HF implementation does not perform this normalization. For the sake of matching test results, we have commented it out
+    # q = q / math.sqrt(E)
 
     n_heads, tgt_len, src_len = position_bias.size()[1:]
     assert B % n_heads == 0
@@ -491,6 +492,11 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         super(T5MultiheadAttention, self).__init__(
             embed_dim, num_heads, dropout, bias, add_bias_kv, add_zero_attn, kdim, vdim, batch_first, device, dtype
         )
+        factory_kwargs = {"device": device, "dtype": dtype}
+        self.q_proj_weight = nn.Parameter(torch.empty((embed_dim, embed_dim), **factory_kwargs))
+        self.k_proj_weight = nn.Parameter(torch.empty((embed_dim, self.kdim), **factory_kwargs))
+        self.v_proj_weight = nn.Parameter(torch.empty((embed_dim, self.vdim), **factory_kwargs))
+        self.register_parameter("in_proj_weight", None)
 
     def forward(
         self,
@@ -513,62 +519,35 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         if self.batch_first and is_batched:
             query, key, value = [x.transpose(1, 0) for x in (query, key, value)]
 
-        if not self._qkv_same_embed_dim:
-            attn_output, attn_output_weights, position_bias = t5_multi_head_attention_forward(
-                query,
-                key,
-                value,
-                self.embed_dim,
-                self.num_heads,
-                self.in_proj_weight,
-                self.in_proj_bias,
-                self.bias_k,
-                self.bias_v,
-                self.add_zero_attn,
-                self.dropout,
-                self.out_proj.weight,
-                self.out_proj.bias,
-                compute_relative_attention_bias=compute_relative_attention_bias,
-                relative_attention_num_buckets=relative_attention_num_buckets,
-                relative_attention_max_distance=relative_attention_max_distance,
-                relative_attention_bias=relative_attention_bias,
-                position_bias=position_bias,
-                training=self.training,
-                key_padding_mask=key_padding_mask,
-                need_weights=need_weights,
-                attn_mask=attn_mask,
-                use_separate_proj_weight=True,
-                q_proj_weight=self.q_proj_weight,
-                k_proj_weight=self.k_proj_weight,
-                v_proj_weight=self.v_proj_weight,
-                average_attn_weights=average_attn_weights,
-            )
-        else:
-            attn_output, attn_output_weights, position_bias = t5_multi_head_attention_forward(
-                query,
-                key,
-                value,
-                self.embed_dim,
-                self.num_heads,
-                self.in_proj_weight,
-                self.in_proj_bias,
-                self.bias_k,
-                self.bias_v,
-                self.add_zero_attn,
-                self.dropout,
-                self.out_proj.weight,
-                self.out_proj.bias,
-                compute_relative_attention_bias=compute_relative_attention_bias,
-                relative_attention_num_buckets=relative_attention_num_buckets,
-                relative_attention_max_distance=relative_attention_max_distance,
-                relative_attention_bias=relative_attention_bias,
-                position_bias=position_bias,
-                training=self.training,
-                key_padding_mask=key_padding_mask,
-                need_weights=need_weights,
-                attn_mask=attn_mask,
-                average_attn_weights=average_attn_weights,
-            )
+        attn_output, attn_output_weights, position_bias = t5_multi_head_attention_forward(
+            query,
+            key,
+            value,
+            self.embed_dim,
+            self.num_heads,
+            self.in_proj_weight,
+            self.in_proj_bias,
+            self.bias_k,
+            self.bias_v,
+            self.add_zero_attn,
+            self.dropout,
+            self.out_proj.weight,
+            self.out_proj.bias,
+            compute_relative_attention_bias=compute_relative_attention_bias,
+            relative_attention_num_buckets=relative_attention_num_buckets,
+            relative_attention_max_distance=relative_attention_max_distance,
+            relative_attention_bias=relative_attention_bias,
+            position_bias=position_bias,
+            training=self.training,
+            key_padding_mask=key_padding_mask,
+            need_weights=need_weights,
+            attn_mask=attn_mask,
+            use_separate_proj_weight=True,
+            q_proj_weight=self.q_proj_weight,
+            k_proj_weight=self.k_proj_weight,
+            v_proj_weight=self.v_proj_weight,
+            average_attn_weights=average_attn_weights,
+        )
         if self.batch_first and is_batched:
             return attn_output.transpose(1, 0), attn_output_weights, position_bias
         else:
@@ -747,15 +726,15 @@ class T5Encoder(nn.TransformerEncoder):
         Shape:
             see the docs in Transformer class.
         """
-
         output = src
+        all_outputs = ()
         position_bias = None
         for mod in self.layers:
+            all_outputs = all_outputs + (output,)
             output, position_bias = mod(
                 output, src_mask=mask, src_key_padding_mask=src_key_padding_mask, position_bias=position_bias
             )
-
-        return output
+        return output, all_outputs, position_bias
 
 
 class T5EncoderModel(nn.Module):
@@ -806,14 +785,16 @@ class T5EncoderModel(nn.Module):
         )
         self.norm = T5LayerNorm(d_model)
         self.encoder = T5Encoder(self.encoder_layer, relative_attention_num_buckets, num_heads, num_layers)
-        self.dropout = nn.Dropout(dropout)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, tokens: torch.Tensor):
 
         padding_mask = tokens.eq(self.padding_idx)
-        embeddings = self.dropout(self.token_embeddings(tokens))
-        encoder_output = self.encoder(embeddings, src_key_padding_mask=padding_mask)
+        embeddings = self.dropout1(self.token_embeddings(tokens))
+        encoder_output, all_hidden_states, position_bias = self.encoder(embeddings, src_key_padding_mask=padding_mask)
         encoder_output = self.norm(encoder_output)
-        encoder_output = self.dropout(encoder_output)
+        last_hidden_state = self.dropout2(encoder_output)
+        all_hidden_states = all_hidden_states + (last_hidden_state,)
 
-        return encoder_output
+        return last_hidden_state, all_hidden_states, position_bias
