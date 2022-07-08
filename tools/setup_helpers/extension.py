@@ -65,6 +65,7 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_INSTALL_PREFIX={extdir}",
             "-DCMAKE_VERBOSE_MAKEFILE=ON",
             f"-DPython_INCLUDE_DIR={distutils.sysconfig.get_python_inc()}",
+            f"-DTORCH_INSTALL_PREFIX:STRING={os.path.dirname(torch.__file__)}",
             "-DBUILD_TORCHTEXT_PYTHON_EXTENSION:BOOL=ON",
             "-DRE2_BUILD_TESTING:BOOL=OFF",
             "-DBUILD_TESTING:BOOL=OFF",
