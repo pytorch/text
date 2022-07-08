@@ -1,3 +1,4 @@
+#include <torchtext/csrc/export.h>
 #include <torchtext/csrc/vocab.h>
 #include <string>
 #include <vector>
@@ -11,7 +12,7 @@ typedef std::tuple<bool, c10::optional<bool>, std::vector<std::string>>
     BERTEncoderStates;
 
 struct BERTEncoder : torch::CustomClassHolder {
-  BERTEncoder(
+  TORCHTEXT_API BERTEncoder(
       const std::string& vocab_file,
       bool do_lower_case,
       c10::optional<bool> strip_accents);
@@ -19,11 +20,12 @@ struct BERTEncoder : torch::CustomClassHolder {
       Vocab vocab,
       bool do_lower_case,
       c10::optional<bool> strip_accents);
-  std::vector<std::string> Tokenize(std::string text);
-  std::vector<int64_t> Encode(std::string text);
-  std::vector<std::vector<std::string>> BatchTokenize(
+  TORCHTEXT_API std::vector<std::string> Tokenize(std::string text);
+  TORCHTEXT_API std::vector<int64_t> Encode(std::string text);
+  TORCHTEXT_API std::vector<std::vector<std::string>> BatchTokenize(
       std::vector<std::string> text);
-  std::vector<std::vector<int64_t>> BatchEncode(std::vector<std::string> text);
+  TORCHTEXT_API std::vector<std::vector<int64_t>> BatchEncode(
+      std::vector<std::string> text);
 
   Vocab vocab_;
   bool do_lower_case_;
@@ -40,8 +42,8 @@ struct BERTEncoder : torch::CustomClassHolder {
   static std::string kUnkToken;
 };
 
-BERTEncoderStates _serialize_bert_encoder(
-    const c10::intrusive_ptr<BERTEncoder>& self);
-c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
+TORCHTEXT_API BERTEncoderStates
+_serialize_bert_encoder(const c10::intrusive_ptr<BERTEncoder>& self);
+TORCHTEXT_API c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
     BERTEncoderStates states);
 } // namespace torchtext
