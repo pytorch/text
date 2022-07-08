@@ -1,9 +1,3 @@
-# the following line is added in order to export symbols when building on Windows
-# this approach has some limitations as documented in https://github.com/pytorch/pytorch/pull/3650
-if (MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
-
 ################################################################################
 # libtorchtext
 ################################################################################
@@ -41,7 +35,8 @@ set(
   )
 
 set(
-  LIBTORCHTEXT_COMPILE_DEFINITIONS)
+  LIBTORCHTEXT_COMPILE_DEFINITIONS
+  TORCHTEXT_BUILD_MAIN_LIB)
 
 function (define_library name source include_dirs link_libraries compile_defs)
   add_library(${name} SHARED ${source})
