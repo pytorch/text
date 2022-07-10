@@ -64,8 +64,10 @@ class RobertaTransformDataFrameNativeOps(Module):
         input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
         input["tokens"] = input["tokens"].list.slice(stop=254)
         input["tokens"] = ta_F.lookup_indices(self.vocab, input["tokens"])
-        input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
-        input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
+        # input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
+        # input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
+        input["tokens"] = ta_F.add_tokens(input["tokens"], [0], begin=True)
+        input["tokens"] = ta_F.add_tokens(input["tokens"], [2], begin=False)
         return input
 
 
@@ -127,9 +129,9 @@ def main(args):
     # create DataLoader
     dl = DataLoader(train_dp, batch_size=None)
 
-    train_steps = args.train_steps
+    num_steps = args.num_steps
     for i, batch in enumerate(dl):
-        if i == train_steps:
+        if i == num_steps:
             break
 
         # model_input = batch.tokens
@@ -140,6 +142,6 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--batch-size", default=4, type=int)
-    parser.add_argument("--train-steps", default=-1, type=int)
+    parser.add_argument("--num-steps", default=-1, type=int)
     parser.add_argument("--ops-type", default="udf", choices=["udf", "native"], type=str)
     main(parser.parse_args())
