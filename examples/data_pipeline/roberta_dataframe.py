@@ -127,9 +127,9 @@ def main(args):
     # create DataLoader
     dl = DataLoader(train_dp, batch_size=None)
 
-    num_steps = args.num_steps
+    train_steps = args.train_steps
     for i, batch in enumerate(dl):
-        if i == num_steps:
+        if i == train_steps:
             break
 
         # model_input = batch.tokens
@@ -140,6 +140,6 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--batch-size", default=4, type=int)
-    parser.add_argument("--num-steps", default=-1, type=int)
+    parser.add_argument("--train-steps", default=-1, type=int)
     parser.add_argument("--ops-type", default="udf", choices=["udf", "native"], type=str)
     main(parser.parse_args())
