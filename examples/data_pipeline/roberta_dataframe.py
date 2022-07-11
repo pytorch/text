@@ -64,8 +64,6 @@ class RobertaTransformDataFrameNativeOps(Module):
         input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
         input["tokens"] = input["tokens"].list.slice(stop=254)
         input["tokens"] = ta_F.lookup_indices(self.vocab, input["tokens"])
-        # input["tokens"] = input["tokens"].transform(self.add_bos, format="python")
-        # input["tokens"] = input["tokens"].transform(self.add_eos, format="python")
         input["tokens"] = ta_F.add_tokens(input["tokens"], [0], begin=True)
         input["tokens"] = ta_F.add_tokens(input["tokens"], [2], begin=False)
         return input
