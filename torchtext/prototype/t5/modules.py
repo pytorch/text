@@ -724,3 +724,108 @@ class T5Layer(nn.Module):
     def _ff_block(self, x: Tensor) -> Tensor:
         x = self.linear2(self.dropout2(self.activation(self.linear1(x))))
         return self.dropout3(x)
+
+
+class T5Stack(nn.Module):
+    r"""T5 is a stack of N encoder/decoder layers
+    Args:
+        is_decoder: whether or not the layer belongs to the decoder. (required)
+        d_model: the number of expected features in the input (required).
+        nhead: the number of heads in the multiheadattention models (required).
+        num_layers: the number of encoder/decoder layers in the stack (required)
+        dim_feedforward: the dimension of the feedforward network model (default=2048).
+        dropout: the dropout value (default=0.1).
+        activation: the activation function of the intermediate layer, can be a string
+            ("relu" or "gelu") or a unary callable. (default: relu)
+        layer_norm_eps: the eps value in layer normalization components (default=1e-5).
+        batch_first: If ``True``, then the input and output tensors are provided
+            as (batch, seq, feature). (default: ``False``) (seq, batch, feature).
+        relative_attention_num_buckets: the number of relative position buckets (default: 32)
+        relative_attention_max_distance: maximum threshold on the relative distance used to
+            allocate buckets. anything larger than that gets placed in the same bucket (defulat: 128)
+    Examples::
+        >>> decoder = nn.T5Stack(is_decoder=True, d_model=768, nhead=12, num_layers=12)
+        >>> memory = torch.rand(32, 10, 512)
+        >>> tgt = torch.rand(32, 10, 512)
+        >>> out = decoder(tgt, memory)
+    """
+
+    def __init__(
+        self,
+        is_decoder: bool,
+        d_model: int,
+        nhead: int,
+        num_layers: int,
+        dim_feedforward: int = 3072,
+        dropout: float = 0.1,
+        activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
+        layer_norm_eps: float = 1e-6,
+        batch_first: bool = False,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        device=None,
+        dtype=None,
+    ):
+        super().__init__()
+
+        self.layers = nn.ModuleList(
+            [
+                T5Layer(
+                    is_decoder,
+                    d_model,
+                    nhead,
+                    dim_feedforward,
+                    dropout,
+                    activation,
+                    layer_norm_eps,
+                    batch_first,
+                    relative_attention_num_buckets,
+                    relative_attention_max_distance,
+                    compute_relative_attention_bias=True if i == 0 else False,
+                    relative_attention_bias=nn.Embedding(relative_attention_num_buckets, nhead) if i == 0 else None,
+                    device=device,
+                    dtype=dtype,
+                )
+                for i in range(num_layers)
+            ]
+        )
+        self.num_layers = num_layers
+
+    def forward(
+        self,
+        tgt: Tensor,
+        memory: Tensor = None,
+        tgt_mask: Optional[Tensor] = None,
+        memory_mask: Optional[Tensor] = None,
+        tgt_key_padding_mask: Optional[Tensor] = None,
+        memory_key_padding_mask: Optional[Tensor] = None,
+    ) -> Tensor:
+        r"""Pass the inputs (and mask) through the decoder layer in turn.
+        Args:
+            tgt: the input sequence to the encoder/decoder (required).
+            memory: the sequence from the last layer of the encoder (for decoder only).
+            tgt_mask: the mask for the tgt sequence (optional).
+            memory_mask: the mask for the memory sequence (optional).
+            tgt_key_padding_mask: the mask for the tgt keys per batch (optional).
+            memory_key_padding_mask: the mask for the memory keys per batch (optional).
+        """
+        output = tgt
+        position_bias = None
+        all_outputs = ()
+        sa_scores = ()
+        ca_scores = ()
+        for mod in self.layers:
+            all_outputs = all_outputs + (output,)
+            output, position_bias, sa_score, ca_score = mod(
+                output,
+                memory,
+                tgt_mask=tgt_mask,
+                memory_mask=memory_mask,
+                tgt_key_padding_mask=tgt_key_padding_mask,
+                memory_key_padding_mask=memory_key_padding_mask,
+                position_bias=position_bias,
+            )
+            sa_scores = sa_scores + (sa_score,)
+            ca_scores = ca_scores + (ca_score,)
+
+        return output, all_outputs, position_bias, sa_scores, ca_scores
