@@ -66,11 +66,11 @@ def _extracted_filepath_fn(root: str, source: str, x: str):
     return os.path.join(root, _EXTRACTED_FOLDERS[source], os.path.basename(x))
 
 
-def _filter_fn(source: str, split: str, x: str):
+def _filter_fn(source: str, split: str, x: tuple):
     return os.path.basename(x[0]) in story_fnames[source + "_" + split]
 
 
-def _hash_urls(s: str):
+def _hash_urls(s: tuple):
     """
     Returns story filename as a heximal formated SHA1 hash of the input url string.
     Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py
