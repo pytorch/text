@@ -13,14 +13,8 @@
 # https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/modeling_t5.py
 # */
 
-import math
-import warnings
-from typing import Optional, Tuple
-
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch import Tensor
 
 
 class T5MultiheadAttention(nn.MultiheadAttention):
