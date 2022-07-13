@@ -67,7 +67,6 @@ def _extracted_filepath_fn(root: str, source: str, x: str):
 
 
 def _filter_fn(source: str, split: str, x: str):
-    print(type(x))
     return os.path.basename(x[0]) in story_fnames[source + "_" + split]
 
 
