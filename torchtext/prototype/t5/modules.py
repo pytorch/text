@@ -15,7 +15,7 @@
 
 import math
 import warnings
-from typing import Optional, Union, Tuple, Callable
+from typing import Optional, Tuple, Union, Callable
 
 import torch
 import torch.nn as nn
