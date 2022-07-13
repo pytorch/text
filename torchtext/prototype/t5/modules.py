@@ -16,7 +16,6 @@
 import math
 import warnings
 from typing import Optional, Tuple
-import torch.nn.functional as F
 
 import torch
 import torch.nn as nn
