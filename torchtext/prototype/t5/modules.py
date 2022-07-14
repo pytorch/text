@@ -9,8 +9,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Original code is taken from
-# https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/modeling_t5.py
+# Parts of code are originally from
+# https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py
 # */
 
 import math
@@ -18,6 +18,7 @@ from typing import Optional, Tuple
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor
 
 
@@ -29,32 +30,22 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         is_decoder=False,
         dropout=0.0,
         bias=False,
-        add_bias_kv=False,
-        add_zero_attn=False,
         kdim=None,
         vdim=None,
-        batch_first=False,
         device=None,
         dtype=None,
     ) -> None:
         r"""
         Args:
-            embed_dim: total dimension of the model.
-            num_heads: parallel attention heads.
-            is_decoder: whether or not multihead attention is being performed on a decoder layer. Default: ``False``
-            dropout: probability of an element to be zeroed. Default: 0.0
-            bias: If specified, adds bias to input / output projection layers. Default: ``False``.
-            add_bias_kv: If specified, adds bias to the key and value sequences at dim=0. Default: ``False``.
-            add_zero_attn: If specified, adds a new batch of zeros to the key and value sequences at dim=1.
-                Default: ``False``.
-            kdim: Total number of features for keys. Default: ``None`` (uses ``kdim=embed_dim``).
-            vdim: Total number of features for values. Default: ``None`` (uses ``vdim=embed_dim``).
-            batch_first: If ``True``, then the input and output tensors are provided
-                as (batch, seq, feature). Default: ``False`` (seq, batch, feature).
+            embed_dim: Total dimension of the model.
+            num_heads: Parallel attention heads.
+            is_decoder: Whether or not multihead attention is being performed on a decoder layer. Default: `False`
+            dropout: Probability of an element to be zeroed. Default: 0.0
+            bias: If specified, adds bias to input / output projection layers. Default: `False`.
+            kdim: Total number of features for keys. Default: `None` (uses `kdim=embed_dim`).
+            vdim: Total number of features for values. Default: `None` (uses `vdim=embed_dim`).
         """
-        super().__init__(
-            embed_dim, num_heads, dropout, bias, add_bias_kv, add_zero_attn, kdim, vdim, batch_first, device, dtype
-        )
+        super().__init__(embed_dim, num_heads, dropout, bias, False, False, kdim, vdim, True, device, dtype)
         factory_kwargs = {"device": device, "dtype": dtype}
         self.is_decoder = is_decoder
         self.q_proj_weight = nn.Parameter(torch.empty((embed_dim, embed_dim), **factory_kwargs))
@@ -65,7 +56,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
     def forward():
         pass
 
-    def _t5_scaled_dot_product_attention(
+    # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4814
+    def _t5_dot_product_attention(
         self,
         q: Tensor,
         k: Tensor,
@@ -80,51 +72,43 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         greater than 0.0 is specified.
         Returns a tensor pair containing attended values and attention weights.
         Args:
-            q, k, v: query, key and value tensors. See Shape section for shape details.
-            attn_mask: optional tensor containing mask values to be added to calculated
+            q, k, v: Query, key and value tensors. See Shape section for shape details.
+            attn_mask: Optional tensor containing mask values to be added to calculated
                 attention. May be 2D or 3D; see Shape section for details.
-            dropout_p: dropout probability. If greater than 0.0, dropout is applied.
-            position_bias: position bias used to incorporate realtive attention bias in attention scors
+            dropout_p: Dropout probability. If greater than 0.0, dropout is applied.
+            position_bias: Position bias used to incorporate realtive attention bias in attention scors
         Shape:
-            - q: :math:`(B, Nt, E)` where B is (batch size*num_heads), Nt is the target sequence length,
-                and E is embedding dimension.
-            - key: :math:`(B, Ns, E)` where B is (batch size*num_heads), Ns is the source sequence length,
-                and E is embedding dimension.
-            - value: :math:`(B, Ns, E)` where B is (batch size*num_heads), Ns is the source sequence length,
-                and E is embedding dimension.
-            - attn_mask: either a 3D tensor of shape :math:`(B, Nt, Ns)` or a 2D tensor of
-                shape :math:`(Nt, Ns)`.
-            - position_bias: :math:`(1, num_heads, Nt, Ns)`
-            - Output: attention values have shape :math:`(B, Nt, E)`; attention weights
-                have shape :math:`(B, Nt, Ns)`
+            - q: :math:`(B, H, Nt, E)` where B is the batch size, H is the number of heads, Nt is the target sequence length,
+                and E is the head dimension.
+            - key: :math:`(B, H, Ns, E)` where B is the batch size, H is the number of heads, Ns is the source sequence length,
+                and E is the head dimension.
+            - value: :math:`(B, H, Ns, E)` where B is the batch size, H is the number of heads, Ns is the source sequence length,
+                and E is the head dimension.
+            - attn_mask: a 4D tensor of shape :math:`(B, H, Nt, Ns)`
+            - position_bias: :math:`(1, H, Nt, Ns)`
+            - Output: attention values have shape :math:`(B, Nt, H*E)`; attention weights
+                have shape :math:`(B, H, Nt, Ns)`
         """
-        B, Nt, E = q.shape
+        B, H, _, E = q.shape
         # NOTE: HF implementation does not perform this normalization. For the sake of matching test results, we have commented it out
         # q = q / math.sqrt(E)
 
-        n_heads, tgt_len, src_len = position_bias.size()[1:]
-        assert B % n_heads == 0
-        assert tgt_len == Nt
-
-        # (B, Nt, E) x (B, E, Ns) -> (B, Nt, Ns)
-        if attn_mask is not None:
-            attn = torch.baddbmm(attn_mask, q, k.transpose(-2, -1))
-        else:
-            attn = torch.bmm(q, k.transpose(-2, -1))
+        attn = torch.matmul(q, k.transpose(3, 2))
 
         # NOTE: modification from torch.nn.functional._scaled_dot_product_attention to incorporate relative attention bias
-        position_bias = position_bias.repeat(B // n_heads, 1, 1, 1)
-        position_bias = position_bias.view(B, tgt_len, src_len)
+        position_bias = position_bias.repeat(B, 1, 1, 1)
+        if attn_mask is not None:
+            position_bias += attn_mask
         attn += position_bias
 
         attn = F.softmax(attn, dim=-1)
         if dropout_p > 0.0:
             attn = F.dropout(attn, p=dropout_p)
-        # (B, Nt, Ns) x (B, Ns, E) -> (B, Nt, E)
-        output = torch.bmm(attn, v)
+        output = torch.matmul(attn, v)
+        output = output.transpose(1, 2).contiguous().view(B, -1, H * E)
         return output, attn
 
-    # NOTE: modified from https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/modeling_t5.py
+    # NOTE: modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L421
     def _compute_bias(
         self,
         query_length: int,
@@ -151,7 +135,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         values = values.permute([2, 0, 1]).unsqueeze(0)  # shape (1, num_heads, query_length, key_length)
         return values
 
-    # NOTE: taken from https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/modeling_t5.py
+    # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
     def _relative_position_bucket(
         self, relative_position: Tensor, bidirectional: bool = True, num_buckets: int = 32, max_distance: int = 128
     ):
@@ -179,9 +163,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             relative_position = torch.abs(relative_position)
         else:
             relative_position = -torch.min(relative_position, torch.zeros_like(relative_position))
-        # now relative_position is in the range [0, inf)
+        # Ensure relative_position is in the range [0, inf)
 
-        # half of the buckets are for exact increments in positions
+        # Half of the buckets are for exact increments in positions
         max_exact = num_buckets // 2
         is_small = relative_position < max_exact
 
