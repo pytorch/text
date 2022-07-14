@@ -14,8 +14,6 @@ dependencies:
       - pytest-pythonpath
       - sacremoses
       - spacy
-      - sphinx
-      - sphinx-rtd-theme
       - tqdm
       - certifi
       - future
