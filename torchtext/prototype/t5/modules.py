@@ -68,7 +68,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         relative_attention_max_distance=128,
         relative_attention_bias: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, Optional[Tensor]]:
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
         r"""
         Allows the model to jointly attend to information from different representation subspaces
         as described in the paper:
@@ -120,7 +120,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             - **position_bias** - Used in attention scoring. Only computed when `compute_relative_attention_bias=True`
                 and `position_bias=None`. Has shape :math:`(1, num_heads, L, S)`.
         """
-        attn_output, attn_output_weights, position_bias = self.t5_multi_head_attention_forward(
+        attn_output, position_bias, attn_output_weights = self._t5_multi_head_attention_forward(
             query,
             key,
             value,
@@ -134,10 +134,10 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             attn_mask=attn_mask,
             average_attn_weights=average_attn_weights,
         )
-        return attn_output, attn_output_weights, position_bias
+        return attn_output, position_bias, attn_output_weights
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4909
-    def t5_multi_head_attention_forward(
+    def _t5_multi_head_attention_forward(
         self,
         query: Tensor,
         key: Tensor,
@@ -151,7 +151,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-    ) -> Tuple[Tensor, Optional[Tensor]]:
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
         is_batched = F._mha_shape_check(query, key, value, key_padding_mask, attn_mask, self.num_heads)
 
         # For unbatched input, we unsqueeze at the expected batch-dim to pretend that the input
@@ -280,18 +280,18 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 attn_output_weights = attn_output_weights.sum(dim=1) / self.num_heads
 
             if not is_batched:
-                # Aqueeze the output if input was unbatched
+                # Squeeze the output if input was unbatched
                 attn_output = attn_output.squeeze(1)
                 attn_output_weights = attn_output_weights.squeeze(0)
 
-            return attn_output, attn_output_weights, position_bias
+            return attn_output, position_bias, attn_output_weights
 
         else:
             if not is_batched:
-                # Aqueeze the output if input was unbatched
+                # Squeeze the output if input was unbatched
                 attn_output = attn_output.squeeze(1)
 
-            return attn_output, None, position_bias
+            return attn_output, position_bias, None
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4814
     def _t5_dot_product_attention(
@@ -355,7 +355,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         relative_attention_max_distance: int = 128,
         bidirectional: bool = True,
         device=None,
-    ):
+    ) -> Tensor:
         """Compute binned relative position bias"""
         if device is None:
             device = relative_attention_bias.weight.device
@@ -375,7 +375,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
     # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
     def _relative_position_bucket(
         self, relative_position: Tensor, bidirectional: bool = True, num_buckets: int = 32, max_distance: int = 128
-    ):
+    ) -> Tensor:
         """
         Adapted from Mesh Tensorflow:
         https://github.com/tensorflow/mesh/blob/0cb87fe07da627bf0b7e60475d59f95ed6b5be3d/mesh_tensorflow/transformer/transformer_layers.py#L593
