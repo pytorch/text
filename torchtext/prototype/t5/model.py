@@ -147,6 +147,8 @@ class T5Model(nn.Module):
         decoder_output = None
         decoder_hidden_states = None
         decoder_position_bias = None
+        decoder_sa = None
+        decoder_ca = None
 
         if not self.encoder_only:
             assert decoder_tokens is not None
