@@ -64,7 +64,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         relative_attention_max_distance: int = 128,
         bidirectional: bool = True,
         device=None,
-    ):
+    ) -> Tensor:
         """Compute binned relative position bias"""
         if device is None:
             device = relative_attention_bias.weight.device
@@ -84,7 +84,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
     # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
     def _relative_position_bucket(
         self, relative_position: Tensor, bidirectional: bool = True, num_buckets: int = 32, max_distance: int = 128
-    ):
+    ) -> Tensor:
         """
         Adapted from Mesh Tensorflow:
         https://github.com/tensorflow/mesh/blob/0cb87fe07da627bf0b7e60475d59f95ed6b5be3d/mesh_tensorflow/transformer/transformer_layers.py#L593
