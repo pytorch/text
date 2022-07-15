@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable
+from typing import Dict, Optional, Tuple, Union, Callable
 
 import torch
 import torch.nn as nn
@@ -120,7 +120,7 @@ class T5Model(nn.Module):
         decoder_tokens: Tensor = None,
         encoder_mask: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
-    ) -> Tensor:
+    ) -> Dict[str, Union[Tensor, Tuple[Tensor]]]:
         r"""Pass the inputs (and mask) through the decoder layer in turn.
         Args:
             encoder_tokens: Tokenized input sequence to the encoder.
@@ -133,6 +133,16 @@ class T5Model(nn.Module):
                 Must have shape (Ne, Ne) (optional).
             decoder_mask: Self-attention mask for the decoder input sequence.
                 Must have shape (Nd, Nd) (optional).
+        Returns:
+            encoder_output: Output Tensor from the final layer of the encoder
+            encoder_hidden_states: Tuple of output Tensors from each layer of the encoder
+            encoder_position_bias: Tensor of relative attention bias computed for input sequence to encoder
+            encoder_sa_scores: Tuple of self-attention scores computed at each layer of the encoder
+            decoder_output: Output Tensor from the final layer of the decoder
+            decoder_hidden_states: Tuple of output Tensors from each layer of the decoder
+            decoder_position_bias: Tensor of relative attention bias computed for input sequence to decoder
+            encoder_sa_scores: Tuple of self-attention scores computed at each layer of the decoder
+            encoder_ca_scores: Tuple of cross-attention scores computed at each layer of the decoder
         """
         encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
         encoder_embeddings = self.dropout1(self.token_embeddings(encoder_tokens))
@@ -143,12 +153,6 @@ class T5Model(nn.Module):
         encoder_output = self.norm1(encoder_output)
         encoder_output = self.dropout2(encoder_output)
         encoder_hidden_states = encoder_hidden_states + (encoder_output,)
-
-        decoder_output = None
-        decoder_hidden_states = None
-        decoder_position_bias = None
-        decoder_sa = None
-        decoder_ca = None
 
         if not self.encoder_only:
             assert decoder_tokens is not None
@@ -174,16 +178,23 @@ class T5Model(nn.Module):
             decoder_output = self.dropout4(decoder_output)
             decoder_hidden_states = decoder_hidden_states + (decoder_output,)
 
-        t5_output = {
-            "encoder_output": encoder_output,
-            "encoder_hidden_states": encoder_hidden_states,
-            "encoder_position_bias": encoder_position_bias,
-            "encoder_sa_scores": encoder_sa,
-            "decoder_output": decoder_output,
-            "decoder_hidden_states": decoder_hidden_states,
-            "decoder_position_bias": decoder_position_bias,
-            "decoder_sa_scores": decoder_sa,
-            "decoder_ca_scores": decoder_ca,
-        }
+            t5_output = {
+                "encoder_output": encoder_output,
+                "encoder_hidden_states": encoder_hidden_states,
+                "encoder_position_bias": encoder_position_bias,
+                "encoder_sa_scores": encoder_sa,
+                "decoder_output": decoder_output,
+                "decoder_hidden_states": decoder_hidden_states,
+                "decoder_position_bias": decoder_position_bias,
+                "decoder_sa_scores": decoder_sa,
+                "decoder_ca_scores": decoder_ca,
+            }
+        else:
+            t5_output = {
+                "encoder_output": encoder_output,
+                "encoder_hidden_states": encoder_hidden_states,
+                "encoder_position_bias": encoder_position_bias,
+                "encoder_sa_scores": encoder_sa,
+            }
 
         return t5_output
