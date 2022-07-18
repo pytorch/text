@@ -209,10 +209,11 @@ def _log_class_usage(klass):
     torch._C._log_api_usage_once(identifier)
 
 
-def get_asset_local_path(asset_path: str) -> str:
+def get_asset_local_path(asset_path: str, overwite=False) -> str:
     """Get local path for assets. Download if path does not exost locally
     Args:
         asset_path: Local path to asset or remote URL
+        overwrite: Indicate whether to overwrite the file when downloading from URL (default: False)
     Returns:
         bool: local path of the asset after downloading or reading from cache
     Examples:
@@ -225,5 +226,5 @@ def get_asset_local_path(asset_path: str) -> str:
     if os.path.exists(asset_path):
         local_path = asset_path
     else:
-        local_path = download_from_url(url=asset_path, root=_CACHE_DIR)
+        local_path = download_from_url(url=asset_path, root=_CACHE_DIR, overwrite=overwite)
     return local_path
