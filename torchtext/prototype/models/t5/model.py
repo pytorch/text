@@ -52,12 +52,14 @@ class T5Model(nn.Module):
         config.max_seq_len: Maximum sequence length (default: 512)
         config.vocab_size: Size of vocabulary (default: 32128)
         config.training: Whether or not to apply dropout (default: False)
-        freeze:
-    Examples::
-        >>> t5_model = T5Model(encoder_only=False)
-        >>> src = torch.rand((32, 10, 512))
-        >>> tgt = torch.rand((32, 20, 512))
-        >>> out = t5_model(src, tgt)
+        freeze: Indicates whether or not to freeze the model weights. (default: False)
+    Examples:
+        from torchtext.prototype.models import T5Conf, T5Model
+        >>> t5_config = T5Conf(encoder_only=False)
+        >>> t5_model = T5Model(t5_config)
+        >>> encoder_input = torch.rand((32, 10, 512))
+        >>> decoder_input = torch.rand((32, 20, 512))
+        >>> out = t5_model(encoder_input, decoder_input)
     """
 
     def __init__(
