@@ -1,6 +1,7 @@
 import sys, os
 
 import torcharrow as ta
+import torcharrow.pytorch as tap
 import torchtext.transforms as T
 from benchmark.utils import Timer
 from torcharrow import functional as ta_F
@@ -26,6 +27,7 @@ def run_torchtext_ops():
     add_eos_str = T.AddToken(token="<eros>", begin=False)
     add_bos_int = T.AddToken(token=0, begin=True)
     add_eos_int = T.AddToken(token=-1, begin=False)
+    convert_to_tensor = T.ToTensor(padding_value=1)
 
     # dataset
     train_dp = SST2(split="train")
@@ -45,6 +47,9 @@ def run_torchtext_ops():
         add_bos_int(token_ids)
         add_eos_int(token_ids)
 
+    with Timer("Running torchtext's to tensor conversion"):
+        convert_to_tensor(token_ids)
+
 
 def run_torcharrow_ops():
     # tokenizer converting text into tokens
@@ -56,7 +61,8 @@ def run_torcharrow_ops():
     # dataset
     train_dp = SST2(split="train")
     text_list = list(train_dp.map(lambda x: x[0]))
-    data_frame = ta.dataframe({"text": text_list})
+    with Timer("Converting python data to TA data frame"):
+        data_frame = ta.dataframe({"text": text_list})
 
     with Timer("Running torcharrow's GPT2BPE tokenizer"):
         data_frame["tokens"] = ta_F.bpe_tokenize(tokenizer, data_frame["text"])
@@ -71,6 +77,9 @@ def run_torcharrow_ops():
     with Timer("Running torcharrow's add tokens operation (int)"):
         ta_F.add_tokens(data_frame["token_ids"], [0], begin=True)
         ta_F.add_tokens(data_frame["token_ids"], [-1], begin=False)
+
+    with Timer("Running torcharrow's to tensor conversion"):
+        data_frame.to_tensor({"token_ids": tap.PadSequence(padding_value=1)})
 
 
 if __name__ == "__main__":
