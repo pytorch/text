@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, Union, Callable
 
 import torch
@@ -5,6 +6,25 @@ import torch.nn as nn
 from torch import Tensor
 
 from .modules import T5Stack, T5LayerNorm
+
+
+@dataclass
+class T5Conf:
+    encoder_only: bool = False
+    embedding_dim: int = 768
+    num_attention_heads: int = 12
+    num_encoder_layers: int = 12
+    num_decoder_layers: int = 12
+    ffn_dimension: int = 3072
+    dropout: float = 0.1
+    activation: Union[str, Callable[[Tensor], Tensor]] = "relu"
+    layer_norm_eps: float = 1e-6
+    relative_attention_num_buckets: int = 32
+    relative_attention_max_distance: int = 128
+    padding_idx: int = 0
+    max_seq_len: int = 512
+    vocab_size: int = 32128
+    training: bool = False
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L1269
@@ -15,22 +35,24 @@ class T5Model(nn.Module):
     Yanqi Zhou, Wei Li, and Peter J. Liu. 2020. Journal of Machine Learning Research.
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Args:
-        encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (required)
-        d_model: Number of expected features in the encoder/decoder inputs (default=768).
-        nhead: Number of heads in the multiheadattention models (default=12).
-        num_encoder_layers: Number of encoder layers in the encoder (default=12).
-        num_decoder_layers: Number of decoder layers in the decoder (default=12).
-        dim_feedforward: Dimension of the feedforward network model (default=3072).
-        dropout: Dropout value (default=0.1).
-        activation: Activation function of encoder/decoder intermediate layer, can be a string
+        config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (required)
+        config.embedding_dim: Number of expected features in the encoder/decoder inputs (default=768).
+        config.num_attention_heads: Number of heads in the multiheadattention models (default=12).
+        config.num_encoder_layers: Number of encoder layers in the encoder (default=12).
+        config.num_decoder_layers: Number of decoder layers in the decoder (default=12).
+        config.ffn_dimension: Dimension of the feedforward network model (default=3072).
+        config.dropout: Dropout value (default=0.1).
+        config.activation: Activation function of encoder/decoder intermediate layer, can be a string
             ("relu" or "gelu") or a unary callable. Default: relu
-        layer_norm_eps: The eps value in layer normalization components (default=1e-6).
-        relative_attention_num_buckets: Number of relative position buckets (default: 32)
-        relative_attention_max_distance: Maximum threshold on the relative distance used to
+        config.layer_norm_eps: The eps value in layer normalization components (default=1e-6).
+        config.relative_attention_num_buckets: Number of relative position buckets (default: 32)
+        config.relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (default: 128)
-        padding_idx: Index assigned to padding token in vocabulary (default: 0)
-        max_seq_len: Maximum sequence length (default: 512)
-        vocab_size: Size of vocabulary (default: 32128)
+        config.padding_idx: Index assigned to padding token in vocabulary (default: 0)
+        config.max_seq_len: Maximum sequence length (default: 512)
+        config.vocab_size: Size of vocabulary (default: 32128)
+        config.training: Whether or not to apply dropout (default: False)
+        freeze:
     Examples::
         >>> t5_model = T5Model(encoder_only=False)
         >>> src = torch.rand((32, 10, 512))
@@ -40,79 +62,63 @@ class T5Model(nn.Module):
 
     def __init__(
         self,
-        encoder_only: bool,
-        d_model: int = 768,
-        nhead: int = 12,
-        num_encoder_layers: int = 12,
-        num_decoder_layers: int = 12,
-        dim_feedforward: int = 3072,
-        dropout: float = 0.1,
-        activation: Union[str, Callable[[Tensor], Tensor]] = "relu",
-        layer_norm_eps: float = 1e-6,
-        relative_attention_num_buckets: int = 32,
-        relative_attention_max_distance: int = 128,
-        padding_idx: int = 0,
-        max_seq_len: int = 512,
-        vocab_size: int = 32128,
+        config: T5Conf,
+        freeze: bool = False,
         device=None,
         dtype=None,
     ) -> None:
         super().__init__()
 
-        self.encoder_only = encoder_only
-        self.d_model = d_model
-        self.dim_feedforward = dim_feedforward
-        self.dropout = dropout
-        self.activation = activation
-        self.layer_norm_eps = layer_norm_eps
-        self.nhead = nhead
-        self.num_encoder_layers = num_encoder_layers
-        self.num_decoder_layers = num_decoder_layers
-        self.relative_attention_num_buckets = relative_attention_num_buckets
-        self.realtive_attention_max_distance = relative_attention_max_distance
-        self.padding_idx = padding_idx
-        self.max_seq_len = max_seq_len
-        self.vocab_size = vocab_size
+        assert isinstance(config, T5Conf)
+
+        self.encoder_only = config.encoder_only
+        self.padding_idx = config.padding_idx
+        self.training = config.training
+        self.dropout = config.dropout if config.training else 0.0
         self.device = device
         self.dtype = dtype
 
-        self.token_embeddings = nn.Embedding(vocab_size, d_model, padding_idx)
+        self.token_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim, config.padding_idx)
         self.encoder = T5Stack(
             is_decoder=False,
-            d_model=d_model,
-            nhead=nhead,
-            num_layers=num_encoder_layers,
-            dim_feedforward=dim_feedforward,
-            dropout=dropout,
-            activation=activation,
-            layer_norm_eps=layer_norm_eps,
-            relative_attention_num_buckets=relative_attention_num_buckets,
-            relative_attention_max_distance=relative_attention_max_distance,
+            d_model=config.embedding_dim,
+            nhead=config.num_attention_heads,
+            num_layers=config.num_encoder_layers,
+            dim_feedforward=config.ffn_dimension,
+            dropout=self.dropout,
+            activation=config.activation,
+            layer_norm_eps=config.layer_norm_eps,
+            relative_attention_num_buckets=config.relative_attention_num_buckets,
+            relative_attention_max_distance=config.relative_attention_max_distance,
             device=device,
             dtype=dtype,
         )
-        self.norm1 = T5LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-        self.dropout2 = nn.Dropout(dropout)
+        self.norm1 = T5LayerNorm(config.embedding_dim)
+        self.dropout1 = nn.Dropout(self.dropout)
+        self.dropout2 = nn.Dropout(self.dropout)
 
-        if not encoder_only:
+        if not config.encoder_only:
             self.decoder = T5Stack(
                 is_decoder=True,
-                d_model=d_model,
-                nhead=nhead,
-                num_layers=num_decoder_layers,
-                dim_feedforward=dim_feedforward,
-                dropout=dropout,
-                activation=activation,
-                layer_norm_eps=layer_norm_eps,
-                relative_attention_num_buckets=relative_attention_num_buckets,
-                relative_attention_max_distance=relative_attention_max_distance,
+                d_model=config.embedding_dim,
+                nhead=config.num_attention_heads,
+                num_layers=config.num_decoder_layers,
+                dim_feedforward=config.ffn_dimension,
+                dropout=self.dropout,
+                activation=config.activation,
+                layer_norm_eps=config.layer_norm_eps,
+                relative_attention_num_buckets=config.relative_attention_num_buckets,
+                relative_attention_max_distance=config.relative_attention_max_distance,
                 device=device,
                 dtype=dtype,
             )
-            self.norm2 = T5LayerNorm(d_model)
-            self.dropout3 = nn.Dropout(dropout)
-            self.dropout4 = nn.Dropout(dropout)
+            self.norm2 = T5LayerNorm(config.embedding_dim)
+            self.dropout3 = nn.Dropout(self.dropout)
+            self.dropout4 = nn.Dropout(self.dropout)
+
+        if freeze:
+            for p in self.parameters():
+                p.requires_grad = False
 
     def forward(
         self,
