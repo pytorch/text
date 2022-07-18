@@ -39,7 +39,7 @@ class T5Bundle:
         >>> from torchtext.prototype.models import T5Conf, T5Bundle
         >>> model_weights_path = "https://download.pytorch.org/models/text/t5.base.encoder.pt"
         >>> encoder_conf = T5Conf(encoder_only=True)
-        >>> model = T5Bundle.build_model(encoder_conf=encoder_conf, checkpoint=model_weights_path)
+        >>> model = T5Bundle.build_model(config=encoder_conf, checkpoint=model_weights_path)
     """
 
     _config: T5Conf
