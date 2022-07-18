@@ -54,6 +54,33 @@ class T5MultiheadAttention(nn.MultiheadAttention):
     def forward():
         pass
 
+    # NOTE: modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L421
+    def _compute_bias(
+        self,
+        query_length: int,
+        key_length: int,
+        relative_attention_bias: Tensor,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        bidirectional: bool = True,
+        device=None,
+    ) -> Tensor:
+        """Compute binned relative position bias"""
+        if device is None:
+            device = relative_attention_bias.weight.device
+        context_position = torch.arange(query_length, dtype=torch.long, device=device)[:, None]
+        memory_position = torch.arange(key_length, dtype=torch.long, device=device)[None, :]
+        relative_position = memory_position - context_position  # shape (query_length, key_length)
+        relative_position_bucket = self._relative_position_bucket(
+            relative_position,  # shape (query_length, key_length)
+            bidirectional=bidirectional,
+            num_buckets=relative_attention_num_buckets,
+            max_distance=relative_attention_max_distance,
+        )
+        values = relative_attention_bias(relative_position_bucket)  # shape (query_length, key_length, num_heads)
+        values = values.permute([2, 0, 1]).unsqueeze(0)  # shape (1, num_heads, query_length, key_length)
+        return values
+
     # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
     def _relative_position_bucket(
         self, relative_position: Tensor, bidirectional: bool = True, num_buckets: int = 32, max_distance: int = 128
