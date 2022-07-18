@@ -29,6 +29,7 @@ build:
   string: py{{py}}
   script_env:
     - BUILD_VERSION
+    - MACOSX_DEPLOYMENT_TARGET
 
 test:
   imports:

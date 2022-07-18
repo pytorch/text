@@ -41,7 +41,7 @@ def _get_mock_dataset(root_dir):
                     stories.append((txt_file, dataset_line))
                 seed += 2
 
-            # append stories to correct dataset split, must be in legixographic order of filenames per dataset
+            # append stories to correct dataset split, must be in lexicographic order of filenames per dataset
             stories.sort(key=lambda x: x[0])
             mocked_data[split] += [t[1] for t in stories]
 
@@ -70,15 +70,14 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    def _mock_split_list(split):
+    def _mock_split_list(source, split):
         story_fnames = []
-        for source in ["cnn", "dailymail"]:
-            for i in range(5):
-                url = "_".join([source, split, str(i)])
-                h = hashlib.sha1()
-                h.update(url.encode())
-                filename = h.hexdigest() + ".story"
-                story_fnames.append(filename)
+        for i in range(5):
+            url = "_".join([source, split, str(i)])
+            h = hashlib.sha1()
+            h.update(url.encode())
+            filename = h.hexdigest() + ".story"
+            story_fnames.append(filename)
 
         return story_fnames
 
@@ -92,6 +91,7 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "val", "test"])
+    @patch("torchtext.datasets.cnndm._get_split_list", _mock_split_list)
     def test_cnndm_split_argument(self, split):
         dataset1 = CNNDM(root=self.root_dir, split=split)
         (dataset2,) = CNNDM(root=self.root_dir, split=(split,))
