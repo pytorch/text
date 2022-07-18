@@ -14,6 +14,34 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class T5Bundle:
+    """T5Bundle(_config: torchtext.prototype.models.T5Conf, _path: Optional[str] = None)
+
+    Example - Pretrained base t5 encoder
+        >>> import torch, torchtext
+        >>> t5_encoder_base = torchtext.prototype.models.T5_BASE_ENCODER
+        >>> model = t5_encoder_base.get_model()
+        >>> model_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        >>> output = model(model_input)['encoder_output']
+        >>> output.shape
+        torch.Size([2, 6, 768])
+
+    Example - Pretrained base t5 model
+        >>> import torch, torchtext
+        >>> t5_base = torchtext.prototype.models.T5_BASE
+        >>> model = t5_base.get_model()
+        >>> encoder_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        >>> decoder_input = torch.tensor([[0],[0]])
+        >>> output = model(encoder_input, decoder_input)['decoder_output']
+        >>> output.shape
+        torch.Size([2, 1, 768])
+
+    Example - User-specified configuration and checkpoint
+        >>> from torchtext.prototype.models import T5Conf, T5Bundle
+        >>> model_weights_path = "https://download.pytorch.org/models/text/t5.base.encoder.pt"
+        >>> encoder_conf = T5Conf(encoder_only=True)
+        >>> model = T5Bundle.build_model(encoder_conf=encoder_conf, checkpoint=model_weights_path)
+    """
+
     _config: T5Conf
     _path: Optional[str] = None
 
@@ -96,7 +124,7 @@ T5_BASE_ENCODER.__doc__ = """
     [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
-    Please refer to :func:`torchtext.prototype.models.t5.T5Bundle` for the usage.
+    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
 
 
@@ -120,5 +148,5 @@ T5_BASE.__doc__ = """
     [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
-    Please refer to :func:`torchtext.prototype.models.t5.T5Bundle` for the usage.
+    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
