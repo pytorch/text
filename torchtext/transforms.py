@@ -572,7 +572,9 @@ class BERTTokenizer(Module):
         self, vocab_path: str, do_lower_case: bool = True, strip_accents: Optional[bool] = None, return_tokens=False
     ) -> None:
         super().__init__()
-        self.bert_model = BERTEncoderPyBind(get_asset_local_path(vocab_path), do_lower_case, strip_accents)
+        self.bert_model = BERTEncoderPyBind(
+            get_asset_local_path(vocab_path, overwite=True), do_lower_case, strip_accents
+        )
         self._return_tokens = return_tokens
         self._vocab_path = vocab_path
         self._do_lower_case = do_lower_case
