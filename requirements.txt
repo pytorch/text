@@ -12,7 +12,6 @@ git+https://github.com/jekbradbury/revtok.git
 
 # Documentation
 Sphinx
-sphinx_rtd_theme
 
 # Required for tests only:
 
