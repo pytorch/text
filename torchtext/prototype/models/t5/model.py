@@ -136,7 +136,8 @@ class T5Model(nn.Module):
                 encoder input sequence length. (required).
             decoder_tokens: Tokenized input sequence to the decoder.
                 Must be batch first with shape (B, Nd) where B is the batch size and Nd is the
-                decoder input sequence length. (required).
+                decoder input sequence length. If None and model is encoder-decoder, will initialize decoder
+                input sequence to begin with padding index. (optional).
             encoder_mask: Self-attention mask for the encoder input sequence.
                 Must have shape (Ne, Ne) (optional).
             decoder_mask: Self-attention mask for the decoder input sequence.
@@ -163,7 +164,11 @@ class T5Model(nn.Module):
         encoder_hidden_states = encoder_hidden_states + (encoder_output,)
 
         if not self.encoder_only:
-            assert decoder_tokens is not None
+
+            # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
+            if decoder_tokens is None:
+                decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * self.padding_idx
+
             if decoder_mask is None:
                 tgt_len = decoder_tokens.shape[1]
                 decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1).bool()

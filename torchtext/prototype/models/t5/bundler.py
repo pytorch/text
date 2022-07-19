@@ -29,9 +29,8 @@ class T5Bundle:
         >>> import torch, torchtext
         >>> t5_base = torchtext.prototype.models.T5_BASE
         >>> model = t5_base.get_model()
-        >>> encoder_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
-        >>> decoder_input = torch.tensor([[0],[0]])
-        >>> output = model(encoder_input, decoder_input)['decoder_output']
+        >>> model_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        >>> output = model(model_input)['decoder_output']
         >>> output.shape
         torch.Size([2, 1, 768])
 
