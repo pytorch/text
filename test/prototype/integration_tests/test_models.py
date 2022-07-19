@@ -13,7 +13,6 @@ class TestT5(TorchtextTestCase):
         the same output as the HuggingFace reference implementation.
         """
         expected_asset_path = get_asset_path(expected_asset_name)
-
         model = t5_model.get_model()
         model = model.eval()
 
