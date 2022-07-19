@@ -8,7 +8,7 @@ from torchtext.prototype.models import (
 
 
 class TestT5(TorchtextTestCase):
-    def _t5_model(self, t5_model, expected_asset_name, encoder_input):
+    def _t5_model(self, t5_model, expected_asset_name, model_input):
         """Verify that pre-trained T5 models in torchtext produce
         the same output as the HuggingFace reference implementation.
         """
@@ -17,19 +17,19 @@ class TestT5(TorchtextTestCase):
         model = model.eval()
 
         if model.encoder_only:
-            actual = model(encoder_input)["encoder_output"]
+            actual = model(model_input)["encoder_output"]
         else:
-            actual = model(encoder_input)["decoder_output"]
+            actual = model(model_input)["decoder_output"]
 
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected)
 
     def test_t5_base_encoder_model(self):
         expected_asset_name = "t5.base.encoder.output.pt"
-        encoder_input = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
-        self._t5_model(t5_model=T5_BASE_ENCODER, expected_asset_name=expected_asset_name, encoder_input=encoder_input)
+        model_input = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
+        self._t5_model(t5_model=T5_BASE_ENCODER, expected_asset_name=expected_asset_name, model_input=model_input)
 
     def test_t5_base_model(self):
         expected_asset_name = "t5.base.output.pt"
-        encoder_input = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
-        self._t5_model(t5_model=T5_BASE, expected_asset_name=expected_asset_name, encoder_input=encoder_input)
+        model_input = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
+        self._t5_model(t5_model=T5_BASE, expected_asset_name=expected_asset_name, model_input=model_input)
