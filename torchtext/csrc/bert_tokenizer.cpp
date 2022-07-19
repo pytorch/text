@@ -29,6 +29,31 @@ std::string BERTEncoder::kUnkToken = "[UNK]";
 
 int kMaxCharsPerWords = 100;
 
+static std::vector<std::string> _read_vocab(std::string file_path) {
+  std::ifstream fin(file_path, std::ios::in);
+  IndexDict token_dict;
+  std::vector<std::string> tokens;
+  TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);
+  std::string token;
+  while (getline(fin, token)) {
+    // to take into account empty lines
+    // see issue: https://github.com/pytorch/text/issues/1840
+    if (token.empty()) {
+      token = "\n";
+    }
+
+    if (token_dict.find(token) == token_dict.end()) {
+      token_dict[token] = 1;
+    }
+  }
+
+  for (auto& token_elem : token_dict) {
+    tokens.push_back(token_elem.first);
+  }
+
+  return tokens;
+}
+
 static bool _is_whitespace(uint32_t c) {
   if (c == '\t' || c == '\n' || c == '\r' || c == ' ') {
     return true;
@@ -117,7 +142,7 @@ BERTEncoder::BERTEncoder(
     const std::string& vocab_file,
     bool do_lower_case,
     c10::optional<bool> strip_accents)
-    : vocab_{_load_vocab_from_file(vocab_file, 1, 1)},
+    : vocab_{_read_vocab(vocab_file)},
       do_lower_case_{do_lower_case},
       strip_accents_{strip_accents} {}
 
