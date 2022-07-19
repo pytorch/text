@@ -52,6 +52,13 @@ class T5Bundle:
         freeze_model: bool = False,
         dl_kwargs: Dict[str, Any] = None,
     ) -> T5Model:
+        r"""get_model(load_weights: bool = True, freeze_model: bool = False, *, dl_kwargs=None) -> torctext.prototype.models.T5Model
+
+        Args:
+            load_weights (bool): Indicates whether or not to load weights if available. (Default: `True`)
+            freeze_model (bool): Indicates whether or not to freeze the model weights. (Default: `False`)
+            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
+        """
 
         if load_weights:
             assert (
@@ -82,6 +89,15 @@ class T5Bundle:
         strict=False,
         dl_kwargs: Dict[str, Any] = None,
     ) -> T5Model:
+        """Class builder method
+
+        Args:
+            config (T5Conf): An instance of classT5Conf that defined the model configuration
+            freeze_model (bool): Indicates whether to freeze the model weights. (Default: `False`)
+            checkpoint (str or Dict[str, torch.Tensor]): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder. (Default: ``None``)
+            strict (bool): Passed to :func: `torch.nn.Module.load_state_dict` method. (Default: `False`)
+            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
+        """
 
         model = T5Model(config, freeze_model)
         if checkpoint is not None:

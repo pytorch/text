@@ -54,7 +54,7 @@ class T5Model(nn.Module):
         config.training: Whether or not to apply dropout (default: False)
         freeze: Indicates whether or not to freeze the model weights. (default: False)
     Examples:
-        from torchtext.prototype.models import T5Conf, T5Model
+        >>> from torchtext.prototype.models import T5Conf, T5Model
         >>> t5_config = T5Conf(encoder_only=False)
         >>> t5_model = T5Model(t5_config)
         >>> encoder_input = torch.rand((32, 10, 512))
