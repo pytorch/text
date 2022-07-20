@@ -1,6 +1,7 @@
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
 #include <torch/script.h>
+#include <torchtext/csrc/export.h>
 
 namespace torchtext {
 
@@ -16,16 +17,19 @@ struct SentencePiece : torch::CustomClassHolder {
   // serialized model from this content_ member, thus it needs to be public.
   std::string content_;
 
-  explicit SentencePiece(const std::string& content);
-  std::vector<std::string> Encode(const std::string& input) const;
-  std::vector<int64_t> EncodeAsIds(const std::string& input) const;
-  std::string DecodeIds(const std::vector<int64_t>& ids) const;
-  std::vector<std::string> EncodeAsPieces(const std::string& input) const;
-  std::string DecodePieces(const std::vector<std::string>& pieces) const;
-  int64_t GetPieceSize() const;
-  int64_t unk_id() const;
-  int64_t PieceToId(const std::string& piece) const;
-  std::string IdToPiece(const int64_t id) const;
+  TORCHTEXT_API explicit SentencePiece(const std::string& content);
+  TORCHTEXT_API std::vector<std::string> Encode(const std::string& input) const;
+  TORCHTEXT_API std::vector<int64_t> EncodeAsIds(
+      const std::string& input) const;
+  TORCHTEXT_API std::string DecodeIds(const std::vector<int64_t>& ids) const;
+  TORCHTEXT_API std::vector<std::string> EncodeAsPieces(
+      const std::string& input) const;
+  TORCHTEXT_API std::string DecodePieces(
+      const std::vector<std::string>& pieces) const;
+  TORCHTEXT_API int64_t GetPieceSize() const;
+  TORCHTEXT_API int64_t unk_id() const;
+  TORCHTEXT_API int64_t PieceToId(const std::string& piece) const;
+  TORCHTEXT_API std::string IdToPiece(const int64_t id) const;
 };
 
 void generate_sp_model(

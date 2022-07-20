@@ -73,7 +73,8 @@ General use cases are as follows: ::
     for label, line in train_iter:
         tokens += tokenize(label, line)
 
-The following datasets are available:
+The following datasets are currently available. If you would like to contribute
+new datasets to the repo or work with your own custom datasets, please refer to `CONTRIBUTING_DATASETS.md <https://github.com/pytorch/text/blob/main/CONTRIBUTING_DATASETS.md>`_ guide.
 
 .. contents:: Datasets
     :local:

@@ -57,6 +57,7 @@ binary_common: &binary_common
     BUILD_VERSION: << parameters.build_version >>
     PYTORCH_VERSION: << parameters.pytorch_version >>
     CU_VERSION: cpu
+    MACOSX_DEPLOYMENT_TARGET: 10.9
 
 smoke_test_common: &smoke_test_common
   <<: *binary_common
@@ -206,7 +207,7 @@ jobs:
   binary_macos_wheel:
     <<: *binary_common
     macos:
-      xcode: "12.0"
+      xcode: "12.5"
     steps:
       - checkout
       - designate_upload_channel
@@ -232,7 +233,7 @@ jobs:
   binary_macos_conda:
     <<: *binary_common
     macos:
-      xcode: "12.0"
+      xcode: "12.5"
     steps:
       - checkout
       - designate_upload_channel
@@ -440,7 +441,7 @@ jobs:
   unittest_macos:
     <<: *binary_common
     macos:
-      xcode: "12.0"
+      xcode: "12.5"
     resource_class: large
     steps:
       - checkout

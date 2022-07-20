@@ -572,7 +572,9 @@ class BERTTokenizer(Module):
         self, vocab_path: str, do_lower_case: bool = True, strip_accents: Optional[bool] = None, return_tokens=False
     ) -> None:
         super().__init__()
-        self.bert_model = BERTEncoderPyBind(get_asset_local_path(vocab_path), do_lower_case, strip_accents)
+        self.bert_model = BERTEncoderPyBind(
+            get_asset_local_path(vocab_path, overwite=True), do_lower_case, strip_accents
+        )
         self._return_tokens = return_tokens
         self._vocab_path = vocab_path
         self._do_lower_case = do_lower_case
@@ -660,24 +662,40 @@ class BERTTokenizer(Module):
 
 
 class RegexTokenizer(Module):
-    __jit_unused_properties__ = ["is_jitable"]
-    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
+    """
+    Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list. It is backed by the `C++ RE2 regular expression engine <https://github.com/google/re2>`_ from Google.
 
     Args:
         patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
         as the first element and the replacement string as the second element.
 
-    Examples:
-        >>> import torch
-        >>> from torchtext.transforms import RegexTokenizer
-        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
-        >>> patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', '')]
-        >>> reg_tokenizer = RegexTokenizer(patterns_list)
-        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
-        >>> tokens = jit_reg_tokenizer(test_sample)
+    Caveats
+        - The RE2 library does not support arbitrary lookahead or lookbehind assertions, nor does it support backreferences. Look at the `docs <https://swtch.com/~rsc/regexp/regexp3.html#caveats>`_ here for more info.
+        - The final tokenization step always uses spaces as seperators. To split strings based on a specific regex pattern, similar to Python's `re.split <https://docs.python.org/3/library/re.html#re.split>`_, a tuple of ``('<regex_pattern>', ' ')`` can be provided.
+
+    Example
+        Regex tokenization based on ``(patterns, replacements)`` list.
+            >>> import torch
+            >>> from torchtext.transforms import RegexTokenizer
+            >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+            >>> patterns_list = [
+                (r'\'', ' \'  '),
+                (r'\"', '')]
+            >>> reg_tokenizer = RegexTokenizer(patterns_list)
+            >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+            >>> tokens = jit_reg_tokenizer(test_sample)
+        Regex tokenization based on ``(single_pattern, ' ')`` list.
+            >>> import torch
+            >>> from torchtext.transforms import RegexTokenizer
+            >>> test_sample = 'Basic.Regex,Tokenization_for+a..Line,,of  Text'
+            >>> patterns_list = [
+                (r'[,._+ ]+', r' ')]
+            >>> reg_tokenizer = RegexTokenizer(patterns_list)
+            >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+            >>> tokens = jit_reg_tokenizer(test_sample)
     """
+
+    __jit_unused_properties__ = ["is_jitable"]
 
     def __init__(self, patterns_list) -> None:
         super(RegexTokenizer, self).__init__()
