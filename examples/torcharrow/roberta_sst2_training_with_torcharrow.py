@@ -110,7 +110,6 @@ criteria = nn.CrossEntropyLoss()
 def train_step(input, target):
     output = model(input)
     loss = criteria(output, target)
-    print(float(loss))
     optim.zero_grad()
     loss.backward()
     optim.step()
