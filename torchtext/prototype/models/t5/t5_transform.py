@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Any, List
 
 import torch
 import torch.nn as nn
@@ -16,14 +16,14 @@ class T5Transform(nn.Module):
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
         self.padding_idx = padding_idx
-        self.pipeline = T.Sequential(T.Truncate(max_seq_len), T.AddToken(token=eos_idx, begin=False))
+        self.pipeline = T.Sequential(T.Truncate(self.max_seq_len), T.AddToken(token=self.eos_idx, begin=False))
 
-    def forward(self, input: Union[str, List[str]]) -> torch.Tensor:
+    def forward(self, input: Any) -> Any:
         tokens = self.encode(input)
         out = to_tensor(self.pipeline(tokens), padding_value=self.padding_idx)
         return out
 
-    def encode(self, input: Union[str, List[str]]) -> Union[List[int], List[List[int]]]:
+    def encode(self, input: Any) -> Any:
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[int]] = []
             for text in input:
@@ -34,13 +34,14 @@ class T5Transform(nn.Module):
         else:
             raise TypeError("Input type not supported")
 
-    def decode(self, input: torch.Tensor) -> Union[str, List[str]]:
-        if torch.jit.isinstance(input, torch.Tensor) and input.dim() > 1:
+    @torch.jit.export
+    def decode(self, input: Any) -> Any:
+        if torch.jit.isinstance(input, List[List[int]]):
             tokens: List[str] = []
             for ids in input:
-                tokens.append(self.sp_model.DecodeIds(list(ids)))
+                tokens.append(self.sp_model.DecodeIds(ids))
             return tokens
-        elif torch.jit.isinstance(input, torch.Tensor) and input.dim() == 1:
-            return self.sp_model.DecodeIds(list(input))
+        elif torch.jit.isinstance(input, List[int]):
+            return self.sp_model.DecodeIds(input)
         else:
             raise TypeError("Input type not supported")
