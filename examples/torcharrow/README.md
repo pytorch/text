@@ -22,7 +22,7 @@ USE_TORCH=1 python setup.py install
 
 #### TorchData
 
-To install TorchData follow instructions athttps://github.com/pytorch/data#installation
+To install TorchData follow instructions at https://github.com/pytorch/data#installation
 
 #### Usage
 
