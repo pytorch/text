@@ -17,7 +17,7 @@ env:
 jobs:
   build_wheels:
     name: "Build TorchText M1 wheels"
-    runs-on: macos-m1-11
+    runs-on: macos-m1-12
     strategy:
       matrix:
         py_vers: ["3.8", "3.9", "3.10"]
