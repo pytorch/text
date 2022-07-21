@@ -105,19 +105,6 @@ class TestModels(TorchtextTestCase):
     def test_t5_bundler_conf_property(self):
         from torchtext.prototype.models import T5Conf, T5Bundle
 
-        # encoder-only
-        dummy_encoder_conf = T5Conf(
-            encoder_only=True,
-            vocab_size=10,
-            embedding_dim=16,
-            ffn_dimension=64,
-            num_attention_heads=2,
-            num_encoder_layers=2,
-        )
-        encoder_bundle = T5Bundle(dummy_encoder_conf)
-        self.assertTrue(isinstance(encoder_bundle.config, T5Conf))
-
-        # encoder-decoder
         dummy_t5_conf = T5Conf(
             encoder_only=False,
             vocab_size=10,
