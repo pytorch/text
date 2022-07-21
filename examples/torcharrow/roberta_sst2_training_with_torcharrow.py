@@ -102,12 +102,8 @@ classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
 model = ROBERTA_BASE_ENCODER.get_model(head=classifier_head)
 model.to(DEVICE)
 
-learning_rate = 1e-5
-optim = AdamW(model.parameters(), lr=learning_rate)
-criteria = nn.CrossEntropyLoss()
 
-
-def train_step(input, target):
+def train_step(input, target, optim, criteria):
     output = model(input)
     loss = criteria(output, target)
     optim.zero_grad()
@@ -115,7 +111,7 @@ def train_step(input, target):
     optim.step()
 
 
-def eval_step(input, target):
+def eval_step(input, target, criteria):
     output = model(input)
     loss = criteria(output, target).item()
     return float(loss), (output.argmax(1) == target).type(torch.float).sum().item()
@@ -141,22 +137,27 @@ def evaluate(dataloader):
 
 
 def main(args):
-
+    print(args)
     train_dl = get_dataloader(split="train", args=args)
     dev_dl = get_dataloader(split="dev", args=args)
+
+    learning_rate = args.learning_rate
+    optim = AdamW(model.parameters(), lr=learning_rate)
+    criteria = nn.CrossEntropyLoss()
 
     for e in range(args.num_epochs):
         for batch in train_dl:
             input = batch.tokens.to(DEVICE)
             target = batch.labels.to(DEVICE)
-            train_step(input, target)
+            train_step(input, target, optim, criteria)
 
-    loss, accuracy = evaluate(dev_dl)
+    loss, accuracy = evaluate(dev_dl, criteria)
     print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--batch-size", default=16, type=int)
-    parser.add_argument("--num-epochs", default=1, type=int)
+    parser.add_argument("--batch-size", default=16, type=int, help="Input batch size used during training")
+    parser.add_argument("--num-epochs", default=1, type=int, help="Number of epochs to run training")
+    parser.add_argument("--learning-rate", default=1e-5, type=float, help="Learning rate used for training")
     main(parser.parse_args())
