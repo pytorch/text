@@ -1,10 +1,16 @@
 i## Description
 
-This example shows end-2-end training for SST-2 binary classification using the RoBERTa model and TorchArrow based text pre-processing. The main motivation for this example is to demonstrate the authoring of a text processing pipeline on top of TorchArrow DataFrame. 
+This example shows end-2-end training for SST-2 binary classification using the RoBERTa model and TorchArrow based text
+pre-processing. The main motivation for this example is to demonstrate the authoring of a text processing pipeline on
+top of TorchArrow DataFrame.
 
 ## Installation and Usage
 
-The example depends on TorchArrow. Install it from source following instructions at https://github.com/pytorch/torcharrow#from-source.  Note that some of the natively integrated text operators (`bpe_tokenize` for tokenization, `lookup_indices` for vocabulary look-up) used in this example depend on the torch library. By default, TorchArrow doesn’t take dependency on the torch library. Hence make sure to use flag `USE_TORCH=1` during TorchArrow installation (this is also the reason why we cannot depend on nightly releases)
+The example depends on TorchArrow. Install it from source following instructions at
+https://github.com/pytorch/torcharrow#from-source. Note that some of the natively integrated text operators
+(`bpe_tokenize` for tokenization, `lookup_indices` for vocabulary look-up) used in this example depend on the torch
+library. By default, TorchArrow doesn’t take dependency on the torch library. Hence make sure to use flag `USE_TORCH=1`
+during TorchArrow installation (this is also the reason why we cannot depend on nightly releases)
 
 To run example from command line run following command:
 
