@@ -8,7 +8,7 @@ top of TorchArrow DataFrame.
 
 The example depends on TorchArrow and TorchData.
 
-### TorchArrow Installation
+#### TorchArrow Installation
 
 Install it from source following instructions at https://github.com/pytorch/torcharrow#from-source. Note that some of
 the natively integrated text operators (`bpe_tokenize` for tokenization, `lookup_indices` for vocabulary look-up) used
@@ -20,11 +20,11 @@ nightly releases)
 USE_TORCH=1 python setup.py install
 ```
 
-### TorchData Installation
+#### TorchData Installation
 
 To install TorchData follow instructions athttps://github.com/pytorch/data#installation
 
-### Usage
+#### Usage
 
 To run example from command line run following command:
 
