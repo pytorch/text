@@ -19,6 +19,7 @@ jobs:
     name: "Build TorchText M1 wheels"
     runs-on: macos-m1-12
     strategy:
+      fail-fast: false
       matrix:
         py_vers: ["3.8", "3.9", "3.10"]
     steps:
@@ -148,9 +149,13 @@ jobs:
 
           setup_conda_pytorch_constraint
           export SOURCE_ROOT_DIR=$(pwd)
-          conda build -c defaults $CONDA_CHANNEL_FLAGS --no-anaconda-upload --python "$PYTHON_VERSION" packaging/torchtext
-          mkdir -p dist
-          cp ~/miniconda3/conda-bld/osx-arm64/*.tar.bz2 dist/
+          conda build \
+            -c defaults \
+            $CONDA_CHANNEL_FLAGS \
+            --no-anaconda-upload \
+            --python "$PYTHON_VERSION" \
+            --output-folder=dist/ \
+            packaging/torchtext
       - name: Upload package to GitHub
         uses: actions/upload-artifact@v3
         with:
@@ -168,3 +173,7 @@ jobs:
           conda install -yq anaconda-client
           set -x
           anaconda  -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/miniconda3/conda-bld/osx-arm64/*.tar.bz2 -u "pytorch-${CHANNEL}" --label main --no-progress --force
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}-${{ github.event_name == 'workflow_dispatch' }}
+  cancel-in-progress: true
