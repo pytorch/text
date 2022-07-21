@@ -11,6 +11,7 @@ from torchtext.prototype.transforms import (
     sentencepiece_tokenizer,
     VectorTransform,
     MaskTransform,
+    T5Transform,
 )
 from torchtext.prototype.vectors import FastText
 
@@ -256,3 +257,26 @@ class TestMaskTransform(TorchtextTestCase):
             masked_tokens, _, _ = mask_transform(self.sample_token_ids)
             exp_tokens = torch.tensor([[5, 5, 5, 5, 5], [5, 5, 5, 4, 4]])
             self.assertEqual(exp_tokens, masked_tokens)
+
+    def _t5tokenizer(self, test_scripting):
+        asset_name = "https://huggingface.co/t5-base/resolve/main/spiece.model"
+        asset_path = get_asset_path(asset_name)
+        transform = T5Transform(asset_path, max_seq_len=512, eos_idx=1, padding_idx=0)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        actual = transform(["Hello World!, how are you?"])
+        expected = torch.tensor([[8774, 1150, 55, 6, 149, 33, 25, 58, 1]])
+        self.assertEqual(actual, expected)
+
+        actual = transform("Hello World!, how are you?")
+        expected = torch.tensor([8774, 1150, 55, 6, 149, 33, 25, 58, 1])
+        self.assertEqual(actual, expected)
+
+    def test_t5tokenizer(self):
+        """test tokenization on single sentence input as well as batch on sentences"""
+        self._t5tokenizer(test_scripting=False)
+
+    def test_t5tokenizer_jit(self):
+        """test tokenization with scripting on single sentence input as well as batch on sentences"""
+        self._t5tokenizer(test_scripting=True)
