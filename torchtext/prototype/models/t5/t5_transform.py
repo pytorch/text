@@ -10,9 +10,9 @@ from torchtext.utils import get_asset_local_path
 
 class T5Transform(nn.Module):
     """
-    Transform for Sentence Piece tokenizer from pre-trained sentencepiece model in preparation for T5 model
+    This transform makes use of a pre-trained sentencepiece model to tokenize text input. The resulting output is fed to the T5 model.
 
-    Additiona details: https://github.com/google/sentencepiece
+    Additional details: https://github.com/google/sentencepiece
 
     :param sp_model_path: Path to pre-trained sentencepiece model
     :type sp_model_path: str
@@ -39,7 +39,7 @@ class T5Transform(nn.Module):
 
     def forward(self, input: Any) -> Any:
         """
-        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :param input: Input sentence or list of sentences to tokenize.
         :type input: Union[str, List[str]]
         :return: Tokenized text that has been truncated, appended with end-of-sequence token, and padded
         :rtype: Union[List[int], List[List[int]]]
@@ -51,7 +51,7 @@ class T5Transform(nn.Module):
     @torch.jit.export
     def encode(self, input: Any) -> Any:
         """
-        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :param input: Input sentence or list of sentences to tokenize.
         :type input: Union[str, List[str]]
         :return: Tokenized text that has been translated to token ids
         :rtype: Union[List[int], List[List[int]]]
