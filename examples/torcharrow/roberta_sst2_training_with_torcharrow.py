@@ -1,14 +1,13 @@
+import functools
 import json
 from argparse import ArgumentParser
 
 import torch
 import torch.nn as nn
-import torcharrow as ta
 import torcharrow._torcharrow as _ta
 import torcharrow.pytorch as tap
 import torchtext.functional as F
 import torchtext.transforms as T
-from torch.nn import Module
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from torcharrow import functional as ta_F
@@ -49,33 +48,21 @@ def init_ta_gpt2bpe_vocab():
     return ta_vocab
 
 
-class RobertaTransformDataFrameNativeOps(Module):
-    def __init__(self) -> None:
-        super().__init__()
-        # Tokenizer to split input text into tokens
-        self.tokenizer = init_ta_gpt2bpe_encoder()
-
-        # vocabulary converting tokens to IDs
-        self.vocab = init_ta_gpt2bpe_vocab()
-
-        # Add BOS token to the beginning of sentence
-        self.add_bos = T.AddToken(token=0, begin=True)
-
-        # Add EOS token to the end of sentence
-        self.add_eos = T.AddToken(token=2, begin=False)
-
-    def forward(self, input: ta.DataFrame) -> ta.DataFrame:
-        input["tokens"] = ta_F.bpe_tokenize(self.tokenizer, input["text"])
-        input["tokens"] = input["tokens"].list.slice(stop=254)
-        input["tokens"] = ta_F.lookup_indices(self.vocab, input["tokens"])
-        input["tokens"] = ta_F.add_tokens(input["tokens"], [0], begin=True)
-        input["tokens"] = ta_F.add_tokens(input["tokens"], [2], begin=False)
-        return input
+def prepoc(df, tokenizer, vocab):
+    df["tokens"] = ta_F.bpe_tokenize(tokenizer, df["text"])
+    df["tokens"] = df["tokens"].list.slice(stop=254)
+    df["tokens"] = ta_F.lookup_indices(vocab, df["tokens"])
+    df["tokens"] = ta_F.add_tokens(df["tokens"], [0], begin=True)
+    df["tokens"] = ta_F.add_tokens(df["tokens"], [2], begin=False)
+    return df
 
 
 def get_dataloader(split, args):
-    # Instantiate transform
-    transform = RobertaTransformDataFrameNativeOps()
+    # Instantiate TA tokenizer opaque object
+    tokenizer = init_ta_gpt2bpe_encoder()
+
+    # Instantiate TA vocab opaque object
+    vocab = init_ta_gpt2bpe_vocab()
 
     # Create SST2 datapipe and apply pre-processing
     train_dp = SST2(split=split)
@@ -83,8 +70,8 @@ def get_dataloader(split, args):
     # convert to DataFrame of size batches
     train_dp = train_dp.dataframe(columns=["text", "labels"], dataframe_size=args.batch_size)
 
-    # Apply transformation on DataFrame
-    train_dp = train_dp.map(transform)
+    # Apply preproc on DataFrame
+    train_dp = train_dp.map(functools.partial(prepoc, tokenizer=tokenizer, vocab=vocab))
 
     # (optional) Remove un-required columns
     train_dp = train_dp.map(lambda x: x.drop(["text"]))
