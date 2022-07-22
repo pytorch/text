@@ -134,7 +134,6 @@ def main(args):
 
     for e in range(args.num_epochs):
         for batch in train_dl:
-            print(batch)
             input = batch.tokens.to(DEVICE)
             target = batch.labels.to(DEVICE)
             train_step(input, target, optim, criteria)
