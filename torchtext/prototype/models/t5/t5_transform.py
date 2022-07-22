@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List, Union
 
 import torch
 import torch.nn as nn
@@ -37,19 +37,19 @@ class T5Transform(nn.Module):
         self.padding_idx = padding_idx
         self.pipeline = T.Sequential(T.Truncate(self.max_seq_len), T.AddToken(token=self.eos_idx, begin=False))
 
-    def forward(self, input: Any) -> Any:
+    def forward(self, input: Union[str, List[str]]) -> torch.Tensor:
         """
         :param input: Input sentence or list of sentences to tokenize.
         :type input: Union[str, List[str]]
         :return: Tokenized text that has been truncated, appended with end-of-sequence token, and padded
-        :rtype: Union[List[int], List[List[int]]]
+        :rtype: torch.Tensor
         """
         tokens = self.encode(input)
         out = to_tensor(self.pipeline(tokens), padding_value=self.padding_idx)
         return out
 
     @torch.jit.export
-    def encode(self, input: Any) -> Any:
+    def encode(self, input: Union[str, List[str]]) -> Union[List[int], List[List[int]]]:
         """
         :param input: Input sentence or list of sentences to tokenize.
         :type input: Union[str, List[str]]
@@ -67,7 +67,7 @@ class T5Transform(nn.Module):
             raise TypeError("Input type not supported")
 
     @torch.jit.export
-    def decode(self, input: Any) -> Any:
+    def decode(self, input: Union[List[int], List[List[int]]]) -> Union[str, List[str]]:
         """
         :param input: List of token ids or list of lists of token ids (i.e. batched).
         :type input: Union[List[int], List[List[int]]]
