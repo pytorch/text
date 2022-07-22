@@ -48,6 +48,7 @@ class T5Transform(nn.Module):
         out = to_tensor(self.pipeline(tokens), padding_value=self.padding_idx)
         return out
 
+    @torch.jit.export
     def encode(self, input: Any) -> Any:
         """
         :param input: Input sentence or list of sentences on which to apply tokenizer.
