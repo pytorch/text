@@ -9,9 +9,28 @@ from torchtext.utils import get_asset_local_path
 
 
 class T5Transform(nn.Module):
+    """
+    Transform for Sentence Piece tokenizer from pre-trained sentencepiece model in preparation for T5 model
+
+    Additiona details: https://github.com/google/sentencepiece
+
+    :param sp_model_path: Path to pre-trained sentencepiece model
+    :type sp_model_path: str
+    :param max_seq_len: Maximum sequence length accepted for inputs to T5 model
+    :type max_seq_len: int
+    :param eos_idx: End-of-sequence token id
+    :type eos_idx: int
+    :param padding_idx: Padding token id
+    :type padding_idx: int
+
+    Example
+        >>> from torchtext.prototype.models import T5Transform
+        >>> transform = T5Transform("spm_model", max_seq_len = 10, eos_idx = 1, padding_idx = 0)
+        >>> transform(["hello world", "attention is all you need!"])
+    """
+
     def __init__(self, sp_model_path: str, max_seq_len: int, eos_idx: int, padding_idx: int):
         super().__init__()
-
         self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
@@ -19,11 +38,23 @@ class T5Transform(nn.Module):
         self.pipeline = T.Sequential(T.Truncate(self.max_seq_len), T.AddToken(token=self.eos_idx, begin=False))
 
     def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: Tokenized text that has been truncated, appended with end-of-sequence token, and padded
+        :rtype: Union[List[int], List[List[int]]]
+        """
         tokens = self.encode(input)
         out = to_tensor(self.pipeline(tokens), padding_value=self.padding_idx)
         return out
 
     def encode(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: Tokenized text that has been translated to token ids
+        :rtype: Union[List[int], List[List[int]]]
+        """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[int]] = []
             for text in input:
@@ -36,6 +67,12 @@ class T5Transform(nn.Module):
 
     @torch.jit.export
     def decode(self, input: Any) -> Any:
+        """
+        :param input: List of token ids or list of lists of token ids (i.e. batched).
+        :type input: Union[List[int], List[List[int]]]
+        :return: Sentence or list of sentencess that were translated from the input token ids
+        :rtype: Union[str, List[str]]
+        """
         if torch.jit.isinstance(input, List[List[int]]):
             tokens: List[str] = []
             for ids in input:

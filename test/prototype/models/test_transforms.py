@@ -12,7 +12,7 @@ class TestTransforms(TorchtextTestCase):
         if test_scripting:
             transform = torch.jit.script(transform)
 
-        # input is a list
+        # input is a list (i.e. batched)
         input_seq = ["Hello World!, how are you?"]
         actual = transform(input_seq)
         expected = torch.tensor([[8774, 1150, 55, 6, 149, 33, 25, 58, 1]])
@@ -25,11 +25,11 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
     def test_t5tokenizer(self):
-        """test tokenization on single sentence input as well as batch on sentences"""
+        """test tokenization on string input (batched and un-batched)"""
         self._t5tokenizer(test_scripting=False)
 
     def test_t5tokenizer_jit(self):
-        """test tokenization with scripting on single sentence input as well as batch on sentences"""
+        """test tokenization with scripting on string input (batched and un-batched)"""
         self._t5tokenizer(test_scripting=True)
 
     def _t5tokenizer_decode(self, test_scripting):
@@ -50,9 +50,9 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
     def test_t5tokenizer_decode(self):
-        """test tokenization on single sentence input as well as batch on sentences"""
+        """test translation from token ids to strings (batched and un-batched)"""
         self._t5tokenizer_decode(test_scripting=False)
 
     def test_t5tokenizer_decode_jit(self):
-        """test tokenization with scripting on single sentence input as well as batch on sentences"""
+        """test translation from token ids to strings with scripting (batched and un-batched)"""
         self._t5tokenizer_decode(test_scripting=True)
