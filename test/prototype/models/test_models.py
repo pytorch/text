@@ -10,7 +10,7 @@ class TestModels(TorchtextTestCase):
     def test_t5_bundler_build_model(self):
         from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 
-        # case: user provide encoder checkpoint state dict
+        # case: user provides encoder checkpoint state dict
         dummy_encoder_conf = T5Conf(
             encoder_only=True,
             vocab_size=10,
@@ -23,7 +23,7 @@ class TestModels(TorchtextTestCase):
         t5_encoder_model = T5Bundle.build_model(config=dummy_encoder_conf, checkpoint=dummy_t5_encoder.state_dict())
         self.assertEqual(t5_encoder_model.state_dict(), dummy_t5_encoder.state_dict())
 
-        # case: user provide encoder-decoder checkpoint state dict
+        # case: user provides encoder-decoder checkpoint state dict
         dummy_t5_conf = T5Conf(
             encoder_only=False,
             vocab_size=10,
@@ -36,7 +36,7 @@ class TestModels(TorchtextTestCase):
         t5_model = T5Bundle.build_model(config=dummy_t5_conf, checkpoint=dummy_t5.state_dict())
         self.assertEqual(t5_model.state_dict(), dummy_t5.state_dict())
 
-        # case: user provide encoder-decoder for generation checkpoint state dict
+        # case: user provides checkpoint state dict for encoder-decoder with generation
         dummy_t5_generation_conf = T5Conf(
             encoder_only=False,
             linear_head=True,
@@ -169,19 +169,8 @@ class TestModels(TorchtextTestCase):
         self.assertTrue(isinstance(t5_bundle.config, T5Conf))
 
     def test_t5_bundler_train(self):
-        from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
-
-        dummy_conf = T5Conf(
-            encoder_only=False,
-            linear_head=True,
-            vocab_size=10,
-            embedding_dim=16,
-            ffn_dimension=64,
-            num_attention_heads=2,
-            num_encoder_layers=2,
-            training=True,
-        )
         from torch.optim import SGD
+        from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 
         def _train(model):
             optim = SGD(model.parameters(), lr=1)
@@ -193,15 +182,23 @@ class TestModels(TorchtextTestCase):
             loss.backward()
             optim.step()
 
+        dummy_conf = T5Conf(
+            encoder_only=False,
+            linear_head=True,
+            vocab_size=10,
+            embedding_dim=16,
+            ffn_dimension=64,
+            num_attention_heads=2,
+            num_encoder_layers=2,
+            training=True,
+        )
         dummy_model = T5Model(dummy_conf)
         model = T5Bundle.build_model(
             config=dummy_conf,
             freeze_model=False,
             checkpoint=dummy_model.state_dict(),
         )
-
         current_state_dict = copy.deepcopy(model.state_dict())
 
         _train(model)
-
         self.assertNotEqual(model.state_dict(), current_state_dict)

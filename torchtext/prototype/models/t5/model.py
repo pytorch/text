@@ -38,8 +38,8 @@ class T5Model(nn.Module):
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Args:
         config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (default=False).
-        config.linear_head: Whether or not linear layer should be used on decoder's last hidden state to project to vocab (default=False).
-        config.tie_word_embeddings: Whether the model's encoder and decoder word embeddings should be tied (default=True).
+        config.linear_head: Whether or not a linear layer should be used to project the output of the decoder's last layer to the vocab (default=False).
+        config.tie_word_embeddings: Whether or not the model's encoder and decoder word embeddings should be tied (default=True).
         config.embedding_dim: Number of expected features in the encoder/decoder inputs (default=768).
         config.num_attention_heads: Number of heads in the multiheadattention models (default=12).
         config.num_encoder_layers: Number of encoder layers in the encoder (default=12).
