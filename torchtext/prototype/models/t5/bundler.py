@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from urllib.parse import urljoin
 
 import torch
@@ -8,28 +8,33 @@ from torchtext import _TEXT_BUCKET
 from torchtext._download_hooks import load_state_dict_from_url
 
 from .model import T5Conf, T5Model
+from .t5_transform import T5Transform
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class T5Bundle:
-    """T5Bundle(_config: torchtext.prototype.models.T5Conf, _path: Optional[str] = None)
+    """T5Bundle(_config: torchtext.prototype.models.T5Conf, _path: Optional[str] = None, transform: Optional[Callable] = None)
 
     Example - Pretrained base t5 encoder
         >>> import torch, torchtext
         >>> t5_encoder_base = torchtext.prototype.models.T5_BASE_ENCODER
+        >>> transform = t5_encoder_base.transform()
+        >>> input_seq = ["Hello world", "Attention rocks!"]
         >>> model = t5_encoder_base.get_model()
-        >>> model_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        >>> model_input = transform(input_seq)
         >>> output = model(model_input)['encoder_output']
         >>> output.shape
-        torch.Size([2, 6, 768])
+        torch.Size([2, 4, 768])
 
     Example - Pretrained base t5 model
         >>> import torch, torchtext
         >>> t5_base = torchtext.prototype.models.T5_BASE
+        >>> transform = t5_base.transform()
+        >>> input_seq = ["Hello world", "Attention rocks!"]
         >>> model = t5_base.get_model()
-        >>> model_input = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        >>> model_input = transform(input_seq)
         >>> output = model(model_input)['decoder_output']
         >>> output.shape
         torch.Size([2, 1, 768])
@@ -43,6 +48,7 @@ class T5Bundle:
 
     _config: T5Conf
     _path: Optional[str] = None
+    transform: Optional[Callable] = None
 
     def get_model(
         self,
@@ -122,6 +128,12 @@ class T5Bundle:
 T5_BASE_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
     _config=T5Conf(encoder_only=True),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
 )
 
 T5_BASE_ENCODER.__doc__ = """
@@ -146,6 +158,12 @@ T5_BASE_ENCODER.__doc__ = """
 T5_BASE = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
     _config=T5Conf(encoder_only=False),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
 )
 
 T5_BASE.__doc__ = """
