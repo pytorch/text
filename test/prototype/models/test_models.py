@@ -33,6 +33,22 @@ class TestModels(TorchtextTestCase):
         t5_model = T5Bundle.build_model(config=dummy_t5_conf, checkpoint=dummy_t5.state_dict())
         self.assertEqual(t5_model.state_dict(), dummy_t5.state_dict())
 
+        # case: user provide encoder-decoder for generation checkpoint state dict
+        dummy_t5_generation_conf = T5Conf(
+            encoder_only=False,
+            linear_head=True,
+            vocab_size=10,
+            embedding_dim=16,
+            ffn_dimension=64,
+            num_attention_heads=2,
+            num_encoder_layers=2,
+        )
+        dummy_t5_generation = T5Model(dummy_t5_generation_conf)
+        t5_generation_model = T5Bundle.build_model(
+            config=dummy_t5_generation_conf, checkpoint=dummy_t5_generation.state_dict()
+        )
+        self.assertEqual(t5_generation_model.state_dict(), dummy_t5_generation.state_dict())
+
     @patch("logging.Logger.warning")
     def test_t5_bundler_get_model(self, mock):
         from torchtext.prototype.models import T5Conf, T5Bundle
@@ -63,6 +79,22 @@ class TestModels(TorchtextTestCase):
         )
         t5_bundle = T5Bundle(dummy_t5_conf)
         t5_bundle.get_model(load_weights=False, freeze_model=True)
+        mock.assert_called_with(
+            "The model is not loaded with pre-trained weights. Setting freeze_model to True will hinder model from learning appropriate weights."
+        )
+
+        # encoder-decoder with generation
+        dummy_t5_generation_conf = T5Conf(
+            encoder_only=False,
+            linear_head=True,
+            vocab_size=10,
+            embedding_dim=16,
+            ffn_dimension=64,
+            num_attention_heads=2,
+            num_encoder_layers=2,
+        )
+        t5_generation_bundle = T5Bundle(dummy_t5_generation_conf)
+        t5_generation_bundle.get_model(load_weights=False, freeze_model=True)
         mock.assert_called_with(
             "The model is not loaded with pre-trained weights. Setting freeze_model to True will hinder model from learning appropriate weights."
         )
@@ -98,6 +130,23 @@ class TestModels(TorchtextTestCase):
             )
             T5Bundle.build_model(
                 config=dummy_t5_conf,
+                freeze_model=True,
+                checkpoint=1,
+            )
+
+        # encoder-decoder with generation
+        with self.assertRaises(TypeError):
+            dummy_t5_generation_conf = T5Conf(
+                encoder_only=False,
+                linear_head=True,
+                vocab_size=10,
+                embedding_dim=16,
+                ffn_dimension=64,
+                num_attention_heads=2,
+                num_encoder_layers=2,
+            )
+            T5Bundle.build_model(
+                config=dummy_t5_generation_conf,
                 freeze_model=True,
                 checkpoint=1,
             )
