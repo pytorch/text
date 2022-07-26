@@ -1,6 +1,9 @@
+import copy
 from unittest.mock import patch
 
+import torch
 from test.common.torchtext_test_case import TorchtextTestCase
+from torch.nn import functional as F
 
 
 class TestModels(TorchtextTestCase):
@@ -164,3 +167,41 @@ class TestModels(TorchtextTestCase):
         )
         t5_bundle = T5Bundle(dummy_t5_conf)
         self.assertTrue(isinstance(t5_bundle.config, T5Conf))
+
+    def test_t5_bundler_train(self):
+        from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
+
+        dummy_conf = T5Conf(
+            encoder_only=False,
+            linear_head=True,
+            vocab_size=10,
+            embedding_dim=16,
+            ffn_dimension=64,
+            num_attention_heads=2,
+            num_encoder_layers=2,
+            training=True,
+        )
+        from torch.optim import SGD
+
+        def _train(model):
+            optim = SGD(model.parameters(), lr=1)
+            model_input = torch.tensor([[1, 2, 3, 4, 5]])
+            target = torch.tensor([0])
+            output = model(model_input)["decoder_output"]
+            logits = F.log_softmax(output[:, -1], dim=-1)
+            loss = F.cross_entropy(logits, target)
+            loss.backward()
+            optim.step()
+
+        dummy_model = T5Model(dummy_conf)
+        model = T5Bundle.build_model(
+            config=dummy_conf,
+            freeze_model=False,
+            checkpoint=dummy_model.state_dict(),
+        )
+
+        current_state_dict = copy.deepcopy(model.state_dict())
+
+        _train(model)
+
+        self.assertNotEqual(model.state_dict(), current_state_dict)
