@@ -153,7 +153,7 @@ class TestModels(TorchtextTestCase):
         def _train(model):
             optim = SGD(model.parameters(), lr=1)
             model_input = torch.tensor([[1, 2, 3, 4, 5]])
-            target = torch.tensor([0])
+            target = torch.tensor([1])
             output = model(model_input)["decoder_output"]
             logits = F.log_softmax(output[:, -1], dim=-1)
             loss = F.cross_entropy(logits, target)
