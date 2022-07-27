@@ -25,7 +25,7 @@ class TestT5(TorchtextTestCase):
             actual = model(model_input)["decoder_output"]
 
         expected = torch.load(expected_asset_path)
-        torch.testing.assert_close(actual, expected)
+        torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
     def test_t5_base_encoder_model(self):
         expected_asset_name = "t5.base.encoder.output.pt"
