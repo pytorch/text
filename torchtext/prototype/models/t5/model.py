@@ -12,7 +12,6 @@ from .modules import T5Stack, T5LayerNorm
 class T5Conf:
     encoder_only: bool = False
     linear_head: bool = False
-    tie_word_embeddings: bool = True
     embedding_dim: int = 768
     num_attention_heads: int = 12
     num_encoder_layers: int = 12
@@ -39,7 +38,6 @@ class T5Model(nn.Module):
     Args:
         config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (default=False).
         config.linear_head: Whether or not a linear layer should be used to project the output of the decoder's last layer to the vocab (default=False).
-        config.tie_word_embeddings: Whether or not the model's encoder and decoder word embeddings should be tied (default=True).
         config.embedding_dim: Number of expected features in the encoder/decoder inputs (default=768).
         config.num_attention_heads: Number of heads in the multiheadattention models (default=12).
         config.num_encoder_layers: Number of encoder layers in the encoder (default=12).
@@ -127,7 +125,6 @@ class T5Model(nn.Module):
 
         if config.linear_head:
             self.lm_head = nn.Linear(config.embedding_dim, config.vocab_size, bias=False)
-            self.tie_word_embeddings = config.tie_word_embeddings
 
         if freeze:
             for p in self.parameters():
@@ -203,9 +200,10 @@ class T5Model(nn.Module):
             decoder_hidden_states = decoder_hidden_states + (decoder_output,)
 
             if self.linear_head:
-                if self.tie_word_embeddings:
-                    decoder_output = decoder_output * (self.config.embedding_dim ** -0.5)
-
+                # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
+                # same word embeddings, which is always the case in our t5 implementation.
+                # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
+                decoder_output = decoder_output * (self.config.embedding_dim ** -0.5)
                 decoder_output = self.lm_head(decoder_output)
 
             t5_output = {
