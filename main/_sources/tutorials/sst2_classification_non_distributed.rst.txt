@@ -308,23 +308,18 @@ Output
 
 .. _sphx_glr_download_tutorials_sst2_classification_non_distributed.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: sst2_classification_non_distributed.py <sst2_classification_non_distributed.py>`
 
-     :download:`Download Python source code: sst2_classification_non_distributed.py <sst2_classification_non_distributed.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: sst2_classification_non_distributed.ipynb <sst2_classification_non_distributed.ipynb>`
+      :download:`Download Jupyter notebook: sst2_classification_non_distributed.ipynb <sst2_classification_non_distributed.ipynb>`
 
 
 .. only:: html
