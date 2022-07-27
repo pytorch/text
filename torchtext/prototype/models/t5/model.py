@@ -62,7 +62,9 @@ class T5Model(nn.Module):
         >>> t5_config = T5Conf(encoder_only=False, linear_head=True)
         >>> t5_model = T5Model(t5_config)
         >>> encoder_input = torch.randint(0, t5_config.vocab_size, (32, 512))
-        >>> out = t5_model(encoder_input)
+        >>> out = t5_model(encoder_input)['decoder_output']
+        >>> out.shape
+        >>> torch.Size([32, 1, 32128])
     """
 
     def __init__(
