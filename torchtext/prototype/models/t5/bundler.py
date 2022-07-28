@@ -39,6 +39,19 @@ class T5Bundle:
         >>> output.shape
         torch.Size([2, 1, 768])
 
+    Example - Pretrained base t5 model for generation
+        >>> import torch, torchtext
+        >>> import torch.nn.functional as F
+        >>> t5_base_generation = torchtext.prototype.models.T5_BASE_GENERATION
+        >>> transform = t5_base_generation.transform()
+        >>> input_seq = ["Hello world", "Attention rocks!"]
+        >>> model = t5_base_generation.get_model()
+        >>> model_input = transform(input_seq)
+        >>> output = model(model_input)['decoder_output']
+        >>> logits = F.log_softmax(output[:,-1], dim=-1)
+        >>> logits.shape
+        torch.Size([2, 1, 32128])
+
     Example - User-specified configuration and checkpoint
         >>> from torchtext.prototype.models import T5Conf, T5Bundle
         >>> model_weights_path = "https://download.pytorch.org/models/text/t5.base.encoder.pt"
