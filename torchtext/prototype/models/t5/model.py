@@ -11,6 +11,7 @@ from .modules import T5Stack, T5LayerNorm
 @dataclass
 class T5Conf:
     encoder_only: bool = False
+    linear_head: bool = False
     embedding_dim: int = 768
     num_attention_heads: int = 12
     num_encoder_layers: int = 12
@@ -35,7 +36,8 @@ class T5Model(nn.Module):
     Yanqi Zhou, Wei Li, and Peter J. Liu. 2020. Journal of Machine Learning Research.
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Args:
-        config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (required)
+        config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (default=False).
+        config.linear_head: Whether or not a linear layer should be used to project the output of the decoder's last layer to the vocab (default=False).
         config.embedding_dim: Number of expected features in the encoder/decoder inputs (default=768).
         config.num_attention_heads: Number of heads in the multiheadattention models (default=12).
         config.num_encoder_layers: Number of encoder layers in the encoder (default=12).
@@ -55,11 +57,12 @@ class T5Model(nn.Module):
         freeze: Indicates whether or not to freeze the model weights. (default: False)
     Examples:
         >>> from torchtext.prototype.models import T5Conf, T5Model
-        >>> t5_config = T5Conf(encoder_only=False)
+        >>> t5_config = T5Conf(encoder_only=False, linear_head=True)
         >>> t5_model = T5Model(t5_config)
-        >>> encoder_input = torch.rand((32, 10, 512))
-        >>> decoder_input = torch.rand((32, 20, 512))
-        >>> out = t5_model(encoder_input, decoder_input)
+        >>> encoder_input = torch.randint(0, t5_config.vocab_size, (32, 512))
+        >>> out = t5_model(encoder_input)['decoder_output']
+        >>> out.shape
+        torch.Size([32, 1, 32128])
     """
 
     def __init__(
@@ -73,7 +76,9 @@ class T5Model(nn.Module):
 
         assert isinstance(config, T5Conf)
 
+        self.config = config
         self.encoder_only = config.encoder_only
+        self.linear_head = config.linear_head
         self.padding_idx = config.padding_idx
         self.training = config.training
         self.dropout = config.dropout if config.training else 0.0
@@ -117,6 +122,9 @@ class T5Model(nn.Module):
             self.norm2 = T5LayerNorm(config.embedding_dim)
             self.dropout3 = nn.Dropout(self.dropout)
             self.dropout4 = nn.Dropout(self.dropout)
+
+        if config.linear_head:
+            self.lm_head = nn.Linear(config.embedding_dim, config.vocab_size, bias=False)
 
         if freeze:
             for p in self.parameters():
@@ -190,6 +198,13 @@ class T5Model(nn.Module):
             decoder_output = self.norm2(decoder_output)
             decoder_output = self.dropout4(decoder_output)
             decoder_hidden_states = decoder_hidden_states + (decoder_output,)
+
+            if self.linear_head:
+                # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
+                # same word embeddings, which is always the case in our t5 implementation.
+                # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
+                decoder_output = decoder_output * (self.config.embedding_dim ** -0.5)
+                decoder_output = self.lm_head(decoder_output)
 
             t5_output = {
                 "encoder_output": encoder_output,
