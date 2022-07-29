@@ -23,7 +23,6 @@ CNNDM Text Summarization with T5-Base model
 # Common imports
 # --------------
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -53,10 +52,10 @@ max_seq_len = 512
 t5_sp_model_path = r"https://download.pytorch.org/models/text/t5_tokenizer_base.model"
 
 transform = T5Transform(
-        sp_model_path=t5_sp_model_path,
-        max_seq_len=max_seq_len,
-        eos_idx=eos_idx,
-        padding_idx=padding_idx,
+    sp_model_path=t5_sp_model_path,
+    max_seq_len=max_seq_len,
+    eos_idx=eos_idx,
+    padding_idx=padding_idx,
 )
 
 #######################################################################
@@ -85,15 +84,18 @@ transform = T5Transform(
 #       for further instructions.
 
 from functools import partial
+
 from torch.utils.data import DataLoader
 from torchtext.datasets.cnndm import CNNDM
 
 batch_size = 5
 test_datapipe = CNNDM(split="test")
-task = 'summarize'
+task = "summarize"
+
 
 def apply_prefix(task, x):
-    return f'{task}: ' + x[0], x[1]
+    return f"{task}: " + x[0], x[1]
+
 
 test_datapipe = test_datapipe.map(partial(apply_prefix, task))
 test_datapipe = test_datapipe.batch(batch_size)
@@ -149,70 +151,71 @@ model.to(DEVICE)
 from torch import Tensor
 from torchtext.prototype.models import T5Model
 
+
 def greedy_generator(
-        encoder_tokens: Tensor,
-        eos_idx: int,
-        model: T5Model,
-    ) -> Tensor:
-        
-        # pass tokens through encoder
-        encoder_padding_mask = encoder_tokens.eq(model.padding_idx)
-        encoder_embeddings = model.dropout1(model.token_embeddings(encoder_tokens))
-        encoder_output = model.encoder(encoder_embeddings, tgt_key_padding_mask=encoder_padding_mask)[0]
+    encoder_tokens: Tensor,
+    eos_idx: int,
+    model: T5Model,
+) -> Tensor:
 
-        encoder_output = model.norm1(encoder_output)
-        encoder_output = model.dropout2(encoder_output)
-        
-        # initialize decoder input sequence; T5 uses padding index as starter index to decoder sequence
-        decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * model.padding_idx
-        
-        # mask to keep track of sequences for which the decoder has not produced an end-of-sequence token yet
-        incomplete_sentences = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long)
+    # pass tokens through encoder
+    encoder_padding_mask = encoder_tokens.eq(model.padding_idx)
+    encoder_embeddings = model.dropout1(model.token_embeddings(encoder_tokens))
+    encoder_output = model.encoder(encoder_embeddings, tgt_key_padding_mask=encoder_padding_mask)[0]
 
-        # iteratively generate output sequence until all sequences in the batch have generated the end-of-sequence token
-        for step in range(model.config.max_seq_len):
-            
-            # causal mask and padding mask for decoder sequence
-            tgt_len = decoder_tokens.shape[1]
-            decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1).bool()
-            decoder_padding_mask = decoder_tokens.eq(model.padding_idx)
-            
-            # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
-            decoder_padding_mask[:, 0] = False
-            
-            # pass decoder sequence through decoder
-            decoder_embeddings = model.dropout3(model.token_embeddings(decoder_tokens))
-            decoder_output = model.decoder(
-                decoder_embeddings,
-                memory=encoder_output,
-                tgt_mask=decoder_mask,
-                tgt_key_padding_mask=decoder_padding_mask,
-                memory_key_padding_mask=encoder_padding_mask,
-            )[0]
+    encoder_output = model.norm1(encoder_output)
+    encoder_output = model.dropout2(encoder_output)
 
-            decoder_output = model.norm2(decoder_output)
-            decoder_output = model.dropout4(decoder_output)
-            decoder_output = decoder_output * (model.config.embedding_dim ** -0.5)
-            decoder_output = model.lm_head(decoder_output)
-            
-            # greedy search for next token to add to sequence
-            probs = F.log_softmax(decoder_output[:,-1], dim=-1)
-            _, next_token = torch.topk(decoder_output[:,-1], 1)
-            
-            # ignore next tokens for sentences that are already complete
-            next_token *= incomplete_sentences
-            
-            # update incomplete_sentences to remove those that were just ended
-            incomplete_sentences = incomplete_sentences - (next_token == eos_idx).long()
-            
-            # update decoder sequences to include new tokens
-            decoder_tokens = torch.cat((decoder_tokens, next_token), 1)
-            
-            # early stop if all sentences have been ended
-            if (incomplete_sentences == 0).all():
-                break
+    # initialize decoder input sequence; T5 uses padding index as starter index to decoder sequence
+    decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * model.padding_idx
 
-        return decoder_tokens
+    # mask to keep track of sequences for which the decoder has not produced an end-of-sequence token yet
+    incomplete_sentences = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long)
+
+    # iteratively generate output sequence until all sequences in the batch have generated the end-of-sequence token
+    for step in range(model.config.max_seq_len):
+
+        # causal mask and padding mask for decoder sequence
+        tgt_len = decoder_tokens.shape[1]
+        decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1).bool()
+        decoder_padding_mask = decoder_tokens.eq(model.padding_idx)
+
+        # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
+        decoder_padding_mask[:, 0] = False
+
+        # pass decoder sequence through decoder
+        decoder_embeddings = model.dropout3(model.token_embeddings(decoder_tokens))
+        decoder_output = model.decoder(
+            decoder_embeddings,
+            memory=encoder_output,
+            tgt_mask=decoder_mask,
+            tgt_key_padding_mask=decoder_padding_mask,
+            memory_key_padding_mask=encoder_padding_mask,
+        )[0]
+
+        decoder_output = model.norm2(decoder_output)
+        decoder_output = model.dropout4(decoder_output)
+        decoder_output = decoder_output * (model.config.embedding_dim ** -0.5)
+        decoder_output = model.lm_head(decoder_output)
+
+        # greedy search for next token to add to sequence
+        probs = F.log_softmax(decoder_output[:, -1], dim=-1)
+        _, next_token = torch.topk(probs, 1)
+
+        # ignore next tokens for sentences that are already complete
+        next_token *= incomplete_sentences
+
+        # update incomplete_sentences to remove those that were just ended
+        incomplete_sentences = incomplete_sentences - (next_token == eos_idx).long()
+
+        # update decoder sequences to include new tokens
+        decoder_tokens = torch.cat((decoder_tokens, next_token), 1)
+
+        # early stop if all sentences have been ended
+        if (incomplete_sentences == 0).all():
+            break
+
+    return decoder_tokens
 
 
 #######################################################################
@@ -226,15 +229,11 @@ batch = next(iter(test_dataloader))
 input_text = batch["article"]
 model_input = transform(input_text)
 
-model_output = greedy_generator(
-    model=model,
-    encoder_tokens=model_input,
-    eos_idx=eos_idx
-)
+model_output = greedy_generator(model=model, encoder_tokens=model_input, eos_idx=eos_idx)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(batch_size):
-    
+
     print(f"Example {i+1}:\n")
     print(f"greedy prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
