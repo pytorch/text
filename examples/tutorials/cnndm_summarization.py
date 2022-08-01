@@ -245,61 +245,60 @@ for i in range(batch_size):
 #
 # ::
 #
-# Example 1:
+#    Example 1:
 #
-#   prediction: the Palestinians officially become the 123rd member of the international
-#   criminal court . the move gives the court jurisdiction over alleged crimes committed
-#   in the occupied Palestinian territory . the ICC opened a preliminary examination into
-#   the situation in the occupied territories .
+#    prediction: the Palestinians officially become the 123rd member of the international
+#    criminal court . the move gives the court jurisdiction over alleged crimes committed
+#    in the occupied Palestinian territory . the ICC opened a preliminary examination into
+#    the situation in the occupied territories .
 #
-#   target: Membership gives the ICC jurisdiction over alleged crimes committed in
-#   Palestinian territories since last June . Israel and the United States opposed the
-#   move, which could open the door to war crimes investigations against Israelis .
+#    target: Membership gives the ICC jurisdiction over alleged crimes committed in
+#    Palestinian territories since last June . Israel and the United States opposed the
+#    move, which could open the door to war crimes investigations against Israelis .
 #
 #
-#   Example 2:
+#    Example 2:
 #
-#   prediction: a stray pooch in Washington state has used up at least three of her own
+#    prediction: a stray pooch in Washington state has used up at least three of her own
 #   after being hit by a car . the dog staggers to a nearby farm, dirt-covered and
-#   emaciated, where she is found . she suffered a dislocated jaw, leg injuries and a
-#   caved-in sinus cavity .
+#    emaciated, where she is found . she suffered a dislocated jaw, leg injuries and a
+#    caved-in sinus cavity .
 #
-#   target: Theia, a bully breed mix, was apparently hit by a car, whacked with a hammer
-#   and buried in a field . "She's a true miracle dog and she deserves a good life," says
-#   Sara Mellado, who is looking for a home for Theia .
-#
-#
-#   Example 3:
-#
-#   prediction: mohammad Javad Zarif is the foreign minister of the country . he has been
-#   a key figure in securing a breakthrough in nuclear talks . he has been a hero in the
-#   international community .
-#
-#   target: Mohammad Javad Zarif has spent more time with John Kerry than any other
-#   foreign minister . He once participated in a takeover of the Iranian Consulate in San
-#   Francisco . The Iranian foreign minister tweets in English .
+#    target: Theia, a bully breed mix, was apparently hit by a car, whacked with a hammer
+#    and buried in a field . "She's a true miracle dog and she deserves a good life," says
+#    Sara Mellado, who is looking for a home for Theia .
 #
 #
-#   Example 4:
+#    Example 3:
 #
-#   prediction: five americans were monitored for three weeks after being exposed to
-#   Ebola . one of the five had a heart-related issue on Saturday and has been discharged .
-#   none of the patients developed the deadly virus .
+#    prediction: mohammad Javad Zarif is the foreign minister of the country . he has been
+#    a key figure in securing a breakthrough in nuclear talks . he has been a hero in the
+#    international community .
 #
-#   target: 17 Americans were exposed to the Ebola virus while in Sierra Leone in March .
-#   Another person was diagnosed with the disease and taken to hospital in Maryland .
-#   National Institutes of Health says the patient is in fair condition after weeks of
-#   treatment .
+#    target: Mohammad Javad Zarif has spent more time with John Kerry than any other
+#    foreign minister . He once participated in a takeover of the Iranian Consulate in San
+#    Francisco . The Iranian foreign minister tweets in English .
 #
 #
-#   Example 5:
+#    Example 4:
 #
-#   prediction: the student was identified during an investigation by campus police and
-#   the office of student affairs . he admitted to placing the noose on the tree early
-#   Wednesday morning .
+#    prediction: five americans were monitored for three weeks after being exposed to
+#    Ebola . one of the five had a heart-related issue on Saturday and has been discharged .
+#    none of the patients developed the deadly virus .
 #
-#   target: Student is no longer on Duke University campus and will face disciplinary
-#   review . School officials identified student during investigation and the person
-#   admitted to hanging the noose, Duke says . The noose, made of rope, was discovered on
-#   campus about 2 a.m.
+#    target: 17 Americans were exposed to the Ebola virus while in Sierra Leone in March .
+#    Another person was diagnosed with the disease and taken to hospital in Maryland .
+#    National Institutes of Health says the patient is in fair condition after weeks of
+#    treatment .
 #
+#
+#    Example 5:
+#
+#    prediction: the student was identified during an investigation by campus police and
+#    the office of student affairs . he admitted to placing the noose on the tree early
+#    Wednesday morning .
+#
+#    target: Student is no longer on Duke University campus and will face disciplinary
+#    review . School officials identified student during investigation and the person
+#    admitted to hanging the noose, Duke says . The noose, made of rope, was discovered on
+#    campus about 2 a.m.
