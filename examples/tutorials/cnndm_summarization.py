@@ -131,6 +131,8 @@ test_dataloader = DataLoader(test_datapipe, batch_size=None)
 # available pre-trained models, please refer to documentation at https://pytorch.org/text/main/models.html
 #
 #
+from torchtext.prototype.models import T5_BASE_GENERATION
+
 
 t5_base = T5_BASE_GENERATION
 transform = t5_base.transform()
@@ -228,6 +230,7 @@ def greedy_generator(
 batch = next(iter(test_dataloader))
 input_text = batch["article"]
 model_input = transform(input_text)
+target = batch["abstract"]
 
 model_output = greedy_generator(model=model, encoder_tokens=model_input, eos_idx=eos_idx)
 output_text = transform.decode(model_output.tolist())
