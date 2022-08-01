@@ -12,7 +12,7 @@ CNNDM Text Summarization with T5-Base model
 #
 # This tutorial demonstrates how to use a pre-trained T5 Model for text summarization on the CNN-DailyMail dataset.
 # We will demonstrate how to use the torchtext library to:
-
+#
 # 1. Build a text pre-processing pipeline for a T5 model
 # 2. Read in the CNNDM dataset and pre-process the text
 # 3. Instantiate a pre-trained T5 model with base configuration, and perform text summarization on input text
@@ -27,22 +27,24 @@ import torch.nn.functional as F
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
+
 #######################################################################
 # Data Transformation
 # -------------------
 #
 # The T5 model does not work with raw text. Instead, it requires the text to be transformed into numerical form
 # in order to perform training and inference. The following transformations are required for the T5 model:
-
+#
 # 1. Tokenize text
 # 2. Convert tokens into (integer) IDs
 # 3. Truncate the sequences to a specified maximum length
 # 4. Add end-of-sequence (EOS) and padding token IDs
-
+#
 # T5 uses a SentencePiece model for text tokenization. Below, we use a pre-trained SentencePiece model to build
-# the text pre-processing pipeline using torchtext's `T5Transform`. Note that the transform supports both
+# the text pre-processing pipeline using torchtext's T5Transform. Note that the transform supports both
 # batched and non-batched text input (i.e. one can either pass a single sentence or a list of sentences), however
 # the T5 model expects the input to be batched.
+#
 
 from torchtext.prototype.models import T5Transform
 
@@ -74,7 +76,7 @@ transform = T5Transform(
 # These datasets are built using composable torchdata datapipes and hence support standard flow-control and mapping/transformation
 # using user defined functions and transforms. Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary
 # for the model to identify the task it is performing.
-
+#
 # The CNNDM dataset has a train, validation, and test split. Below we demo on the test split.
 #
 # .. note::
@@ -113,13 +115,13 @@ test_dataloader = DataLoader(test_datapipe, batch_size=None)
 #        "abstract": x["abstract"]
 #    }
 #
-# batch_size = 5
-# test_datapipe = CNNDM(split="test")
-# task = 'summarize'
+#   batch_size = 5
+#   test_datapipe = CNNDM(split="test")
+#   task = 'summarize'
 #
-# test_datapipe = test_datapipe.batch(batch_size).rows2columnar(["article", "abstract"])
-# test_datapipe = test_datapipe.map(partial(batch_prefix, task))
-# test_dataloader = DataLoader(test_datapipe, batch_size=None)
+#   test_datapipe = test_datapipe.batch(batch_size).rows2columnar(["article", "abstract"])
+#   test_datapipe = test_datapipe.map(partial(batch_prefix, task))
+#   test_dataloader = DataLoader(test_datapipe, batch_size=None)
 #
 
 ######################################################################
@@ -127,7 +129,7 @@ test_dataloader = DataLoader(test_datapipe, batch_size=None)
 # -----------------
 #
 # torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
-# we use the pre-trained T5 model with standard base architecture to perform text summarization. For additional details on
+# we use the pre-trained T5 model with standard base configuration to perform text summarization. For additional details on
 # available pre-trained models, please refer to documentation at https://pytorch.org/text/main/models.html
 #
 #
@@ -238,7 +240,7 @@ output_text = transform.decode(model_output.tolist())
 for i in range(batch_size):
 
     print(f"Example {i+1}:\n")
-    print(f"greedy prediction: {output_text[i]}\n")
+    print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
 
 
