@@ -175,5 +175,7 @@ jobs:
           anaconda  -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/miniconda3/conda-bld/osx-arm64/*.tar.bz2 -u "pytorch-${CHANNEL}" --label main --no-progress --force
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}-${{ github.event_name == 'workflow_dispatch' }}
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}-${{ github.event_name ==
+    'workflow_dispatch' }}
   cancel-in-progress: true
