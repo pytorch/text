@@ -11,7 +11,7 @@ from .common.torchtext_test_case import TorchtextTestCase
 class TestDataUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
 
-    def test_get_tokenizer_spacy(self):
+    def test_get_tokenizer_spacy(self) -> None:
         # Test SpaCy option, and verify it properly handles punctuation.
         assert torchtext.data.get_tokenizer("spacy", language="en_core_web_sm")(str(self.TEST_STR)) == [
             "A",
@@ -26,7 +26,7 @@ class TestDataUtils(TorchtextTestCase):
             ".",
         ]
 
-    def test_get_tokenizer_moses(self):
+    def test_get_tokenizer_moses(self) -> None:
         # Test Moses option.
         # Note that internally, MosesTokenizer converts to unicode if applicable
         moses_tokenizer = torchtext.data.get_tokenizer("moses")
@@ -48,7 +48,7 @@ class TestDataUtils(TorchtextTestCase):
 
 
 class TestVocab(TorchtextTestCase):
-    def test_vectors_get_vecs(self):
+    def test_vectors_get_vecs(self) -> None:
         vec = torchtext.vocab.GloVe(name="twitter.27B", dim="25")
         self.assertEqual(vec.vectors.shape[0], len(vec))
 
@@ -64,7 +64,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(token_one_vec.shape[0], vec.dim)
         self.assertEqual(vec[tokens[0].lower()], token_one_vec)
 
-    def test_download_charngram_vectors(self):
+    def test_download_charngram_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
             vectors = torchtext.vocab.CharNGram()
@@ -83,7 +83,7 @@ class TestVocab(TorchtextTestCase):
             expected_oov_token_charngram = [-0.1070, -0.2240, -0.3043, -0.1092, 0.0953]
             self.assertEqual(vectors["OOV token"][0, :5], expected_oov_token_charngram, atol=0, rtol=10e-4)
 
-    def test_download_custom_vectors(self):
+    def test_download_custom_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
             vectors = torchtext.vocab.Vectors("wiki.simple.vec", url=torchtext.vocab.FastText.url_base.format("simple"))
@@ -99,7 +99,7 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(vectors["<unk>"], torch.zeros(300))
 
-    def test_download_fasttext_vectors(self):
+    def test_download_fasttext_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
             vectors = torchtext.vocab.FastText(language="simple")
@@ -116,7 +116,7 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(vectors["<unk>"], torch.zeros(300))
             self.assertEqual(vectors["OOV token"], torch.zeros(300))
 
-    def test_download_glove_vectors(self):
+    def test_download_glove_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.
         vectors = torchtext.vocab.GloVe(name="twitter.27B", dim="25")
         # The first 5 entries in each vector.
@@ -131,7 +131,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(vectors["<unk>"], torch.zeros(25))
         self.assertEqual(vectors["OOV token"], torch.zeros(25))
 
-    def test_vectors_custom_cache(self):
+    def test_vectors_custom_cache(self) -> None:
         vector_cache = os.path.join("/tmp", "vector_cache")
         # Build a vocab and get vectors twice to test caching.
         for i in range(2):

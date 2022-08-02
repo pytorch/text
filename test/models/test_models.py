@@ -9,7 +9,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestModels(TorchtextTestCase):
-    def test_roberta_bundler_build_model(self):
+    def test_roberta_bundler_build_model(self) -> None:
         from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaModel, RobertaBundle
 
         dummy_encoder_conf = RobertaEncoderConf(
@@ -53,7 +53,7 @@ class TestModels(TorchtextTestCase):
         )
         self.assertEqual(model.state_dict(), dummy_classifier.state_dict())
 
-    def test_roberta_bundler_train(self):
+    def test_roberta_bundler_train(self) -> None:
         from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaModel, RobertaBundle
 
         dummy_encoder_conf = RobertaEncoderConf(
@@ -119,7 +119,7 @@ class TestModels(TorchtextTestCase):
             "The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights."
         )
 
-    def test_roberta_bundler_raise_checkpoint(self):
+    def test_roberta_bundler_raise_checkpoint(self) -> None:
         from torchtext.models import RobertaClassificationHead, RobertaEncoderConf, RobertaBundle
 
         with self.assertRaises(TypeError):
@@ -134,7 +134,7 @@ class TestModels(TorchtextTestCase):
                 checkpoint=1,
             )
 
-    def test_roberta_bundler_encode_conf_property(self):
+    def test_roberta_bundler_encode_conf_property(self) -> None:
         from torchtext.models import RobertaEncoderConf, RobertaBundle
 
         dummy_encoder_conf = RobertaEncoderConf(
