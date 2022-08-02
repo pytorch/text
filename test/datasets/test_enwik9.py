@@ -56,7 +56,7 @@ class TestEnWik9(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    def test_enwik9(self):
+    def test_enwik9(self) -> None:
         dataset = EnWik9(root=self.root_dir)
 
         samples = list(dataset)

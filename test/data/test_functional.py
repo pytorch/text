@@ -19,7 +19,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestFunctional(TorchtextTestCase):
-    def test_generate_sp_model(self):
+    def test_generate_sp_model(self) -> None:
         """
         Test the function to train a sentencepiece tokenizer.
         """
@@ -42,7 +42,7 @@ class TestFunctional(TorchtextTestCase):
             sp_model = load_sp_model(model_file)
             self.assertEqual(sp_model.GetPieceSize(), 23456)
 
-    def test_sentencepiece_numericalizer(self):
+    def test_sentencepiece_numericalizer(self) -> None:
         test_sample = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         model_path = get_asset_path("spm_example.model")
         sp_model = load_sp_model(model_path)
@@ -74,7 +74,7 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(list(spm_generator([test_sample]))[0], ref_results)
 
-    def test_sentencepiece_tokenizer(self):
+    def test_sentencepiece_tokenizer(self) -> None:
         test_sample = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         model_path = get_asset_path("spm_example.model")
         sp_model = load_sp_model(open(model_path, "rb"))
@@ -106,19 +106,19 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(list(spm_generator([test_sample]))[0], ref_results)
 
-    def test_sentencepiece_unsupported_input_type(self):
+    def test_sentencepiece_unsupported_input_type(self) -> None:
         with self.assertRaisesRegex(
             TypeError, "Unsupported type for spm argument: dict. " "Supported types are: str, io.BufferedReader"
         ):
             load_sp_model(dict())
 
-    def test_custom_replace(self):
+    def test_custom_replace(self) -> None:
         custom_replace_transform = custom_replace([(r"S", "s"), (r"\s+", " ")])
         test_sample = ["test     cuStom   replace", "with   uSer   instruction"]
         ref_results = ["test custom replace", "with user instruction"]
         self.assertEqual(list(custom_replace_transform(test_sample)), ref_results)
 
-    def test_simple_space_split(self):
+    def test_simple_space_split(self) -> None:
         test_sample = ["test simple space split function"]
         ref_results = ["test", "simple", "space", "split", "function"]
         self.assertEqual(list(simple_space_split(test_sample))[0], ref_results)
@@ -143,14 +143,14 @@ class ScriptableSP(torch.jit.ScriptModule):
 
 
 class TestScriptableSP(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         model_path = get_asset_path("spm_example.model")
         with tempfile.TemporaryDirectory() as dir_name:
             jit_model_path = os.path.join(dir_name, "spm_example.model")
             torch.jit.script(ScriptableSP(model_path)).save(jit_model_path)
             self.model = torch.jit.load(jit_model_path)
 
-    def test_encode(self):
+    def test_encode(self) -> None:
         input = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         expected = [
             "▁Sent",
@@ -177,7 +177,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode(input)
         self.assertEqual(expected, output)
 
-    def test_encode_as_ids(self):
+    def test_encode_as_ids(self) -> None:
         input = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         expected = [
             15340,
@@ -204,7 +204,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode_as_ids(input)
         self.assertEqual(expected, output)
 
-    def test_encode_as_pieces(self):
+    def test_encode_as_pieces(self) -> None:
         input = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         expected = [
             "\u2581Sent",
