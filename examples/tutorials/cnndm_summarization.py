@@ -149,7 +149,9 @@ model.to(DEVICE)
 #
 # We can define a sequence generator to produce an output sequence based on the input sequence provided. This calls on the
 # model's encoder and decoder, and iteratively expands the decoded sequences until the end-of-sequence token is generated
-# for all sequences in the batch. The `generate` method shown below uses a beam search to generate the sequences.
+# for all sequences in the batch. The `generate` method shown below uses a beam search to generate the sequences. Larger
+# beam sizes can result in better generation at the cost of computational complexity, and a beam size of 1 is equivalent to
+# a greedy decoder.
 #
 
 from torch import Tensor
@@ -288,7 +290,8 @@ def generate(encoder_tokens: Tensor, eos_idx: int, model: T5Model, beam_size: in
 # Generate Summaries
 # ------------------
 #
-# Finally we put all of the components together to generate summaries on the first batch of articles in the CNNDM test set.
+# Finally we put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
+# using a beam size of 3.
 #
 
 batch = next(iter(test_dataloader))
