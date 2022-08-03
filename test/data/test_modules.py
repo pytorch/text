@@ -9,7 +9,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestModels(TorchtextTestCase):
-    def test_multiheadattention(self):
+    def test_multiheadattention(self) -> None:
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
         in_proj = InProjContainer(
@@ -64,7 +64,7 @@ class TestModels(TorchtextTestCase):
         attn_weights = attn_weights.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
         self.assertEqual(attn_weights, torch_mha_weights)
 
-    def test_mha_batch_first(self):
+    def test_mha_batch_first(self) -> None:
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
         in_proj = InProjContainer(
@@ -121,7 +121,7 @@ class TestModels(TorchtextTestCase):
         attn_weights_1st = attn_weights_1st.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
         self.assertEqual(attn_weights_1st, torch_mha_weights)
 
-    def test_broadcast_scaled_dot_product(self):
+    def test_broadcast_scaled_dot_product(self) -> None:
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         SDP = ScaledDotProduct()
         query = torch.rand((tgt_len, 1, embed_dim))
@@ -251,7 +251,7 @@ class TestModels(TorchtextTestCase):
                 attn_mask=attn_mask.expand(*attn_mask_size) if attn_mask_size else attn_mask,
             )
 
-    def test_sdp_batch_first(self):
+    def test_sdp_batch_first(self) -> None:
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         SDP = ScaledDotProduct(batch_first=True)
         query = torch.rand((1, tgt_len, embed_dim))
@@ -267,7 +267,7 @@ class TestModels(TorchtextTestCase):
 
         self.assertEqual(list(sdp_attn_output.size()), [bsz * nhead, tgt_len, embed_dim])
 
-    def test_generate_square_subsequent_mask(self):
+    def test_generate_square_subsequent_mask(self) -> None:
         configs = [(3, 2), (1, 3), (1, 1), (3, 1), (2, 3)]
         for nbatch, sz in configs:
             out = generate_square_subsequent_mask(nbatch, sz)

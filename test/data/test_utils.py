@@ -6,12 +6,12 @@ from ..common.torchtext_test_case import TorchtextTestCase
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
 
-    def test_get_tokenizer_split(self):
+    def test_get_tokenizer_split(self) -> None:
         # Test the default case with str.split
         assert get_tokenizer(str.split) == str.split
         assert get_tokenizer(str.split)(self.TEST_STR) == str.split(self.TEST_STR)
 
-    def test_get_tokenizer_toktokt(self):
+    def test_get_tokenizer_toktokt(self) -> None:
         # Test Toktok option. Test strings taken from NLTK doctests.
         # Note that internally, MosesTokenizer converts to unicode if applicable
         toktok_tokenizer = get_tokenizer("toktok")

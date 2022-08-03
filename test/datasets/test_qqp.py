@@ -50,7 +50,7 @@ class TestQQP(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    def test_qqp(self):
+    def test_qqp(self) -> None:
         dataset = QQP(root=self.root_dir)
 
         samples = list(dataset)

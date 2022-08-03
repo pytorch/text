@@ -4,7 +4,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestUtils(TorchtextTestCase):
-    def test_bleu_score(self):
+    def test_bleu_score(self) -> None:
         # Full match
         candidate = [["My", "full", "pytorch", "test"]]
         refs = [[["My", "full", "pytorch", "test"], ["Completely", "Different"]]]

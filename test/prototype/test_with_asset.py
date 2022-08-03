@@ -28,7 +28,7 @@ def _batch_func(spm_processor, data):
 
 
 class TestTransformsWithAsset(TorchtextTestCase):
-    def test_vocab_transform(self):
+    def test_vocab_transform(self) -> None:
         asset_name = "vocab_test2.txt"
         asset_path = get_asset_path(asset_name)
         vocab_transform = VocabTransform(load_vocab_from_file(asset_path))
@@ -36,7 +36,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         jit_vocab_transform = torch.jit.script(vocab_transform)
         self.assertEqual(jit_vocab_transform(["of", "that", "new", "that"]), [7, 18, 24, 18])
 
-    def test_errors_vectors_python(self):
+    def test_errors_vectors_python(self) -> None:
         tokens = []
         vecs = torch.empty(0, dtype=torch.float)
 
@@ -68,7 +68,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
                 # incorrect dim
                 GloVe(name="6B", dim=500, root=dir_name, validate_file=False)
 
-    def test_glove(self):
+    def test_glove(self) -> None:
         # copy the asset file into the expected download location
         # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
         asset_name = "glove.840B.300d.zip"
@@ -90,7 +90,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
                 self.assertEqual(vectors_obj[word][:3], expected_glove[word])
                 self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
 
-    def test_glove_different_dims(self):
+    def test_glove_different_dims(self) -> None:
         # copy the asset file into the expected download location
         # note that this is just a zip file with 1 line txt files used to test that the
         # correct files are being loaded
@@ -126,7 +126,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
                 for word in expected_glove.keys():
                     self.assertEqual(vectors_obj[word][:3], expected_glove[word])
 
-    def test_vocab_from_file(self):
+    def test_vocab_from_file(self) -> None:
         asset_name = "vocab_test.txt"
         asset_path = get_asset_path(asset_name)
         v = load_vocab_from_file(asset_path)
@@ -135,7 +135,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-    def test_vocab_from_raw_text_file(self):
+    def test_vocab_from_raw_text_file(self) -> None:
         asset_name = "vocab_raw_text_test.txt"
         asset_path = get_asset_path(asset_name)
 
@@ -196,7 +196,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
 
-    def test_builtin_pretrained_sentencepiece_processor(self):
+    def test_builtin_pretrained_sentencepiece_processor(self) -> None:
         sp_model_path = download_from_url(PRETRAINED_SP_MODEL["text_unigram_25000"])
         spm_tokenizer = sentencepiece_tokenizer(sp_model_path)
         _path = os.path.join(self.project_root, ".data", "text_unigram_25000.model")
@@ -215,7 +215,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
-    def test_sentencepiece_with_dataloader(self):
+    def test_sentencepiece_with_dataloader(self) -> None:
         example_strings = ["the pretrained spm model names"] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
 
@@ -227,7 +227,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         for item in dataloader:
             self.assertEqual(item, ref_results)
 
-    def test_vectors_from_file(self):
+    def test_vectors_from_file(self) -> None:
         asset_name = "vectors_test.csv"
         asset_path = get_asset_path(asset_name)
         vectors_obj = load_vectors_from_file_path(asset_path)
@@ -240,7 +240,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(vectors_obj["b"], expected_tensorB)
         self.assertEqual(vectors_obj["not_in_it"], expected_unk_tensor)
 
-    def test_fast_text(self):
+    def test_fast_text(self) -> None:
         # copy the asset file into the expected download location
         # note that this is just a file with the first 100 entries of the FastText english dataset
         asset_name = "wiki.en.vec"

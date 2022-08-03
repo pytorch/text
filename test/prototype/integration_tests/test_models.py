@@ -27,17 +27,17 @@ class TestT5(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
-    def test_t5_base_encoder_model(self):
+    def test_t5_base_encoder_model(self) -> None:
         expected_asset_name = "t5.base.encoder.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         self._t5_model(t5_model=T5_BASE_ENCODER, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    def test_t5_base_model(self):
+    def test_t5_base_model(self) -> None:
         expected_asset_name = "t5.base.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         self._t5_model(t5_model=T5_BASE, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    def test_t5_base_generation_model(self):
+    def test_t5_base_generation_model(self) -> None:
         expected_asset_name = "t5.base.generation.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         self._t5_model(t5_model=T5_BASE_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text)

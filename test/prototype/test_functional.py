@@ -12,7 +12,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 class TestFunctional(TorchtextTestCase):
     # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_BasicEnglishNormalize(self):
+    def test_BasicEnglishNormalize(self) -> None:
         test_sample = "'\".<br />,()!?;:   Basic English Normalization for a Line of Text   '\".<br />,()!?;:"
         ref_results = [
             "'",
@@ -57,7 +57,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
-    def test_basicEnglishNormalize_load_and_save(self):
+    def test_basicEnglishNormalize_load_and_save(self) -> None:
         test_sample = "'\".<br />,()!?;:   Basic English Normalization for a Line of Text   '\".<br />,()!?;:"
         ref_results = [
             "'",

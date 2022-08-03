@@ -18,7 +18,7 @@ from ..common.parameterized_utils import nested_params
 
 
 class TestTransforms(TorchtextTestCase):
-    def test_sentencepiece_processor(self):
+    def test_sentencepiece_processor(self) -> None:
         model_path = get_asset_path("spm_example.model")
         spm_transform = sentencepiece_processor(model_path)
         jit_spm_transform = torch.jit.script(spm_transform)
@@ -50,7 +50,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(spm_transform.decode(ref_results), test_sample)
         self.assertEqual(jit_spm_transform.decode(ref_results), test_sample)
 
-    def test_sentencepiece_tokenizer(self):
+    def test_sentencepiece_tokenizer(self) -> None:
         model_path = get_asset_path("spm_example.model")
         spm_tokenizer = sentencepiece_tokenizer(model_path)
         jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
@@ -83,7 +83,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
-    def test_vector_transform(self):
+    def test_vector_transform(self) -> None:
         asset_name = "wiki.en.vec"
         asset_path = get_asset_path(asset_name)
 
@@ -99,7 +99,7 @@ class TestTransforms(TorchtextTestCase):
             self.assertEqual(vector_transform(["the", "world"])[:, 0:3], expected_fasttext_simple_en)
             self.assertEqual(jit_vector_transform(["the", "world"])[:, 0:3], expected_fasttext_simple_en)
 
-    def test_sentencepiece_load_and_save(self):
+    def test_sentencepiece_load_and_save(self) -> None:
         model_path = get_asset_path("spm_example.model")
         input = "SentencePiece is an unsupervised text tokenizer and detokenizer"
         expected = [
@@ -241,7 +241,7 @@ class TestMaskTransform(TorchtextTestCase):
                 exp_tokens = torch.tensor([[6, 5, 5, 5, 5], [6, 5, 5, 4, 4]])
                 self.assertEqual(exp_tokens, masked_tokens)
 
-    def test_mask_transform_mask_bos(self):
+    def test_mask_transform_mask_bos(self) -> None:
         # MaskTransform has boolean parameter mask_bos to indicate whether or not [BOS] tokens
         # should be eligible for replacement. The above tests of MaskTransform are under default value
         # mask_bos = False. Here we test the case where mask_bos = True

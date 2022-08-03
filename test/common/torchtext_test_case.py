@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class TorchtextTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         logging.basicConfig(format=("%(asctime)s - %(levelname)s - " "%(name)s - %(message)s"), level=logging.INFO)
         # Directory where everything temporary and test-related is written
         self.project_root = os.path.abspath(
@@ -28,7 +28,7 @@ class TorchtextTestCase(TestCase):
         self.test_dataset_splitting_path = os.path.join(self.test_dir, "test_dataset_split")
         self.test_nested_key_json_dataset_path = os.path.join(self.test_dir, "test_nested_key_json")
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         try:
             shutil.rmtree(self.test_dir)
         except:
@@ -68,7 +68,7 @@ class TorchtextTestCase(TestCase):
                 else:
                     raise ValueError("Invalid format {}".format(data_format))
 
-    def write_test_nested_key_json_dataset(self):
+    def write_test_nested_key_json_dataset(self) -> None:
         """
         Used only to test nested key parsing of Example.fromJSON()
         """
@@ -91,7 +91,7 @@ class TorchtextTestCase(TestCase):
             for example in dict_dataset:
                 test_nested_key_json_dataset_file.write(json.dumps(example) + "\n")
 
-    def write_test_numerical_features_dataset(self):
+    def write_test_numerical_features_dataset(self) -> None:
         with open(self.test_numerical_features_dataset_path, "w") as test_numerical_features_dataset_file:
             test_numerical_features_dataset_file.write("0.1\t1\tteststring1\n")
             test_numerical_features_dataset_file.write("0.5\t12\tteststring2\n")

@@ -6,7 +6,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestGPT2BPETokenizer(TorchtextTestCase):
-    def test_gpt2_bpe_pre_tokenizer(self):
+    def test_gpt2_bpe_pre_tokenizer(self) -> None:
         # Regex pattern for GPT-2 BPE which includes the negative lookahead
         # Reference: https://github.com/pytorch/fairseq/blob/main/fairseq/data/encoders/gpt2_bpe_utils.py#L69
         gpt2_bpe_pattern = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
