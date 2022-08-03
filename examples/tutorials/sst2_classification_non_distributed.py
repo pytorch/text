@@ -40,7 +40,7 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 # 2. Convert tokens into (integer) IDs
 # 3. Add any special tokens IDs
 #
-# XLM-R uses sentencepiece model for text tokenization. Below, we use pre-trained sentencepiepce
+# XLM-R uses sentencepiece model for text tokenization. Below, we use pre-trained sentencepiece
 # model along with corresponding vocabulary to build text pre-processing pipeline using torchtext's transforms.
 # The transforms are pipelined using :py:func:`torchtext.transforms.Sequential` which is similar to :py:func:`torch.nn.Sequential`
 # but is torchscriptable. Note that the transforms support both batched and non-batched text inputs i.e, one

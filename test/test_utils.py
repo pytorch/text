@@ -18,7 +18,7 @@ def conditional_remove(f):
 
 
 class TestUtils(TorchtextTestCase):
-    def test_download_extract_tar(self):
+    def test_download_extract_tar(self) -> None:
         # create root directory for downloading data
         root = os.path.abspath(".data")
         if not os.path.exists(root):
@@ -46,7 +46,7 @@ class TestUtils(TorchtextTestCase):
             conditional_remove(f)
         conditional_remove(archive_path)
 
-    def test_download_extract_gz(self):
+    def test_download_extract_gz(self) -> None:
         # create root directory for downloading data
         root = os.path.abspath(".data")
         if not os.path.exists(root):
@@ -74,7 +74,7 @@ class TestUtils(TorchtextTestCase):
             conditional_remove(f)
         conditional_remove(archive_path)
 
-    def test_download_extract_zip(self):
+    def test_download_extract_zip(self) -> None:
         # create root directory for downloading data
         root = os.path.abspath(".data")
         if not os.path.exists(root):
@@ -110,7 +110,7 @@ class TestUtils(TorchtextTestCase):
         os.rmdir(os.path.join(root, "en-ud-v2"))
         conditional_remove(archive_path)
 
-    def test_no_download(self):
+    def test_no_download(self) -> None:
         asset_name = "glove.840B.300d.zip"
         asset_path = get_asset_path(asset_name)
         root = os.path.abspath(".data")
@@ -122,7 +122,7 @@ class TestUtils(TorchtextTestCase):
         self.assertEqual(file_path, data_path)
         conditional_remove(data_path)
 
-    def test_download_extract_to_path(self):
+    def test_download_extract_to_path(self) -> None:
         # create root directory for downloading data
         root = os.path.abspath(".data")
         if not os.path.exists(root):
@@ -156,7 +156,7 @@ class TestUtils(TorchtextTestCase):
         conditional_remove(archive_path)
 
     @unittest.skip("Download temp. slow.")
-    def test_extract_non_tar_zip(self):
+    def test_extract_non_tar_zip(self) -> None:
         # create root directory for downloading data
         root = os.path.abspath(".data")
         if not os.path.exists(root):

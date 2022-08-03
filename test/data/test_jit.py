@@ -6,7 +6,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestJIT(TorchtextTestCase):
-    def test_torchscript_multiheadattention(self):
+    def test_torchscript_multiheadattention(self) -> None:
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention models
         in_proj_container = InProjContainer(

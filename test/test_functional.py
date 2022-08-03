@@ -25,7 +25,7 @@ class TestFunctional(TorchtextTestCase):
         expected = torch.tensor(expected_list, dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
-    def test_to_tensor_assert_raises(self):
+    def test_to_tensor_assert_raises(self) -> None:
         """test raise type error if input provided is not in Union[List[int],List[List[int]]]"""
         with self.assertRaises(TypeError):
             functional.to_tensor("test")
@@ -50,7 +50,7 @@ class TestFunctional(TorchtextTestCase):
         actual = func(inputs, max_seq_len=max_seq_len)
         self.assertEqual(actual, expected)
 
-    def test_truncate_assert_raises(self):
+    def test_truncate_assert_raises(self) -> None:
         """test raise type error if input provided is not in Union[List[Union[str, int]], List[List[Union[str, int]]]]"""
         with self.assertRaises(TypeError):
             functional.truncate("test", max_seq_len=2)

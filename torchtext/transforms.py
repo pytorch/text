@@ -58,7 +58,7 @@ class SentencePieceTokenizer(Module):
         :param input: Input sentence or list of sentences on which to apply tokenizer.
         :type input: Union[str, List[str]]
         :return: tokenized text
-        :rtype: Union[List[str], List[List(str)]]
+        :rtype: Union[List[str], List[List[str]]]
         """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
