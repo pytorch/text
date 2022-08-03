@@ -1,6 +1,6 @@
 """
-CNNDM Text Summarization with T5-Base model
-=======================================================
+T5-BASE MODEL FOR SUMMARIZATION, SENTIMENT CLASSIFICATION, AND TRANSLATION
+==========================================================================
 
 **Author**: `Pendo Abbo <pabbo@fb.com>`__
 
@@ -10,12 +10,13 @@ CNNDM Text Summarization with T5-Base model
 # Overview
 # --------
 #
-# This tutorial demonstrates how to use a pre-trained T5 Model for text summarization on the CNN-DailyMail dataset.
-# We will demonstrate how to use the torchtext library to:
+# This tutorial demonstrates how to use a pre-trained T5 Model for summarization, sentiment classification, and
+# translation tasks. We will demonstrate how to use the torchtext library to:
 #
 # 1. Build a text pre-processing pipeline for a T5 model
-# 2. Read in the CNNDM dataset and pre-process the text
-# 3. Instantiate a pre-trained T5 model with base configuration, and perform text summarization on input text
+# 2. Instantiate a pre-trained T5 model with base configuration
+# 3. Read in the CNNDM, IMDB, and Multi30k datasets and pre-process their texts in preparation for the model
+# 4. Perform text summarization, sentiment classification, and translation
 #
 #
 
@@ -69,60 +70,6 @@ transform = T5Transform(
 #   transform = T5_BASE_GENERATION.transform()
 #
 
-#######################################################################
-# Dataset
-# -------
-# torchtext provides several standard NLP datasets. For a complete list, refer to the documentation at https://pytorch.org/text/stable/datasets.html.
-# These datasets are built using composable torchdata datapipes and hence support standard flow-control and mapping/transformation
-# using user defined functions and transforms. Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary
-# for the model to identify the task it is performing.
-#
-# The CNNDM dataset has a train, validation, and test split. Below we demo on the test split.
-#
-# .. note::
-#       Using datapipes is still currently subject to a few caveats. If you wish
-#       to extend this example to include shuffling, multi-processing, or
-#       distributed learning, please see :ref:`this note <datapipes_warnings>`
-#       for further instructions.
-
-from functools import partial
-
-from torch.utils.data import DataLoader
-from torchtext.datasets.cnndm import CNNDM
-
-batch_size = 5
-test_datapipe = CNNDM(split="test")
-task = "summarize"
-
-
-def apply_prefix(task, x):
-    return f"{task}: " + x[0], x[1]
-
-
-test_datapipe = test_datapipe.map(partial(apply_prefix, task))
-test_datapipe = test_datapipe.batch(batch_size)
-test_datapipe = test_datapipe.rows2columnar(["article", "abstract"])
-test_dataloader = DataLoader(test_datapipe, batch_size=None)
-
-#######################################################################
-# Alternately we can also use batched API (i.e apply the prefix on the whole batch)
-#
-# ::
-#
-#   def batch_prefix(task, x):
-#    return {
-#        "article": [f'{task}: ' + y for y in x["article"]],
-#        "abstract": x["abstract"]
-#    }
-#
-#   batch_size = 5
-#   test_datapipe = CNNDM(split="test")
-#   task = 'summarize'
-#
-#   test_datapipe = test_datapipe.batch(batch_size).rows2columnar(["article", "abstract"])
-#   test_datapipe = test_datapipe.map(partial(batch_prefix, task))
-#   test_dataloader = DataLoader(test_datapipe, batch_size=None)
-#
 
 ######################################################################
 # Model Preparation
@@ -287,14 +234,118 @@ def generate(encoder_tokens: Tensor, eos_idx: int, model: T5Model, beam_size: in
 
 
 #######################################################################
+# Datasets
+# --------
+# torchtext provides several standard NLP datasets. For a complete list, refer to the documentation
+# at https://pytorch.org/text/stable/datasets.html. These datasets are built using composable torchdata
+# datapipes and hence support standard flow-control and mapping/transformation using user defined
+# functions and transforms.
+#
+# Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
+# model to indentify the task it is performing. The CNNDM dataset has a train, validation, and test
+# split. Below we demo on the test split.
+#
+# The T5 model uses the prefix "summarize" for text summarization. For more information on task
+# prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.10683.pdf
+#
+# .. note::
+#       Using datapipes is still currently subject to a few caveats. If you wish
+#       to extend this example to include shuffling, multi-processing, or
+#       distributed learning, please see :ref:`this note <datapipes_warnings>`
+#       for further instructions.
+
+from functools import partial
+
+from torch.utils.data import DataLoader
+from torchtext.datasets.cnndm import CNNDM
+
+batch_size = 5
+cnndm_datapipe = CNNDM(split="test")
+task = "summarize"
+
+
+def apply_prefix(task, x):
+    return f"{task}: " + x[0], x[1]
+
+
+cnndm_datapipe = cnndm_datapipe.map(partial(apply_prefix, task))
+cnndm_datapipe = cnndm_datapipe.batch(batch_size)
+cnndm_datapipe = cnndm_datapipe.rows2columnar(["article", "abstract"])
+cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
+
+#######################################################################
+# Alternately we can also use batched API (i.e apply the prefix on the whole batch)
+#
+# ::
+#
+#   def batch_prefix(task, x):
+#    return {
+#        "article": [f'{task}: ' + y for y in x["article"]],
+#        "abstract": x["abstract"]
+#    }
+#
+#   batch_size = 5
+#   cnndm_datapipe = CNNDM(split="test")
+#   task = 'summarize'
+#
+#   cnndm_datapipe = cnndm_datapipe.batch(batch_size).rows2columnar(["article", "abstract"])
+#   cnndm_datapipe = cnndm_datapipe.map(partial(batch_prefix, task))
+#   cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
+#
+
+#######################################################################
+# We can also load the IMDB dataset, which will be used to demonstrate sentiment classification using the T5 model.
+# This dataset has a train and test split. Below we demo on the test split.
+#
+# The T5 model was trained on the SST2 dataset (also available in torchtext) for sentiment classification using the
+# prefix "sst2 sentence". Therefore, we will use this prefix to perform sentiment classification on the IMDB dataset.
+#
+
+from torchtext.datasets import IMDB
+
+batch_size = 3
+imdb_datapipe = IMDB(split="test")
+task = "sst2 sentence"
+labels = {"neg": "negative", "pos": "positive"}
+
+
+def process_labels(labels, x):
+    return x[1], labels[x[0]]
+
+
+imdb_datapipe = imdb_datapipe.map(partial(process_labels, labels))
+imdb_datapipe = imdb_datapipe.map(partial(apply_prefix, task))
+imdb_datapipe = imdb_datapipe.batch(batch_size)
+imdb_datapipe = imdb_datapipe.rows2columnar(["text", "label"])
+imdb_dataloader = DataLoader(imdb_datapipe, batch_size=None)
+
+#######################################################################
+# Finally, we can also load the Multi30k dataset to demonstrate English to German translation using the T5 model.
+# This dataset has a train, validation, and test split. Below we demo on the test split.
+#
+# The T5 model uses the prefix "translate English to German" for this task.
+
+from torchtext.datasets import Multi30k
+
+batch_size = 5
+language_pair = ("en", "de")
+multi_datapipe = Multi30k(split="test", language_pair=language_pair)
+task = "translate English to German"
+
+multi_datapipe = multi_datapipe.map(partial(apply_prefix, task))
+multi_datapipe = multi_datapipe.batch(batch_size)
+multi_datapipe = multi_datapipe.rows2columnar(["english", "german"])
+multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
+
+#######################################################################
 # Generate Summaries
 # ------------------
 #
-# Finally we put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
+# We can put all of the components together the generate summaries on the first batch of articles in the CNNDM test set
 # using a beam size of 3.
 #
 
-batch = next(iter(test_dataloader))
+batch = next(iter(cnndm_dataloader))
 input_text = batch["article"]
 model_input = transform(input_text)
 target = batch["abstract"]
@@ -311,8 +362,8 @@ for i in range(batch_size):
 
 
 #######################################################################
-# Output
-# ------
+# Summarization Output
+# --------------------
 #
 # ::
 #
@@ -374,3 +425,174 @@ for i in range(batch_size):
 #    review . School officials identified student during investigation and the person
 #    admitted to hanging the noose, Duke says . The noose, made of rope, was discovered on
 #    campus about 2 a.m.
+#
+
+
+#######################################################################
+# Generate Sentiment Classifications
+# ----------------------------------
+#
+# Similarly, we can now use the model to generate sentiment classifications on the first batch of reviews from the IMDB test set
+# using a beam size of 1.
+#
+
+batch = next(iter(imdb_dataloader))
+input_text = batch["text"]
+model_input = transform(input_text)
+target = batch["label"]
+beam_size = 1
+
+model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+output_text = transform.decode(model_output.tolist())
+
+for i in range(batch_size):
+
+    print(f"Example {i+1}:\n")
+    print(f"input_text: {input_text[i]}\n")
+    print(f"prediction: {output_text[i]}\n")
+    print(f"target: {target[i]}\n\n")
+
+#######################################################################
+# Sentiment Output
+# ----------------
+#
+# ::
+#
+#    Example 1:
+#
+#    input_text: sst2 sentence: I love sci-fi and am willing to put up with a lot. Sci-fi
+#    movies/TV are usually underfunded, under-appreciated and misunderstood. I tried to like
+#    this, I really did, but it is to good TV sci-fi as Babylon 5 is to Star Trek (the original).
+#    Silly prosthetics, cheap cardboard sets, stilted dialogues, CG that doesn't match the
+#    background, and painfully one-dimensional characters cannot be overcome with a 'sci-fi'
+#    setting. (I'm sure there are those of you out there who think Babylon 5 is good sci-fi TV.
+#    It's not. It's clichéd and uninspiring.) While US viewers might like emotion and character
+#    development, sci-fi is a genre that does not take itself seriously (cf. Star Trek). It may
+#    treat important issues, yet not as a serious philosophy. It's really difficult to care about
+#    the characters here as they are not simply foolish, just missing a spark of life. Their
+#    actions and reactions are wooden and predictable, often painful to watch. The makers of Earth
+#    KNOW it's rubbish as they have to always say "Gene Roddenberry's Earth..." otherwise people
+#    would not continue watching. Roddenberry's ashes must be turning in their orbit as this dull,
+#    cheap, poorly edited (watching it without advert breaks really brings this home) trudging
+#    Trabant of a show lumbers into space. Spoiler. So, kill off a main character. And then bring
+#    him back as another actor. Jeeez! Dallas all over again.
+#
+#    prediction: negative
+#
+#    target: negative
+#
+#
+#    Example 2:
+#
+#    input_text: sst2 sentence: Worth the entertainment value of a rental, especially if you like
+#    action movies. This one features the usual car chases, fights with the great Van Damme kick
+#    style, shooting battles with the 40 shell load shotgun, and even terrorist style bombs. All
+#    of this is entertaining and competently handled but there is nothing that really blows you
+#    away if you've seen your share before.<br /><br />The plot is made interesting by the
+#    inclusion of a rabbit, which is clever but hardly profound. Many of the characters are
+#    heavily stereotyped -- the angry veterans, the terrified illegal aliens, the crooked cops,
+#    the indifferent feds, the bitchy tough lady station head, the crooked politician, the fat
+#    federale who looks like he was typecast as the Mexican in a Hollywood movie from the 1940s.
+#    All passably acted but again nothing special.<br /><br />I thought the main villains were
+#    pretty well done and fairly well acted. By the end of the movie you certainly knew who the
+#    good guys were and weren't. There was an emotional lift as the really bad ones got their just
+#    deserts. Very simplistic, but then you weren't expecting Hamlet, right? The only thing I found
+#    really annoying was the constant cuts to VDs daughter during the last fight scene.<br /><br />
+#    Not bad. Not good. Passable 4.
+#
+#    prediction: negative
+#
+#    target: negative
+#
+#
+#    Example 3:
+#
+#    input_text: sst2 sentence: its a totally average film with a few semi-alright action sequences
+#    that make the plot seem a little better and remind the viewer of the classic van dam films.
+#    parts of the plot don't make sense and seem to be added in to use up time. the end plot is that
+#    of a very basic type that doesn't leave the viewer guessing and any twists are obvious from the
+#    beginning. the end scene with the flask backs don't make sense as they are added in and seem to
+#    have little relevance to the history of van dam's character. not really worth watching again,
+#    bit disappointed in the end production, even though it is apparent it was shot on a low budget
+#    certain shots and sections in the film are of poor directed quality
+#
+#    prediction: negative
+#
+#    target: negative
+#
+
+
+#######################################################################
+# Generate Translations
+# ---------------------
+#
+# Similarly, we can now use the model to generate sentiment classification on the first batch of reviews from the IMDB test set
+# using a beam size of 4.
+#
+
+batch = next(iter(multi_dataloader))
+input_text = batch["english"]
+model_input = transform(input_text)
+target = batch["german"]
+beam_size = 4
+
+model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+output_text = transform.decode(model_output.tolist())
+
+for i in range(batch_size):
+
+    print(f"Example {i+1}:\n")
+    print(f"input_text: {input_text[i]}\n")
+    print(f"prediction: {output_text[i]}\n")
+    print(f"target: {target[i]}\n\n")
+
+#######################################################################
+# Translation Output
+# ------------------
+#
+# ::
+#
+#    Example 1:
+#
+#    input_text: translate English to German: A man in an orange hat starring at something.
+#
+#    prediction: Ein Mann in einem orangen Hut, der an etwas schaut.
+#
+#    target: Ein Mann mit einem orangefarbenen Hut, der etwas anstarrt.
+#
+#
+#    Example 2:
+#
+#    input_text: translate English to German: A Boston Terrier is running on lush green grass in front of a white fence.
+#
+#    prediction: Ein Boston Terrier läuft auf üppigem grünem Gras vor einem weißen Zaun.
+#
+#    target: Ein Boston Terrier läuft über saftig-grünes Gras vor einem weißen Zaun.
+#
+#
+#    Example 3:
+#
+#    input_text: translate English to German: A girl in karate uniform breaking a stick with a front kick.
+#
+#    prediction: Ein Mädchen in Karate-Uniform bricht einen Stöck mit einem Frontkick.
+#
+#    target: Ein Mädchen in einem Karateanzug bricht ein Brett mit einem Tritt.
+#
+#
+#    Example 4:
+#
+#    input_text: translate English to German: Five people wearing winter jackets and helmets stand in the snow, with snowmobiles in the background.
+#
+#    prediction: Fünf Menschen mit Winterjacken und Helmen stehen im Schnee, mit Schneemobilen im Hintergrund.
+#
+#    target: Fünf Leute in Winterjacken und mit Helmen stehen im Schnee mit Schneemobilen im Hintergrund.
+#
+#
+#    Example 5:
+#
+#    input_text: translate English to German: People are fixing the roof of a house.
+#
+#    prediction: Die Leute fixieren das Dach eines Hauses.
+#
+#    target: Leute Reparieren das Dach eines Hauses.
+#
