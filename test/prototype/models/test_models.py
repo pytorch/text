@@ -7,7 +7,7 @@ from torch.nn import functional as F
 
 
 class TestModels(TorchtextTestCase):
-    def test_t5_bundler_build_model(self):
+    def test_t5_bundler_build_model(self) -> None:
         from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 
         # case: user provides encoder checkpoint state dict
@@ -76,7 +76,7 @@ class TestModels(TorchtextTestCase):
             "The model is not loaded with pre-trained weights. Setting freeze_model to True will hinder model from learning appropriate weights."
         )
 
-    def test_t5_bundler_raise_checkpoint(self):
+    def test_t5_bundler_raise_checkpoint(self) -> None:
         from torchtext.prototype.models import T5Conf, T5Bundle
 
         # encoder-only
@@ -131,7 +131,7 @@ class TestModels(TorchtextTestCase):
                 checkpoint=1,
             )
 
-    def test_t5_bundler_conf_property(self):
+    def test_t5_bundler_conf_property(self) -> None:
         from torchtext.prototype.models import T5Conf, T5Bundle
 
         dummy_t5_conf = T5Conf(
@@ -146,7 +146,7 @@ class TestModels(TorchtextTestCase):
         t5_bundle = T5Bundle(dummy_t5_conf)
         self.assertTrue(isinstance(t5_bundle.config, T5Conf))
 
-    def test_t5_bundler_train(self):
+    def test_t5_bundler_train(self) -> None:
         from torch.optim import SGD
         from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 

@@ -36,10 +36,10 @@ class TestTransforms(TorchtextTestCase):
         expected = ["Hello World!, how are you?"]
         self.assertEqual(actual, expected)
 
-    def test_t5tokenizer(self):
+    def test_t5tokenizer(self) -> None:
         """test tokenization on string input (encode) and translation from token ids to strings (decode)"""
         self._t5tokenizer(test_scripting=False)
 
-    def test_t5tokenizer_jit(self):
+    def test_t5tokenizer_jit(self) -> None:
         """test tokenization on string input (encode) and translation from token ids to strings (decode) with scripting"""
         self._t5tokenizer(test_scripting=True)

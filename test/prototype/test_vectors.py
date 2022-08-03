@@ -9,12 +9,12 @@ from torchtext.prototype.vectors import build_vectors
 
 
 class TestVectors(TorchtextTestCase):
-    def tearDown(self):
+    def tearDown(self) -> None:
         super().tearDown()
         torch._C._jit_clear_class_registry()
         torch.jit._recursive.concrete_type_store = torch.jit._recursive.ConcreteTypeStore()
 
-    def test_empty_vectors(self):
+    def test_empty_vectors(self) -> None:
         tokens = []
         vecs = torch.empty(0, dtype=torch.float)
         unk_tensor = torch.tensor([0], dtype=torch.float)
@@ -22,7 +22,7 @@ class TestVectors(TorchtextTestCase):
         vectors_obj = build_vectors(tokens, vecs, unk_tensor)
         self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
-    def test_empty_unk(self):
+    def test_empty_unk(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
@@ -32,7 +32,7 @@ class TestVectors(TorchtextTestCase):
 
         self.assertEqual(vectors_obj["not_in_it"], expected_unk_tensor)
 
-    def test_vectors_basic(self):
+    def test_vectors_basic(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
@@ -45,7 +45,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj["b"], tensorB)
         self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
-    def test_vectors_jit(self):
+    def test_vectors_jit(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
@@ -64,7 +64,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj["b"], jit_vectors_obj["b"])
         self.assertEqual(vectors_obj["not_in_it"], jit_vectors_obj["not_in_it"])
 
-    def test_vectors_forward(self):
+    def test_vectors_forward(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
@@ -82,7 +82,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(expected_vectors, vectors_by_tokens)
         self.assertEqual(expected_vectors, jit_vectors_by_tokens)
 
-    def test_vectors_lookup_vectors(self):
+    def test_vectors_lookup_vectors(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
 
@@ -97,7 +97,7 @@ class TestVectors(TorchtextTestCase):
 
         self.assertEqual(expected_vectors, vectors_by_tokens)
 
-    def test_vectors_add_item(self):
+    def test_vectors_add_item(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
@@ -112,7 +112,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj["b"], tensorB)
         self.assertEqual(vectors_obj["not_in_it"], unk_tensor)
 
-    def test_vectors_update(self):
+    def test_vectors_update(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
         tensorC = torch.tensor([1, 1], dtype=torch.float)
@@ -129,7 +129,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj["b"], tensorC)
         self.assertEqual(vectors_obj["not_in_it"], expected_unk_tensor)
 
-    def test_vectors_load_and_save(self):
+    def test_vectors_load_and_save(self) -> None:
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
@@ -161,7 +161,7 @@ class TestVectors(TorchtextTestCase):
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_errors_vectors_cpp(self):
+    def test_errors_vectors_cpp(self) -> None:
         tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         tensorC = torch.tensor([0, 0, 1], dtype=torch.float)

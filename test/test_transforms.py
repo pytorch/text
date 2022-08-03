@@ -27,11 +27,11 @@ class TestTransforms(TorchtextTestCase):
         expected = ["▁Hello", "▁World", "!", ",", "▁how", "▁are", "▁you", "?"]
         self.assertEqual(actual, expected)
 
-    def test_spmtokenizer(self):
+    def test_spmtokenizer(self) -> None:
         """test tokenization on single sentence input as well as batch on sentences"""
         self._spmtokenizer(test_scripting=False)
 
-    def test_spmtokenizer_jit(self):
+    def test_spmtokenizer_jit(self) -> None:
         """test tokenization with scripting on single sentence input as well as batch on sentences"""
         self._spmtokenizer(test_scripting=True)
 
@@ -48,11 +48,11 @@ class TestTransforms(TorchtextTestCase):
         expected = [0, 1, 2]
         self.assertEqual(actual, expected)
 
-    def test_vocab_transform(self):
+    def test_vocab_transform(self) -> None:
         """test token to indices on both sequence of input tokens as well as batch of sequence"""
         self._vocab_transform(test_scripting=False)
 
-    def test_vocab_transform_jit(self):
+    def test_vocab_transform_jit(self) -> None:
         """test token to indices with scripting on both sequence of input tokens as well as batch of sequence"""
         self._vocab_transform(test_scripting=True)
 
@@ -72,11 +72,11 @@ class TestTransforms(TorchtextTestCase):
         expected = torch.tensor([1, 2], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
-    def test_totensor(self):
+    def test_totensor(self) -> None:
         """test tensorization on both single sequence and batch of sequence"""
         self._totensor(test_scripting=False)
 
-    def test_totensor_jit(self):
+    def test_totensor_jit(self) -> None:
         """test tensorization with scripting on both single sequence and batch of sequence"""
         self._totensor(test_scripting=True)
 
@@ -112,11 +112,11 @@ class TestTransforms(TorchtextTestCase):
         expected = [0, 1, 2]
         self.assertEqual(actual, expected)
 
-    def test_labeltoindex(self):
+    def test_labeltoindex(self) -> None:
         """test labe to ids on single label input as well as batch of labels"""
         self._labeltoindex(test_scripting=False)
 
-    def test_labeltoindex_jit(self):
+    def test_labeltoindex_jit(self) -> None:
         """test labe to ids with scripting on single label input as well as batch of labels"""
         self._labeltoindex(test_scripting=True)
 
@@ -146,11 +146,11 @@ class TestTransforms(TorchtextTestCase):
         expected = ["a", "b"]
         self.assertEqual(actual, expected)
 
-    def test_truncate(self):
+    def test_truncate(self) -> None:
         """test truncation on both sequence and batch of sequence with both str and int types"""
         self._truncate(test_scripting=False)
 
-    def test_truncate_jit(self):
+    def test_truncate_jit(self) -> None:
         """test truncation with scripting on both sequence and batch of sequence with both str and int types"""
         self._truncate(test_scripting=True)
 
@@ -201,10 +201,10 @@ class TestTransforms(TorchtextTestCase):
         expected = ["1", "2", "0"]
         self.assertEqual(actual, expected)
 
-    def test_add_token(self):
+    def test_add_token(self) -> None:
         self._add_token(test_scripting=False)
 
-    def test_add_token_jit(self):
+    def test_add_token_jit(self) -> None:
         self._add_token(test_scripting=True)
 
     def _pad_transform(self, test_scripting):
@@ -254,10 +254,10 @@ class TestTransforms(TorchtextTestCase):
             msg=f"actual: {padded_2d_tensor_actual}, expected: {padded_2d_tensor_expected}",
         )
 
-    def test_pad_transform(self):
+    def test_pad_transform(self) -> None:
         self._pad_transform(test_scripting=False)
 
-    def test_pad_transform_jit(self):
+    def test_pad_transform_jit(self) -> None:
         self._pad_transform(test_scripting=True)
 
     def _str_to_int_transform(self, test_scripting):
@@ -281,10 +281,10 @@ class TestTransforms(TorchtextTestCase):
         for i in range(len(expected_2d_int_list)):
             self.assertListEqual(expected_2d_int_list[i], actual_2d_int_list[i])
 
-    def test_str_to_int_transform(self):
+    def test_str_to_int_transform(self) -> None:
         self._str_to_int_transform(test_scripting=False)
 
-    def test_str_to_int_transform_jit(self):
+    def test_str_to_int_transform_jit(self) -> None:
         self._str_to_int_transform(test_scripting=True)
 
 
@@ -306,11 +306,11 @@ class TestSequential(TorchtextTestCase):
         expected = torch.tensor(input)
         torch.testing.assert_close(actual, expected)
 
-    def test_sequential(self):
+    def test_sequential(self) -> None:
         """test pipelining transforms using Sequential transform"""
         self._sequential(test_scripting=False)
 
-    def test_sequential_jit(self):
+    def test_sequential_jit(self) -> None:
         """test pipelining transforms using Sequential transform, ensuring the composite transform is scriptable"""
         self._sequential(test_scripting=True)
 
@@ -367,14 +367,14 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         """test tokenization on single sentence input as well as batch on sentences"""
         self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
 
-    def test_gpt2_bpe_tokenizer_save_load_pybind(self):
+    def test_gpt2_bpe_tokenizer_save_load_pybind(self) -> None:
         tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._gpt2_bpe_tokenizer((loaded_tokenizer))
 
-    def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
+    def test_gpt2_bpe_tokenizer_save_load_torchscript(self) -> None:
         tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
@@ -567,14 +567,14 @@ class TestCLIPTokenizer(TorchtextTestCase):
             )
         )
 
-    def test_clip_tokenizer_save_load_pybind(self):
+    def test_clip_tokenizer_save_load_pybind(self) -> None:
         tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_pybind.pt")
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._clip_tokenizer((loaded_tokenizer))
 
-    def test_clip_tokenizer_save_load_torchscript(self):
+    def test_clip_tokenizer_save_load_torchscript(self) -> None:
         tokenizer = self._load_tokenizer(init_using_merge_only=True, test_scripting=False, return_tokens=False)
         tokenizer_path = os.path.join(self.test_dir, "gpt2_tokenizer_torchscript.pt")
         # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
@@ -717,7 +717,7 @@ class TestRegexTokenizer(TorchtextTestCase):
         (r"\s+", " "),
     ]
 
-    def test_regex_tokenizer(self):
+    def test_regex_tokenizer(self) -> None:
         r_tokenizer = RegexTokenizer(self.patterns_list)
         eager_tokens = r_tokenizer(self.test_sample)
 
@@ -732,7 +732,7 @@ class TestRegexTokenizer(TorchtextTestCase):
         self.assertEqual(eager_tokens, self.ref_results)
         self.assertEqual(jit_tokens, self.ref_results)
 
-    def test_regex_tokenizer_save_load(self):
+    def test_regex_tokenizer_save_load(self) -> None:
 
         with self.subTest("pybind"):
             save_path = os.path.join(self.test_dir, "regex_pybind.pt")
