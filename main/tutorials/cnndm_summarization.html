@@ -1,0 +1,1002 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CNNDM Text Summarization with T5-Base model &mdash; Torchtext nightly documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="SST-2 Binary text classification with XLM-RoBERTa model" href="sst2_classification_non_distributed.html" />
+  <!-- Google Analytics -->
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-117752657-2');
+    </script>
+  
+  <!-- End Google Analytics -->
+  
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Docs
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/index.html">
+                  <span class="dropdown-title">PyTorch</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/audio/stable/index.html">
+                  <span class="dropdown-title">torchaudio</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/text/stable/index.html">
+                  <span class="dropdown-title">torchtext</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/vision/stable/index.html">
+                  <span class="dropdown-title">torchvision</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/elastic/">
+                  <span class="dropdown-title">TorchElastic</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/serve/">
+                  <span class="dropdown-title">TorchServe</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/xla">
+                  <span class="dropdown-title">PyTorch on XLA Devices</span>
+                  <p></p>
+                </a>
+            </div>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class="dropdown-title">About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/#community-module">
+                  <span class="dropdown-title">Community</span>
+                  <p>Join the PyTorch developer community to contribute, learn, and get your questions answered.</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources">
+                  <span class="dropdown-title">Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://discuss.pytorch.org/" target="_blank">
+                  <span class="dropdown-title">Forums</span>
+                  <p>A place to discuss PyTorch code, issues, install, research</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub">
+                  <span class="dropdown-title">Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">GitHub</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+  </div>
+</div>
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+    <div class="version">
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220803) &#x25BC</a>
+    </div>
+    
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nn_modules.html">torchtext.nn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">torchtext.models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sst2_classification_non_distributed.html">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CNNDM Text Summarization with T5-Base model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+      <li>CNNDM Text Summarization with T5-Base model</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/cnndm_summarization.rst.txt" rel="nofollow"><img src="../_static/images/view-page-source-icon.svg"></a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+    
+
+    <div class="pytorch-call-to-action-links">
+      <div id="tutorial-type">tutorials/cnndm_summarization</div>
+
+      <div id="google-colab-link">
+        <img class="call-to-action-img" src="../_static/images/pytorch-colab.svg"/>
+        <div class="call-to-action-desktop-view">Run in Google Colab</div>
+        <div class="call-to-action-mobile-view">Colab</div>
+      </div>
+      <div id="download-notebook-link">
+        <img class="call-to-action-notebook-img" src="../_static/images/pytorch-download.svg"/>
+        <div class="call-to-action-desktop-view">Download Notebook</div>
+        <div class="call-to-action-mobile-view">Notebook</div>
+      </div>
+      <div id="github-view-link">
+        <img class="call-to-action-img" src="../_static/images/pytorch-github.svg"/>
+        <div class="call-to-action-desktop-view">View on GitHub</div>
+        <div class="call-to-action-mobile-view">GitHub</div>
+      </div>
+    </div>
+
+    
+    
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-cnndm-summarization-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="cnndm-text-summarization-with-t5-base-model">
+<span id="sphx-glr-tutorials-cnndm-summarization-py"></span><h1>CNNDM Text Summarization with T5-Base model<a class="headerlink" href="#cnndm-text-summarization-with-t5-base-model" title="Permalink to this headline">¶</a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="mailto:pabbo&#37;&#52;&#48;fb&#46;com">Pendo Abbo</a></p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial demonstrates how to use a pre-trained T5 Model for text summarization on the CNN-DailyMail dataset.
+We will demonstrate how to use the torchtext library to:</p>
+<ol class="arabic simple">
+<li><p>Build a text pre-processing pipeline for a T5 model</p></li>
+<li><p>Read in the CNNDM dataset and pre-process the text</p></li>
+<li><p>Instantiate a pre-trained T5 model with base configuration, and perform text summarization on input text</p></li>
+</ol>
+</div>
+<div class="section" id="common-imports">
+<h2>Common imports<a class="headerlink" href="#common-imports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="n">DEVICE</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span> <span class="k">if</span> <a href="https://pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-transformation">
+<h2>Data Transformation<a class="headerlink" href="#data-transformation" title="Permalink to this headline">¶</a></h2>
+<p>The T5 model does not work with raw text. Instead, it requires the text to be transformed into numerical form
+in order to perform training and inference. The following transformations are required for the T5 model:</p>
+<ol class="arabic simple">
+<li><p>Tokenize text</p></li>
+<li><p>Convert tokens into (integer) IDs</p></li>
+<li><p>Truncate the sequences to a specified maximum length</p></li>
+<li><p>Add end-of-sequence (EOS) and padding token IDs</p></li>
+</ol>
+<p>T5 uses a SentencePiece model for text tokenization. Below, we use a pre-trained SentencePiece model to build
+the text pre-processing pipeline using torchtext’s T5Transform. Note that the transform supports both
+batched and non-batched text input (i.e. one can either pass a single sentence or a list of sentences), however
+the T5 model expects the input to be batched.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.prototype.models</span> <span class="kn">import</span> <span class="n">T5Transform</span>
+
+<span class="n">padding_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">eos_idx</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">max_seq_len</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">t5_sp_model_path</span> <span class="o">=</span> <span class="s2">&quot;https://download.pytorch.org/models/text/t5_tokenizer_base.model&quot;</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">T5Transform</span><span class="p">(</span>
+    <span class="n">sp_model_path</span><span class="o">=</span><span class="n">t5_sp_model_path</span><span class="p">,</span>
+    <span class="n">max_seq_len</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span>
+    <span class="n">eos_idx</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">,</span>
+    <span class="n">padding_idx</span><span class="o">=</span><span class="n">padding_idx</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, we can also use the transform shipped with the pre-trained models that does all of the above out-of-the-box</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.prototype.models</span> <span class="kn">import</span> <span class="n">T5_BASE_GENERATION</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">T5_BASE_GENERATION</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+<p>torchtext provides several standard NLP datasets. For a complete list, refer to the documentation at <a class="reference external" href="https://pytorch.org/text/stable/datasets.html">https://pytorch.org/text/stable/datasets.html</a>.
+These datasets are built using composable torchdata datapipes and hence support standard flow-control and mapping/transformation
+using user defined functions and transforms. Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary
+for the model to identify the task it is performing.</p>
+<p>The CNNDM dataset has a train, validation, and test split. Below we demo on the test split.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using datapipes is still currently subject to a few caveats. If you wish
+to extend this example to include shuffling, multi-processing, or
+distributed learning, please see <a class="reference internal" href="../datasets.html#datapipes-warnings"><span class="std std-ref">this note</span></a>
+for further instructions.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a>
+
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
+<span class="kn">from</span> <span class="nn">torchtext.datasets.cnndm</span> <span class="kn">import</span> <span class="n">CNNDM</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s2">&quot;summarize&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">apply_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">apply_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
+<span class="n">test_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">test_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternately we can also use batched API (i.e apply the prefix on the whole batch)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">batch_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+ <span class="k">return</span> <span class="p">{</span>
+     <span class="s2">&quot;article&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">: &#39;</span> <span class="o">+</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;article&quot;</span><span class="p">]],</span>
+     <span class="s2">&quot;abstract&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;abstract&quot;</span><span class="p">]</span>
+ <span class="p">}</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;summarize&#39;</span>
+
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
+<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">batch_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">test_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">test_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="model-preparation">
+<h2>Model Preparation<a class="headerlink" href="#model-preparation" title="Permalink to this headline">¶</a></h2>
+<p>torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
+we use the pre-trained T5 model with standard base configuration to perform text summarization. For additional details on
+available pre-trained models, please refer to documentation at <a class="reference external" href="https://pytorch.org/text/main/models.html">https://pytorch.org/text/main/models.html</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.prototype.models</span> <span class="kn">import</span> <span class="n">T5_BASE_GENERATION</span>
+
+
+<span class="n">t5_base</span> <span class="o">=</span> <span class="n">T5_BASE_GENERATION</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">t5_base</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">t5_base</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sequence-generator">
+<h2>Sequence Generator<a class="headerlink" href="#sequence-generator" title="Permalink to this headline">¶</a></h2>
+<p>We can define a sequence generator to produce an output sequence based on the input sequence provided. This calls on the
+model’s encoder and decoder, and iteratively expands the decoded sequences until the end-of-sequence token is generated
+for all sequences in the batch. The <cite>greedy_generator</cite> method shown below uses a greedy search (i.e. expands the sequence
+based on the most probable next word).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Tensor</span></a>
+<span class="kn">from</span> <span class="nn">torchtext.prototype.models</span> <span class="kn">import</span> <span class="n">T5Model</span>
+
+
+<span class="k">def</span> <span class="nf">greedy_generator</span><span class="p">(</span>
+    <span class="n">encoder_tokens</span><span class="p">:</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Tensor</span></a><span class="p">,</span>
+    <span class="n">eos_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">T5Model</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Tensor</span></a><span class="p">:</span>
+
+    <span class="c1"># pass tokens through encoder</span>
+    <span class="n">encoder_padding_mask</span> <span class="o">=</span> <span class="n">encoder_tokens</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">padding_idx</span><span class="p">)</span>
+    <span class="n">encoder_embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dropout1</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">token_embeddings</span><span class="p">(</span><span class="n">encoder_tokens</span><span class="p">))</span>
+    <span class="n">encoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">encoder_embeddings</span><span class="p">,</span> <span class="n">tgt_key_padding_mask</span><span class="o">=</span><span class="n">encoder_padding_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">encoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">norm1</span><span class="p">(</span><span class="n">encoder_output</span><span class="p">)</span>
+    <span class="n">encoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dropout2</span><span class="p">(</span><span class="n">encoder_output</span><span class="p">)</span>
+
+    <span class="c1"># initialize decoder input sequence; T5 uses padding index as starter index to decoder sequence</span>
+    <span class="n">decoder_tokens</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.ones.html#torch.ones" title="torch.ones" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="n">encoder_tokens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">padding_idx</span>
+
+    <span class="c1"># mask to keep track of sequences for which the decoder has not produced an end-of-sequence token yet</span>
+    <span class="n">incomplete_sentences</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.ones.html#torch.ones" title="torch.ones" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="n">encoder_tokens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+    <span class="c1"># iteratively generate output sequence until all sequences in the batch have generated the end-of-sequence token</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_seq_len</span><span class="p">):</span>
+
+        <span class="c1"># causal mask and padding mask for decoder sequence</span>
+        <span class="n">tgt_len</span> <span class="o">=</span> <span class="n">decoder_tokens</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">decoder_mask</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.triu.html#torch.triu" title="torch.triu" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">triu</span></a><span class="p">(</span><a href="https://pytorch.org/docs/stable/generated/torch.ones.html#torch.ones" title="torch.ones" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="n">tgt_len</span><span class="p">,</span> <span class="n">tgt_len</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">diagonal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>
+        <span class="n">decoder_padding_mask</span> <span class="o">=</span> <span class="n">decoder_tokens</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">padding_idx</span><span class="p">)</span>
+
+        <span class="c1"># T5 implemention uses padding idx to start sequence. Want to ignore this when masking</span>
+        <span class="n">decoder_padding_mask</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># pass decoder sequence through decoder</span>
+        <span class="n">decoder_embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dropout3</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">token_embeddings</span><span class="p">(</span><span class="n">decoder_tokens</span><span class="p">))</span>
+        <span class="n">decoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span>
+            <span class="n">decoder_embeddings</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="n">encoder_output</span><span class="p">,</span>
+            <span class="n">tgt_mask</span><span class="o">=</span><span class="n">decoder_mask</span><span class="p">,</span>
+            <span class="n">tgt_key_padding_mask</span><span class="o">=</span><span class="n">decoder_padding_mask</span><span class="p">,</span>
+            <span class="n">memory_key_padding_mask</span><span class="o">=</span><span class="n">encoder_padding_mask</span><span class="p">,</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">decoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="n">decoder_output</span><span class="p">)</span>
+        <span class="n">decoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dropout4</span><span class="p">(</span><span class="n">decoder_output</span><span class="p">)</span>
+        <span class="n">decoder_output</span> <span class="o">=</span> <span class="n">decoder_output</span> <span class="o">*</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">embedding_dim</span> <span class="o">**</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">decoder_output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lm_head</span><span class="p">(</span><span class="n">decoder_output</span><span class="p">)</span>
+
+        <span class="c1"># greedy search for next token to add to sequence</span>
+        <span class="n">probs</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.functional.log_softmax.html#torch.nn.functional.log_softmax" title="torch.nn.functional.log_softmax" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span></a><span class="p">(</span><span class="n">decoder_output</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">next_token</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.topk.html#torch.topk" title="torch.topk" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">topk</span></a><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># ignore next tokens for sentences that are already complete</span>
+        <span class="n">next_token</span> <span class="o">*=</span> <span class="n">incomplete_sentences</span>
+
+        <span class="c1"># update incomplete_sentences to remove those that were just ended</span>
+        <span class="n">incomplete_sentences</span> <span class="o">=</span> <span class="n">incomplete_sentences</span> <span class="o">-</span> <span class="p">(</span><span class="n">next_token</span> <span class="o">==</span> <span class="n">eos_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+
+        <span class="c1"># update decoder sequences to include new tokens</span>
+        <span class="n">decoder_tokens</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.cat.html#torch.cat" title="torch.cat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">((</span><span class="n">decoder_tokens</span><span class="p">,</span> <span class="n">next_token</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># early stop if all sentences have been ended</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">incomplete_sentences</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">decoder_tokens</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generate-summaries">
+<h2>Generate Summaries<a class="headerlink" href="#generate-summaries" title="Permalink to this headline">¶</a></h2>
+<p>Finally we put all of the components together to generate summaries on the first batch of articles in the CNNDM test set.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_dataloader</span><span class="p">))</span>
+<span class="n">input_text</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;article&quot;</span><span class="p">]</span>
+<span class="n">model_input</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;abstract&quot;</span><span class="p">]</span>
+
+<span class="n">model_output</span> <span class="o">=</span> <span class="n">greedy_generator</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">encoder_tokens</span><span class="o">=</span><span class="n">model_input</span><span class="p">,</span> <span class="n">eos_idx</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">)</span>
+<span class="n">output_text</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">model_output</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Example </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prediction: </span><span class="si">{</span><span class="n">output_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target: </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Example</span> <span class="mi">1</span><span class="p">:</span>
+
+ <span class="n">prediction</span><span class="p">:</span> <span class="n">the</span> <span class="n">Palestinians</span> <span class="n">officially</span> <span class="n">become</span> <span class="n">the</span> <span class="mi">123</span><span class="n">rd</span> <span class="n">member</span> <span class="n">of</span> <span class="n">the</span> <span class="n">international</span>
+ <span class="n">criminal</span> <span class="n">court</span> <span class="o">.</span> <span class="n">the</span> <span class="n">move</span> <span class="n">gives</span> <span class="n">the</span> <span class="n">court</span> <span class="n">jurisdiction</span> <span class="n">over</span> <span class="n">alleged</span> <span class="n">crimes</span> <span class="n">committed</span>
+ <span class="ow">in</span> <span class="n">the</span> <span class="n">occupied</span> <span class="n">Palestinian</span> <span class="n">territory</span> <span class="o">.</span> <span class="n">the</span> <span class="n">ICC</span> <span class="n">opened</span> <span class="n">a</span> <span class="n">preliminary</span> <span class="n">examination</span> <span class="n">into</span>
+ <span class="n">the</span> <span class="n">situation</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">occupied</span> <span class="n">territories</span> <span class="o">.</span>
+
+ <span class="n">target</span><span class="p">:</span> <span class="n">Membership</span> <span class="n">gives</span> <span class="n">the</span> <span class="n">ICC</span> <span class="n">jurisdiction</span> <span class="n">over</span> <span class="n">alleged</span> <span class="n">crimes</span> <span class="n">committed</span> <span class="ow">in</span>
+ <span class="n">Palestinian</span> <span class="n">territories</span> <span class="n">since</span> <span class="n">last</span> <span class="n">June</span> <span class="o">.</span> <span class="n">Israel</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">United</span> <span class="n">States</span> <span class="n">opposed</span> <span class="n">the</span>
+ <span class="n">move</span><span class="p">,</span> <span class="n">which</span> <span class="n">could</span> <span class="nb">open</span> <span class="n">the</span> <span class="n">door</span> <span class="n">to</span> <span class="n">war</span> <span class="n">crimes</span> <span class="n">investigations</span> <span class="n">against</span> <span class="n">Israelis</span> <span class="o">.</span>
+
+
+ <span class="n">Example</span> <span class="mi">2</span><span class="p">:</span>
+
+ <span class="n">prediction</span><span class="p">:</span> <span class="n">a</span> <span class="n">stray</span> <span class="n">pooch</span> <span class="ow">in</span> <span class="n">Washington</span> <span class="n">state</span> <span class="n">has</span> <span class="n">used</span> <span class="n">up</span> <span class="n">at</span> <span class="n">least</span> <span class="n">three</span> <span class="n">of</span> <span class="n">her</span> <span class="n">own</span>
+<span class="n">after</span> <span class="n">being</span> <span class="n">hit</span> <span class="n">by</span> <span class="n">a</span> <span class="n">car</span> <span class="o">.</span> <span class="n">the</span> <span class="n">dog</span> <span class="n">staggers</span> <span class="n">to</span> <span class="n">a</span> <span class="n">nearby</span> <span class="n">farm</span><span class="p">,</span> <span class="n">dirt</span><span class="o">-</span><span class="n">covered</span> <span class="ow">and</span>
+ <span class="n">emaciated</span><span class="p">,</span> <span class="n">where</span> <span class="n">she</span> <span class="ow">is</span> <span class="n">found</span> <span class="o">.</span> <span class="n">she</span> <span class="n">suffered</span> <span class="n">a</span> <span class="n">dislocated</span> <span class="n">jaw</span><span class="p">,</span> <span class="n">leg</span> <span class="n">injuries</span> <span class="ow">and</span> <span class="n">a</span>
+ <span class="n">caved</span><span class="o">-</span><span class="ow">in</span> <span class="n">sinus</span> <span class="n">cavity</span> <span class="o">.</span>
+
+ <span class="n">target</span><span class="p">:</span> <span class="n">Theia</span><span class="p">,</span> <span class="n">a</span> <span class="n">bully</span> <span class="n">breed</span> <span class="n">mix</span><span class="p">,</span> <span class="n">was</span> <span class="n">apparently</span> <span class="n">hit</span> <span class="n">by</span> <span class="n">a</span> <span class="n">car</span><span class="p">,</span> <span class="n">whacked</span> <span class="k">with</span> <span class="n">a</span> <span class="n">hammer</span>
+ <span class="ow">and</span> <span class="n">buried</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">field</span> <span class="o">.</span> <span class="s2">&quot;She&#39;s a true miracle dog and she deserves a good life,&quot;</span> <span class="n">says</span>
+ <span class="n">Sara</span> <span class="n">Mellado</span><span class="p">,</span> <span class="n">who</span> <span class="ow">is</span> <span class="n">looking</span> <span class="k">for</span> <span class="n">a</span> <span class="n">home</span> <span class="k">for</span> <span class="n">Theia</span> <span class="o">.</span>
+
+
+ <span class="n">Example</span> <span class="mi">3</span><span class="p">:</span>
+
+ <span class="n">prediction</span><span class="p">:</span> <span class="n">mohammad</span> <span class="n">Javad</span> <span class="n">Zarif</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">foreign</span> <span class="n">minister</span> <span class="n">of</span> <span class="n">the</span> <span class="n">country</span> <span class="o">.</span> <span class="n">he</span> <span class="n">has</span> <span class="n">been</span>
+ <span class="n">a</span> <span class="n">key</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">securing</span> <span class="n">a</span> <span class="n">breakthrough</span> <span class="ow">in</span> <span class="n">nuclear</span> <span class="n">talks</span> <span class="o">.</span> <span class="n">he</span> <span class="n">has</span> <span class="n">been</span> <span class="n">a</span> <span class="n">hero</span> <span class="ow">in</span> <span class="n">the</span>
+ <span class="n">international</span> <span class="n">community</span> <span class="o">.</span>
+
+ <span class="n">target</span><span class="p">:</span> <span class="n">Mohammad</span> <span class="n">Javad</span> <span class="n">Zarif</span> <span class="n">has</span> <span class="n">spent</span> <span class="n">more</span> <span class="n">time</span> <span class="k">with</span> <span class="n">John</span> <span class="n">Kerry</span> <span class="n">than</span> <span class="nb">any</span> <span class="n">other</span>
+ <span class="n">foreign</span> <span class="n">minister</span> <span class="o">.</span> <span class="n">He</span> <span class="n">once</span> <span class="n">participated</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">takeover</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Iranian</span> <span class="n">Consulate</span> <span class="ow">in</span> <span class="n">San</span>
+ <span class="n">Francisco</span> <span class="o">.</span> <span class="n">The</span> <span class="n">Iranian</span> <span class="n">foreign</span> <span class="n">minister</span> <span class="n">tweets</span> <span class="ow">in</span> <span class="n">English</span> <span class="o">.</span>
+
+
+ <span class="n">Example</span> <span class="mi">4</span><span class="p">:</span>
+
+ <span class="n">prediction</span><span class="p">:</span> <span class="n">five</span> <span class="n">americans</span> <span class="n">were</span> <span class="n">monitored</span> <span class="k">for</span> <span class="n">three</span> <span class="n">weeks</span> <span class="n">after</span> <span class="n">being</span> <span class="n">exposed</span> <span class="n">to</span>
+ <span class="n">Ebola</span> <span class="o">.</span> <span class="n">one</span> <span class="n">of</span> <span class="n">the</span> <span class="n">five</span> <span class="n">had</span> <span class="n">a</span> <span class="n">heart</span><span class="o">-</span><span class="n">related</span> <span class="n">issue</span> <span class="n">on</span> <span class="n">Saturday</span> <span class="ow">and</span> <span class="n">has</span> <span class="n">been</span> <span class="n">discharged</span> <span class="o">.</span>
+ <span class="n">none</span> <span class="n">of</span> <span class="n">the</span> <span class="n">patients</span> <span class="n">developed</span> <span class="n">the</span> <span class="n">deadly</span> <span class="n">virus</span> <span class="o">.</span>
+
+ <span class="n">target</span><span class="p">:</span> <span class="mi">17</span> <span class="n">Americans</span> <span class="n">were</span> <span class="n">exposed</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Ebola</span> <span class="n">virus</span> <span class="k">while</span> <span class="ow">in</span> <span class="n">Sierra</span> <span class="n">Leone</span> <span class="ow">in</span> <span class="n">March</span> <span class="o">.</span>
+ <span class="n">Another</span> <span class="n">person</span> <span class="n">was</span> <span class="n">diagnosed</span> <span class="k">with</span> <span class="n">the</span> <span class="n">disease</span> <span class="ow">and</span> <span class="n">taken</span> <span class="n">to</span> <span class="n">hospital</span> <span class="ow">in</span> <span class="n">Maryland</span> <span class="o">.</span>
+ <span class="n">National</span> <span class="n">Institutes</span> <span class="n">of</span> <span class="n">Health</span> <span class="n">says</span> <span class="n">the</span> <span class="n">patient</span> <span class="ow">is</span> <span class="ow">in</span> <span class="n">fair</span> <span class="n">condition</span> <span class="n">after</span> <span class="n">weeks</span> <span class="n">of</span>
+ <span class="n">treatment</span> <span class="o">.</span>
+
+
+ <span class="n">Example</span> <span class="mi">5</span><span class="p">:</span>
+
+ <span class="n">prediction</span><span class="p">:</span> <span class="n">the</span> <span class="n">student</span> <span class="n">was</span> <span class="n">identified</span> <span class="n">during</span> <span class="n">an</span> <span class="n">investigation</span> <span class="n">by</span> <span class="n">campus</span> <span class="n">police</span> <span class="ow">and</span>
+ <span class="n">the</span> <span class="n">office</span> <span class="n">of</span> <span class="n">student</span> <span class="n">affairs</span> <span class="o">.</span> <span class="n">he</span> <span class="n">admitted</span> <span class="n">to</span> <span class="n">placing</span> <span class="n">the</span> <span class="n">noose</span> <span class="n">on</span> <span class="n">the</span> <span class="n">tree</span> <span class="n">early</span>
+ <span class="n">Wednesday</span> <span class="n">morning</span> <span class="o">.</span>
+
+ <span class="n">target</span><span class="p">:</span> <span class="n">Student</span> <span class="ow">is</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">on</span> <span class="n">Duke</span> <span class="n">University</span> <span class="n">campus</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">face</span> <span class="n">disciplinary</span>
+ <span class="n">review</span> <span class="o">.</span> <span class="n">School</span> <span class="n">officials</span> <span class="n">identified</span> <span class="n">student</span> <span class="n">during</span> <span class="n">investigation</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">person</span>
+ <span class="n">admitted</span> <span class="n">to</span> <span class="n">hanging</span> <span class="n">the</span> <span class="n">noose</span><span class="p">,</span> <span class="n">Duke</span> <span class="n">says</span> <span class="o">.</span> <span class="n">The</span> <span class="n">noose</span><span class="p">,</span> <span class="n">made</span> <span class="n">of</span> <span class="n">rope</span><span class="p">,</span> <span class="n">was</span> <span class="n">discovered</span> <span class="n">on</span>
+ <span class="n">campus</span> <span class="n">about</span> <span class="mi">2</span> <span class="n">a</span><span class="o">.</span><span class="n">m</span><span class="o">.</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-cnndm-summarization-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/b075fb73b6301950f6da948106cba651/cnndm_summarization.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cnndm_summarization.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/359600fa3feade002e500c7814a29664/cnndm_summarization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cnndm_summarization.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+             </article>
+             
+            </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="sst2_classification_non_distributed.html" class="btn btn-neutral" title="SST-2 Binary text classification with XLM-RoBERTa model" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+    </div>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Torchtext Contributors.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+
+
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">CNNDM Text Summarization with T5-Base model</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#common-imports">Common imports</a></li>
+<li><a class="reference internal" href="#data-transformation">Data Transformation</a></li>
+<li><a class="reference internal" href="#dataset">Dataset</a></li>
+<li><a class="reference internal" href="#model-preparation">Model Preparation</a></li>
+<li><a class="reference internal" href="#sequence-generator">Sequence Generator</a></li>
+<li><a class="reference internal" href="#generate-summaries">Generate Summaries</a></li>
+<li><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+         <script src="../_static/jquery.js"></script>
+         <script src="../_static/underscore.js"></script>
+         <script src="../_static/doctools.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <script type="text/javascript">
+      var collapsedSections = [];
+    </script>
+     
+    <script type="text/javascript">
+      $(document).ready(function() {
+	  var downloadNote = $(".sphx-glr-download-link-note.admonition.note");
+	  if (downloadNote.length >= 1) {
+	      var tutorialUrl = $("#tutorial-type").text();
+	      var githubLink = "https://github.com/pytorch/text/blob/main/examples/"  + tutorialUrl + ".py",
+		  notebookLink = $(".reference.download")[1].href,
+		  notebookDownloadPath = notebookLink.split('_downloads')[1],
+		  colabLink = "https://colab.research.google.com/github/pytorch/text/blob/gh-pages/main/_downloads" + notebookDownloadPath;
+
+	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
+	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
+	  }
+
+          // Overwrite the link to GitHub project
+          var overwrite = function(_) {
+              if ($(this).length > 0) {
+                  $(this)[0].href = "https://github.com/pytorch/text"
+              }
+          }
+          // PC
+          $(".main-menu a:contains('GitHub')").each(overwrite);
+          // Mobile
+          $(".main-menu a:contains('Github')").each(overwrite);
+      });
+    </script>
+
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Stay Connected</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="resources-mobile-menu-title">
+            Docs
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/docs/stable/index.html">PyTorch</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/audio/stable/index.html">torchaudio</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/text/stable/index.html">torchtext</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/vision/stable/index.html">torchvision</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/elastic/">TorchElastic</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/serve/">TorchServe</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/xla">PyTorch on XLA Devices</a>
+            </li>
+          </ul>
+
+          <li class="resources-mobile-menu-title">
+            Resources
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/resources">Developer Resources</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/features">About</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/hub">Models (Beta)</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/#community-module">Community</a>
+            </li>
+
+            <li>
+              <a href="https://discuss.pytorch.org/">Forums</a>
+            </li>
+          </ul>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>

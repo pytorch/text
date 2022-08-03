@@ -51,6 +51,7 @@ Getting Started
    :caption: Getting Started
 
    tutorials/sst2_classification_non_distributed
+   tutorials/cnndm_summarization
 
 
 .. automodule:: torchtext

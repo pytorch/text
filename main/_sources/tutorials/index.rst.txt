@@ -29,6 +29,23 @@ Tutorials
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Pendo Abbo &lt;pabbo@fb.com&gt;`__">
+
+.. only:: html
+
+  .. image:: /tutorials/images/thumb/sphx_glr_cnndm_summarization_thumb.png
+    :alt: CNNDM Text Summarization with T5-Base model
+
+  :ref:`sphx_glr_tutorials_cnndm_summarization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">CNNDM Text Summarization with T5-Base model</div>
+    </div>
+
+
+.. raw:: html
+
     </div>
 
 
@@ -36,6 +53,7 @@ Tutorials
    :hidden:
 
    /tutorials/sst2_classification_non_distributed
+   /tutorials/cnndm_summarization
 
 
 .. only:: html
