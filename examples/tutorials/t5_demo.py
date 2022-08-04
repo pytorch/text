@@ -1,5 +1,5 @@
 """
-T5-BASE MODEL FOR SUMMARIZATION, SENTIMENT CLASSIFICATION, AND TRANSLATION
+T5-Base Model for Summarization, Sentiment Classification, and Translation
 ==========================================================================
 
 **Author**: `Pendo Abbo <pabbo@fb.com>`__
