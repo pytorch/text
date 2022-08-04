@@ -259,7 +259,7 @@ from functools import partial
 from torch.utils.data import DataLoader
 from torchtext.datasets.cnndm import CNNDM
 
-batch_size = 5
+cnndm_batch_size = 5
 cnndm_datapipe = CNNDM(split="test")
 task = "summarize"
 
@@ -269,7 +269,7 @@ def apply_prefix(task, x):
 
 
 cnndm_datapipe = cnndm_datapipe.map(partial(apply_prefix, task))
-cnndm_datapipe = cnndm_datapipe.batch(batch_size)
+cnndm_datapipe = cnndm_datapipe.batch(cnndm_batch_size)
 cnndm_datapipe = cnndm_datapipe.rows2columnar(["article", "abstract"])
 cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
 
@@ -284,11 +284,11 @@ cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
 #        "abstract": x["abstract"]
 #    }
 #
-#   batch_size = 5
+#   cnndm_batch_size = 5
 #   cnndm_datapipe = CNNDM(split="test")
 #   task = 'summarize'
 #
-#   cnndm_datapipe = cnndm_datapipe.batch(batch_size).rows2columnar(["article", "abstract"])
+#   cnndm_datapipe = cnndm_datapipe.batch(cnndm_batch_size).rows2columnar(["article", "abstract"])
 #   cnndm_datapipe = cnndm_datapipe.map(partial(batch_prefix, task))
 #   cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
 #
@@ -303,7 +303,7 @@ cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
 
 from torchtext.datasets import IMDB
 
-batch_size = 3
+imdb_batch_size = 3
 imdb_datapipe = IMDB(split="test")
 task = "sst2 sentence"
 labels = {"neg": "negative", "pos": "positive"}
@@ -315,7 +315,7 @@ def process_labels(labels, x):
 
 imdb_datapipe = imdb_datapipe.map(partial(process_labels, labels))
 imdb_datapipe = imdb_datapipe.map(partial(apply_prefix, task))
-imdb_datapipe = imdb_datapipe.batch(batch_size)
+imdb_datapipe = imdb_datapipe.batch(imdb_batch_size)
 imdb_datapipe = imdb_datapipe.rows2columnar(["text", "label"])
 imdb_dataloader = DataLoader(imdb_datapipe, batch_size=None)
 
@@ -327,13 +327,13 @@ imdb_dataloader = DataLoader(imdb_datapipe, batch_size=None)
 
 from torchtext.datasets import Multi30k
 
-batch_size = 5
+multi_batch_size = 5
 language_pair = ("en", "de")
 multi_datapipe = Multi30k(split="test", language_pair=language_pair)
 task = "translate English to German"
 
 multi_datapipe = multi_datapipe.map(partial(apply_prefix, task))
-multi_datapipe = multi_datapipe.batch(batch_size)
+multi_datapipe = multi_datapipe.batch(multi_batch_size)
 multi_datapipe = multi_datapipe.rows2columnar(["english", "german"])
 multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 
@@ -354,7 +354,7 @@ model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
-for i in range(batch_size):
+for i in range(cnndm_batch_size):
     print(f"Example {i+1}:\n")
     print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
@@ -444,11 +444,12 @@ model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
-for i in range(batch_size):
+for i in range(imdb_batch_size):
     print(f"Example {i+1}:\n")
     print(f"input_text: {input_text[i]}\n")
     print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
+
 
 #######################################################################
 # Sentiment Output
@@ -512,7 +513,7 @@ for i in range(batch_size):
 #    beginning. the end scene with the flask backs don't make sense as they are added in and seem to
 #    have little relevance to the history of van dam's character. not really worth watching again,
 #    bit disappointed in the end production, even though it is apparent it was shot on a low budget
-#    certain shots and sections in the film are of poor directed quality
+#    certain shots and sections in the film are of poor directed quality.
 #
 #    prediction: negative
 #
@@ -537,11 +538,12 @@ model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
-for i in range(batch_size):
+for i in range(multi_batch_size):
     print(f"Example {i+1}:\n")
     print(f"input_text: {input_text[i]}\n")
     print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
+
 
 #######################################################################
 # Translation Output
