@@ -347,15 +347,14 @@ multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 
 batch = next(iter(cnndm_dataloader))
 input_text = batch["article"]
-model_input = transform(input_text)
 target = batch["abstract"]
 beam_size = 3
 
+model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(batch_size):
-
     print(f"Example {i+1}:\n")
     print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
@@ -438,15 +437,14 @@ for i in range(batch_size):
 
 batch = next(iter(imdb_dataloader))
 input_text = batch["text"]
-model_input = transform(input_text)
 target = batch["label"]
 beam_size = 1
 
+model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(batch_size):
-
     print(f"Example {i+1}:\n")
     print(f"input_text: {input_text[i]}\n")
     print(f"prediction: {output_text[i]}\n")
@@ -526,21 +524,20 @@ for i in range(batch_size):
 # Generate Translations
 # ---------------------
 #
-# Similarly, we can now use the model to generate sentiment classification on the first batch of reviews from the IMDB test set
-# using a beam size of 4.
+# Finally, we can also use the model to generate English to German translations on the first batch of examples from the Multi30k
+# test set using a beam size of 4.
 #
 
 batch = next(iter(multi_dataloader))
 input_text = batch["english"]
-model_input = transform(input_text)
 target = batch["german"]
 beam_size = 4
 
+model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(batch_size):
-
     print(f"Example {i+1}:\n")
     print(f"input_text: {input_text[i]}\n")
     print(f"prediction: {output_text[i]}\n")
