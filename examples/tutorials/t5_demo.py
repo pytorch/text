@@ -474,7 +474,7 @@ for i in range(imdb_batch_size):
 #    would not continue watching. Roddenberry's ashes must be turning in their orbit as this dull,
 #    cheap, poorly edited (watching it without advert breaks really brings this home) trudging
 #    Trabant of a show lumbers into space. Spoiler. So, kill off a main character. And then bring
-#    him back as another actor. Jeeez! Dallas all over again.
+#    him back as another actor. Jeeez. Dallas all over again.
 #
 #    prediction: negative
 #
