@@ -338,6 +338,53 @@ multi_datapipe = multi_datapipe.rows2columnar(["english", "german"])
 multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 
 #######################################################################
+# Summaries
+# ------------------
+#
+# We can put all of the components together the generate summaries on the first batch of articles in the CNNDM test set
+# using a beam size of 3.
+#
+
+batch = next(iter(cnndm_dataloader))
+input_text = batch["article"]
+target = batch["abstract"]
+beam_size = 3
+
+model_input = transform(input_text)
+model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+output_text = transform.decode(model_output.tolist())
+
+for i in range(cnndm_batch_size):
+    print(f"Example {i+1}:\n")
+    print(f"prediction: {output_text[i]}\n")
+    print(f"target: {target[i]}\n\n")
+
+
+#######################################################################
+# Sentiment Classifications
+# ----------------------------------
+#
+# Similarly, we can now use the model to generate sentiment classifications on the first batch of reviews from the IMDB test set
+# using a beam size of 1.
+#
+
+batch = next(iter(imdb_dataloader))
+input_text = batch["text"]
+target = batch["label"]
+beam_size = 1
+
+model_input = transform(input_text)
+model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+output_text = transform.decode(model_output.tolist())
+
+for i in range(imdb_batch_size):
+    print(f"Example {i+1}:\n")
+    print(f"input_text: {input_text[i]}\n")
+    print(f"prediction: {output_text[i]}\n")
+    print(f"target: {target[i]}\n\n")
+
+
+#######################################################################
 # Translations
 # ---------------------
 #
