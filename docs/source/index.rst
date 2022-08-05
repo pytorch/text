@@ -51,7 +51,7 @@ Getting Started
    :caption: Getting Started
 
    tutorials/sst2_classification_non_distributed
-   tutorials/t5_tutorial
+   tutorials/t5_demo
 
 
 .. automodule:: torchtext
