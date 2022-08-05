@@ -541,6 +541,7 @@ jobs:
     <<: *binary_common
     docker:
       - image: continuumio/miniconda3
+    working_directory: /mnt/ramdisk
     resource_class: medium
     steps:
       - attach_workspace:
