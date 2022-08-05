@@ -553,7 +553,6 @@ jobs:
             set -x
             conda install -y make python=${PYTHON_VERSION}
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
-            pip install --pre torchdata --extra-index-url "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu"
       - run:
           name: Build docs
           command: |
