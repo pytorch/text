@@ -1,4 +1,4 @@
---index-url https://download.pytorch.org/whl/nightly/cpu --extra-index-url=https://pypi.org/simple
+--index-url https://download.pytorch.org/whl/nightly/cpu
 Jinja2<3.1.0
 sphinx==3.5.4
 -e git+https://github.com/pytorch/pytorch_sphinx_theme.git@b4d0005#egg=pytorch_sphinx_theme
