@@ -338,23 +338,24 @@ multi_datapipe = multi_datapipe.rows2columnar(["english", "german"])
 multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 
 #######################################################################
-# Summaries
-# ------------------
+# Translations
+# ---------------------
 #
-# We can put all of the components together the generate summaries on the first batch of articles in the CNNDM test set
-# using a beam size of 3.
+# Finally, we can also use the model to generate English to German translations on the first batch of examples from the Multi30k
+# test set using a beam size of 4.
 #
 
-batch = next(iter(cnndm_dataloader))
-input_text = batch["article"]
-target = batch["abstract"]
-beam_size = 3
+batch = next(iter(multi_dataloader))
+input_text = batch["english"]
+target = batch["german"]
+beam_size = 4
 
 model_input = transform(input_text)
 model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
 output_text = transform.decode(model_output.tolist())
 
-for i in range(cnndm_batch_size):
+for i in range(multi_batch_size):
     print(f"Example {i+1}:\n")
+    print(f"input_text: {input_text[i]}\n")
     print(f"prediction: {output_text[i]}\n")
     print(f"target: {target[i]}\n\n")
