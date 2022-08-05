@@ -542,7 +542,7 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     working_directory: /mnt/ramdisk
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/workspace
