@@ -48,6 +48,12 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             bias: If specified, adds bias to input / output projection layers. Default: `False`.
             kdim: Total number of features for keys. Default: `None` (uses `kdim=embed_dim`).
             vdim: Total number of features for values. Default: `None` (uses `vdim=embed_dim`).
+            compute_relative_attention_bias: Whether or not the relative position embeddings
+                need to be computed. Wypically occurs in the first layer of the encoder/decoder
+                and the resulting position embeddings are returned to be passed up to higher layers. (defualt: False)
+            relative_attention_num_buckets: Number of relative position buckets. Default: `32`
+            relative_attention_max_distance: Maximum threshold on the relative distance used to
+                allocate buckets. Anything larger gets placed in the same bucket. Default: `128`
         """
         super().__init__(embed_dim, num_heads, dropout, bias, False, False, kdim, vdim, True, device, dtype)
         factory_kwargs = {"device": device, "dtype": dtype}
@@ -109,13 +115,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             average_attn_weights: If true, indicates that the returned `attn_weights` should be averaged across
                 heads. Otherwise, `attn_weights` are provided separately per head. Note that this flag only has an
                 effect when `need_weights=True`. Default: `False` (i.e. average weights across heads)
-            compute_relative_attention_bias: Whether or not the relative position embeddings
-                need to be computed. Wypically occurs in the first layer of the encoder/decoder
-                and the resulting position embeddings are returned to be passed up to higher layers. (defualt: False)
-            relative_attention_num_buckets: Number of relative position buckets. Default: `32`
-            relative_attention_max_distance: Maximum threshold on the relative distance used to
-                allocate buckets. Anything larger gets placed in the same bucket. Default: `128`
-            relative_attention_bias: nn.Embeding object used to compute relative position embeddings. Default: `None`
             position_bias: Position bias tensor used if to add relative attention bias to attention scores. Default: `None`
         Outputs:
             - **attn_output** - Attention outputs of shape :math:`(N, L, E)`, where :math:`N` is the batch size,
@@ -449,7 +448,7 @@ class T5LayerNorm(nn.Module):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L622
 class T5EncoderLayer(nn.Module):
-    r"""T5Layer is made up of self-attn, cross-attn (decoder only) and feedforward network.
+    r"""T5EncoderLayer is made up of a self-attn block and feedforward network.
     This T5 layer is based on the paper:
     "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer".
     Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena,
@@ -457,7 +456,6 @@ class T5EncoderLayer(nn.Module):
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Users may modify or implement in a different way during application.
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
         dim_feedforward: Dimension of the feedforward network model (default=3072).
@@ -469,14 +467,13 @@ class T5EncoderLayer(nn.Module):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (default: 128)
         compute_relative_attention_bias: Whether or not the relative position embeddings
-            need to be computed. Typically occurs in the first layer of encoder/decoder
+            need to be computed. Typically occurs in the first layer of the encoder
             and resulting position embeddings are returned to be passed up to higher layers. (default: False)
 
     Examples::
-        >>> decoder_layer = T5Layer(is_decoder=True, d_model=768, nhead=12)
-        >>> memory = torch.rand(32, 10, 768)
+        >>> encoder_layer = T5EncoderLayer(d_model=768, nhead=12)
         >>> tgt = torch.rand(32, 20, 768)
-        >>> out = deoder_layer(tgt, memory)
+        >>> out = encoder_layer(tgt)
     """
 
     def __init__(
@@ -537,22 +534,15 @@ class T5EncoderLayer(nn.Module):
         tgt_key_padding_mask: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
     ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
-        r"""Pass the inputs (and mask) through the encoder/decoder layer.
+        r"""Pass the inputs (and mask) through the encoder layer.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the encoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
-                length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
-                Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
-                Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
-                Must have shape (B, Ns).
             position_bias: Relative attention bias to be used when computing self-attention scores (optional)
                 Must have shape (B, H, Nt, Nt) where H is the number of heads.
         """
@@ -598,7 +588,7 @@ class T5EncoderLayer(nn.Module):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L622
 class T5DecoderLayer(T5EncoderLayer):
-    r"""T5Layer is made up of self-attn, cross-attn (decoder only) and feedforward network.
+    r"""T5DecoderLayer is made up of a self-attn block, cross-attn block, and feedforward network.
     This T5 layer is based on the paper:
     "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer".
     Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena,
@@ -606,7 +596,6 @@ class T5DecoderLayer(T5EncoderLayer):
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Users may modify or implement in a different way during application.
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
         dim_feedforward: Dimension of the feedforward network model (default=3072).
@@ -618,14 +607,14 @@ class T5DecoderLayer(T5EncoderLayer):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (default: 128)
         compute_relative_attention_bias: Whether or not the relative position embeddings
-            need to be computed. Typically occurs in the first layer of encoder/decoder
+            need to be computed. Typically occurs in the first layer of the decoder
             and resulting position embeddings are returned to be passed up to higher layers. (default: False)
 
     Examples::
-        >>> decoder_layer = T5Layer(is_decoder=True, d_model=768, nhead=12)
+        >>> decoder_layer = T5DecoderLayer(d_model=768, nhead=12)
         >>> memory = torch.rand(32, 10, 768)
         >>> tgt = torch.rand(32, 20, 768)
-        >>> out = deoder_layer(tgt, memory)
+        >>> out = decoder_layer(tgt, memory)
     """
 
     def __init__(
@@ -686,19 +675,19 @@ class T5DecoderLayer(T5EncoderLayer):
     ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]]:
         r"""Pass the inputs (and mask) through the encoder/decoder layer.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
+            memory: Sequence from the last layer of the encoder. (required).
                 Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
+            memory_mask: Attention mask for cross-attention (optional).
                 Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
+            memory_key_padding_mask: Mask for the memory keys per batch (optional).
                 Must have shape (B, Ns).
             position_bias: Relative attention bias to be used when computing self-attention scores (optional)
                 Must have shape (B, H, Nt, Nt) where H is the number of heads.
@@ -726,12 +715,11 @@ class T5DecoderLayer(T5EncoderLayer):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
 class T5Encoder(nn.Module):
-    r"""T5 is a stack of N encoder/decoder layers
+    r"""T5Encoder is a stack of N encoder layers
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
-        num_layers: Number of encoder/decoder layers in the stack (required)
+        num_layers: Number of encoder layers in the stack (required)
         dim_feedforward: Dimension of the feedforward network model (default=3072).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
@@ -741,10 +729,9 @@ class T5Encoder(nn.Module):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
     Examples::
-        >>> decoder = nn.T5Stack(is_decoder=True, d_model=768, nhead=12, num_layers=12)
-        >>> memory = torch.rand(32, 10, 512)
+        >>> encoder = T5Encoder(d_model=768, nhead=12, num_layers=12)
         >>> tgt = torch.rand(32, 10, 512)
-        >>> out = decoder(tgt, memory)
+        >>> out = encoder(tgt)
     """
 
     def __init__(
@@ -789,22 +776,15 @@ class T5Encoder(nn.Module):
         tgt_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
     ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]:
-        r"""Pass the inputs (and mask) through the stack of encoder/decoder layers.
+        r"""Pass the inputs (and mask) through the stack of encoder layers.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the encoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
-                length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
-                Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
-                Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
-                Must have shape (B, Ns).
         """
         output = tgt
         position_bias = None
@@ -825,12 +805,11 @@ class T5Encoder(nn.Module):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
 class T5Decoder(nn.Module):
-    r"""T5 is a stack of N encoder/decoder layers
+    r"""T5Decoder is a stack of N decoder layers
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
-        num_layers: Number of encoder/decoder layers in the stack (required)
+        num_layers: Number of decoder layers in the stack (required)
         dim_feedforward: Dimension of the feedforward network model (default=3072).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
@@ -840,7 +819,7 @@ class T5Decoder(nn.Module):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
     Examples::
-        >>> decoder = nn.T5Stack(is_decoder=True, d_model=768, nhead=12, num_layers=12)
+        >>> decoder = T5Decoder(d_model=768, nhead=12, num_layers=12)
         >>> memory = torch.rand(32, 10, 512)
         >>> tgt = torch.rand(32, 10, 512)
         >>> out = decoder(tgt, memory)
@@ -893,19 +872,19 @@ class T5Decoder(nn.Module):
     ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]:
         r"""Pass the inputs (and mask) through the stack of encoder/decoder layers.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
+            memory: Sequence from the last layer of the encoder. (required).
                 Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
+            memory_mask: Attention mask for cross-attention (optional).
                 Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
+            memory_key_padding_mask: Mask for the memory keys per batch (optional).
                 Must have shape (B, Ns).
         """
         output = tgt
