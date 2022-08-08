@@ -33,6 +33,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         bias: bool = False,
         kdim: int = None,
         vdim: int = None,
+        compute_relative_attention_bias=False,
+        relative_attention_num_buckets=32,
+        relative_attention_max_distance=128,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -54,6 +57,13 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         self.v_proj_weight = nn.Parameter(torch.empty((embed_dim, self.vdim), **factory_kwargs))
         self.register_parameter("in_proj_weight", None)
 
+        self.compute_relative_attention_bias = compute_relative_attention_bias
+        self.relative_attention_num_buckets = relative_attention_num_buckets
+        self.relative_attention_max_distance = relative_attention_max_distance
+
+        if compute_relative_attention_bias:
+            self.relative_attention_bias = nn.Embedding(relative_attention_num_buckets, num_heads)
+
     def forward(
         self,
         query: Tensor,
@@ -63,10 +73,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-        compute_relative_attention_bias=False,
-        relative_attention_num_buckets=32,
-        relative_attention_max_distance=128,
-        relative_attention_bias: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
     ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
         r"""
@@ -124,10 +130,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             query,
             key,
             value,
-            compute_relative_attention_bias=compute_relative_attention_bias,
-            relative_attention_num_buckets=relative_attention_num_buckets,
-            relative_attention_max_distance=relative_attention_max_distance,
-            relative_attention_bias=relative_attention_bias,
             position_bias=position_bias,
             key_padding_mask=key_padding_mask,
             need_weights=need_weights,
@@ -142,10 +144,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         query: Tensor,
         key: Tensor,
         value: Tensor,
-        compute_relative_attention_bias: bool,
-        relative_attention_num_buckets: Optional[int],
-        relative_attention_max_distance: Optional[int],
-        relative_attention_bias: Optional[Tensor],
         position_bias: Optional[Tensor],
         key_padding_mask: Optional[Tensor] = None,
         need_weights: bool = True,
@@ -255,7 +253,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
         # NOTE: Modification to torch.nn.functional._multi_head_attention_forward to incorporate relative attention bias
         if position_bias is None:
-            if not compute_relative_attention_bias:
+            if not self.compute_relative_attention_bias:
                 position_bias = torch.zeros(
                     (self.num_heads, tgt_len, src_len), device=k.device, dtype=k.dtype
                 ).unsqueeze(0)
@@ -263,9 +261,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 position_bias = self._compute_bias(
                     tgt_len,
                     src_len,
-                    relative_attention_bias,
-                    relative_attention_num_buckets=relative_attention_num_buckets,
-                    relative_attention_max_distance=relative_attention_max_distance,
                     bidirectional=(not self.is_decoder),
                     device=k.device,
                 )
@@ -350,25 +345,22 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         self,
         query_length: int,
         key_length: int,
-        relative_attention_bias: Tensor,
-        relative_attention_num_buckets: int = 32,
-        relative_attention_max_distance: int = 128,
         bidirectional: bool = True,
         device: Optional[torch.device] = None,
     ) -> Tensor:
         """Compute binned relative position bias"""
         if device is None:
-            device = relative_attention_bias.weight.device
+            device = self.relative_attention_bias.weight.device
         context_position = torch.arange(query_length, dtype=torch.long, device=device)[:, None]
         memory_position = torch.arange(key_length, dtype=torch.long, device=device)[None, :]
         relative_position = memory_position - context_position  # shape (query_length, key_length)
         relative_position_bucket = self._relative_position_bucket(
             relative_position,  # shape (query_length, key_length)
             bidirectional=bidirectional,
-            num_buckets=relative_attention_num_buckets,
-            max_distance=relative_attention_max_distance,
+            num_buckets=self.relative_attention_num_buckets,
+            max_distance=self.relative_attention_max_distance,
         )
-        values = relative_attention_bias(relative_position_bucket)  # shape (query_length, key_length, num_heads)
+        values = self.relative_attention_bias(relative_position_bucket)  # shape (query_length, key_length, num_heads)
         values = values.permute([2, 0, 1]).unsqueeze(0)  # shape (1, num_heads, query_length, key_length)
         return values
 
@@ -395,7 +387,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         """
         relative_buckets = 0
         if bidirectional:
-            num_buckets //= 2
+            num_buckets = num_buckets // 2
             relative_buckets += (relative_position > 0).to(torch.long) * num_buckets
             relative_position = torch.abs(relative_position)
         else:
@@ -476,7 +468,6 @@ class T5Layer(nn.Module):
         compute_relative_attention_bias: Whether or not the relative position embeddings
             need to be computed. Typically occurs in the first layer of encoder/decoder
             and resulting position embeddings are returned to be passed up to higher layers. (default: False)
-        relative_attention_bias: nn.Embeding object used to compute relative position embeddings. (default: None)
 
     Examples::
         >>> decoder_layer = T5Layer(is_decoder=True, d_model=768, nhead=12)
@@ -497,7 +488,6 @@ class T5Layer(nn.Module):
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
         compute_relative_attention_bias: bool = False,
-        relative_attention_bias: Optional[Tensor] = None,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -507,10 +497,17 @@ class T5Layer(nn.Module):
         self.compute_relative_attention_bias = compute_relative_attention_bias
         self.relative_attention_num_buckets = relative_attention_num_buckets
         self.relative_attention_max_distance = relative_attention_max_distance
-        self.relative_attention_bias = relative_attention_bias
 
         self.self_attn = T5MultiheadAttention(
-            d_model, nhead, is_decoder=is_decoder, dropout=dropout, device=device, dtype=dtype
+            d_model,
+            nhead,
+            is_decoder=is_decoder,
+            dropout=dropout,
+            compute_relative_attention_bias=compute_relative_attention_bias,
+            relative_attention_num_buckets=relative_attention_num_buckets,
+            relative_attention_max_distance=relative_attention_max_distance,
+            device=device,
+            dtype=dtype,
         )
         self.linear1 = nn.Linear(d_model, dim_feedforward, bias=False)
         self.linear2 = nn.Linear(dim_feedforward, d_model, bias=False)
@@ -595,10 +592,6 @@ class T5Layer(nn.Module):
             attn_mask=attn_mask,
             key_padding_mask=key_padding_mask,
             need_weights=True,
-            compute_relative_attention_bias=self.compute_relative_attention_bias,
-            relative_attention_num_buckets=self.relative_attention_num_buckets,
-            relative_attention_max_distance=self.relative_attention_max_distance,
-            relative_attention_bias=self.relative_attention_bias,
             position_bias=position_bias,
         )
 
@@ -677,7 +670,6 @@ class T5Stack(nn.Module):
                     relative_attention_num_buckets,
                     relative_attention_max_distance,
                     compute_relative_attention_bias=True if i == 0 else False,
-                    relative_attention_bias=nn.Embedding(relative_attention_num_buckets, nhead) if i == 0 else None,
                     device=device,
                     dtype=dtype,
                 )
