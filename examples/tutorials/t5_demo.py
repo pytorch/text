@@ -76,8 +76,9 @@ transform = T5Transform(
 # -----------------
 #
 # torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
-# we use the pre-trained T5 model with standard base configuration to perform text summarization. For additional details on
-# available pre-trained models, please refer to documentation at https://pytorch.org/text/main/models.html
+# we use the pre-trained T5 model with standard base configuration to perform text summarization, sentiment classification, and
+# translation. For additional details on available pre-trained models, please refer to documentation at
+# https://pytorch.org/text/main/models.html
 #
 #
 from torchtext.prototype.models import T5_BASE_GENERATION
@@ -341,7 +342,7 @@ multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 # Generate Summaries
 # ------------------
 #
-# We can put all of the components together the generate summaries on the first batch of articles in the CNNDM test set
+# We can put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
 # using a beam size of 3.
 #
 
@@ -431,7 +432,7 @@ for i in range(cnndm_batch_size):
 # Generate Sentiment Classifications
 # ----------------------------------
 #
-# Similarly, we can now use the model to generate sentiment classifications on the first batch of reviews from the IMDB test set
+# Similarly, we can use the model to generate sentiment classifications on the first batch of reviews from the IMDB test set
 # using a beam size of 1.
 #
 
