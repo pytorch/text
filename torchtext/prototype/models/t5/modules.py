@@ -26,14 +26,14 @@ from torch import Tensor
 class T5MultiheadAttention(nn.MultiheadAttention):
     def __init__(
         self,
-        embed_dim,
-        num_heads,
-        is_decoder=False,
-        dropout=0.0,
-        bias=False,
-        kdim=None,
-        vdim=None,
-        device=None,
+        embed_dim: int,
+        num_heads: int,
+        is_decoder: bool = False,
+        dropout: float = 0.0,
+        bias: bool = False,
+        kdim: int = None,
+        vdim: int = None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         r"""
@@ -354,7 +354,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
         bidirectional: bool = True,
-        device=None,
+        device: Optional[torch.device] = None,
     ) -> Tensor:
         """Compute binned relative position bias"""
         if device is None:
@@ -498,7 +498,7 @@ class T5Layer(nn.Module):
         relative_attention_max_distance: int = 128,
         compute_relative_attention_bias: bool = False,
         relative_attention_bias: Optional[Tensor] = None,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
@@ -659,7 +659,7 @@ class T5Stack(nn.Module):
         layer_norm_eps: float = 1e-6,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()

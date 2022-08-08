@@ -69,7 +69,7 @@ class T5Model(nn.Module):
         self,
         config: T5Conf,
         freeze: bool = False,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
