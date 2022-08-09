@@ -33,14 +33,14 @@ Tutorials
 
 .. only:: html
 
-  .. image:: /tutorials/images/thumb/sphx_glr_cnndm_summarization_thumb.png
-    :alt: CNNDM Text Summarization with T5-Base model
+  .. image:: /tutorials/images/thumb/sphx_glr_t5_demo_thumb.png
+    :alt: T5-Base Model for Summarization, Sentiment Classification, and Translation
 
-  :ref:`sphx_glr_tutorials_cnndm_summarization.py`
+  :ref:`sphx_glr_tutorials_t5_demo.py`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">CNNDM Text Summarization with T5-Base model</div>
+      <div class="sphx-glr-thumbnail-title">T5-Base Model for Summarization, Sentiment Classification, and Translation</div>
     </div>
 
 
@@ -53,7 +53,7 @@ Tutorials
    :hidden:
 
    /tutorials/sst2_classification_non_distributed
-   /tutorials/cnndm_summarization
+   /tutorials/t5_demo
 
 
 .. only:: html

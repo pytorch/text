@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CNNDM Text Summarization with T5-Base model &mdash; Torchtext nightly documentation</title>
+  <title>T5-Base Model for Summarization, Sentiment Classification, and Translation &mdash; Torchtext nightly documentation</title>
   
 
   
@@ -195,7 +195,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220808) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220809) &#x25BC</a>
     </div>
     
 
@@ -236,7 +236,7 @@
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="sst2_classification_non_distributed.html">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">CNNDM Text Summarization with T5-Base model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">T5-Base Model for Summarization, Sentiment Classification, and Translation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -287,13 +287,13 @@
       </li>
 
         
-      <li>CNNDM Text Summarization with T5-Base model</li>
+      <li>T5-Base Model for Summarization, Sentiment Classification, and Translation</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="../_sources/tutorials/cnndm_summarization.rst.txt" rel="nofollow"><img src="../_static/images/view-page-source-icon.svg"></a>
+            <a href="../_sources/tutorials/t5_demo.rst.txt" rel="nofollow"><img src="../_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -316,7 +316,7 @@
     
 
     <div class="pytorch-call-to-action-links">
-      <div id="tutorial-type">tutorials/cnndm_summarization</div>
+      <div id="tutorial-type">tutorials/t5_demo</div>
 
       <div id="google-colab-link">
         <img class="call-to-action-img" src="../_static/images/pytorch-colab.svg"/>
@@ -345,20 +345,21 @@
               
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-cnndm-summarization-py"><span class="std std-ref">here</span></a>
+<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-t5-demo-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="cnndm-text-summarization-with-t5-base-model">
-<span id="sphx-glr-tutorials-cnndm-summarization-py"></span><h1>CNNDM Text Summarization with T5-Base model<a class="headerlink" href="#cnndm-text-summarization-with-t5-base-model" title="Permalink to this headline">¶</a></h1>
+<div class="sphx-glr-example-title section" id="t5-base-model-for-summarization-sentiment-classification-and-translation">
+<span id="sphx-glr-tutorials-t5-demo-py"></span><h1>T5-Base Model for Summarization, Sentiment Classification, and Translation<a class="headerlink" href="#t5-base-model-for-summarization-sentiment-classification-and-translation" title="Permalink to this headline">¶</a></h1>
 <p><strong>Author</strong>: <a class="reference external" href="mailto:pabbo&#37;&#52;&#48;fb&#46;com">Pendo Abbo</a></p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>This tutorial demonstrates how to use a pre-trained T5 Model for text summarization on the CNN-DailyMail dataset.
-We will demonstrate how to use the torchtext library to:</p>
+<p>This tutorial demonstrates how to use a pre-trained T5 Model for summarization, sentiment classification, and
+translation tasks. We will demonstrate how to use the torchtext library to:</p>
 <ol class="arabic simple">
 <li><p>Build a text pre-processing pipeline for a T5 model</p></li>
-<li><p>Read in the CNNDM dataset and pre-process the text</p></li>
-<li><p>Instantiate a pre-trained T5 model with base configuration, and perform text summarization on input text</p></li>
+<li><p>Instantiate a pre-trained T5 model with base configuration</p></li>
+<li><p>Read in the CNNDM, IMDB, and Multi30k datasets and pre-process their texts in preparation for the model</p></li>
+<li><p>Perform text summarization, sentiment classification, and translation</p></li>
 </ol>
 </div>
 <div class="section" id="common-imports">
@@ -405,62 +406,12 @@ the T5 model expects the input to be batched.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="dataset">
-<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
-<p>torchtext provides several standard NLP datasets. For a complete list, refer to the documentation at <a class="reference external" href="https://pytorch.org/text/stable/datasets.html">https://pytorch.org/text/stable/datasets.html</a>.
-These datasets are built using composable torchdata datapipes and hence support standard flow-control and mapping/transformation
-using user defined functions and transforms. Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary
-for the model to identify the task it is performing.</p>
-<p>The CNNDM dataset has a train, validation, and test split. Below we demo on the test split.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Using datapipes is still currently subject to a few caveats. If you wish
-to extend this example to include shuffling, multi-processing, or
-distributed learning, please see <a class="reference internal" href="../datasets.html#datapipes-warnings"><span class="std std-ref">this note</span></a>
-for further instructions.</p>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a>
-
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.cnndm</span> <span class="kn">import</span> <span class="n">CNNDM</span>
-
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-<span class="n">task</span> <span class="o">=</span> <span class="s2">&quot;summarize&quot;</span>
-
-
-<span class="k">def</span> <span class="nf">apply_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">apply_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
-<span class="n">test_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">test_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Alternately we can also use batched API (i.e apply the prefix on the whole batch)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">batch_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
- <span class="k">return</span> <span class="p">{</span>
-     <span class="s2">&quot;article&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">: &#39;</span> <span class="o">+</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;article&quot;</span><span class="p">]],</span>
-     <span class="s2">&quot;abstract&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;abstract&quot;</span><span class="p">]</span>
- <span class="p">}</span>
-
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-<span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;summarize&#39;</span>
-
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
-<span class="n">test_datapipe</span> <span class="o">=</span> <span class="n">test_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">batch_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
-<span class="n">test_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">test_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="model-preparation">
 <h2>Model Preparation<a class="headerlink" href="#model-preparation" title="Permalink to this headline">¶</a></h2>
 <p>torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
-we use the pre-trained T5 model with standard base configuration to perform text summarization. For additional details on
-available pre-trained models, please refer to documentation at <a class="reference external" href="https://pytorch.org/text/main/models.html">https://pytorch.org/text/main/models.html</a></p>
+we use the pre-trained T5 model with standard base configuration to perform text summarization, sentiment classification, and
+translation. For additional details on available pre-trained models, please refer to documentation at
+<a class="reference external" href="https://pytorch.org/text/main/models.html">https://pytorch.org/text/main/models.html</a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.prototype.models</span> <span class="kn">import</span> <span class="n">T5_BASE_GENERATION</span>
 
 
@@ -612,29 +563,122 @@ a greedy decoder.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="datasets">
+<h2>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
+<p>torchtext provides several standard NLP datasets. For a complete list, refer to the documentation
+at <a class="reference external" href="https://pytorch.org/text/stable/datasets.html">https://pytorch.org/text/stable/datasets.html</a>. These datasets are built using composable torchdata
+datapipes and hence support standard flow-control and mapping/transformation using user defined
+functions and transforms.</p>
+<p>Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
+model to indentify the task it is performing. The CNNDM dataset has a train, validation, and test
+split. Below we demo on the test split.</p>
+<p>The T5 model uses the prefix “summarize” for text summarization. For more information on task
+prefixes, please visit Appendix D of the T5 Paper at <a class="reference external" href="https://arxiv.org/pdf/1910.10683.pdf">https://arxiv.org/pdf/1910.10683.pdf</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using datapipes is still currently subject to a few caveats. If you wish
+to extend this example to include shuffling, multi-processing, or
+distributed learning, please see <a class="reference internal" href="../datasets.html#datapipes-warnings"><span class="std std-ref">this note</span></a>
+for further instructions.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a>
+
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
+<span class="kn">from</span> <span class="nn">torchtext.datasets.cnndm</span> <span class="kn">import</span> <span class="n">CNNDM</span>
+
+<span class="n">cnndm_batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s2">&quot;summarize&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">apply_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">: &quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">cnndm_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">apply_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">cnndm_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">cnndm_batch_size</span><span class="p">)</span>
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">cnndm_datapipe</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
+<span class="n">cnndm_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">cnndm_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternately we can also use batched API (i.e apply the prefix on the whole batch)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">batch_prefix</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+ <span class="k">return</span> <span class="p">{</span>
+     <span class="s2">&quot;article&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">: &#39;</span> <span class="o">+</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;article&quot;</span><span class="p">]],</span>
+     <span class="s2">&quot;abstract&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;abstract&quot;</span><span class="p">]</span>
+ <span class="p">}</span>
+
+<span class="n">cnndm_batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">CNNDM</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;summarize&#39;</span>
+
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">cnndm_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">cnndm_batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;abstract&quot;</span><span class="p">])</span>
+<span class="n">cnndm_datapipe</span> <span class="o">=</span> <span class="n">cnndm_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">batch_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">cnndm_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">cnndm_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also load the IMDB dataset, which will be used to demonstrate sentiment classification using the T5 model.
+This dataset has a train and test split. Below we demo on the test split.</p>
+<p>The T5 model was trained on the SST2 dataset (also available in torchtext) for sentiment classification using the
+prefix “sst2 sentence”. Therefore, we will use this prefix to perform sentiment classification on the IMDB dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">IMDB</span>
+
+<span class="n">imdb_batch_size</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">imdb_datapipe</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s2">&quot;sst2 sentence&quot;</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;neg&quot;</span><span class="p">:</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="s2">&quot;positive&quot;</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">process_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+
+<span class="n">imdb_datapipe</span> <span class="o">=</span> <span class="n">imdb_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">process_labels</span><span class="p">,</span> <span class="n">labels</span><span class="p">))</span>
+<span class="n">imdb_datapipe</span> <span class="o">=</span> <span class="n">imdb_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">apply_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">imdb_datapipe</span> <span class="o">=</span> <span class="n">imdb_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">imdb_batch_size</span><span class="p">)</span>
+<span class="n">imdb_datapipe</span> <span class="o">=</span> <span class="n">imdb_datapipe</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">])</span>
+<span class="n">imdb_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">imdb_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we can also load the Multi30k dataset to demonstrate English to German translation using the T5 model.
+This dataset has a train, validation, and test split. Below we demo on the test split.</p>
+<p>The T5 model uses the prefix “translate English to German” for this task.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">Multi30k</span>
+
+<span class="n">multi_batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">language_pair</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">)</span>
+<span class="n">multi_datapipe</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">language_pair</span><span class="o">=</span><span class="n">language_pair</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="s2">&quot;translate English to German&quot;</span>
+
+<span class="n">multi_datapipe</span> <span class="o">=</span> <span class="n">multi_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">apply_prefix</span><span class="p">,</span> <span class="n">task</span><span class="p">))</span>
+<span class="n">multi_datapipe</span> <span class="o">=</span> <span class="n">multi_datapipe</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">multi_batch_size</span><span class="p">)</span>
+<span class="n">multi_datapipe</span> <span class="o">=</span> <span class="n">multi_datapipe</span><span class="o">.</span><span class="n">rows2columnar</span><span class="p">([</span><span class="s2">&quot;english&quot;</span><span class="p">,</span> <span class="s2">&quot;german&quot;</span><span class="p">])</span>
+<span class="n">multi_dataloader</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">multi_datapipe</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="generate-summaries">
 <h2>Generate Summaries<a class="headerlink" href="#generate-summaries" title="Permalink to this headline">¶</a></h2>
-<p>Finally we put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
+<p>We can put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
 using a beam size of 3.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_dataloader</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">cnndm_dataloader</span><span class="p">))</span>
 <span class="n">input_text</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;article&quot;</span><span class="p">]</span>
-<span class="n">model_input</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
 <span class="n">target</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;abstract&quot;</span><span class="p">]</span>
 <span class="n">beam_size</span> <span class="o">=</span> <span class="mi">3</span>
 
+<span class="n">model_input</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
 <span class="n">model_output</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">encoder_tokens</span><span class="o">=</span><span class="n">model_input</span><span class="p">,</span> <span class="n">eos_idx</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">,</span> <span class="n">beam_size</span><span class="o">=</span><span class="n">beam_size</span><span class="p">)</span>
 <span class="n">output_text</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">model_output</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
-
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnndm_batch_size</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Example </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prediction: </span><span class="si">{</span><span class="n">output_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target: </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="output">
-<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="summarization-output">
+<h2>Summarization Output<a class="headerlink" href="#summarization-output" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Example</span> <span class="mi">1</span><span class="p">:</span>
 
 <span class="n">prediction</span><span class="p">:</span> <span class="n">the</span> <span class="n">Palestinians</span> <span class="n">become</span> <span class="n">the</span> <span class="mi">123</span><span class="n">rd</span> <span class="n">member</span> <span class="n">of</span> <span class="n">the</span> <span class="n">international</span> <span class="n">criminal</span>
@@ -695,13 +739,169 @@ using a beam size of 3.</p>
 <span class="n">campus</span> <span class="n">about</span> <span class="mi">2</span> <span class="n">a</span><span class="o">.</span><span class="n">m</span><span class="o">.</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="generate-sentiment-classifications">
+<h2>Generate Sentiment Classifications<a class="headerlink" href="#generate-sentiment-classifications" title="Permalink to this headline">¶</a></h2>
+<p>Similarly, we can use the model to generate sentiment classifications on the first batch of reviews from the IMDB test set
+using a beam size of 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">imdb_dataloader</span><span class="p">))</span>
+<span class="n">input_text</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+<span class="n">beam_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">model_input</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+<span class="n">model_output</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">encoder_tokens</span><span class="o">=</span><span class="n">model_input</span><span class="p">,</span> <span class="n">eos_idx</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">,</span> <span class="n">beam_size</span><span class="o">=</span><span class="n">beam_size</span><span class="p">)</span>
+<span class="n">output_text</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">model_output</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imdb_batch_size</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Example </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_text: </span><span class="si">{</span><span class="n">input_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prediction: </span><span class="si">{</span><span class="n">output_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target: </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sentiment-output">
+<h2>Sentiment Output<a class="headerlink" href="#sentiment-output" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Example</span> <span class="mi">1</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">sst2</span> <span class="n">sentence</span><span class="p">:</span> <span class="n">I</span> <span class="n">love</span> <span class="n">sci</span><span class="o">-</span><span class="n">fi</span> <span class="ow">and</span> <span class="n">am</span> <span class="n">willing</span> <span class="n">to</span> <span class="n">put</span> <span class="n">up</span> <span class="k">with</span> <span class="n">a</span> <span class="n">lot</span><span class="o">.</span> <span class="n">Sci</span><span class="o">-</span><span class="n">fi</span>
+<span class="n">movies</span><span class="o">/</span><span class="n">TV</span> <span class="n">are</span> <span class="n">usually</span> <span class="n">underfunded</span><span class="p">,</span> <span class="n">under</span><span class="o">-</span><span class="n">appreciated</span> <span class="ow">and</span> <span class="n">misunderstood</span><span class="o">.</span> <span class="n">I</span> <span class="n">tried</span> <span class="n">to</span> <span class="n">like</span>
+<span class="n">this</span><span class="p">,</span> <span class="n">I</span> <span class="n">really</span> <span class="n">did</span><span class="p">,</span> <span class="n">but</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">to</span> <span class="n">good</span> <span class="n">TV</span> <span class="n">sci</span><span class="o">-</span><span class="n">fi</span> <span class="k">as</span> <span class="n">Babylon</span> <span class="mi">5</span> <span class="ow">is</span> <span class="n">to</span> <span class="n">Star</span> <span class="n">Trek</span> <span class="p">(</span><span class="n">the</span> <span class="n">original</span><span class="p">)</span><span class="o">.</span>
+<span class="n">Silly</span> <span class="n">prosthetics</span><span class="p">,</span> <span class="n">cheap</span> <span class="n">cardboard</span> <span class="n">sets</span><span class="p">,</span> <span class="n">stilted</span> <span class="n">dialogues</span><span class="p">,</span> <span class="n">CG</span> <span class="n">that</span> <span class="n">doesn</span><span class="s1">&#39;t match the</span>
+<span class="n">background</span><span class="p">,</span> <span class="ow">and</span> <span class="n">painfully</span> <span class="n">one</span><span class="o">-</span><span class="n">dimensional</span> <span class="n">characters</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">overcome</span> <span class="k">with</span> <span class="n">a</span> <span class="s1">&#39;sci-fi&#39;</span>
+<span class="n">setting</span><span class="o">.</span> <span class="p">(</span><span class="n">I</span><span class="s1">&#39;m sure there are those of you out there who think Babylon 5 is good sci-fi TV.</span>
+<span class="n">It</span><span class="s1">&#39;s not. It&#39;</span><span class="n">s</span> <span class="n">clichéd</span> <span class="ow">and</span> <span class="n">uninspiring</span><span class="o">.</span><span class="p">)</span> <span class="n">While</span> <span class="n">US</span> <span class="n">viewers</span> <span class="n">might</span> <span class="n">like</span> <span class="n">emotion</span> <span class="ow">and</span> <span class="n">character</span>
+<span class="n">development</span><span class="p">,</span> <span class="n">sci</span><span class="o">-</span><span class="n">fi</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">genre</span> <span class="n">that</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">take</span> <span class="n">itself</span> <span class="n">seriously</span> <span class="p">(</span><span class="n">cf</span><span class="o">.</span> <span class="n">Star</span> <span class="n">Trek</span><span class="p">)</span><span class="o">.</span> <span class="n">It</span> <span class="n">may</span>
+<span class="n">treat</span> <span class="n">important</span> <span class="n">issues</span><span class="p">,</span> <span class="n">yet</span> <span class="ow">not</span> <span class="k">as</span> <span class="n">a</span> <span class="n">serious</span> <span class="n">philosophy</span><span class="o">.</span> <span class="n">It</span><span class="s1">&#39;s really difficult to care about</span>
+<span class="n">the</span> <span class="n">characters</span> <span class="n">here</span> <span class="k">as</span> <span class="n">they</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">simply</span> <span class="n">foolish</span><span class="p">,</span> <span class="n">just</span> <span class="n">missing</span> <span class="n">a</span> <span class="n">spark</span> <span class="n">of</span> <span class="n">life</span><span class="o">.</span> <span class="n">Their</span>
+<span class="n">actions</span> <span class="ow">and</span> <span class="n">reactions</span> <span class="n">are</span> <span class="n">wooden</span> <span class="ow">and</span> <span class="n">predictable</span><span class="p">,</span> <span class="n">often</span> <span class="n">painful</span> <span class="n">to</span> <span class="n">watch</span><span class="o">.</span> <span class="n">The</span> <span class="n">makers</span> <span class="n">of</span> <span class="n">Earth</span>
+<span class="n">KNOW</span> <span class="n">it</span><span class="s1">&#39;s rubbish as they have to always say &quot;Gene Roddenberry&#39;</span><span class="n">s</span> <span class="n">Earth</span><span class="o">...</span><span class="s2">&quot; otherwise people</span>
+<span class="n">would</span> <span class="ow">not</span> <span class="k">continue</span> <span class="n">watching</span><span class="o">.</span> <span class="n">Roddenberry</span><span class="s1">&#39;s ashes must be turning in their orbit as this dull,</span>
+<span class="n">cheap</span><span class="p">,</span> <span class="n">poorly</span> <span class="n">edited</span> <span class="p">(</span><span class="n">watching</span> <span class="n">it</span> <span class="n">without</span> <span class="n">advert</span> <span class="n">breaks</span> <span class="n">really</span> <span class="n">brings</span> <span class="n">this</span> <span class="n">home</span><span class="p">)</span> <span class="n">trudging</span>
+<span class="n">Trabant</span> <span class="n">of</span> <span class="n">a</span> <span class="n">show</span> <span class="n">lumbers</span> <span class="n">into</span> <span class="n">space</span><span class="o">.</span> <span class="n">Spoiler</span><span class="o">.</span> <span class="n">So</span><span class="p">,</span> <span class="n">kill</span> <span class="n">off</span> <span class="n">a</span> <span class="n">main</span> <span class="n">character</span><span class="o">.</span> <span class="n">And</span> <span class="n">then</span> <span class="n">bring</span>
+<span class="n">him</span> <span class="n">back</span> <span class="k">as</span> <span class="n">another</span> <span class="n">actor</span><span class="o">.</span> <span class="n">Jeeez</span><span class="o">.</span> <span class="n">Dallas</span> <span class="nb">all</span> <span class="n">over</span> <span class="n">again</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">negative</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">negative</span>
+
+
+<span class="n">Example</span> <span class="mi">2</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">sst2</span> <span class="n">sentence</span><span class="p">:</span> <span class="n">Worth</span> <span class="n">the</span> <span class="n">entertainment</span> <span class="n">value</span> <span class="n">of</span> <span class="n">a</span> <span class="n">rental</span><span class="p">,</span> <span class="n">especially</span> <span class="k">if</span> <span class="n">you</span> <span class="n">like</span>
+<span class="n">action</span> <span class="n">movies</span><span class="o">.</span> <span class="n">This</span> <span class="n">one</span> <span class="n">features</span> <span class="n">the</span> <span class="n">usual</span> <span class="n">car</span> <span class="n">chases</span><span class="p">,</span> <span class="n">fights</span> <span class="k">with</span> <span class="n">the</span> <span class="n">great</span> <span class="n">Van</span> <span class="n">Damme</span> <span class="n">kick</span>
+<span class="n">style</span><span class="p">,</span> <span class="n">shooting</span> <span class="n">battles</span> <span class="k">with</span> <span class="n">the</span> <span class="mi">40</span> <span class="n">shell</span> <span class="n">load</span> <span class="n">shotgun</span><span class="p">,</span> <span class="ow">and</span> <span class="n">even</span> <span class="n">terrorist</span> <span class="n">style</span> <span class="n">bombs</span><span class="o">.</span> <span class="n">All</span>
+<span class="n">of</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">entertaining</span> <span class="ow">and</span> <span class="n">competently</span> <span class="n">handled</span> <span class="n">but</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">nothing</span> <span class="n">that</span> <span class="n">really</span> <span class="n">blows</span> <span class="n">you</span>
+<span class="n">away</span> <span class="k">if</span> <span class="n">you</span><span class="s1">&#39;ve seen your share before.&lt;br /&gt;&lt;br /&gt;The plot is made interesting by the</span>
+<span class="n">inclusion</span> <span class="n">of</span> <span class="n">a</span> <span class="n">rabbit</span><span class="p">,</span> <span class="n">which</span> <span class="ow">is</span> <span class="n">clever</span> <span class="n">but</span> <span class="n">hardly</span> <span class="n">profound</span><span class="o">.</span> <span class="n">Many</span> <span class="n">of</span> <span class="n">the</span> <span class="n">characters</span> <span class="n">are</span>
+<span class="n">heavily</span> <span class="n">stereotyped</span> <span class="o">--</span> <span class="n">the</span> <span class="n">angry</span> <span class="n">veterans</span><span class="p">,</span> <span class="n">the</span> <span class="n">terrified</span> <span class="n">illegal</span> <span class="n">aliens</span><span class="p">,</span> <span class="n">the</span> <span class="n">crooked</span> <span class="n">cops</span><span class="p">,</span>
+<span class="n">the</span> <span class="n">indifferent</span> <span class="n">feds</span><span class="p">,</span> <span class="n">the</span> <span class="n">bitchy</span> <span class="n">tough</span> <span class="n">lady</span> <span class="n">station</span> <span class="n">head</span><span class="p">,</span> <span class="n">the</span> <span class="n">crooked</span> <span class="n">politician</span><span class="p">,</span> <span class="n">the</span> <span class="n">fat</span>
+<span class="n">federale</span> <span class="n">who</span> <span class="n">looks</span> <span class="n">like</span> <span class="n">he</span> <span class="n">was</span> <span class="n">typecast</span> <span class="k">as</span> <span class="n">the</span> <span class="n">Mexican</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">Hollywood</span> <span class="n">movie</span> <span class="kn">from</span> <span class="nn">the</span> <span class="mi">1940</span><span class="n">s</span><span class="o">.</span>
+<span class="n">All</span> <span class="n">passably</span> <span class="n">acted</span> <span class="n">but</span> <span class="n">again</span> <span class="n">nothing</span> <span class="n">special</span><span class="o">.&lt;</span><span class="n">br</span> <span class="o">/&gt;&lt;</span><span class="n">br</span> <span class="o">/&gt;</span><span class="n">I</span> <span class="n">thought</span> <span class="n">the</span> <span class="n">main</span> <span class="n">villains</span> <span class="n">were</span>
+<span class="n">pretty</span> <span class="n">well</span> <span class="n">done</span> <span class="ow">and</span> <span class="n">fairly</span> <span class="n">well</span> <span class="n">acted</span><span class="o">.</span> <span class="n">By</span> <span class="n">the</span> <span class="n">end</span> <span class="n">of</span> <span class="n">the</span> <span class="n">movie</span> <span class="n">you</span> <span class="n">certainly</span> <span class="n">knew</span> <span class="n">who</span> <span class="n">the</span>
+<span class="n">good</span> <span class="n">guys</span> <span class="n">were</span> <span class="ow">and</span> <span class="n">weren</span><span class="s1">&#39;t. There was an emotional lift as the really bad ones got their just</span>
+<span class="n">deserts</span><span class="o">.</span> <span class="n">Very</span> <span class="n">simplistic</span><span class="p">,</span> <span class="n">but</span> <span class="n">then</span> <span class="n">you</span> <span class="n">weren</span><span class="s1">&#39;t expecting Hamlet, right? The only thing I found</span>
+<span class="n">really</span> <span class="n">annoying</span> <span class="n">was</span> <span class="n">the</span> <span class="n">constant</span> <span class="n">cuts</span> <span class="n">to</span> <span class="n">VDs</span> <span class="n">daughter</span> <span class="n">during</span> <span class="n">the</span> <span class="n">last</span> <span class="n">fight</span> <span class="n">scene</span><span class="o">.&lt;</span><span class="n">br</span> <span class="o">/&gt;&lt;</span><span class="n">br</span> <span class="o">/&gt;</span>
+<span class="n">Not</span> <span class="n">bad</span><span class="o">.</span> <span class="n">Not</span> <span class="n">good</span><span class="o">.</span> <span class="n">Passable</span> <span class="mf">4.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">negative</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">negative</span>
+
+
+<span class="n">Example</span> <span class="mi">3</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">sst2</span> <span class="n">sentence</span><span class="p">:</span> <span class="n">its</span> <span class="n">a</span> <span class="n">totally</span> <span class="n">average</span> <span class="n">film</span> <span class="k">with</span> <span class="n">a</span> <span class="n">few</span> <span class="n">semi</span><span class="o">-</span><span class="n">alright</span> <span class="n">action</span> <span class="n">sequences</span>
+<span class="n">that</span> <span class="n">make</span> <span class="n">the</span> <span class="n">plot</span> <span class="n">seem</span> <span class="n">a</span> <span class="n">little</span> <span class="n">better</span> <span class="ow">and</span> <span class="n">remind</span> <span class="n">the</span> <span class="n">viewer</span> <span class="n">of</span> <span class="n">the</span> <span class="n">classic</span> <span class="n">van</span> <span class="n">dam</span> <span class="n">films</span><span class="o">.</span>
+<span class="n">parts</span> <span class="n">of</span> <span class="n">the</span> <span class="n">plot</span> <span class="n">don</span><span class="s1">&#39;t make sense and seem to be added in to use up time. the end plot is that</span>
+<span class="n">of</span> <span class="n">a</span> <span class="n">very</span> <span class="n">basic</span> <span class="nb">type</span> <span class="n">that</span> <span class="n">doesn</span><span class="s1">&#39;t leave the viewer guessing and any twists are obvious from the</span>
+<span class="n">beginning</span><span class="o">.</span> <span class="n">the</span> <span class="n">end</span> <span class="n">scene</span> <span class="k">with</span> <span class="n">the</span> <span class="n">flask</span> <span class="n">backs</span> <span class="n">don</span><span class="s1">&#39;t make sense as they are added in and seem to</span>
+<span class="n">have</span> <span class="n">little</span> <span class="n">relevance</span> <span class="n">to</span> <span class="n">the</span> <span class="n">history</span> <span class="n">of</span> <span class="n">van</span> <span class="n">dam</span><span class="s1">&#39;s character. not really worth watching again,</span>
+<span class="n">bit</span> <span class="n">disappointed</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">end</span> <span class="n">production</span><span class="p">,</span> <span class="n">even</span> <span class="n">though</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">apparent</span> <span class="n">it</span> <span class="n">was</span> <span class="n">shot</span> <span class="n">on</span> <span class="n">a</span> <span class="n">low</span> <span class="n">budget</span>
+<span class="n">certain</span> <span class="n">shots</span> <span class="ow">and</span> <span class="n">sections</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">film</span> <span class="n">are</span> <span class="n">of</span> <span class="n">poor</span> <span class="n">directed</span> <span class="n">quality</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">negative</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">negative</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generate-translations">
+<h2>Generate Translations<a class="headerlink" href="#generate-translations" title="Permalink to this headline">¶</a></h2>
+<p>Finally, we can also use the model to generate English to German translations on the first batch of examples from the Multi30k
+test set using a beam size of 4.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">multi_dataloader</span><span class="p">))</span>
+<span class="n">input_text</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;english&quot;</span><span class="p">]</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;german&quot;</span><span class="p">]</span>
+<span class="n">beam_size</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="n">model_input</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+<span class="n">model_output</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">encoder_tokens</span><span class="o">=</span><span class="n">model_input</span><span class="p">,</span> <span class="n">eos_idx</span><span class="o">=</span><span class="n">eos_idx</span><span class="p">,</span> <span class="n">beam_size</span><span class="o">=</span><span class="n">beam_size</span><span class="p">)</span>
+<span class="n">output_text</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">model_output</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_batch_size</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Example </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_text: </span><span class="si">{</span><span class="n">input_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prediction: </span><span class="si">{</span><span class="n">output_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target: </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="translation-output">
+<h2>Translation Output<a class="headerlink" href="#translation-output" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Example</span> <span class="mi">1</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">translate</span> <span class="n">English</span> <span class="n">to</span> <span class="n">German</span><span class="p">:</span> <span class="n">A</span> <span class="n">man</span> <span class="ow">in</span> <span class="n">an</span> <span class="n">orange</span> <span class="n">hat</span> <span class="n">starring</span> <span class="n">at</span> <span class="n">something</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Mann</span> <span class="ow">in</span> <span class="n">einem</span> <span class="n">orangen</span> <span class="n">Hut</span><span class="p">,</span> <span class="n">der</span> <span class="n">an</span> <span class="n">etwas</span> <span class="n">schaut</span><span class="o">.</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Mann</span> <span class="n">mit</span> <span class="n">einem</span> <span class="n">orangefarbenen</span> <span class="n">Hut</span><span class="p">,</span> <span class="n">der</span> <span class="n">etwas</span> <span class="n">anstarrt</span><span class="o">.</span>
+
+
+<span class="n">Example</span> <span class="mi">2</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">translate</span> <span class="n">English</span> <span class="n">to</span> <span class="n">German</span><span class="p">:</span> <span class="n">A</span> <span class="n">Boston</span> <span class="n">Terrier</span> <span class="ow">is</span> <span class="n">running</span> <span class="n">on</span> <span class="n">lush</span> <span class="n">green</span> <span class="n">grass</span> <span class="ow">in</span> <span class="n">front</span> <span class="n">of</span> <span class="n">a</span> <span class="n">white</span> <span class="n">fence</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Boston</span> <span class="n">Terrier</span> <span class="n">läuft</span> <span class="n">auf</span> <span class="n">üppigem</span> <span class="n">grünem</span> <span class="n">Gras</span> <span class="n">vor</span> <span class="n">einem</span> <span class="n">weißen</span> <span class="n">Zaun</span><span class="o">.</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Boston</span> <span class="n">Terrier</span> <span class="n">läuft</span> <span class="n">über</span> <span class="n">saftig</span><span class="o">-</span><span class="n">grünes</span> <span class="n">Gras</span> <span class="n">vor</span> <span class="n">einem</span> <span class="n">weißen</span> <span class="n">Zaun</span><span class="o">.</span>
+
+
+<span class="n">Example</span> <span class="mi">3</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">translate</span> <span class="n">English</span> <span class="n">to</span> <span class="n">German</span><span class="p">:</span> <span class="n">A</span> <span class="n">girl</span> <span class="ow">in</span> <span class="n">karate</span> <span class="n">uniform</span> <span class="n">breaking</span> <span class="n">a</span> <span class="n">stick</span> <span class="k">with</span> <span class="n">a</span> <span class="n">front</span> <span class="n">kick</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Mädchen</span> <span class="ow">in</span> <span class="n">Karate</span><span class="o">-</span><span class="n">Uniform</span> <span class="n">bricht</span> <span class="n">einen</span> <span class="n">Stöck</span> <span class="n">mit</span> <span class="n">einem</span> <span class="n">Frontkick</span><span class="o">.</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">Ein</span> <span class="n">Mädchen</span> <span class="ow">in</span> <span class="n">einem</span> <span class="n">Karateanzug</span> <span class="n">bricht</span> <span class="n">ein</span> <span class="n">Brett</span> <span class="n">mit</span> <span class="n">einem</span> <span class="n">Tritt</span><span class="o">.</span>
+
+
+<span class="n">Example</span> <span class="mi">4</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">translate</span> <span class="n">English</span> <span class="n">to</span> <span class="n">German</span><span class="p">:</span> <span class="n">Five</span> <span class="n">people</span> <span class="n">wearing</span> <span class="n">winter</span> <span class="n">jackets</span> <span class="ow">and</span> <span class="n">helmets</span> <span class="n">stand</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">snow</span><span class="p">,</span> <span class="k">with</span> <span class="n">snowmobiles</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">background</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">Fünf</span> <span class="n">Menschen</span> <span class="n">mit</span> <span class="n">Winterjacken</span> <span class="n">und</span> <span class="n">Helmen</span> <span class="n">stehen</span> <span class="n">im</span> <span class="n">Schnee</span><span class="p">,</span> <span class="n">mit</span> <span class="n">Schneemobilen</span> <span class="n">im</span> <span class="n">Hintergrund</span><span class="o">.</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">Fünf</span> <span class="n">Leute</span> <span class="ow">in</span> <span class="n">Winterjacken</span> <span class="n">und</span> <span class="n">mit</span> <span class="n">Helmen</span> <span class="n">stehen</span> <span class="n">im</span> <span class="n">Schnee</span> <span class="n">mit</span> <span class="n">Schneemobilen</span> <span class="n">im</span> <span class="n">Hintergrund</span><span class="o">.</span>
+
+
+<span class="n">Example</span> <span class="mi">5</span><span class="p">:</span>
+
+<span class="n">input_text</span><span class="p">:</span> <span class="n">translate</span> <span class="n">English</span> <span class="n">to</span> <span class="n">German</span><span class="p">:</span> <span class="n">People</span> <span class="n">are</span> <span class="n">fixing</span> <span class="n">the</span> <span class="n">roof</span> <span class="n">of</span> <span class="n">a</span> <span class="n">house</span><span class="o">.</span>
+
+<span class="n">prediction</span><span class="p">:</span> <span class="n">Die</span> <span class="n">Leute</span> <span class="n">fixieren</span> <span class="n">das</span> <span class="n">Dach</span> <span class="n">eines</span> <span class="n">Hauses</span><span class="o">.</span>
+
+<span class="n">target</span><span class="p">:</span> <span class="n">Leute</span> <span class="n">Reparieren</span> <span class="n">das</span> <span class="n">Dach</span> <span class="n">eines</span> <span class="n">Hauses</span><span class="o">.</span>
+</pre></div>
+</div>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-cnndm-summarization-py">
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-t5-demo-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/b075fb73b6301950f6da948106cba651/cnndm_summarization.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cnndm_summarization.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/44b94d63339a7b86de25d87a007ac20d/t5_demo.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">t5_demo.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/359600fa3feade002e500c7814a29664/cnndm_summarization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cnndm_summarization.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/607a641e3f6f089289ce96925bb002c7/t5_demo.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">t5_demo.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -751,15 +951,19 @@ using a beam size of 3.</p>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">CNNDM Text Summarization with T5-Base model</a><ul>
+<li><a class="reference internal" href="#">T5-Base Model for Summarization, Sentiment Classification, and Translation</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#common-imports">Common imports</a></li>
 <li><a class="reference internal" href="#data-transformation">Data Transformation</a></li>
-<li><a class="reference internal" href="#dataset">Dataset</a></li>
 <li><a class="reference internal" href="#model-preparation">Model Preparation</a></li>
 <li><a class="reference internal" href="#sequence-generator">Sequence Generator</a></li>
+<li><a class="reference internal" href="#datasets">Datasets</a></li>
 <li><a class="reference internal" href="#generate-summaries">Generate Summaries</a></li>
-<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#summarization-output">Summarization Output</a></li>
+<li><a class="reference internal" href="#generate-sentiment-classifications">Generate Sentiment Classifications</a></li>
+<li><a class="reference internal" href="#sentiment-output">Sentiment Output</a></li>
+<li><a class="reference internal" href="#generate-translations">Generate Translations</a></li>
+<li><a class="reference internal" href="#translation-output">Translation Output</a></li>
 </ul>
 </li>
 </ul>
