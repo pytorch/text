@@ -19,6 +19,7 @@ Sphinx
 pytest
 expecttest
 parameterized
+torchdata
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath
