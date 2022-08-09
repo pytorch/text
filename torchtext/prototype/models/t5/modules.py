@@ -31,11 +31,11 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         is_decoder: bool = False,
         dropout: float = 0.0,
         bias: bool = False,
-        kdim: int = None,
-        vdim: int = None,
-        compute_relative_attention_bias=False,
-        relative_attention_num_buckets=32,
-        relative_attention_max_distance=128,
+        kdim: Optional[int] = None,
+        vdim: Optional[int] = None,
+        compute_relative_attention_bias: bool = False,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -416,7 +416,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
 # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L239
 class T5LayerNorm(nn.Module):
-    def __init__(self, d_model, eps=1e-6) -> None:
+    def __init__(self, d_model: int, eps: float = 1e-6) -> None:
         """
         Construct a layernorm module in the T5 style. No bias and no subtraction of mean.
         """
@@ -776,7 +776,7 @@ class T5Encoder(nn.Module):
         tgt_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
     ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]:
-        r"""Pass the inputs (and mask) through the stack of encoder layers.
+        r"""Pass the input (and masks) through the stack of encoder layers.
         Args:
             tgt: Input sequence to the encoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
@@ -864,13 +864,13 @@ class T5Decoder(nn.Module):
     def forward(
         self,
         tgt: Tensor,
-        memory: Tensor = None,
+        memory: Tensor,
         tgt_mask: Optional[Tensor] = None,
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
     ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]:
-        r"""Pass the inputs (and mask) through the stack of encoder/decoder layers.
+        r"""Pass the inputs (and masks) through the stack of decoder layers.
         Args:
             tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence

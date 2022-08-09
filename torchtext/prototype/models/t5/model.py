@@ -136,7 +136,7 @@ class T5Model(nn.Module):
     def forward(
         self,
         encoder_tokens: Tensor,
-        decoder_tokens: Tensor = None,
+        decoder_tokens: Optional[Tensor] = None,
         encoder_mask: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
     ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
@@ -183,6 +183,7 @@ class T5Model(nn.Module):
                 decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * self.padding_idx
 
             if decoder_mask is None:
+                assert decoder_tokens is not None and decoder_tokens.dim() == 2
                 tgt_len = decoder_tokens.shape[1]
                 decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
                 decoder_mask = decoder_mask.to(torch.bool)
@@ -231,5 +232,9 @@ class T5Model(nn.Module):
                 "encoder_position_bias": encoder_position_bias,
                 "encoder_sa_scores": encoder_sa,
             }
+
+            assert torch.jit.isinstance(
+                t5_output, Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
+            )
 
         return t5_output
