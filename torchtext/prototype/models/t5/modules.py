@@ -21,6 +21,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
+from torch.nn.modules.linear import NonDynamicallyQuantizableLinear
 
 
 class T5MultiheadAttention(nn.MultiheadAttention):
@@ -31,8 +32,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         is_decoder: bool = False,
         dropout: float = 0.0,
         bias: bool = False,
-        kdim: Optional[int] = None,
-        vdim: Optional[int] = None,
+        qkv_dim: int = 64,
         compute_relative_attention_bias: bool = False,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
@@ -46,8 +46,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             is_decoder: Whether or not multihead attention is being performed on a decoder layer. Default: `False`
             dropout: Probability of an element to be zeroed. Default: 0.0
             bias: If specified, adds bias to input / output projection layers. Default: `False`.
-            kdim: Total number of features for keys. Default: `None` (uses `kdim=embed_dim`).
-            vdim: Total number of features for values. Default: `None` (uses `vdim=embed_dim`).
+            qkv_dim: Projection dimension (per head) for query, keys, and values. Defualt: 64.
             compute_relative_attention_bias: Whether or not the relative position embeddings
                 need to be computed. Wypically occurs in the first layer of the encoder/decoder
                 and the resulting position embeddings are returned to be passed up to higher layers. (defualt: False)
@@ -55,12 +54,15 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             relative_attention_max_distance: Maximum threshold on the relative distance used to
                 allocate buckets. Anything larger gets placed in the same bucket. Default: `128`
         """
-        super().__init__(embed_dim, num_heads, dropout, bias, False, False, kdim, vdim, True, device, dtype)
+        super().__init__(embed_dim, num_heads, dropout, bias, False, False, qkv_dim, qkv_dim, True, device, dtype)
         factory_kwargs = {"device": device, "dtype": dtype}
         self.is_decoder = is_decoder
-        self.q_proj_weight = nn.Parameter(torch.empty((embed_dim, embed_dim), **factory_kwargs))
-        self.k_proj_weight = nn.Parameter(torch.empty((embed_dim, self.kdim), **factory_kwargs))
-        self.v_proj_weight = nn.Parameter(torch.empty((embed_dim, self.vdim), **factory_kwargs))
+        self.inner_dim = qkv_dim * num_heads
+        self.q_proj_weight = nn.Parameter(torch.empty((self.inner_dim, embed_dim), **factory_kwargs))
+        self.k_proj_weight = nn.Parameter(torch.empty((self.inner_dim, embed_dim), **factory_kwargs))
+        self.v_proj_weight = nn.Parameter(torch.empty((self.inner_dim, embed_dim), **factory_kwargs))
+        self.out_proj = NonDynamicallyQuantizableLinear(self.inner_dim, embed_dim, bias=bias, **factory_kwargs)
+
         self.register_parameter("in_proj_weight", None)
 
         self.compute_relative_attention_bias = compute_relative_attention_bias
@@ -171,14 +173,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         assert (
             embed_dim == self.embed_dim
         ), f"was expecting embedding dimension of {self.embed_dim}, but got {embed_dim}"
-        if isinstance(embed_dim, Tensor):
-            # Embed_dim can be a tensor when JIT tracing
-            head_dim = embed_dim.div(self.num_heads, rounding_mode="trunc")
-        else:
-            head_dim = embed_dim // self.num_heads
-        assert (
-            head_dim * self.num_heads == embed_dim
-        ), f"embed_dim {embed_dim} not divisible by num_heads {self.num_heads}"
+        head_dim = self.inner_dim // self.num_heads
         # Allow MHA to have different embedding dimensions when separate projection weights are used
         assert (
             key.shape[:2] == value.shape[:2]
@@ -192,7 +187,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             b_q = b_k = b_v = None
         else:
             b_q, b_k, b_v = self.in_proj_bias.chunk(3)
-        q, k, v = F._in_projection(
+        q, k, v = self._t5_in_projection(
             query, key, value, self.q_proj_weight, self.k_proj_weight, self.v_proj_weight, b_q, b_k, b_v
         )
 
@@ -221,7 +216,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             warnings.warn("Byte tensor for key_padding_mask is not supported. Using bool tensor instead.")
             key_padding_mask = key_padding_mask.to(torch.bool)
 
-        # Reshape q, k, v for multihead attention and make em batch first
+        # Reshape q, k, v for multihead attention and make them batch first
         q = q.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
         k = k.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
         v = v.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
@@ -288,6 +283,71 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 attn_output = attn_output.squeeze(1)
 
             return attn_output, position_bias, None
+
+    def _t5_in_projection(
+        self,
+        q: Tensor,
+        k: Tensor,
+        v: Tensor,
+        w_q: Tensor,
+        w_k: Tensor,
+        w_v: Tensor,
+        b_q: Optional[Tensor] = None,
+        b_k: Optional[Tensor] = None,
+        b_v: Optional[Tensor] = None,
+    ) -> Tuple[Tensor, Tensor, Tensor]:
+        r"""
+        Performs the in-projection step of the attention operation. This is simply
+        a triple of linear projections, with shape constraints on the weights which
+        ensure embedding dimension uniformity in the projected outputs.
+        Output is a triple containing projection tensors for query, key and value.
+        Args:
+            q, k, v: query, key and value tensors to be projected.
+            w_q, w_k, w_v: weights for q, k and v, respectively.
+            b_q, b_k, b_v: optional biases for q, k and v, respectively.
+        Shape:
+            Inputs:
+            - q: :math:`(Qdims..., Eq)` where Eq is the query embedding dimension and Qdims are any
+                number of leading dimensions.
+            - k: :math:`(Kdims..., Ek)` where Ek is the key embedding dimension and Kdims are any
+                number of leading dimensions.
+            - v: :math:`(Vdims..., Ev)` where Ev is the value embedding dimension and Vdims are any
+                number of leading dimensions.
+            - w_q: :math:`(Ei, Eq)` where Ei is the dimension to which the query, key, and value
+                emebeddings are to be projected
+            - w_k: :math:`(Ei, Ek)`
+            - w_v: :math:`(Ei, Ev)`
+            - b_q: :math:`(Ei)`
+            - b_k: :math:`(Ei)`
+            - b_v: :math:`(Ei)`
+            Output: in output triple :math:`(q', k', v')`,
+            - q': :math:`[Qdims..., Ei]`
+            - k': :math:`[Kdims..., Ei]`
+            - v': :math:`[Vdims..., Ei]`
+        """
+        Eq, Ek, Ev = q.size(-1), k.size(-1), v.size(-1)
+        assert w_q.shape == (
+            self.inner_dim,
+            Eq,
+        ), f"expecting query weights shape of {(self.inner_dim, Eq)}, but got {w_q.shape}"
+        assert w_k.shape == (
+            self.inner_dim,
+            Ek,
+        ), f"expecting key weights shape of {(self.inner_dim, Ek)}, but got {w_k.shape}"
+        assert w_v.shape == (
+            self.inner_dim,
+            Ev,
+        ), f"expecting value weights shape of {(self.inner_dim, Ev)}, but got {w_v.shape}"
+        assert b_q is None or b_q.shape == (
+            self.inner_dim,
+        ), f"expecting query bias shape of {(self.inner_dim,)}, but got {b_q.shape}"
+        assert b_k is None or b_k.shape == (
+            self.inner_dim,
+        ), f"expecting key bias shape of {(self.inner_dim,)}, but got {b_k.shape}"
+        assert b_v is None or b_v.shape == (
+            self.inner_dim,
+        ), f"expecting value bias shape of {(self.inner_dim,)}, but got {b_v.shape}"
+        return F.linear(q, w_q, b_q), F.linear(k, w_k, b_k), F.linear(v, w_v, b_v)
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4814
     def _t5_dot_product_attention(
@@ -459,6 +519,7 @@ class T5EncoderLayer(nn.Module):
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
         dim_feedforward: Dimension of the feedforward network model (default=3072).
+        qkv_dim: Projection dimension (per head) for query, keys, and values. (defualt=64).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
             ("relu" or "gelu") or a unary callable. (default: relu)
@@ -481,6 +542,7 @@ class T5EncoderLayer(nn.Module):
         d_model: int,
         nhead: int,
         dim_feedforward: int = 3072,
+        qkv_dim: int = 64,
         dropout: float = 0.1,
         activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
         layer_norm_eps: float = 1e-6,
@@ -501,6 +563,7 @@ class T5EncoderLayer(nn.Module):
             nhead,
             is_decoder=False,
             dropout=dropout,
+            qkv_dim=qkv_dim,
             compute_relative_attention_bias=compute_relative_attention_bias,
             relative_attention_num_buckets=relative_attention_num_buckets,
             relative_attention_max_distance=relative_attention_max_distance,
@@ -599,6 +662,7 @@ class T5DecoderLayer(T5EncoderLayer):
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
         dim_feedforward: Dimension of the feedforward network model (default=3072).
+        qkv_dim: Projection dimension (per head) for query, keys, and values. (defualt=64).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
             ("relu" or "gelu") or a unary callable. (default: relu)
@@ -622,6 +686,7 @@ class T5DecoderLayer(T5EncoderLayer):
         d_model: int,
         nhead: int,
         dim_feedforward: int = 3072,
+        qkv_dim: int = 64,
         dropout: float = 0.1,
         activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
         layer_norm_eps: float = 1e-6,
@@ -635,6 +700,7 @@ class T5DecoderLayer(T5EncoderLayer):
             d_model,
             nhead,
             dim_feedforward,
+            qkv_dim,
             dropout,
             activation,
             layer_norm_eps,
@@ -646,7 +712,7 @@ class T5DecoderLayer(T5EncoderLayer):
         )
 
         self.cross_attn = T5MultiheadAttention(
-            d_model, nhead, is_decoder=True, dropout=dropout, device=device, dtype=dtype
+            d_model, nhead, is_decoder=True, dropout=dropout, qkv_dim=qkv_dim, device=device, dtype=dtype
         )
         self.norm3 = T5LayerNorm(d_model, eps=layer_norm_eps)
         self.dropout4 = nn.Dropout(dropout)
@@ -721,6 +787,7 @@ class T5Encoder(nn.Module):
         nhead: Number of heads in the multihead attention models (required).
         num_layers: Number of encoder layers in the stack (required)
         dim_feedforward: Dimension of the feedforward network model (default=3072).
+        qkv_dim: Projection dimension (per head) for query, keys, and values. (defualt=64).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
             ("relu" or "gelu") or a unary callable. (default: relu)
@@ -740,6 +807,7 @@ class T5Encoder(nn.Module):
         nhead: int,
         num_layers: int,
         dim_feedforward: int = 3072,
+        qkv_dim: int = 64,
         dropout: float = 0.1,
         activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
         layer_norm_eps: float = 1e-6,
@@ -756,6 +824,7 @@ class T5Encoder(nn.Module):
                     d_model,
                     nhead,
                     dim_feedforward,
+                    qkv_dim,
                     dropout,
                     activation,
                     layer_norm_eps,
@@ -811,6 +880,7 @@ class T5Decoder(nn.Module):
         nhead: Number of heads in the multihead attention models (required).
         num_layers: Number of decoder layers in the stack (required)
         dim_feedforward: Dimension of the feedforward network model (default=3072).
+        qkv_dim: Projection dimension (per head) for query, keys, and values. (defualt=64).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
             ("relu" or "gelu") or a unary callable. (default: relu)
@@ -831,6 +901,7 @@ class T5Decoder(nn.Module):
         nhead: int,
         num_layers: int,
         dim_feedforward: int = 3072,
+        qkv_dim: int = 64,
         dropout: float = 0.1,
         activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
         layer_norm_eps: float = 1e-6,
@@ -847,6 +918,7 @@ class T5Decoder(nn.Module):
                     d_model,
                     nhead,
                     dim_feedforward,
+                    qkv_dim,
                     dropout,
                     activation,
                     layer_norm_eps,
