@@ -1,6 +1,6 @@
 import torch
-from parameterized import parameterized
 from test.common.assets import get_asset_path
+from test.common.parameterized_utils import nested_params
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.models import (
     T5_BASE_ENCODER,
@@ -38,68 +38,44 @@ class TestT5(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_base_encoder_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.base.encoder.output.pt"
+    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
+    def test_t5_encoder_model(self, configuration, name) -> None:
+        expected_asset_name = f"t5.{configuration}.encoder.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_BASE_ENCODER, expected_asset_name=expected_asset_name, test_text=test_text
-        )
+        is_jit = name == "jit"
+        if configuration == "base":
+            t5_model = T5_BASE_ENCODER
+        elif configuration == "small":
+            t5_model = T5_SMALL_ENCODER
+        elif configuration == "large":
+            t5_model = T5_LARGE_ENCODER
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_base_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.base.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(is_jit=is_jit, t5_model=T5_BASE, expected_asset_name=expected_asset_name, test_text=test_text)
+        self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_base_generation_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.base.generation.output.pt"
+    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
+    def test_t5_model(self, configuration, name) -> None:
+        expected_asset_name = f"t5.{configuration}.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_BASE_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text
-        )
+        is_jit = name == "jit"
+        if configuration == "base":
+            t5_model = T5_BASE
+        elif configuration == "small":
+            t5_model = T5_SMALL
+        elif configuration == "large":
+            t5_model = T5_LARGE
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_small_encoder_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.small.encoder.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_SMALL_ENCODER, expected_asset_name=expected_asset_name, test_text=test_text
-        )
+        self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_small_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.small.output.pt"
+    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
+    def test_t5_generation_model(self, configuration, name) -> None:
+        expected_asset_name = f"t5.{configuration}.generation.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(is_jit=is_jit, t5_model=T5_SMALL, expected_asset_name=expected_asset_name, test_text=test_text)
+        is_jit = name == "jit"
+        if configuration == "base":
+            t5_model = T5_BASE_GENERATION
+        elif configuration == "small":
+            t5_model = T5_SMALL_GENERATION
+        elif configuration == "large":
+            t5_model = T5_LARGE_GENERATION
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_small_generation_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.small.generation.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_SMALL_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text
-        )
-
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_large_encoder_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.large.encoder.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_LARGE_ENCODER, expected_asset_name=expected_asset_name, test_text=test_text
-        )
-
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_large_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.large.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(is_jit=is_jit, t5_model=T5_LARGE, expected_asset_name=expected_asset_name, test_text=test_text)
-
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_large_generation_model(self, name, is_jit) -> None:
-        expected_asset_name = "t5.large.generation.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        self._t5_model(
-            is_jit=is_jit, t5_model=T5_LARGE_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text
-        )
+        self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
