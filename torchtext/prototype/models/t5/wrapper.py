@@ -52,7 +52,6 @@ class T5Wrapper(nn.Module):
             self.model = self.bundler.get_model()
 
         self.transform = self.bundler.transform()
-        self.config = self.bundler._config
 
     def beam_search(
         self,
@@ -84,7 +83,7 @@ class T5Wrapper(nn.Module):
             new_incomplete_sentences = incomplete_sentences
 
         # beams already exist, want to expand each beam into possible new tokens to add
-        # and for all expanded beams beloning to the same sequences, choose the top k
+        # and for all expanded beams belonging to the same sequences, choose the top k
         else:
             # scores has shape (batch_size,B) -> (N,1) -> (N,B)
             # top.values has shape (N,B)

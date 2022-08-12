@@ -2,11 +2,8 @@ import torch
 from parameterized import parameterized
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.prototype.models import (
-    T5_BASE_ENCODER,
-    T5_BASE,
-    T5_BASE_GENERATION,
-)
+from torchtext.prototype.models import T5_BASE_ENCODER, T5_BASE, T5_BASE_GENERATION, T5Conf, T5Transform
+from torchtext.prototype.models.t5.wrapper import T5Wrapper
 
 
 class TestT5(TorchtextTestCase):
@@ -56,9 +53,6 @@ class TestT5(TorchtextTestCase):
 
     @parameterized.expand([("jit", True), ("not_jit", False)])
     def test_t5_wrapper(self, name, is_jit) -> None:
-
-        from torchtext.prototype.models.t5.wrapper import T5Wrapper
-
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         expected_text = ["Je veux manger de la pizza pour le dîner."]
         beam_size = 3
@@ -72,10 +66,6 @@ class TestT5(TorchtextTestCase):
 
     @parameterized.expand([("jit", True), ("not_jit", False)])
     def test_t5_wrapper_checkpoing(self, name, is_jit) -> None:
-
-        from torchtext.prototype.models import T5Conf, T5Transform
-        from torchtext.prototype.models.t5.wrapper import T5Wrapper
-
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         expected_text = ["Je veux manger de la pizza pour le dîner."]
         beam_size = 3
