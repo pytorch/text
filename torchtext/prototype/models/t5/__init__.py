@@ -8,6 +8,9 @@ from .bundler import (
     T5_LARGE_ENCODER,
     T5_LARGE,
     T5_LARGE_GENERATION,
+    T5_3B_ENCODER,
+    T5_3B,
+    T5_3B_GENERATION,
     T5Bundle,
 )
 from .model import T5Conf, T5Model
@@ -26,5 +29,8 @@ __all__ = [
     "T5_LARGE_ENCODER",
     "T5_LARGE",
     "T5_LARGE_GENERATION",
+    "T5_3B_ENCODER",
+    "T5_3B",
+    "T5_3B_GENERATION",
     "T5Transform",
 ]
