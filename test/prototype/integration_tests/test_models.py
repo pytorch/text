@@ -9,6 +9,9 @@ from torchtext.prototype.models import (
     T5_SMALL_ENCODER,
     T5_SMALL,
     T5_SMALL_GENERATION,
+    T5_LARGE_ENCODER,
+    T5_LARGE,
+    T5_LARGE_GENERATION,
 )
 
 
@@ -77,4 +80,26 @@ class TestT5(TorchtextTestCase):
         test_text = ["Hello world", "Attention rocks!"]
         self._t5_model(
             is_jit=is_jit, t5_model=T5_SMALL_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text
+        )
+
+    @parameterized.expand([("jit", True), ("not_jit", False)])
+    def test_t5_large_encoder_model(self, name, is_jit) -> None:
+        expected_asset_name = "t5.large.encoder.output.pt"
+        test_text = ["Hello world", "Attention rocks!"]
+        self._t5_model(
+            is_jit=is_jit, t5_model=T5_LARGE_ENCODER, expected_asset_name=expected_asset_name, test_text=test_text
+        )
+
+    @parameterized.expand([("jit", True), ("not_jit", False)])
+    def test_t5_large_model(self, name, is_jit) -> None:
+        expected_asset_name = "t5.large.output.pt"
+        test_text = ["Hello world", "Attention rocks!"]
+        self._t5_model(is_jit=is_jit, t5_model=T5_LARGE, expected_asset_name=expected_asset_name, test_text=test_text)
+
+    @parameterized.expand([("jit", True), ("not_jit", False)])
+    def test_t5_large_generation_model(self, name, is_jit) -> None:
+        expected_asset_name = "t5.large.generation.output.pt"
+        test_text = ["Hello world", "Attention rocks!"]
+        self._t5_model(
+            is_jit=is_jit, t5_model=T5_LARGE_GENERATION, expected_asset_name=expected_asset_name, test_text=test_text
         )
