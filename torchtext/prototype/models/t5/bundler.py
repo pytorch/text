@@ -477,7 +477,7 @@ T5_3B_ENCODER = T5Bundle(
 )
 
 T5_3B_ENCODER.__doc__ = """
-    T5_3B_ENCODER is an encoder-only model from a pre-trained T5 model with the 3b configuration..
+    T5_3B_ENCODER is an encoder-only model from a pre-trained T5 model with the 3B configuration..
     It returns the normalized output from the final layer of the encoder.
 
     The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
@@ -555,6 +555,122 @@ T5_3B_GENERATION = T5Bundle(
 
 T5_3B_GENERATION.__doc__ = """
     T5_3B_GENERATION is an encoder-decoder model from a pre-trained T5 model with the 3B configuration.
+    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
+    the model vocabulary. This output can then be used for language generation.
+
+    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
+    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
+    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
+    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
+    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
+    of the canonical Transformer architecture.
+
+    Originally published by the authors of T5 under Apache License, Version 2.0
+    and redistributed with the same license.
+    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
+    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
+
+    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
+    """
+
+T5_11B_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B_ENCODER.__doc__ = """
+    T5_11B_ENCODER is an encoder-only model from a pre-trained T5 model with the 11b configuration..
+    It returns the normalized output from the final layer of the encoder.
+
+    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
+    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
+    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
+    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
+    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
+    of the canonical Transformer architecture.
+
+    Originally published by the authors of T5 under Apache License, Version 2.0
+    and redistributed with the same license.
+    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
+    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
+
+    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
+    """
+
+T5_11B = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B.__doc__ = """
+    T5_11B is an encoder-decoder model from a pre-trained T5 model with the 11B configuration.
+    It returns the normalized output from the final layer of the decoder.
+
+    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
+    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
+    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
+    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
+    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
+    of the canonical Transformer architecture.
+
+    Originally published by the authors of T5 under Apache License, Version 2.0
+    and redistributed with the same license.
+    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
+    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
+
+    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
+    """
+
+T5_11B_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B_GENERATION.__doc__ = """
+    T5_11B_GENERATION is an encoder-decoder model from a pre-trained T5 model with the 11B configuration.
     It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
     the model vocabulary. This output can then be used for language generation.
 

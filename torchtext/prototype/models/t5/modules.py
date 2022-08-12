@@ -284,6 +284,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
             return attn_output, position_bias, None
 
+    # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4761
     def _t5_in_projection(
         self,
         q: Tensor,
