@@ -35,6 +35,8 @@ class T5Wrapper(nn.Module):
             assert checkpoint is not None, "Must provide a checkpoint if configuration is None"
             assert t5_config is not None, "Must provide t5_config if using checkpoint"
             assert isinstance(t5_config, T5Conf), "t5_config must have type torchtext.prototype.models.T5Conf"
+            assert not t5_config.encoder_only, "t5_config.encoder_only must be False"
+            assert t5_config.linear_head, "t5_config.linear_head must be True"
             assert transform is not None, "Must provide transform if using checkpoint"
             assert isinstance(transform, T5Transform), "transform must have type torchtext.prototype.models.T5Transform"
 
