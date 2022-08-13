@@ -82,8 +82,8 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
         split: split or splits to be returned. Can be a string or tuple of strings. Default: (`train`, `test`)
 
-    :returns: DataPipe that yields tuple of label (1 to 2) and text containing the movie review
-    :rtype: (int, str)
+    :returns: DataPipe that yields tuple of label ("neg" or "pos") and text containing the movie review
+    :rtype: (str, str)
     """
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
