@@ -138,19 +138,8 @@ class T5Bundle:
         return self._config
 
 
-T5_BASE_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
-    _config=T5Conf(encoder_only=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE_ENCODER.__doc__ = """
-    T5_BASE_ENCODER is an encoder-only model from a pre-trained T5 model with the base configuration..
+ENCODER_DOC = """
+    T5_{}_ENCODER is an encoder-only model from a pre-trained T5 model with the {} configuration.
     It returns the normalized output from the final layer of the encoder.
 
     The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
@@ -166,22 +155,10 @@ T5_BASE_ENCODER.__doc__ = """
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+"""
 
-
-T5_BASE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
-    _config=T5Conf(encoder_only=False),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE.__doc__ = """
-    T5_BASE is an encoder-decoder model from a pre-trained T5 model with the base configuration.
+MODEL_DOC = """
+    T5_{} is an encoder-decoder model from a pre-trained T5 model with the {} configuration.
     It returns the normalized output from the final layer of the decoder.
 
     The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
@@ -197,21 +174,10 @@ T5_BASE.__doc__ = """
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+"""
 
-T5_BASE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.pt"),
-    _config=T5Conf(encoder_only=False, linear_head=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE_GENERATION.__doc__ = """
-    T5_BASE_GENERATION is an encoder-decoder model from a pre-trained T5 model with the base configuration.
+GENERATION_DOC = """
+    T5_{}_GENERATION is an encoder-decoder model from a pre-trained T5 model with the {} configuration.
     It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
     the model vocabulary. This output can then be used for language generation.
 
@@ -229,6 +195,45 @@ T5_BASE_GENERATION.__doc__ = """
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
+
+T5_BASE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
+    _config=T5Conf(encoder_only=True),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE_ENCODER.__doc__ = ENCODER_DOC.format("BASE", "base")
+
+T5_BASE = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
+    _config=T5Conf(encoder_only=False),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
+
+T5_BASE_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.pt"),
+    _config=T5Conf(encoder_only=False, linear_head=True),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE_GENERATION.__doc__ = GENERATION_DOC.format("BASE", "base")
 
 T5_SMALL_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.small.encoder.pt"),
@@ -248,24 +253,7 @@ T5_SMALL_ENCODER = T5Bundle(
     ),
 )
 
-T5_SMALL_ENCODER.__doc__ = """
-    T5_SMALL_ENCODER is an encoder-only model from a pre-trained T5 model with the small configuration..
-    It returns the normalized output from the final layer of the encoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_SMALL_ENCODER.__doc__ = ENCODER_DOC.format("SMALL", "small")
 
 
 T5_SMALL = T5Bundle(
@@ -286,24 +274,7 @@ T5_SMALL = T5Bundle(
     ),
 )
 
-T5_SMALL.__doc__ = """
-    T5_SMALL is an encoder-decoder model from a pre-trained T5 model with the small configuration.
-    It returns the normalized output from the final layer of the decoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_SMALL.__doc__ = MODEL_DOC.format("SMALL", "small")
 
 T5_SMALL_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.small.generation.pt"),
@@ -324,25 +295,7 @@ T5_SMALL_GENERATION = T5Bundle(
     ),
 )
 
-T5_SMALL_GENERATION.__doc__ = """
-    T5_SMALL_GENERATION is an encoder-decoder model from a pre-trained T5 model with the small configuration.
-    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
-    the model vocabulary. This output can then be used for language generation.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_SMALL_GENERATION.__doc__ = GENERATION_DOC.format("SMALL", "small")
 
 T5_LARGE_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.large.encoder.pt"),
@@ -362,24 +315,7 @@ T5_LARGE_ENCODER = T5Bundle(
     ),
 )
 
-T5_LARGE_ENCODER.__doc__ = """
-    T5_LARGE_ENCODER is an encoder-only model from a pre-trained T5 model with the large configuration..
-    It returns the normalized output from the final layer of the encoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_LARGE_ENCODER.__doc__ = ENCODER_DOC.format("LARGE", "large")
 
 T5_LARGE = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.large.pt"),
@@ -399,24 +335,7 @@ T5_LARGE = T5Bundle(
     ),
 )
 
-T5_LARGE.__doc__ = """
-    T5_LARGE is an encoder-decoder model from a pre-trained T5 model with the large configuration.
-    It returns the normalized output from the final layer of the decoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_LARGE.__doc__ = MODEL_DOC.format("LARGE", "large")
 
 T5_LARGE_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.large.generation.pt"),
@@ -437,25 +356,7 @@ T5_LARGE_GENERATION = T5Bundle(
     ),
 )
 
-T5_LARGE_GENERATION.__doc__ = """
-    T5_LARGE_GENERATION is an encoder-decoder model from a pre-trained T5 model with the large configuration.
-    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
-    the model vocabulary. This output can then be used for language generation.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_LARGE_GENERATION.__doc__ = GENERATION_DOC.format("LARGE", "large")
 
 T5_3B_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.3b.encoder.pt"),
@@ -476,24 +377,7 @@ T5_3B_ENCODER = T5Bundle(
     ),
 )
 
-T5_3B_ENCODER.__doc__ = """
-    T5_3B_ENCODER is an encoder-only model from a pre-trained T5 model with the 3B configuration..
-    It returns the normalized output from the final layer of the encoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_3B_ENCODER.__doc__ = ENCODER_DOC.format("3B", "3B")
 
 T5_3B = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.3b.pt"),
@@ -514,24 +398,7 @@ T5_3B = T5Bundle(
     ),
 )
 
-T5_3B.__doc__ = """
-    T5_3B is an encoder-decoder model from a pre-trained T5 model with the 3B configuration.
-    It returns the normalized output from the final layer of the decoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_3B.__doc__ = MODEL_DOC.format("3B", "3B")
 
 T5_3B_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.3b.generation.pt"),
@@ -553,25 +420,7 @@ T5_3B_GENERATION = T5Bundle(
     ),
 )
 
-T5_3B_GENERATION.__doc__ = """
-    T5_3B_GENERATION is an encoder-decoder model from a pre-trained T5 model with the 3B configuration.
-    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
-    the model vocabulary. This output can then be used for language generation.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_3B_GENERATION.__doc__ = GENERATION_DOC.format("3B", "3B")
 
 T5_11B_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.11b.encoder.pt"),
@@ -592,24 +441,7 @@ T5_11B_ENCODER = T5Bundle(
     ),
 )
 
-T5_11B_ENCODER.__doc__ = """
-    T5_11B_ENCODER is an encoder-only model from a pre-trained T5 model with the 11b configuration..
-    It returns the normalized output from the final layer of the encoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_11B_ENCODER.__doc__ = ENCODER_DOC.format("11B", "11B")
 
 T5_11B = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.11b.pt"),
@@ -630,24 +462,7 @@ T5_11B = T5Bundle(
     ),
 )
 
-T5_11B.__doc__ = """
-    T5_11B is an encoder-decoder model from a pre-trained T5 model with the 11B configuration.
-    It returns the normalized output from the final layer of the decoder.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_11B.__doc__ = MODEL_DOC.format("11B", "11B")
 
 T5_11B_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.11b.generation.pt"),
@@ -669,22 +484,4 @@ T5_11B_GENERATION = T5Bundle(
     ),
 )
 
-T5_11B_GENERATION.__doc__ = """
-    T5_11B_GENERATION is an encoder-decoder model from a pre-trained T5 model with the 11B configuration.
-    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
-    the model vocabulary. This output can then be used for language generation.
-
-    The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-    <http://jmlr.org/papers/v21/20-074.html>`. It introduces a unified framework that converts text-based
-    language problems, such as translation, question-answering, and summarization, into a text-to-text format. The
-    Colossal Clean Crawled Corpus (C4) dataset is used to pre-train the model on a masked language modeling task,
-    and various datasets are used to fine-tune the model on each downstream task. The model's architecture is a modified version
-    of the canonical Transformer architecture.
-
-    Originally published by the authors of T5 under Apache License, Version 2.0
-    and redistributed with the same license.
-    [`License <https://github.com/google-research/text-to-text-transfer-transformer/blob/main/LICENSE>`__,
-    `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
-
-    Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
