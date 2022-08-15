@@ -63,21 +63,24 @@ class TestT5(TorchtextTestCase):
         t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_wrapper(self, name, is_jit) -> None:
+    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
+    def test_t5_wrapper(self, configuration, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]
-        expected_text = ["Je veux manger de la pizza pour le dîner."]
+        if configuration == "small":
+            expected_text = ["Je veux manger la pizza pour le dîner."]
+        else:
+            expected_text = ["Je veux manger de la pizza pour le dîner."]
         beam_size = 3
         max_seq_len = 512
-        model = T5Wrapper(configuration="base")
-        if is_jit:
+        model = T5Wrapper(configuration=configuration)
+        if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_t5_wrapper_checkpoint(self, name, is_jit) -> None:
+    @parameterized.expand(["jit", "not_jit"])
+    def test_t5_wrapper_checkpoint(self, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         expected_text = ["Je veux manger de la pizza pour le dîner."]
         beam_size = 3
@@ -96,7 +99,7 @@ class TestT5(TorchtextTestCase):
             freeze_model=True,
             strict=True,
         )
-        if is_jit:
+        if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
