@@ -19,7 +19,7 @@ from torchtext.prototype.models import (
 from torchtext.prototype.models.t5.wrapper import T5Wrapper
 
 
-bundlers = {
+BUNDLERS = {
     "base_model": T5_BASE,
     "base_encoder": T5_BASE_ENCODER,
     "base_generation": T5_BASE_GENERATION,
@@ -60,7 +60,7 @@ class TestT5(TorchtextTestCase):
         expected_asset_name = f"t5.{configuration}.{type}.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
-        t5_model = bundlers[configuration + "_" + type]
+        t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
     @parameterized.expand([("jit", True), ("not_jit", False)])

@@ -174,7 +174,7 @@ MODEL_DOC = """
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-"""
+    """
 
 GENERATION_DOC = """
     T5_{}_GENERATION is an encoder-decoder model from a pre-trained T5 model with the {} configuration.
