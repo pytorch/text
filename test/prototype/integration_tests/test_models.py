@@ -19,6 +19,19 @@ from torchtext.prototype.models import (
 from torchtext.prototype.models.t5.wrapper import T5Wrapper
 
 
+bundlers = {
+    "base_model": T5_BASE,
+    "base_encoder": T5_BASE_ENCODER,
+    "base_generation": T5_BASE_GENERATION,
+    "small_model": T5_SMALL,
+    "small_encoder": T5_SMALL_ENCODER,
+    "small_generation": T5_SMALL_GENERATION,
+    "large_model": T5_LARGE,
+    "large_encoder": T5_LARGE_ENCODER,
+    "large_generation": T5_LARGE_GENERATION,
+}
+
+
 class TestT5(TorchtextTestCase):
     def _t5_model(self, is_jit, t5_model, expected_asset_name, test_text):
         """Verify that pre-trained T5 models in torchtext produce
@@ -42,46 +55,12 @@ class TestT5(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
-    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
-    def test_t5_encoder_model(self, configuration, name) -> None:
-        expected_asset_name = f"t5.{configuration}.encoder.output.pt"
+    @nested_params(["base", "small", "large"], ["encoder", "model", "generation"], ["jit", "not_jit"])
+    def test_t5_encoder_model(self, configuration, type, name) -> None:
+        expected_asset_name = f"t5.{configuration}.{type}.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
-        if configuration == "base":
-            t5_model = T5_BASE_ENCODER
-        elif configuration == "small":
-            t5_model = T5_SMALL_ENCODER
-        elif configuration == "large":
-            t5_model = T5_LARGE_ENCODER
-
-        self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
-
-    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
-    def test_t5_model(self, configuration, name) -> None:
-        expected_asset_name = f"t5.{configuration}.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        is_jit = name == "jit"
-        if configuration == "base":
-            t5_model = T5_BASE
-        elif configuration == "small":
-            t5_model = T5_SMALL
-        elif configuration == "large":
-            t5_model = T5_LARGE
-
-        self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
-
-    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
-    def test_t5_generation_model(self, configuration, name) -> None:
-        expected_asset_name = f"t5.{configuration}.generation.output.pt"
-        test_text = ["Hello world", "Attention rocks!"]
-        is_jit = name == "jit"
-        if configuration == "base":
-            t5_model = T5_BASE_GENERATION
-        elif configuration == "small":
-            t5_model = T5_SMALL_GENERATION
-        elif configuration == "large":
-            t5_model = T5_LARGE_GENERATION
-
+        t5_model = bundlers[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
     @parameterized.expand([("jit", True), ("not_jit", False)])
