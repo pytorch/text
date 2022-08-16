@@ -207,7 +207,7 @@ jobs:
   binary_macos_wheel:
     <<: *binary_common
     macos:
-      xcode: "12.5"
+      xcode: "14.0"
     steps:
       - checkout
       - designate_upload_channel
@@ -233,7 +233,7 @@ jobs:
   binary_macos_conda:
     <<: *binary_common
     macos:
-      xcode: "12.5"
+      xcode: "14.0"
     steps:
       - checkout
       - designate_upload_channel
@@ -441,7 +441,7 @@ jobs:
   unittest_macos:
     <<: *binary_common
     macos:
-      xcode: "12.5"
+      xcode: "14.0"
     resource_class: large
     steps:
       - checkout
