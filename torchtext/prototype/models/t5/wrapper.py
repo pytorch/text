@@ -60,13 +60,9 @@ class T5Wrapper(nn.Module):
 
         else:
             assert checkpoint is None, "configuration and checkpoint were both provided. Can only provide one."
-            assert configuration in (
-                "base",
-                "small",
-                "large",
-                "3b",
-                "11b",
-            ), "Invalid configuration provided. Only support 'base', 'small', 'large', '3b', and '11b' configurations."
+            assert (
+                configuration in BUNDLERS
+            ), f"Invalid configuration provided. Only support the following configurations: {[key for key in BUNDLERS.keys()]}"
 
         if configuration is None and checkpoint is not None:
             self.bundler = T5Bundle(_path=checkpoint, _config=t5_config, transform=lambda: transform)
