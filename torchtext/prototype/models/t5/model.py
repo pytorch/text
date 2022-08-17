@@ -13,6 +13,7 @@ class T5Conf:
     encoder_only: bool = False
     linear_head: bool = False
     embedding_dim: int = 768
+    qkv_dim: int = 64
     num_attention_heads: int = 12
     num_encoder_layers: int = 12
     num_decoder_layers: int = 12
@@ -39,6 +40,7 @@ class T5Model(nn.Module):
         config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (default=False).
         config.linear_head: Whether or not a linear layer should be used to project the output of the decoder's last layer to the vocab (default=False).
         config.embedding_dim: Number of expected features in the encoder/decoder inputs (default=768).
+        config.qkv_dim: Projection dimension (per head) for query, keys, and values. (defualt=64).
         config.num_attention_heads: Number of heads in the multiheadattention models (default=12).
         config.num_encoder_layers: Number of encoder layers in the encoder (default=12).
         config.num_decoder_layers: Number of decoder layers in the decoder (default=12).
@@ -92,6 +94,7 @@ class T5Model(nn.Module):
             nhead=config.num_attention_heads,
             num_layers=config.num_encoder_layers,
             dim_feedforward=config.ffn_dimension,
+            qkv_dim=config.qkv_dim,
             dropout=self.dropout,
             activation=config.activation,
             layer_norm_eps=config.layer_norm_eps,
@@ -110,6 +113,7 @@ class T5Model(nn.Module):
                 nhead=config.num_attention_heads,
                 num_layers=config.num_decoder_layers,
                 dim_feedforward=config.ffn_dimension,
+                qkv_dim=config.qkv_dim,
                 dropout=self.dropout,
                 activation=config.activation,
                 layer_norm_eps=config.layer_norm_eps,
