@@ -15,7 +15,7 @@
 
 import math
 import warnings
-from typing import Optional, Tuple, Union, Callable
+from typing import List, Optional, Tuple, Union, Callable
 
 import torch
 import torch.nn as nn
@@ -26,14 +26,17 @@ from torch import Tensor
 class T5MultiheadAttention(nn.MultiheadAttention):
     def __init__(
         self,
-        embed_dim,
-        num_heads,
-        is_decoder=False,
-        dropout=0.0,
-        bias=False,
-        kdim=None,
-        vdim=None,
-        device=None,
+        embed_dim: int,
+        num_heads: int,
+        is_decoder: bool = False,
+        dropout: float = 0.0,
+        bias: bool = False,
+        kdim: Optional[int] = None,
+        vdim: Optional[int] = None,
+        compute_relative_attention_bias: bool = False,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         r"""
@@ -45,6 +48,12 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             bias: If specified, adds bias to input / output projection layers. Default: `False`.
             kdim: Total number of features for keys. Default: `None` (uses `kdim=embed_dim`).
             vdim: Total number of features for values. Default: `None` (uses `vdim=embed_dim`).
+            compute_relative_attention_bias: Whether or not the relative position embeddings
+                need to be computed. Wypically occurs in the first layer of the encoder/decoder
+                and the resulting position embeddings are returned to be passed up to higher layers. (default: False)
+            relative_attention_num_buckets: Number of relative position buckets. Default: `32`
+            relative_attention_max_distance: Maximum threshold on the relative distance used to
+                allocate buckets. Anything larger gets placed in the same bucket. Default: `128`
         """
         super().__init__(embed_dim, num_heads, dropout, bias, False, False, kdim, vdim, True, device, dtype)
         factory_kwargs = {"device": device, "dtype": dtype}
@@ -53,6 +62,15 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         self.k_proj_weight = nn.Parameter(torch.empty((embed_dim, self.kdim), **factory_kwargs))
         self.v_proj_weight = nn.Parameter(torch.empty((embed_dim, self.vdim), **factory_kwargs))
         self.register_parameter("in_proj_weight", None)
+
+        self.compute_relative_attention_bias = compute_relative_attention_bias
+        self.relative_attention_num_buckets = relative_attention_num_buckets
+        self.relative_attention_max_distance = relative_attention_max_distance
+
+        if compute_relative_attention_bias:
+            self.relative_attention_bias = nn.Embedding(relative_attention_num_buckets, num_heads)
+        else:
+            self.relative_attention_bias = None
 
     def forward(
         self,
@@ -63,10 +81,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-        compute_relative_attention_bias=False,
-        relative_attention_num_buckets=32,
-        relative_attention_max_distance=128,
-        relative_attention_bias: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
     ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
         r"""
@@ -101,13 +115,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             average_attn_weights: If true, indicates that the returned `attn_weights` should be averaged across
                 heads. Otherwise, `attn_weights` are provided separately per head. Note that this flag only has an
                 effect when `need_weights=True`. Default: `False` (i.e. average weights across heads)
-            compute_relative_attention_bias: Whether or not the relative position embeddings
-                need to be computed. Wypically occurs in the first layer of the encoder/decoder
-                and the resulting position embeddings are returned to be passed up to higher layers. (defualt: False)
-            relative_attention_num_buckets: Number of relative position buckets. Default: `32`
-            relative_attention_max_distance: Maximum threshold on the relative distance used to
-                allocate buckets. Anything larger gets placed in the same bucket. Default: `128`
-            relative_attention_bias: nn.Embeding object used to compute relative position embeddings. Default: `None`
             position_bias: Position bias tensor used if to add relative attention bias to attention scores. Default: `None`
         Outputs:
             - **attn_output** - Attention outputs of shape :math:`(N, L, E)`, where :math:`N` is the batch size,
@@ -124,10 +131,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             query,
             key,
             value,
-            compute_relative_attention_bias=compute_relative_attention_bias,
-            relative_attention_num_buckets=relative_attention_num_buckets,
-            relative_attention_max_distance=relative_attention_max_distance,
-            relative_attention_bias=relative_attention_bias,
             position_bias=position_bias,
             key_padding_mask=key_padding_mask,
             need_weights=need_weights,
@@ -142,10 +145,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         query: Tensor,
         key: Tensor,
         value: Tensor,
-        compute_relative_attention_bias: bool,
-        relative_attention_num_buckets: Optional[int],
-        relative_attention_max_distance: Optional[int],
-        relative_attention_bias: Optional[Tensor],
         position_bias: Optional[Tensor],
         key_padding_mask: Optional[Tensor] = None,
         need_weights: bool = True,
@@ -255,7 +254,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
         # NOTE: Modification to torch.nn.functional._multi_head_attention_forward to incorporate relative attention bias
         if position_bias is None:
-            if not compute_relative_attention_bias:
+            if not self.compute_relative_attention_bias:
                 position_bias = torch.zeros(
                     (self.num_heads, tgt_len, src_len), device=k.device, dtype=k.dtype
                 ).unsqueeze(0)
@@ -263,9 +262,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 position_bias = self._compute_bias(
                     tgt_len,
                     src_len,
-                    relative_attention_bias,
-                    relative_attention_num_buckets=relative_attention_num_buckets,
-                    relative_attention_max_distance=relative_attention_max_distance,
                     bidirectional=(not self.is_decoder),
                     device=k.device,
                 )
@@ -350,25 +346,23 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         self,
         query_length: int,
         key_length: int,
-        relative_attention_bias: Tensor,
-        relative_attention_num_buckets: int = 32,
-        relative_attention_max_distance: int = 128,
         bidirectional: bool = True,
-        device=None,
+        device: Optional[torch.device] = None,
     ) -> Tensor:
         """Compute binned relative position bias"""
+        assert self.relative_attention_bias is not None
         if device is None:
-            device = relative_attention_bias.weight.device
+            device = self.relative_attention_bias.weight.device
         context_position = torch.arange(query_length, dtype=torch.long, device=device)[:, None]
         memory_position = torch.arange(key_length, dtype=torch.long, device=device)[None, :]
         relative_position = memory_position - context_position  # shape (query_length, key_length)
         relative_position_bucket = self._relative_position_bucket(
             relative_position,  # shape (query_length, key_length)
             bidirectional=bidirectional,
-            num_buckets=relative_attention_num_buckets,
-            max_distance=relative_attention_max_distance,
+            num_buckets=self.relative_attention_num_buckets,
+            max_distance=self.relative_attention_max_distance,
         )
-        values = relative_attention_bias(relative_position_bucket)  # shape (query_length, key_length, num_heads)
+        values = self.relative_attention_bias(relative_position_bucket)  # shape (query_length, key_length, num_heads)
         values = values.permute([2, 0, 1]).unsqueeze(0)  # shape (1, num_heads, query_length, key_length)
         return values
 
@@ -393,9 +387,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         Returns:
             a Tensor with the same shape as relative_position, containing int32 values in the range [0, num_buckets)
         """
-        relative_buckets = 0
+        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long)
         if bidirectional:
-            num_buckets //= 2
+            num_buckets = num_buckets // 2
             relative_buckets += (relative_position > 0).to(torch.long) * num_buckets
             relative_position = torch.abs(relative_position)
         else:
@@ -422,7 +416,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
 # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L239
 class T5LayerNorm(nn.Module):
-    def __init__(self, d_model, eps=1e-6) -> None:
+    def __init__(self, d_model: int, eps: float = 1e-6) -> None:
         """
         Construct a layernorm module in the T5 style. No bias and no subtraction of mean.
         """
@@ -453,8 +447,8 @@ class T5LayerNorm(nn.Module):
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L622
-class T5Layer(nn.Module):
-    r"""T5Layer is made up of self-attn, cross-attn (decoder only) and feedforward network.
+class T5EncoderLayer(nn.Module):
+    r"""T5EncoderLayer is made up of a self-attn block and feedforward network.
     This T5 layer is based on the paper:
     "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer".
     Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena,
@@ -462,7 +456,6 @@ class T5Layer(nn.Module):
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
     Users may modify or implement in a different way during application.
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
         dim_feedforward: Dimension of the feedforward network model (default=3072).
@@ -474,20 +467,17 @@ class T5Layer(nn.Module):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (default: 128)
         compute_relative_attention_bias: Whether or not the relative position embeddings
-            need to be computed. Typically occurs in the first layer of encoder/decoder
+            need to be computed. Typically occurs in the first layer of the encoder
             and resulting position embeddings are returned to be passed up to higher layers. (default: False)
-        relative_attention_bias: nn.Embeding object used to compute relative position embeddings. (default: None)
 
     Examples::
-        >>> decoder_layer = T5Layer(is_decoder=True, d_model=768, nhead=12)
-        >>> memory = torch.rand(32, 10, 768)
+        >>> encoder_layer = T5EncoderLayer(d_model=768, nhead=12)
         >>> tgt = torch.rand(32, 20, 768)
-        >>> out = deoder_layer(tgt, memory)
+        >>> out = encoder_layer(tgt)
     """
 
     def __init__(
         self,
-        is_decoder: bool,
         d_model: int,
         nhead: int,
         dim_feedforward: int = 3072,
@@ -497,20 +487,25 @@ class T5Layer(nn.Module):
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
         compute_relative_attention_bias: bool = False,
-        relative_attention_bias: Optional[Tensor] = None,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
 
-        self.is_decoder = is_decoder
         self.compute_relative_attention_bias = compute_relative_attention_bias
         self.relative_attention_num_buckets = relative_attention_num_buckets
         self.relative_attention_max_distance = relative_attention_max_distance
-        self.relative_attention_bias = relative_attention_bias
 
         self.self_attn = T5MultiheadAttention(
-            d_model, nhead, is_decoder=is_decoder, dropout=dropout, device=device, dtype=dtype
+            d_model,
+            nhead,
+            is_decoder=False,
+            dropout=dropout,
+            compute_relative_attention_bias=compute_relative_attention_bias,
+            relative_attention_num_buckets=relative_attention_num_buckets,
+            relative_attention_max_distance=relative_attention_max_distance,
+            device=device,
+            dtype=dtype,
         )
         self.linear1 = nn.Linear(d_model, dim_feedforward, bias=False)
         self.linear2 = nn.Linear(dim_feedforward, d_model, bias=False)
@@ -520,12 +515,142 @@ class T5Layer(nn.Module):
         self.dropout2 = nn.Dropout(dropout)
         self.dropout3 = nn.Dropout(dropout)
 
-        if is_decoder:
-            self.cross_attn = T5MultiheadAttention(
-                d_model, nhead, is_decoder=is_decoder, dropout=dropout, device=device, dtype=dtype
-            )
-            self.norm3 = T5LayerNorm(d_model, eps=layer_norm_eps)
-            self.dropout4 = nn.Dropout(dropout)
+        if isinstance(activation, str):
+            assert activation in (
+                "relu",
+                "gelu",
+            ), f"Do not support '{activation}' activation. Use either 'relu' or 'gelu'"
+            if activation == "relu":
+                self.activation = F.relu
+            elif activation == "gelu":
+                self.activation = F.gelu
+        else:
+            self.activation = activation
+
+    def forward(
+        self,
+        tgt: Tensor,
+        tgt_mask: Optional[Tensor] = None,
+        tgt_key_padding_mask: Optional[Tensor] = None,
+        position_bias: Optional[Tensor] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+        r"""Pass the inputs (and mask) through the encoder layer.
+        Args:
+            tgt: Input sequence to the encoder layer. (required).
+                Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
+                length, and E is the model dimension.
+            tgt_mask: Attention mask for self-attention. (optional).
+                Must have shape (Nt, Nt).
+            tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
+                Must have shape (B, Nt).
+            position_bias: Relative attention bias to be used when computing self-attention scores (optional)
+                Must have shape (B, H, Nt, Nt) where H is the number of heads.
+        """
+
+        # See Fig. 1 of https://arxiv.org/pdf/2002.04745v1.pdf
+        x = tgt
+        sa_out, position_bias, sa_scores = self._sa_block(self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias)
+        x = x + sa_out
+        x = x + self._ff_block(self.norm2(x))
+
+        return x, position_bias, sa_scores
+
+    # Self-attention block
+    def _sa_block(
+        self,
+        x: Tensor,
+        attn_mask: Optional[Tensor],
+        key_padding_mask: Optional[Tensor],
+        position_bias: Optional[Tensor],
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+        attn = self.self_attn(
+            x,
+            x,
+            x,
+            attn_mask=attn_mask,
+            key_padding_mask=key_padding_mask,
+            need_weights=True,
+            position_bias=position_bias,
+        )
+
+        x = attn[0]
+        scores = attn[2]
+        if self.compute_relative_attention_bias and position_bias is None:
+            position_bias = attn[1]
+
+        return self.dropout1(x), position_bias, scores
+
+    # Feed forward block
+    def _ff_block(self, x: Tensor) -> Tensor:
+        x = self.linear2(self.dropout2(self.activation(self.linear1(x))))
+        return self.dropout3(x)
+
+
+# NOTE: Comparable HuggingFace implentation can be found at
+# https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L622
+class T5DecoderLayer(T5EncoderLayer):
+    r"""T5DecoderLayer is made up of a self-attn block, cross-attn block, and feedforward network.
+    This T5 layer is based on the paper:
+    "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer".
+    Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena,
+    Yanqi Zhou, Wei Li, and Peter J. Liu. 2020. Journal of Machine Learning Research.
+    Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
+    Users may modify or implement in a different way during application.
+    Args:
+        d_model: Number of expected features in the input (required).
+        nhead: Number of heads in the multihead attention models (required).
+        dim_feedforward: Dimension of the feedforward network model (default=3072).
+        dropout: Dropout value (default=0.1).
+        activation: Activation function of the intermediate layer, can be a string
+            ("relu" or "gelu") or a unary callable. (default: relu)
+        layer_norm_eps: The eps value in layer normalization components (default=1e-6).
+        relative_attention_num_buckets: Number of relative position buckets (default: 32)
+        relative_attention_max_distance: Maximum threshold on the relative distance used to
+            allocate buckets. Anything larger gets placed in the same bucket (default: 128)
+        compute_relative_attention_bias: Whether or not the relative position embeddings
+            need to be computed. Typically occurs in the first layer of the decoder
+            and resulting position embeddings are returned to be passed up to higher layers. (default: False)
+
+    Examples::
+        >>> decoder_layer = T5DecoderLayer(d_model=768, nhead=12)
+        >>> memory = torch.rand(32, 10, 768)
+        >>> tgt = torch.rand(32, 20, 768)
+        >>> out = decoder_layer(tgt, memory)
+    """
+
+    def __init__(
+        self,
+        d_model: int,
+        nhead: int,
+        dim_feedforward: int = 3072,
+        dropout: float = 0.1,
+        activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
+        layer_norm_eps: float = 1e-6,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        compute_relative_attention_bias: bool = False,
+        device: Optional[torch.device] = None,
+        dtype=None,
+    ) -> None:
+        super().__init__(
+            d_model,
+            nhead,
+            dim_feedforward,
+            dropout,
+            activation,
+            layer_norm_eps,
+            relative_attention_num_buckets,
+            relative_attention_max_distance,
+            compute_relative_attention_bias,
+            device,
+            dtype,
+        )
+
+        self.cross_attn = T5MultiheadAttention(
+            d_model, nhead, is_decoder=True, dropout=dropout, device=device, dtype=dtype
+        )
+        self.norm3 = T5LayerNorm(d_model, eps=layer_norm_eps)
+        self.dropout4 = nn.Dropout(dropout)
 
         if isinstance(activation, str):
             assert activation in (
@@ -548,22 +673,22 @@ class T5Layer(nn.Module):
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, Tensor, Tensor, Optional[Tensor]]:
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]]:
         r"""Pass the inputs (and mask) through the encoder/decoder layer.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
+            memory: Sequence from the last layer of the encoder. (required).
                 Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
+            memory_mask: Attention mask for cross-attention (optional).
                 Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
+            memory_key_padding_mask: Mask for the memory keys per batch (optional).
                 Must have shape (B, Ns).
             position_bias: Relative attention bias to be used when computing self-attention scores (optional)
                 Must have shape (B, H, Nt, Nt) where H is the number of heads.
@@ -573,41 +698,11 @@ class T5Layer(nn.Module):
         x = tgt
         sa_out, position_bias, sa_scores = self._sa_block(self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias)
         x = x + sa_out
-        if self.is_decoder:
-            ca_out, ca_scores = self._ca_block(self.norm3(x), memory, memory_mask, memory_key_padding_mask)
-            x = x + ca_out
+        ca_out, ca_scores = self._ca_block(self.norm3(x), memory, memory_mask, memory_key_padding_mask)
+        x = x + ca_out
         x = x + self._ff_block(self.norm2(x))
 
-        return x, position_bias, sa_scores, ca_scores if self.is_decoder else None
-
-    # Self-attention block
-    def _sa_block(
-        self,
-        x: Tensor,
-        attn_mask: Optional[Tensor],
-        key_padding_mask: Optional[Tensor],
-        position_bias: Optional[Tensor],
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
-        attn = self.self_attn(
-            x,
-            x,
-            x,
-            attn_mask=attn_mask,
-            key_padding_mask=key_padding_mask,
-            need_weights=True,
-            compute_relative_attention_bias=self.compute_relative_attention_bias,
-            relative_attention_num_buckets=self.relative_attention_num_buckets,
-            relative_attention_max_distance=self.relative_attention_max_distance,
-            relative_attention_bias=self.relative_attention_bias,
-            position_bias=position_bias,
-        )
-
-        x = attn[0]
-        scores = attn[2]
-        if self.compute_relative_attention_bias and position_bias is None:
-            position_bias = attn[1]
-
-        return self.dropout1(x), position_bias, scores
+        return x, position_bias, sa_scores, ca_scores
 
     # Cross attention block
     def _ca_block(
@@ -618,20 +713,15 @@ class T5Layer(nn.Module):
         scores = attn[2]
         return self.dropout4(x), scores
 
-    # Feed forward block
-    def _ff_block(self, x: Tensor) -> Tensor:
-        x = self.linear2(self.dropout2(self.activation(self.linear1(x))))
-        return self.dropout3(x)
 
-
-# NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
-class T5Stack(nn.Module):
-    r"""T5 is a stack of N encoder/decoder layers
+# NOTE: Comparable HuggingFace implentation can be found at
+# https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
+class T5Encoder(nn.Module):
+    r"""T5Encoder is a stack of N encoder layers
     Args:
-        is_decoder: Whether or not the layer belongs to the decoder. (required)
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
-        num_layers: Number of encoder/decoder layers in the stack (required)
+        num_layers: Number of encoder layers in the stack (required)
         dim_feedforward: Dimension of the feedforward network model (default=3072).
         dropout: Dropout value (default=0.1).
         activation: Activation function of the intermediate layer, can be a string
@@ -641,15 +731,13 @@ class T5Stack(nn.Module):
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
     Examples::
-        >>> decoder = nn.T5Stack(is_decoder=True, d_model=768, nhead=12, num_layers=12)
-        >>> memory = torch.rand(32, 10, 512)
+        >>> encoder = T5Encoder(d_model=768, nhead=12, num_layers=12)
         >>> tgt = torch.rand(32, 10, 512)
-        >>> out = decoder(tgt, memory)
+        >>> out = encoder(tgt)
     """
 
     def __init__(
         self,
-        is_decoder: bool,
         d_model: int,
         nhead: int,
         num_layers: int,
@@ -659,15 +747,14 @@ class T5Stack(nn.Module):
         layer_norm_eps: float = 1e-6,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
 
         self.layers = nn.ModuleList(
             [
-                T5Layer(
-                    is_decoder,
+                T5EncoderLayer(
                     d_model,
                     nhead,
                     dim_feedforward,
@@ -677,7 +764,6 @@ class T5Stack(nn.Module):
                     relative_attention_num_buckets,
                     relative_attention_max_distance,
                     compute_relative_attention_bias=True if i == 0 else False,
-                    relative_attention_bias=nn.Embedding(relative_attention_num_buckets, nhead) if i == 0 else None,
                     device=device,
                     dtype=dtype,
                 )
@@ -689,36 +775,127 @@ class T5Stack(nn.Module):
     def forward(
         self,
         tgt: Tensor,
-        memory: Tensor = None,
+        tgt_mask: Optional[Tensor] = None,
+        tgt_key_padding_mask: Optional[Tensor] = None,
+    ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]:
+        r"""Pass the input (and masks) through the stack of encoder layers.
+        Args:
+            tgt: Input sequence to the encoder layer. (required).
+                Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
+                length, and E is the model dimension.
+            tgt_mask: Attention mask for self-attention. (optional).
+                Must have shape (Nt, Nt).
+            tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
+                Must have shape (B, Nt).
+        """
+        output = tgt
+        position_bias = None
+        all_outputs = torch.jit.annotate(List[Tensor], [])
+        all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
+        for mod in self.layers:
+            all_outputs.append(output)
+            output, position_bias, sa_score = mod(
+                output,
+                tgt_mask=tgt_mask,
+                tgt_key_padding_mask=tgt_key_padding_mask,
+                position_bias=position_bias,
+            )
+            all_sa_scores.append(sa_score)
+
+        return output, all_outputs, position_bias, all_sa_scores
+
+
+# NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
+class T5Decoder(nn.Module):
+    r"""T5Decoder is a stack of N decoder layers
+    Args:
+        d_model: Number of expected features in the input (required).
+        nhead: Number of heads in the multihead attention models (required).
+        num_layers: Number of decoder layers in the stack (required)
+        dim_feedforward: Dimension of the feedforward network model (default=3072).
+        dropout: Dropout value (default=0.1).
+        activation: Activation function of the intermediate layer, can be a string
+            ("relu" or "gelu") or a unary callable. (default: relu)
+        layer_norm_eps: The eps value in layer normalization components (default=1e-6).
+        relative_attention_num_buckets: Number of relative position buckets (default: 32)
+        relative_attention_max_distance: Maximum threshold on the relative distance used to
+            allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
+    Examples::
+        >>> decoder = T5Decoder(d_model=768, nhead=12, num_layers=12)
+        >>> memory = torch.rand(32, 10, 512)
+        >>> tgt = torch.rand(32, 10, 512)
+        >>> out = decoder(tgt, memory)
+    """
+
+    def __init__(
+        self,
+        d_model: int,
+        nhead: int,
+        num_layers: int,
+        dim_feedforward: int = 3072,
+        dropout: float = 0.1,
+        activation: Union[str, Callable[[Tensor], Tensor]] = F.relu,
+        layer_norm_eps: float = 1e-6,
+        relative_attention_num_buckets: int = 32,
+        relative_attention_max_distance: int = 128,
+        device: Optional[torch.device] = None,
+        dtype=None,
+    ) -> None:
+        super().__init__()
+
+        self.layers = nn.ModuleList(
+            [
+                T5DecoderLayer(
+                    d_model,
+                    nhead,
+                    dim_feedforward,
+                    dropout,
+                    activation,
+                    layer_norm_eps,
+                    relative_attention_num_buckets,
+                    relative_attention_max_distance,
+                    compute_relative_attention_bias=True if i == 0 else False,
+                    device=device,
+                    dtype=dtype,
+                )
+                for i in range(num_layers)
+            ]
+        )
+        self.num_layers = num_layers
+
+    def forward(
+        self,
+        tgt: Tensor,
+        memory: Tensor,
         tgt_mask: Optional[Tensor] = None,
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, Tuple[Tensor], Tensor, Tuple[Tensor], Tuple[Tensor]]:
-        r"""Pass the inputs (and mask) through the stack of encoder/decoder layers.
+    ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]:
+        r"""Pass the inputs (and masks) through the stack of decoder layers.
         Args:
-            tgt: Input sequence to the encoder/decoder layer. (required).
+            tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
-            memory: Sequence from the last layer of the encoder (used for decoder only). (required).
+            memory: Sequence from the last layer of the encoder. (required).
                 Must have shape (B, Nts, E) where B is the batch size, Ns is the source sequence
                 length, and E is the model dimension.
             tgt_mask: Attention mask for self-attention. (optional).
                 Must have shape (Nt, Nt).
-            memory_mask: Attention mask for cross-attention (decoder-only) (optional).
+            memory_mask: Attention mask for cross-attention (optional).
                 Must have shape (Nt, Ns).
             tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
                 Must have shape (B, Nt).
-            memory_key_padding_mask: Mask for the memory keys per batch (decoder-only) (optional).
+            memory_key_padding_mask: Mask for the memory keys per batch (optional).
                 Must have shape (B, Ns).
         """
         output = tgt
         position_bias = None
-        all_outputs = ()
-        all_sa_scores = ()
-        all_ca_scores = ()
+        all_outputs = torch.jit.annotate(List[Tensor], [])
+        all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
+        all_ca_scores = torch.jit.annotate(List[Optional[Tensor]], [])
         for mod in self.layers:
-            all_outputs = all_outputs + (output,)
+            all_outputs.append(output)
             output, position_bias, sa_score, ca_score = mod(
                 output,
                 memory,
@@ -728,7 +905,7 @@ class T5Stack(nn.Module):
                 memory_key_padding_mask=memory_key_padding_mask,
                 position_bias=position_bias,
             )
-            all_sa_scores = all_sa_scores + (sa_score,)
-            all_ca_scores = all_ca_scores + (ca_score,)
+            all_sa_scores.append(sa_score)
+            all_ca_scores.append(ca_score)
 
         return output, all_outputs, position_bias, all_sa_scores, all_ca_scores

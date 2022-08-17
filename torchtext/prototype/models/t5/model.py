@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple, Union, Callable
+from typing import Dict, List, Optional, Union, Callable
 
 import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Stack, T5LayerNorm
+from .modules import T5Encoder, T5Decoder, T5LayerNorm
 
 
 @dataclass
@@ -69,7 +69,7 @@ class T5Model(nn.Module):
         self,
         config: T5Conf,
         freeze: bool = False,
-        device=None,
+        device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
@@ -77,6 +77,7 @@ class T5Model(nn.Module):
         assert isinstance(config, T5Conf)
 
         self.config = config
+        self.embedding_dim = config.embedding_dim
         self.encoder_only = config.encoder_only
         self.linear_head = config.linear_head
         self.padding_idx = config.padding_idx
@@ -86,8 +87,7 @@ class T5Model(nn.Module):
         self.dtype = dtype
 
         self.token_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim, config.padding_idx)
-        self.encoder = T5Stack(
-            is_decoder=False,
+        self.encoder = T5Encoder(
             d_model=config.embedding_dim,
             nhead=config.num_attention_heads,
             num_layers=config.num_encoder_layers,
@@ -105,8 +105,7 @@ class T5Model(nn.Module):
         self.dropout2 = nn.Dropout(self.dropout)
 
         if not config.encoder_only:
-            self.decoder = T5Stack(
-                is_decoder=True,
+            self.decoder = T5Decoder(
                 d_model=config.embedding_dim,
                 nhead=config.num_attention_heads,
                 num_layers=config.num_decoder_layers,
@@ -122,9 +121,13 @@ class T5Model(nn.Module):
             self.norm2 = T5LayerNorm(config.embedding_dim)
             self.dropout3 = nn.Dropout(self.dropout)
             self.dropout4 = nn.Dropout(self.dropout)
+        else:
+            self.decoder = None
 
         if config.linear_head:
             self.lm_head = nn.Linear(config.embedding_dim, config.vocab_size, bias=False)
+        else:
+            self.lm_head = None
 
         if freeze:
             for p in self.parameters():
@@ -133,10 +136,10 @@ class T5Model(nn.Module):
     def forward(
         self,
         encoder_tokens: Tensor,
-        decoder_tokens: Tensor = None,
+        decoder_tokens: Optional[Tensor] = None,
         encoder_mask: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Tensor, Tuple[Tensor]]]:
+    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
         r"""Pass the inputs (and mask) through the decoder layer in turn.
         Args:
             encoder_tokens: Tokenized input sequence to the encoder.
@@ -163,23 +166,27 @@ class T5Model(nn.Module):
         """
         encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
         encoder_embeddings = self.dropout1(self.token_embeddings(encoder_tokens))
-        encoder_output, encoder_hidden_states, encoder_position_bias, encoder_sa, _ = self.encoder(
+        encoder_output, encoder_hidden_states, encoder_position_bias, encoder_sa = self.encoder(
             encoder_embeddings, tgt_mask=encoder_mask, tgt_key_padding_mask=encoder_padding_mask
         )
 
         encoder_output = self.norm1(encoder_output)
         encoder_output = self.dropout2(encoder_output)
-        encoder_hidden_states = encoder_hidden_states + (encoder_output,)
+        encoder_hidden_states.append(encoder_output)
 
         if not self.encoder_only:
+
+            assert self.decoder is not None
 
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
                 decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * self.padding_idx
 
             if decoder_mask is None:
+                assert decoder_tokens is not None and decoder_tokens.dim() == 2
                 tgt_len = decoder_tokens.shape[1]
-                decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1).bool()
+                decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
+                decoder_mask = decoder_mask.to(torch.bool)
 
             decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
             # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
@@ -197,13 +204,14 @@ class T5Model(nn.Module):
 
             decoder_output = self.norm2(decoder_output)
             decoder_output = self.dropout4(decoder_output)
-            decoder_hidden_states = decoder_hidden_states + (decoder_output,)
+            decoder_hidden_states.append(decoder_output)
 
             if self.linear_head:
+                assert self.lm_head is not None
                 # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
                 # same word embeddings, which is always the case in our t5 implementation.
                 # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
-                decoder_output = decoder_output * (self.config.embedding_dim ** -0.5)
+                decoder_output = decoder_output * (self.embedding_dim ** -0.5)
                 decoder_output = self.lm_head(decoder_output)
 
             t5_output = {
@@ -224,5 +232,9 @@ class T5Model(nn.Module):
                 "encoder_position_bias": encoder_position_bias,
                 "encoder_sa_scores": encoder_sa,
             }
+
+            assert torch.jit.isinstance(
+                t5_output, Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
+            )
 
         return t5_output
