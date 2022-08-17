@@ -4,7 +4,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-from torchtext.prototype.models import T5_BASE_GENERATION, T5Conf, T5Transform, T5Bundle
+from torchtext.prototype.models import (
+    T5_BASE_GENERATION,
+    T5_SMALL_GENERATION,
+    T5_LARGE_GENERATION,
+    T5_3B_GENERATION,
+    T5_11B_GENERATION,
+    T5Conf,
+    T5Transform,
+    T5Bundle,
+)
+
+
+BUNDLERS = {
+    "base": T5_BASE_GENERATION,
+    "small": T5_SMALL_GENERATION,
+    "large": T5_LARGE_GENERATION,
+    "3b": T5_3B_GENERATION,
+    "11b": T5_11B_GENERATION,
+}
 
 
 class T5Wrapper(nn.Module):
@@ -21,14 +39,10 @@ class T5Wrapper(nn.Module):
     ) -> None:
         """
         Args:
-            configuration (str or None): The model configuration. Currently only support 'base'.
-                Must be `None` if checkpoint is not `None`. (Default: `None`)
-            checkpoint (str, Dict[str, torch.Tensor], or None): Path to or actual model state_dict.
-                state_dict can have partial weights i.e only for encoder. Must be `None` if configuration is not `None`.(Default: ``None``)
-            t5_config (T5Conf or None): An instance of T5Conf that defined the model configuration (i.e. number of
-                layer, attention heads, etc). Must be provided if configuration is `None`. (Default: `None`)
-            transform (T5Transfrom or None): An instance of T5Transform that defines the text processing pipeline.
-                Must be provided if configuration is `None`. (Default: `None`)
+            configuration (str or None): The model configuration. Only support 'base', 'small', 'large', '3b', and '11b' . Must be `None` if checkpoint is not `None`. (Default: `None`)
+            checkpoint (str, Dict[str, torch.Tensor], or None): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder. Must be `None` if configuration is not `None`.(Default: ``None``)
+            t5_config (T5Conf or None): An instance of T5Conf that defined the model configuration (i.e. number of layer, attention heads, etc). Must be provided if configuration is `None`. (Default: `None`)
+            transform (T5Transfrom or None): An instance of T5Transform that defines the text processing pipeline. Must be provided if configuration is `None`. (Default: `None`)
             freeze_model (bool): Indicates whether to freeze the model weights. (Default: `False`)
             strict (bool): Passed to :func: `torch.nn.Module.load_state_dict` method. (Default: `False`)
             dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
@@ -46,7 +60,9 @@ class T5Wrapper(nn.Module):
 
         else:
             assert checkpoint is None, "configuration and checkpoint were both provided. Can only provide one."
-            assert configuration in ("base"), "Invalid configuration provided. Only support 'base' configuration."
+            assert (
+                configuration in BUNDLERS
+            ), f"Invalid configuration provided. Only support the following configurations: {[key for key in BUNDLERS.keys()]}"
 
         if configuration is None and checkpoint is not None:
             self.bundler = T5Bundle(_path=checkpoint, _config=t5_config, transform=lambda: transform)
@@ -54,7 +70,7 @@ class T5Wrapper(nn.Module):
                 config=t5_config, freeze_model=freeze_model, checkpoint=checkpoint, strict=strict, dl_kwargs=dl_kwargs
             )
         else:
-            self.bundler = T5_BASE_GENERATION
+            self.bundler = BUNDLERS[configuration]
             self.model = self.bundler.get_model()
 
         self.transform = self.bundler.transform()
@@ -152,7 +168,7 @@ class T5Wrapper(nn.Module):
             decoder_mask = decoder_mask.to(torch.bool)
             decoder_padding_mask = decoder_tokens.eq(self.model.padding_idx)
 
-            # T5 implementation uses padding idx to start sequence. Want to ignore this when masking
+            # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
             decoder_padding_mask[:, 0] = False
 
             # pass decoder sequence through decoder
