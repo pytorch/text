@@ -258,7 +258,7 @@ def generate(encoder_tokens: Tensor, eos_idx: int, model: T5Model, beam_size: in
 from functools import partial
 
 from torch.utils.data import DataLoader
-from torchtext.datasets.cnndm import CNNDM
+from torchtext.datasets import CNNDM
 
 cnndm_batch_size = 5
 cnndm_datapipe = CNNDM(split="test")
