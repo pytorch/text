@@ -194,7 +194,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220817) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220818) &#x25BC</a>
     </div>
     
 
@@ -322,7 +322,7 @@
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torchtext</span>  <span class="c1"># noqa: F401</span>
@@ -1088,6 +1088,147 @@
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">input</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">input</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">MaskTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The transform chooses mask_prob% (example 15%) of the token positions at random for</span>
+<span class="sd">    prediction.</span>
+
+<span class="sd">    If the i-th token is chosen, we replace the i-th token with</span>
+<span class="sd">    (1) the [MASK] token 80% of the time</span>
+<span class="sd">    (2) a random token 10% of the time</span>
+<span class="sd">    (3) the unchanged i-th token 10% of the time.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vocab_len (int): the length of the vocabulary, including special tokens such as [BOS], [PAD], [MASK]</span>
+<span class="sd">        mask_idx (int): index assigned to mask token in vocabulary</span>
+<span class="sd">        bos_idx (int): index assigned to beginning-of-sequence token in vocabulary</span>
+<span class="sd">        pad_idx (int): index assigned to padding token in vocabulary</span>
+<span class="sd">        mask_bos (bool): indicate whether beginning-of-sequence tokens are eligible for masking (default: False)</span>
+<span class="sd">        mask_prob (float): probability that a token is chosen for replacement (default: 0.15)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.transforms import MaskTransform</span>
+<span class="sd">        &gt;&gt;&gt; sample_tokens = [</span>
+<span class="sd">                [&quot;[BOS]&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;],</span>
+<span class="sd">                [&quot;[BOS]&quot;, &quot;a&quot;, &quot;b&quot;, &quot;[PAD]&quot;, &quot;[PAD]&quot;]</span>
+<span class="sd">            ]</span>
+<span class="sd">        &gt;&gt;&gt; sample_token_ids = torch.tensor([</span>
+<span class="sd">                [6, 0, 1, 2, 3], [6, 0, 1, 4, 4]</span>
+<span class="sd">            ])</span>
+<span class="sd">        &gt;&gt;&gt; mask_transform = MaskTransform(</span>
+<span class="sd">                vocab_len = 7,</span>
+<span class="sd">                mask_idx = 4,</span>
+<span class="sd">                bos_idx = 6,</span>
+<span class="sd">                pad_idx = 5,</span>
+<span class="sd">                mask_bos = False,</span>
+<span class="sd">                mask_prob = 0.15</span>
+<span class="sd">            )</span>
+<span class="sd">        &gt;&gt;&gt; masked_tokens, target_tokens, mask = mask_transform(sample_token_ids)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># maks_mask_prob is prob. of replacing a token with [MASK] (ex. 80%)</span>
+    <span class="n">mask_mask_prob</span> <span class="o">=</span> <span class="mf">0.8</span>
+
+    <span class="c1"># rand_mask_thresh is prob. of replacing a token with a random token. (ex.10%)</span>
+    <span class="n">rand_mask_prob</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">vocab_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">mask_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bos_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">pad_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">mask_bos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">mask_prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_len</span> <span class="o">=</span> <span class="n">vocab_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_idx</span> <span class="o">=</span> <span class="n">mask_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bos_idx</span> <span class="o">=</span> <span class="n">bos_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_idx</span> <span class="o">=</span> <span class="n">pad_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_prob</span> <span class="o">=</span> <span class="n">mask_prob</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_bos</span> <span class="o">=</span> <span class="n">mask_bos</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies mask to input tokens.</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            tokens: Tensor with token ids of shape (batch_size x seq_len). Includes token ids for special tokens such as [BOS] and [PAD]</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            masked_tokens: Tensor of tokens after masking has been applied</span>
+<span class="sd">            target_tokens: Tensor of token values selected for masking</span>
+<span class="sd">            mask: Tensor with same shape as input tokens (batch_size x seq_len)</span>
+<span class="sd">                with masked tokens represented by a 1 and everything else as 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># tokens, mask, mask_mask, rand_mask: (T, C)</span>
+        <span class="n">mask</span><span class="p">,</span> <span class="n">mask_mask</span><span class="p">,</span> <span class="n">rand_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_mask</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+        <span class="c1"># a. generate the masked input tokens</span>
+        <span class="c1"># (1) the [MASK] token 80% of the time</span>
+        <span class="n">masked_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask_input</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">mask_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_idx</span><span class="p">)</span>
+        <span class="c1"># (2) a random token 10% of the time</span>
+        <span class="n">masked_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask_input</span><span class="p">(</span>
+            <span class="n">masked_tokens</span><span class="p">,</span>
+            <span class="n">rand_mask</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">randint_like</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab_len</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># b. generate the target prediction</span>
+        <span class="n">target_tokens</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">masked_select</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">())</span>
+
+        <span class="c1"># masked_tokens: (T, C), target_tokens: (T x C x mask_prob, ), mask</span>
+        <span class="k">return</span> <span class="n">masked_tokens</span><span class="p">,</span> <span class="n">target_tokens</span><span class="p">,</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">_random_masking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="n">mask_prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to mask tokens randomly.</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            1) tokens: Tensor with token ids of shape (batch_size x seq_len). Includes token ids for special tokens such as [BOS] and [PAD]</span>
+<span class="sd">            2) mask_prob: Probability of masking a particular token</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            mask: Tensor with same shape as input tokens (batch_size x seq_len)</span>
+<span class="sd">                with masked tokens represented by a 1 and everything else as 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">num_masked_per_seq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seq_len</span> <span class="o">*</span> <span class="n">mask_prob</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">tokens</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_masked_per_seq</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">seq_len</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">_select_tokens_to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">mask_prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_masking</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">mask_prob</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_bos</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">*=</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bos_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">_generate_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="c1"># chooses mask_prob% of the token positions at random</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_tokens_to_mask</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_prob</span><span class="p">)</span>
+        <span class="c1"># not mask the pad token</span>
+        <span class="n">mask</span> <span class="o">*=</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="c1"># keep one masked token to avoid failure in the loss calculation.</span>
+        <span class="n">mask</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">byte</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">mask</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand_like</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="c1"># (1) the [MASK] token 80% of the time</span>
+        <span class="n">mask_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_mask_prob</span><span class="p">))</span><span class="o">.</span><span class="n">long</span><span class="p">()</span> <span class="o">*</span> <span class="n">mask</span>
+        <span class="c1"># (2) a random token 10% of the time</span>
+        <span class="n">rand_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">probs</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rand_mask_prob</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span> <span class="o">*</span> <span class="n">mask</span>
+        <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">mask_mask</span><span class="p">,</span> <span class="n">rand_mask</span>
+
+    <span class="k">def</span> <span class="nf">_mask_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tokens</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mask</span><span class="p">)</span> <span class="o">+</span> <span class="n">replacement</span> <span class="o">*</span> <span class="n">mask</span>
 </pre></div>
 
              </article>
