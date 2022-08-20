@@ -310,7 +310,7 @@ prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.
     from functools import partial
 
     from torch.utils.data import DataLoader
-    from torchtext.datasets.cnndm import CNNDM
+    from torchtext.datasets import CNNDM
 
     cnndm_batch_size = 5
     cnndm_datapipe = CNNDM(split="test")
