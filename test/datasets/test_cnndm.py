@@ -5,7 +5,7 @@ from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.cnndm import CNNDM
+from torchtext.datasets import CNNDM
 
 from ..common.case_utils import TempDirMixin, zip_equal, get_random_unicode
 from ..common.torchtext_test_case import TorchtextTestCase
