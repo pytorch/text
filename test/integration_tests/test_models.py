@@ -6,8 +6,9 @@ from torchtext.models import (
     XLMR_BASE_ENCODER,
     XLMR_LARGE_ENCODER,
 )
+from torchtext.utils import get_asset_local_path
 
-from ..common.assets import get_asset_path
+from ..common.assets import conditional_remove, get_asset_path
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -30,6 +31,10 @@ class TestRobertaEncoders(TorchtextTestCase):
         actual = model(model_input)
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected)
+
+        # delete checkpoint from cache
+        model_checkpoint_path = get_asset_local_path(encoder._path)
+        conditional_remove(model_checkpoint_path)
 
     @parameterized.expand([("jit", True), ("not_jit", False)])
     def test_xlmr_base_model(self, name, is_jit):

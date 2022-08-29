@@ -1,6 +1,6 @@
 import torch
 from parameterized import parameterized
-from test.common.assets import get_asset_path
+from test.common.assets import conditional_remove, get_asset_path
 from test.common.parameterized_utils import nested_params
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.models import (
@@ -17,6 +17,7 @@ from torchtext.prototype.models import (
     T5Transform,
 )
 from torchtext.prototype.models.t5.wrapper import T5Wrapper
+from torchtext.utils import get_asset_local_path
 
 
 BUNDLERS = {
@@ -63,6 +64,10 @@ class TestT5(TorchtextTestCase):
         t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
+        # delete checkpoint from cache
+        model_checkpoint_path = get_asset_local_path(t5_model._path)
+        conditional_remove(model_checkpoint_path)
+
     @nested_params(["base", "small", "large"], ["jit", "not_jit"])
     def test_t5_wrapper(self, configuration, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]
@@ -73,11 +78,15 @@ class TestT5(TorchtextTestCase):
         beam_size = 3
         max_seq_len = 512
         model = T5Wrapper(configuration=configuration)
+        model_checkpoint_path = get_asset_local_path(model.bundler._path)
         if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
+
+        # delete checkpoint from cache
+        conditional_remove(model_checkpoint_path)
 
     @parameterized.expand(["jit", "not_jit"])
     def test_t5_wrapper_checkpoint(self, name) -> None:
@@ -99,8 +108,13 @@ class TestT5(TorchtextTestCase):
             freeze_model=True,
             strict=True,
         )
+        model_checkpoint_path = get_asset_local_path(model.bundler._path)
+
         if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
+
+        # delete checkpoint from cache
+        conditional_remove(model_checkpoint_path)
