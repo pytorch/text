@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <torchtext/csrc/export.h>
 #include <torchtext/csrc/vocab.h> // @manual
 
 namespace py = pybind11;
