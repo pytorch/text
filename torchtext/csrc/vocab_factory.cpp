@@ -3,6 +3,7 @@
 #include <torchtext/csrc/common.h>
 #include <torchtext/csrc/vocab.h> // @manual
 #include <torchtext/csrc/vocab_factory.h> // @manual
+#include <pybind11/stl.h>
 
 #include <fstream>
 #include <stdexcept>
