@@ -1,5 +1,9 @@
 #include <torchtext/csrc/export.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 namespace torchtext {
 
 namespace impl {
