@@ -49,7 +49,7 @@ class TestRobertaEncoders(TorchtextTestCase):
         torch.testing.assert_close(actual, expected)
 
     @parameterized.expand(["jit", "not_jit"])
-    def test_xlmr_base_model(self, name):
+    def test_models(self, name):
         configuration, type = self.model_name.split("_")
 
         expected_asset_name = f"{configuration}.{type}.output.pt"
@@ -65,36 +65,3 @@ class TestRobertaEncoders(TorchtextTestCase):
             expected_asset_name=expected_asset_name,
             test_text=test_text,
         )
-
-    # @parameterized.expand([("jit", True), ("not_jit", False)])
-    # def test_xlmr_large_model(self, name, is_jit):
-    #     expected_asset_name = "xlmr.large.output.pt"
-    #     test_text = "XLMR base Model Comparison"
-    #     self._roberta_encoders(
-    #         is_jit=is_jit,
-    #         encoder=XLMR_LARGE_ENCODER,
-    #         expected_asset_name=expected_asset_name,
-    #         test_text=test_text,
-    #     )
-
-    # @parameterized.expand([("jit", True), ("not_jit", False)])
-    # def test_roberta_base_model(self, name, is_jit):
-    #     expected_asset_name = "roberta.base.output.pt"
-    #     test_text = "Roberta base Model Comparison"
-    #     self._roberta_encoders(
-    #         is_jit=is_jit,
-    #         encoder=ROBERTA_BASE_ENCODER,
-    #         expected_asset_name=expected_asset_name,
-    #         test_text=test_text,
-    #     )
-
-    # @parameterized.expand([("jit", True), ("not_jit", False)])
-    # def test_robeta_large_model(self, name, is_jit):
-    #     expected_asset_name = "roberta.large.output.pt"
-    #     test_text = "Roberta base Model Comparison"
-    #     self._roberta_encoders(
-    #         is_jit=is_jit,
-    #         encoder=ROBERTA_LARGE_ENCODER,
-    #         expected_asset_name=expected_asset_name,
-    #         test_text=test_text,
-    #     )
