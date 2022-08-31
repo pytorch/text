@@ -91,14 +91,4 @@ struct Vocab : torch::CustomClassHolder {
 TORCHTEXT_API VocabStates
 _serialize_vocab(const c10::intrusive_ptr<Vocab>& self);
 TORCHTEXT_API c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
-
-TORCHTEXT_API Vocab _load_vocab_from_file(
-    const std::string& file_path,
-    const int64_t min_freq,
-    const int64_t num_cpus);
-TORCHTEXT_API Vocab _build_vocab_from_text_file(
-    const std::string& file_path,
-    const int64_t min_freq,
-    const int64_t num_cpus,
-    torch::jit::script::Module tokenizer);
 } // namespace torchtext
