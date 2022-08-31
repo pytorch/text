@@ -3,7 +3,7 @@ import re
 import requests
 
 # This is to allow monkey-patching in fbcode
-from torch.hub import load_state_dict_from_url as load_state_dict_from_url  # noqa
+from torch.hub import load_state_dict_from_url  # noqa
 from torchtext._internal.module_utils import is_module_available
 from tqdm import tqdm
 
