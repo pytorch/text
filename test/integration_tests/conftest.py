@@ -17,7 +17,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(autouse=True, scope="class")
 def temp_hub_dir(tmp_path_factory, pytestconfig):
-    if not pytestconfig.getoption("use_tmp_hub_dir"):
+    if not pytestconfig.getoption("--use-tmp-hub-dir"):
         yield
     else:
         tmp_dir = tmp_path_factory.mktemp("hub", numbered=True).resolve()
