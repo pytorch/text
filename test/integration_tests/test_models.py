@@ -1,17 +1,33 @@
+import pytest  # noqa: F401
 import torch
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from torchtext.models import (
     ROBERTA_BASE_ENCODER,
     ROBERTA_LARGE_ENCODER,
     XLMR_BASE_ENCODER,
     XLMR_LARGE_ENCODER,
 )
-from torchtext.utils import get_asset_local_path
 
-from ..common.assets import conditional_remove, get_asset_path
+from ..common.assets import get_asset_path
 from ..common.torchtext_test_case import TorchtextTestCase
 
+BUNDLERS = {
+    "xlmr_base": XLMR_BASE_ENCODER,
+    "xlmr_large": XLMR_LARGE_ENCODER,
+    "roberta_base": ROBERTA_BASE_ENCODER,
+    "roberta_large": ROBERTA_LARGE_ENCODER,
+}
 
+
+@parameterized_class(
+    ("model_name",),
+    [
+        ("xlmr_base",),
+        ("xlmr_large",),
+        ("roberta_base",),
+        ("roberta_large",),
+    ],
+)
 class TestRobertaEncoders(TorchtextTestCase):
     def _roberta_encoders(self, is_jit, encoder, expected_asset_name, test_text):
         """Verify pre-trained XLM-R and Roberta models in torchtext produce
@@ -32,50 +48,53 @@ class TestRobertaEncoders(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected)
 
-        # delete checkpoint from cache
-        model_checkpoint_path = get_asset_local_path(encoder._path)
-        conditional_remove(model_checkpoint_path)
+    @parameterized.expand(["jit", "not_jit"])
+    def test_xlmr_base_model(self, name):
+        configuration, type = self.model_name.split("_")
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_xlmr_base_model(self, name, is_jit):
-        expected_asset_name = "xlmr.base.output.pt"
-        test_text = "XLMR base Model Comparison"
+        expected_asset_name = f"{configuration}.{type}.output.pt"
+        is_jit = name == "jit"
+        if configuration == "xlmr":
+            test_text = "XLMR base Model Comparison"
+        else:
+            test_text = "Roberta base Model Comparison"
+
         self._roberta_encoders(
             is_jit=is_jit,
-            encoder=XLMR_BASE_ENCODER,
+            encoder=BUNDLERS[configuration + "_" + type],
             expected_asset_name=expected_asset_name,
             test_text=test_text,
         )
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_xlmr_large_model(self, name, is_jit):
-        expected_asset_name = "xlmr.large.output.pt"
-        test_text = "XLMR base Model Comparison"
-        self._roberta_encoders(
-            is_jit=is_jit,
-            encoder=XLMR_LARGE_ENCODER,
-            expected_asset_name=expected_asset_name,
-            test_text=test_text,
-        )
+    # @parameterized.expand([("jit", True), ("not_jit", False)])
+    # def test_xlmr_large_model(self, name, is_jit):
+    #     expected_asset_name = "xlmr.large.output.pt"
+    #     test_text = "XLMR base Model Comparison"
+    #     self._roberta_encoders(
+    #         is_jit=is_jit,
+    #         encoder=XLMR_LARGE_ENCODER,
+    #         expected_asset_name=expected_asset_name,
+    #         test_text=test_text,
+    #     )
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_roberta_base_model(self, name, is_jit):
-        expected_asset_name = "roberta.base.output.pt"
-        test_text = "Roberta base Model Comparison"
-        self._roberta_encoders(
-            is_jit=is_jit,
-            encoder=ROBERTA_BASE_ENCODER,
-            expected_asset_name=expected_asset_name,
-            test_text=test_text,
-        )
+    # @parameterized.expand([("jit", True), ("not_jit", False)])
+    # def test_roberta_base_model(self, name, is_jit):
+    #     expected_asset_name = "roberta.base.output.pt"
+    #     test_text = "Roberta base Model Comparison"
+    #     self._roberta_encoders(
+    #         is_jit=is_jit,
+    #         encoder=ROBERTA_BASE_ENCODER,
+    #         expected_asset_name=expected_asset_name,
+    #         test_text=test_text,
+    #     )
 
-    @parameterized.expand([("jit", True), ("not_jit", False)])
-    def test_robeta_large_model(self, name, is_jit):
-        expected_asset_name = "roberta.large.output.pt"
-        test_text = "Roberta base Model Comparison"
-        self._roberta_encoders(
-            is_jit=is_jit,
-            encoder=ROBERTA_LARGE_ENCODER,
-            expected_asset_name=expected_asset_name,
-            test_text=test_text,
-        )
+    # @parameterized.expand([("jit", True), ("not_jit", False)])
+    # def test_robeta_large_model(self, name, is_jit):
+    #     expected_asset_name = "roberta.large.output.pt"
+    #     test_text = "Roberta base Model Comparison"
+    #     self._roberta_encoders(
+    #         is_jit=is_jit,
+    #         encoder=ROBERTA_LARGE_ENCODER,
+    #         expected_asset_name=expected_asset_name,
+    #         test_text=test_text,
+    #     )

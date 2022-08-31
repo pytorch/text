@@ -1,19 +1,14 @@
 import re
-from functools import partial
 
 import requests
 
 # This is to allow monkey-patching in fbcode
-from torch.hub import load_state_dict_from_url as torchhub_load_state_dict_from_url  # noqa
-from torchtext import _CACHE_DIR
+from torch.hub import load_state_dict_from_url as load_state_dict_from_url  # noqa
 from torchtext._internal.module_utils import is_module_available
 from tqdm import tqdm
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import HttpReader, GDriveReader  # noqa F401
-
-# we set the model_dir to be equal to _CACHE_DIR so that all checkpoint downloads go into the text specific cache
-load_state_dict_from_url = partial(torchhub_load_state_dict_from_url, model_dir=_CACHE_DIR)
 
 
 def _stream_response(r, chunk_size=16 * 1024):

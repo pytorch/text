@@ -1,6 +1,7 @@
+import pytest  # noqa: F401
 import torch
-from parameterized import parameterized
-from test.common.assets import conditional_remove, get_asset_path
+from parameterized import parameterized, parameterized_class
+from test.common.assets import get_asset_path
 from test.common.parameterized_utils import nested_params
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.models import (
@@ -17,7 +18,6 @@ from torchtext.prototype.models import (
     T5Transform,
 )
 from torchtext.prototype.models.t5.wrapper import T5Wrapper
-from torchtext.utils import get_asset_local_path
 
 
 BUNDLERS = {
@@ -33,7 +33,21 @@ BUNDLERS = {
 }
 
 
-class TestT5(TorchtextTestCase):
+@parameterized_class(
+    ("model_name",),
+    [
+        ("base_model",),
+        ("base_encoder",),
+        ("base_generation",),
+        ("small_model",),
+        ("small_encoder",),
+        ("small_generation",),
+        ("large_model",),
+        ("large_encoder",),
+        ("large_generation",),
+    ],
+)
+class TestT5Model(TorchtextTestCase):
     def _t5_model(self, is_jit, t5_model, expected_asset_name, test_text):
         """Verify that pre-trained T5 models in torchtext produce
         the same output as the HuggingFace reference implementation.
@@ -56,38 +70,46 @@ class TestT5(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
-    @nested_params(["base", "small", "large"], ["encoder", "model", "generation"], ["jit", "not_jit"])
-    def test_t5_encoder_model(self, configuration, type, name) -> None:
+    @nested_params(["jit", "not_jit"])
+    def test_t5_model(self, name) -> None:
+        configuration, type = self.model_name.split("_")
+
         expected_asset_name = f"t5.{configuration}.{type}.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
         t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-        # delete checkpoint from cache
-        model_checkpoint_path = get_asset_local_path(t5_model._path)
-        conditional_remove(model_checkpoint_path)
 
-    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
-    def test_t5_wrapper(self, configuration, name) -> None:
+@parameterized_class(
+    ("configuration",),
+    [
+        ("small",),
+        ("base",),
+        ("large",),
+    ],
+)
+class TestT5Wrapper(TorchtextTestCase):
+    @parameterized.expand(["jit", "not_jit"])
+    def test_t5_wrapper(self, name) -> None:
+        configuration = self.configuration
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         if configuration == "small":
             expected_text = ["Je veux manger la pizza pour le dîner."]
         else:
             expected_text = ["Je veux manger de la pizza pour le dîner."]
+
         beam_size = 3
         max_seq_len = 512
         model = T5Wrapper(configuration=configuration)
-        model_checkpoint_path = get_asset_local_path(model.bundler._path)
         if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
 
-        # delete checkpoint from cache
-        conditional_remove(model_checkpoint_path)
 
+class TestT5WrapperCheckpoint(TorchtextTestCase):
     @parameterized.expand(["jit", "not_jit"])
     def test_t5_wrapper_checkpoint(self, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]
@@ -108,13 +130,8 @@ class TestT5(TorchtextTestCase):
             freeze_model=True,
             strict=True,
         )
-        model_checkpoint_path = get_asset_local_path(model.bundler._path)
-
         if name == "jit":
             model = torch.jit.script(model)
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
-
-        # delete checkpoint from cache
-        conditional_remove(model_checkpoint_path)
