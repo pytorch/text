@@ -4,7 +4,6 @@ import tempfile
 from functools import partial
 
 import torch
-from test.common.torchtext_test_case import TorchtextTestCase
 from torch.utils.data import DataLoader
 from torchtext.data.functional import custom_replace
 from torchtext.prototype.transforms import (
@@ -17,6 +16,7 @@ from torchtext.prototype.transforms import (
 from torchtext.prototype.vectors import build_vectors, FastText, GloVe, load_vectors_from_file_path
 from torchtext.prototype.vocab_factory import build_vocab_from_text_file, load_vocab_from_file
 from torchtext.utils import download_from_url
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 from ..common.assets import get_asset_path
 

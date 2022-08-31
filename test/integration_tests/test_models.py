@@ -7,9 +7,8 @@ from torchtext.models import (
     XLMR_BASE_ENCODER,
     XLMR_LARGE_ENCODER,
 )
-
-from ..common.assets import get_asset_path
-from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.assets import get_asset_path
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 BUNDLERS = {
     "xlmr_base": XLMR_BASE_ENCODER,

@@ -1,9 +1,6 @@
 import pytest  # noqa: F401
 import torch
 from parameterized import parameterized, parameterized_class
-from test.common.assets import get_asset_path
-from test.common.parameterized_utils import nested_params
-from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.models import (
     T5_BASE_ENCODER,
     T5_BASE,
@@ -18,6 +15,9 @@ from torchtext.prototype.models import (
     T5Transform,
 )
 from torchtext.prototype.models.t5.wrapper import T5Wrapper
+from torchtext_unittest.common.assets import get_asset_path
+from torchtext_unittest.common.parameterized_utils import nested_params
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 BUNDLERS = {

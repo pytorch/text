@@ -2,8 +2,8 @@ import copy
 from unittest.mock import patch
 
 import torch
-from test.common.torchtext_test_case import TorchtextTestCase
 from torch.nn import functional as F
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestModels(TorchtextTestCase):
