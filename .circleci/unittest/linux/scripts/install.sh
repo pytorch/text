@@ -33,7 +33,7 @@ printf "Installing torchdata nightly\n"
 pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 
 printf "* Installing torchtext\n"
-python setup.py develop
+python setup.py install
 
 printf "* Installing parameterized\n"
 pip install parameterized
