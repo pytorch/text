@@ -28,7 +28,7 @@ jobs:
           python -m pip install --quiet --upgrade pip
           python -m pip install --quiet --pre torch -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm
-          python setup.py install
+          python setup.py develop
       - name: Run integration test
         run: |
           cd test && pytest integration_tests -v --use-tmp-hub-dir

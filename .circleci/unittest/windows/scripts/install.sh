@@ -26,7 +26,7 @@ curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/
 python pywin32_postinstall.py -install
 
 printf "* Installing torchtext\n"
-"$root_dir/packaging/vc_env_helper.bat" python setup.py install
+"$root_dir/packaging/vc_env_helper.bat" python setup.py develop
 
 printf "* Installing parameterized\n"
 pip install parameterized
