@@ -113,6 +113,7 @@ if (BUILD_TORCHTEXT_PYTHON_EXTENSION)
   set(
     EXTENSION_SOURCES
     register_pybindings.cpp
+    vocab_factory.cpp
     )
 
   set(

@@ -1,9 +1,8 @@
+#include <torchtext/csrc/common.h>
+
 #include <fstream>
 #include <ios>
-#include <iostream>
 #include <limits>
-#include <string>
-#include <vector>
 
 namespace torchtext {
 namespace impl {
