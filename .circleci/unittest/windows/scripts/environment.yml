@@ -4,6 +4,7 @@ dependencies:
   - codecov
   - pip
   - setuptools == 58.0.4
+  - spacy
   - pip:
       - dataclasses
       - nltk
@@ -13,7 +14,6 @@ dependencies:
       - pytest-cov
       - pytest-pythonpath
       - sacremoses
-      - spacy
       - tqdm
       - certifi
       - expecttest
