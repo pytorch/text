@@ -1,4 +1,5 @@
 #include <ATen/Parallel.h> // @manual
+#include <pybind11/stl.h>
 #include <torch/torch.h> // @manual
 #include <torchtext/csrc/common.h>
 #include <torchtext/csrc/vocab.h> // @manual

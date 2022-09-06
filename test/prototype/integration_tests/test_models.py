@@ -1,5 +1,6 @@
+import pytest  # noqa: F401
 import torch
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from test.common.assets import get_asset_path
 from test.common.parameterized_utils import nested_params
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -32,7 +33,21 @@ BUNDLERS = {
 }
 
 
-class TestT5(TorchtextTestCase):
+@parameterized_class(
+    ("model_name",),
+    [
+        ("base_model",),
+        ("base_encoder",),
+        ("base_generation",),
+        ("small_model",),
+        ("small_encoder",),
+        ("small_generation",),
+        ("large_model",),
+        ("large_encoder",),
+        ("large_generation",),
+    ],
+)
+class TestT5Model(TorchtextTestCase):
     def _t5_model(self, is_jit, t5_model, expected_asset_name, test_text):
         """Verify that pre-trained T5 models in torchtext produce
         the same output as the HuggingFace reference implementation.
@@ -55,21 +70,35 @@ class TestT5(TorchtextTestCase):
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
 
-    @nested_params(["base", "small", "large"], ["encoder", "model", "generation"], ["jit", "not_jit"])
-    def test_t5_encoder_model(self, configuration, type, name) -> None:
+    @nested_params(["jit", "not_jit"])
+    def test_t5_model(self, name) -> None:
+        configuration, type = self.model_name.split("_")
+
         expected_asset_name = f"t5.{configuration}.{type}.output.pt"
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
         t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-    @nested_params(["base", "small", "large"], ["jit", "not_jit"])
-    def test_t5_wrapper(self, configuration, name) -> None:
+
+@parameterized_class(
+    ("configuration",),
+    [
+        ("small",),
+        ("base",),
+        ("large",),
+    ],
+)
+class TestT5Wrapper(TorchtextTestCase):
+    @parameterized.expand(["jit", "not_jit"])
+    def test_t5_wrapper(self, name) -> None:
+        configuration = self.configuration
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         if configuration == "small":
             expected_text = ["Je veux manger la pizza pour le dîner."]
         else:
             expected_text = ["Je veux manger de la pizza pour le dîner."]
+
         beam_size = 3
         max_seq_len = 512
         model = T5Wrapper(configuration=configuration)
@@ -79,6 +108,8 @@ class TestT5(TorchtextTestCase):
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
 
+
+class TestT5WrapperCheckpoint(TorchtextTestCase):
     @parameterized.expand(["jit", "not_jit"])
     def test_t5_wrapper_checkpoint(self, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]

@@ -8,11 +8,11 @@ import torchtext  # noqa: F401
 from torch import Tensor
 from torch.nn import Module
 from torchtext._torchtext import (
-    BERTEncoder as BERTEncoderPyBind,
     CLIPEncoder as CLIPEncoderPyBind,
     GPT2BPEEncoder as GPT2BPEEncoderPyBind,
-    RegexTokenizer as RegexTokenizerPybind,
+    BERTEncoder as BERTEncoderPyBind,
 )
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
