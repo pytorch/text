@@ -30,7 +30,7 @@ jobs:
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm
           python setup.py install
           echo "Install packages step"
-          python -c "import torchtext"
+          cd test && python -c "import torchtext"
       - name: Run integration test
         run: |
           echo "Run integration test step"
