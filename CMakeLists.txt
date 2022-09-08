@@ -60,9 +60,9 @@ if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-# TORCH_CXX_FLAGS contains the same -D_GLIBCXX_USE_CXX11_ABI value as PyTorch
+# We need to explicityly set -D_GLIBCXX_USE_CXX11_ABI to 0 as PyTorch doesn't provide access
+# to the flag via TORCH_CXX_FLAGS
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -D_GLIBCXX_USE_CXX11_ABI=0 ${TORCH_CXX_FLAGS}")
-message(STATUS "[CMAKE_CXX_FLAGS] ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(third_party)
 add_subdirectory(torchtext/csrc)
