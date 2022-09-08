@@ -29,16 +29,6 @@ def get_ext_modules():
     return modules
 
 
-def _get_cxx11_abi():
-    try:
-        import torch
-
-        value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
-    except ImportError:
-        value = 0
-    print("[_get_cxx11_abi] -D_GLIBCXX_USE_CXX11_ABI=", str(value))
-
-
 # Based off of
 # https://github.com/pybind/cmake_example/blob/580c5fd29d4651db99d8874714b07c0c49a53f8a/setup.py
 
@@ -58,10 +48,6 @@ class CMakeBuild(build_ext):
         # However, the following `cmake` command will build all of them at the same time,
         # so, we do not need to perform `cmake` twice.
         # Therefore we call `cmake` only for `torchaudio._torchaudio`.
-
-        # TODO delete
-        _get_cxx11_abi()
-
         if ext.name != "torchtext._torchtext":
             return
 
