@@ -22,9 +22,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install packages
         run: |
-          ROOT_DIR="$( cd -- "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
-          cd "${ROOT_DIR}"
-
           python -m pip install --quiet --upgrade pip
           python -m pip install --quiet --pre torch -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm expecttest
