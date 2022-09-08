@@ -32,7 +32,6 @@ jobs:
           python setup.py install
       - name: Debug missing symbols
         run: |
-          pip list
           cd test && python -c "import torchtext"
       - name: Run integration test
         run: |
