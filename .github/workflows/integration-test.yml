@@ -32,10 +32,6 @@ jobs:
           python setup.py install
       - name: Debug missing symbols
         run: |
-          for file in $(find /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages/torch/ -name '*.so' )
-            do echo $file
-            nm $file | grep _ZN3c106ivalue14ConstantString6create
-          done
           pip list
           cd test && python -c "import torchtext"
       - name: Run integration test
