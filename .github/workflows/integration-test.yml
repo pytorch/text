@@ -24,16 +24,15 @@ jobs:
         run: |
           ROOT_DIR="$( cd -- "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
           SCRIPT_DIR=${ROOT_DIR}/scripts
-          echo "Root and script dir"
-          echo $ROOT_DIR
-          echo $SCRIPT_DIR
       - name: Install packages
         run: |
           python -m pip install --quiet --upgrade pip
           python -m pip install --quiet --pre torch -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm
           python setup.py install
-          echo "Install packages step"
+      - name: Debug missing symbols
+        run: |
+          for file in $(find /opt/hostedtoolcache/Python/3.8.13/x64/lib/python3.8/site-packages/torch/ -name '*.so' ); do echo $file; nm $file | grep _ZN3c106ivalue14ConstantString6create; done
           pip list
           cd test && python -c "import torchtext"
       - name: Run integration test
