@@ -30,11 +30,6 @@ jobs:
           python -m pip install --quiet --pre torch -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm
           python setup.py install
-      - name: Debug missing symbols
-        run: |
-          cd test && python -c "import torchtext"
       - name: Run integration test
         run: |
-          echo "Run integration test step"
-          python -c "import torchtext"
           cd test && pytest integration_tests -v --use-tmp-hub-dir
