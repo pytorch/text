@@ -76,7 +76,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
             "-DSPM_ENABLE_SHARED=OFF",
-            f"{_get_cxx11_abi()}",
+            f"-DCMAKE_CXX_FLAGS={_get_cxx11_abi()}",
         ]
         build_args = ["--target", "install"]
 
