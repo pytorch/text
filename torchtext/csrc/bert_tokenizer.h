@@ -9,19 +9,26 @@ typedef std::basic_string<uint32_t> UString;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
 
-// stores (do_lower_case, strip_accents, list of tokens in vocabulary)
-typedef std::tuple<bool, c10::optional<bool>, std::vector<std::string>>
+// stores (do_lower_case, strip_accents, never_split, list of tokens in
+// vocabulary)
+typedef std::tuple<
+    bool,
+    c10::optional<bool>,
+    std::vector<std::string>,
+    std::vector<std::string>>
     BERTEncoderStates;
 
 struct BERTEncoder : torch::CustomClassHolder {
   TORCHTEXT_API BERTEncoder(
       const std::string& vocab_file,
       bool do_lower_case,
-      c10::optional<bool> strip_accents);
+      c10::optional<bool> strip_accents,
+      std::vector<std::string> never_split);
   BERTEncoder(
       Vocab vocab,
       bool do_lower_case,
-      c10::optional<bool> strip_accents);
+      c10::optional<bool> strip_accents,
+      std::vector<std::string> never_split);
   TORCHTEXT_API std::vector<std::string> Tokenize(std::string text);
   TORCHTEXT_API std::vector<int64_t> Encode(std::string text);
   TORCHTEXT_API std::vector<std::vector<std::string>> BatchTokenize(
@@ -32,11 +39,15 @@ struct BERTEncoder : torch::CustomClassHolder {
   Vocab vocab_;
   bool do_lower_case_;
   c10::optional<bool> strip_accents_ = {};
+  std::vector<std::string> never_split_;
 
  protected:
-  UString _clean(const UString& text, bool strip_accents);
+  UString _clean(
+      const UString& text,
+      bool strip_accents,
+      bool is_never_split_token);
   void _max_seg(const std::string& s, std::vector<std::string>& results);
-  UString _basic_tokenize(const UString& text);
+  UString _basic_tokenize(const UString& token, bool is_never_split_token);
   void split_(
       const std::string& str,
       std::vector<std::string>& tokens,

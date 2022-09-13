@@ -132,38 +132,48 @@ static std::string _convert_from_unicode(const UString& text) {
   return ret;
 }
 
-static void to_lower(UString& text) {
-  for (size_t i = 0; i < text.size(); i++) {
-    text[i] = utf8proc_tolower(text[i]);
+static void to_lower(UString& token) {
+  for (size_t i = 0; i < token.size(); i++) {
+    token[i] = utf8proc_tolower(token[i]);
   }
 }
 
 BERTEncoder::BERTEncoder(
     const std::string& vocab_file,
     bool do_lower_case,
-    c10::optional<bool> strip_accents)
+    c10::optional<bool> strip_accents,
+    std::vector<std::string> never_split)
     : vocab_{_read_vocab(vocab_file)},
       do_lower_case_{do_lower_case},
-      strip_accents_{strip_accents} {}
+      strip_accents_{strip_accents},
+      never_split_{never_split} {}
 
 BERTEncoder::BERTEncoder(
     Vocab vocab,
     bool do_lower_case,
-    c10::optional<bool> strip_accents)
+    c10::optional<bool> strip_accents,
+    std::vector<std::string> never_split)
     : vocab_{vocab},
       do_lower_case_{do_lower_case},
-      strip_accents_{strip_accents} {}
+      strip_accents_{strip_accents},
+      never_split_{never_split} {}
 
-UString BERTEncoder::_clean(const UString& text, bool strip_accents) {
+UString BERTEncoder::_clean(
+    const UString& token,
+    bool strip_accents,
+    bool is_never_split_token) {
   /* This function combines:
    * cleaning
    * strip accents
    */
-  size_t len = text.size();
+  size_t len = token.size();
   UString ret;
   for (size_t i = 0; i < len; i++) {
-    uint32_t c = text[i];
-    if (c == 0 || c == 0xFFFD || _is_control(c) ||
+    uint32_t c = token[i];
+    if (c == 0 || c == 0xFFFD || _is_control(c)) {
+      continue;
+    }
+    if ((!is_never_split_token) &&
         (utf8proc_category(c) == UTF8PROC_CATEGORY_MN && strip_accents)) {
       continue;
     }
@@ -221,7 +231,9 @@ void BERTEncoder::_max_seg(
   }
 }
 
-UString BERTEncoder::_basic_tokenize(const UString& text) {
+UString BERTEncoder::_basic_tokenize(
+    const UString& token,
+    bool is_never_split_token) {
   /*
   This function enables white space based tokenization for following:
     * chinese character
@@ -229,10 +241,10 @@ UString BERTEncoder::_basic_tokenize(const UString& text) {
   */
 
   UString ret;
-  size_t len = text.size();
+  size_t len = token.size();
   for (size_t i = 0; i < len; i++) {
-    uint32_t c = text[i];
-    if (_is_chinese_char(c) || _is_punct_char(c)) {
+    uint32_t c = token[i];
+    if (_is_chinese_char(c) || (_is_punct_char(c) and !is_never_split_token)) {
       if (!ret.empty() && ret.back() != ' ') {
         ret.append(1, ' ');
       }
@@ -254,51 +266,56 @@ UString BERTEncoder::_basic_tokenize(const UString& text) {
 
 std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
-
-  // normalize
-
-  bool strip_accents = do_lower_case_;
-
-  if (strip_accents_.has_value()) {
-    strip_accents = strip_accents_.has_value();
-  }
-
-  if (strip_accents) {
-    char* nfkcstr = reinterpret_cast<char*>(
-        utf8proc_NFD(reinterpret_cast<const unsigned char*>(text.c_str())));
-    if (nfkcstr == nullptr) {
-      return {};
-    }
-
-    text.assign(nfkcstr, strlen(nfkcstr));
-
-    free(nfkcstr);
-  }
-
-  // convert to unicode codepoints
-  UString unicodes = _convert_to_unicode(text);
-
-  // clean -> invalid character removal, whitespce cleanup, strip accents
-  unicodes = _clean(unicodes, strip_accents);
-
-  // Add whitespace in front/back of tokens to enable splitting based on
-  // white-space Enables tokenization on chinese characters, Punctuations
-  unicodes = _basic_tokenize(unicodes);
-
-  // Convert text to lower-case
-  if (do_lower_case_)
-    to_lower(unicodes);
-
-  // Convert back to string from code-points
-  std::string newtext = _convert_from_unicode(unicodes);
-
+  std::vector<std::string> interim_results;
   std::vector<std::string> tokens;
+  std::set<std::string> never_split(never_split_.begin(), never_split_.end());
 
   // split based on whitespace
-  split_(newtext, tokens);
+  split_(text, tokens);
+
+  for (auto& token : tokens) {
+    bool is_never_split_token = never_split.find(token) != never_split.end();
+
+    // normalize
+
+    bool strip_accents = do_lower_case_;
+
+    if (strip_accents_.has_value()) {
+      strip_accents = strip_accents_.has_value();
+    }
+
+    if (strip_accents) {
+      char* nfkcstr = reinterpret_cast<char*>(
+          utf8proc_NFD(reinterpret_cast<const unsigned char*>(token.c_str())));
+      if (nfkcstr == nullptr) {
+        return {};
+      }
+
+      token.assign(nfkcstr, strlen(nfkcstr));
+
+      free(nfkcstr);
+    }
+
+    // convert to unicode codepoints
+    UString unicodes = _convert_to_unicode(token);
+
+    // clean -> invalid character removal, whitespce cleanup, strip accents
+    unicodes = _clean(unicodes, strip_accents, is_never_split_token);
+
+    // Add whitespace in front/back of tokens to enable splitting based on
+    // white-space Enables tokenization on chinese characters, Punctuations
+    unicodes = _basic_tokenize(unicodes, is_never_split_token);
+
+    // Convert token to lower-case
+    if (do_lower_case_ && !is_never_split_token)
+      to_lower(unicodes);
+
+    // Convert back to string from code-points
+    split_(_convert_from_unicode(unicodes), interim_results);
+  }
 
   // Perform WORDPIECE tokenization
-  for (auto s : tokens) {
+  for (auto s : interim_results) {
     if (s.size() > kMaxCharsPerWords) {
       results.push_back(kUnkToken);
     } else {
@@ -338,16 +355,20 @@ std::vector<std::vector<int64_t>> BERTEncoder::BatchEncode(
 BERTEncoderStates _serialize_bert_encoder(
     const c10::intrusive_ptr<BERTEncoder>& self) {
   return std::make_tuple(
-      self->do_lower_case_, self->strip_accents_, self->vocab_.itos_);
+      self->do_lower_case_,
+      self->strip_accents_,
+      self->never_split_,
+      self->vocab_.itos_);
 }
 
 c10::intrusive_ptr<BERTEncoder> _deserialize_bert_encoder(
     BERTEncoderStates states) {
   auto do_lower_case = std::get<0>(states);
   auto strip_accents = std::get<1>(states);
-  auto strings = std::get<2>(states);
+  auto never_split = std::get<2>(states);
+  auto strings = std::get<3>(states);
   return c10::make_intrusive<BERTEncoder>(
-      Vocab(std::move(strings)), do_lower_case, strip_accents);
+      Vocab(std::move(strings)), do_lower_case, strip_accents, never_split);
 }
 
 } // namespace torchtext
