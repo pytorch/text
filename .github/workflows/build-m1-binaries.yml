@@ -169,7 +169,7 @@ jobs:
         run: |
           conda install -yq anaconda-client
           set -x
-          anaconda  -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/miniconda3/conda-bld/osx-arm64/*.tar.bz2 -u "pytorch-${CHANNEL}" --label main --no-progress --force
+          anaconda  -t "${CONDA_PYTORCHBOT_TOKEN}" upload dist/osx-arm64/*.tar.bz2 -u "pytorch-${CHANNEL}" --label main --no-progress --force
 
 concurrency:
   group:
