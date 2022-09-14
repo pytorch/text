@@ -138,7 +138,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     # TODO(Nayef211): remove decorator once https://github.com/pytorch/text/issues/1900 is closed
-    @unittest.skipIf(platform.system() == "Linux", "Test is known to fail on Linux.")
+    @unittest.skipIf("CI" in os.environ and platform.system() == "Linux", "Test is known to fail on Linux.")
     def test_vocab_from_raw_text_file(self) -> None:
         asset_name = "vocab_raw_text_test.txt"
         asset_path = get_asset_path(asset_name)
