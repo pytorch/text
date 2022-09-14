@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import tempfile
 import unittest
