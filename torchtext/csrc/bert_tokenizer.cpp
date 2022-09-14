@@ -244,7 +244,7 @@ UString BERTEncoder::_basic_tokenize(
   size_t len = token.size();
   for (size_t i = 0; i < len; i++) {
     uint32_t c = token[i];
-    if (_is_chinese_char(c) || (_is_punct_char(c) and !is_never_split_token)) {
+    if (_is_chinese_char(c) || (_is_punct_char(c) && !is_never_split_token)) {
       if (!ret.empty() && ret.back() != ' ') {
         ret.append(1, ' ');
       }
