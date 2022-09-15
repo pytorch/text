@@ -22,7 +22,7 @@ _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 
 def _get_cxx11_abi():
-    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(int(torch._C._GLIBCXX_USE_CXX11_ABI))
+    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(int(torch.compiled_with_cxx11_abi))
 
 
 def get_ext_modules():
