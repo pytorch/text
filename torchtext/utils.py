@@ -232,7 +232,7 @@ def get_asset_local_path(asset_path: str, overwite=False) -> str:
 
 
 PATH_MANAGER = PathManager()
-'''
+"""
 We use iopath to handle local files, remote files with http/https urls, etc.
 This global instance is registered with all the required handlers with the best
 defaults. Learn more about iopath: https://github.com/facebookresearch/iopath
@@ -241,4 +241,4 @@ Examples:
     >>> from torchtext.utils import PATH_MANAGER
     >>> with PATH_MANAGER.open(FILE_PATH) as f:
     >>>     f.read()
-'''
+"""
