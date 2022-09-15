@@ -5,6 +5,7 @@ dependencies:
   - pip
   - pip:
       - dataclasses
+      - iopath
       - nltk
       - requests
       - revtok

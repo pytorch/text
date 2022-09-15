@@ -7,6 +7,7 @@ dependencies:
   - spacy
   - pip:
       - dataclasses
+      - iopath
       - nltk
       - requests
       - revtok

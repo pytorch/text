@@ -3,6 +3,7 @@ tqdm
 
 # Downloading data and other files
 requests
+iopath
 
 # Optional NLP tools
 nltk
