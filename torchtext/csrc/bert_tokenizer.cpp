@@ -146,7 +146,9 @@ BERTEncoder::BERTEncoder(
     : vocab_{_read_vocab(vocab_file)},
       do_lower_case_{do_lower_case},
       strip_accents_{strip_accents},
-      never_split_{never_split} {}
+      never_split_{never_split} {
+  never_split_set_.insert(never_split_.begin(), never_split_.end());
+}
 
 BERTEncoder::BERTEncoder(
     Vocab vocab,
@@ -156,7 +158,9 @@ BERTEncoder::BERTEncoder(
     : vocab_{vocab},
       do_lower_case_{do_lower_case},
       strip_accents_{strip_accents},
-      never_split_{never_split} {}
+      never_split_{never_split} {
+  never_split_set_.insert(never_split_.begin(), never_split_.end());
+}
 
 UString BERTEncoder::_clean(
     const UString& token,
@@ -268,13 +272,13 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
   std::vector<std::string> results;
   std::vector<std::string> interim_results;
   std::vector<std::string> tokens;
-  std::set<std::string> never_split(never_split_.begin(), never_split_.end());
 
   // split based on whitespace
   split_(text, tokens);
 
   for (auto& token : tokens) {
-    bool is_never_split_token = never_split.find(token) != never_split.end();
+    bool is_never_split_token =
+        never_split_set_.find(token) != never_split_set_.end();
 
     // normalize
 

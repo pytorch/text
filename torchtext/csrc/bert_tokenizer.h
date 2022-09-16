@@ -40,6 +40,7 @@ struct BERTEncoder : torch::CustomClassHolder {
   bool do_lower_case_;
   c10::optional<bool> strip_accents_ = {};
   std::vector<std::string> never_split_;
+  std::set<std::string> never_split_set_;
 
  protected:
   UString _clean(
