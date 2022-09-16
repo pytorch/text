@@ -1,9 +1,7 @@
 import os
-
 import torch
 import torchtext.data as data
 from torchtext.prototype.transforms import basic_english_normalize
-
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
