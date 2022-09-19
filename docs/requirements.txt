@@ -1,9 +1,6 @@
 Jinja2<3.1.0
-sphinx==3.5.4
--e git+https://github.com/pytorch/pytorch_sphinx_theme.git@cece053#egg=pytorch_sphinx_theme
 sphinx==5.1.1
-sphinxcontrib.katex==0.8.6
-sphinxcontrib.bibtex==2.4.2
+-e git+https://github.com/pytorch/pytorch_sphinx_theme.git@cece053#egg=pytorch_sphinx_theme
 sphinx_gallery==0.11.1
 nbsphinx==0.8.8
 matplotlib
