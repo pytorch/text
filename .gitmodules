@@ -9,6 +9,7 @@
 [submodule "third_party/double-conversion"]
 	path = third_party/double-conversion
 	url = https://github.com/google/double-conversion
+	branch = main
 	ignore = dirty
 [submodule "third_party/utf8proc"]
 	path = third_party/utf8proc
