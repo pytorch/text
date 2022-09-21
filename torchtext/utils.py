@@ -6,7 +6,6 @@ import tarfile
 import zipfile
 
 import torch
-from iopath.common.file_io import PathManager
 from torchtext import _CACHE_DIR
 
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
@@ -229,16 +228,3 @@ def get_asset_local_path(asset_path: str, overwite=False) -> str:
     else:
         local_path = download_from_url(url=asset_path, root=_CACHE_DIR, overwrite=overwite)
     return local_path
-
-
-PATH_MANAGER = PathManager()
-'''
-We use iopath to handle local files, remote files with http/https urls, etc.
-This global instance is registered with all the required handlers with the best
-defaults. Learn more about iopath: https://github.com/facebookresearch/iopath
-
-Examples:
-    >>> from torchtext.utils import PATH_MANAGER
-    >>> with PATH_MANAGER.open(FILE_PATH) as f:
-    >>>     f.read()
-'''
