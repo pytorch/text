@@ -6,7 +6,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>SST-2 Binary text classification with XLM-RoBERTa model &mdash; Torchtext nightly documentation</title>
@@ -27,6 +28,8 @@
 
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
@@ -204,7 +207,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220920) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220921) &#x25BC</a>
     </div>
     
 
@@ -228,7 +231,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Package Reference</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../nn_modules.html">torchtext.nn</a></li>
@@ -242,12 +245,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../functional.html">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../models.html">torchtext.models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="t5_demo.html">T5-Base Model for Summarization, Sentiment Classification, and Translation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption" role="heading"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -357,11 +360,11 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-sst2-classification-non-distributed-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="sst-2-binary-text-classification-with-xlm-roberta-model">
-<span id="sphx-glr-tutorials-sst2-classification-non-distributed-py"></span><h1>SST-2 Binary text classification with XLM-RoBERTa model<a class="headerlink" href="#sst-2-binary-text-classification-with-xlm-roberta-model" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="sst-2-binary-text-classification-with-xlm-roberta-model">
+<span id="sphx-glr-tutorials-sst2-classification-non-distributed-py"></span><h1>SST-2 Binary text classification with XLM-RoBERTa model<a class="headerlink" href="#sst-2-binary-text-classification-with-xlm-roberta-model" title="Permalink to this heading">¶</a></h1>
 <p><strong>Author</strong>: <a class="reference external" href="mailto:parmeetbhatia&#37;&#52;&#48;fb&#46;com">Parmeet Bhatia</a></p>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
 <p>This tutorial demonstrates how to train a text classifier on SST-2 binary dataset using a pre-trained XLM-RoBERTa (XLM-R) model.
 We will show how to use torchtext library to:</p>
 <ol class="arabic simple">
@@ -369,18 +372,18 @@ We will show how to use torchtext library to:</p>
 <li><p>read SST-2 dataset and transform it using text and label transformation</p></li>
 <li><p>instantiate classification model using pre-trained XLM-R encoder</p></li>
 </ol>
-</div>
-<div class="section" id="common-imports">
-<h2>Common imports<a class="headerlink" href="#common-imports" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="common-imports">
+<h2>Common imports<a class="headerlink" href="#common-imports" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
 <span class="n">DEVICE</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span> <span class="k">if</span> <a href="https://pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <a href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="data-transformation">
-<h2>Data Transformation<a class="headerlink" href="#data-transformation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="data-transformation">
+<h2>Data Transformation<a class="headerlink" href="#data-transformation" title="Permalink to this heading">¶</a></h2>
 <p>Models like XLM-R cannot work directly with raw text. The first step in training
 these models is to transform input text into tensor (numerical) form such that it
 can then be processed by models to make predictions. A standard way to process text is:</p>
@@ -420,9 +423,9 @@ can either pass a single sentence or list of sentences.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text_transform</span> <span class="o">=</span> <span class="n">XLMR_BASE_ENCODER</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="dataset">
-<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this heading">¶</a></h2>
 <p>torchtext provides several standard NLP datasets. For complete list, refer to documentation
 at <a class="reference external" href="https://pytorch.org/text/stable/datasets.html">https://pytorch.org/text/stable/datasets.html</a>. These datasets are build using composable torchdata
 datapipes and hence support standard flow-control and mapping/transformation using user defined functions
@@ -470,9 +473,9 @@ for further instructions.</p>
 <span class="n">dev_datapipe</span> <span class="o">=</span> <span class="n">dev_datapipe</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">batch_transform</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="model-preparation">
-<h2>Model Preparation<a class="headerlink" href="#model-preparation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="model-preparation">
+<h2>Model Preparation<a class="headerlink" href="#model-preparation" title="Permalink to this heading">¶</a></h2>
 <p>torchtext provides SOTA pre-trained models that can be used to fine-tune on downstream NLP tasks.
 Below we use pre-trained XLM-R encoder with standard base architecture and attach a classifier head to fine-tune it
 on SST-2 binary classification task. We shall use standard Classifier head from the library, but users can define
@@ -488,9 +491,9 @@ please refer to documentation at <a class="reference external" href="https://pyt
 <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="training-methods">
-<h2>Training methods<a class="headerlink" href="#training-methods" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="training-methods">
+<h2>Training methods<a class="headerlink" href="#training-methods" title="Permalink to this heading">¶</a></h2>
 <p>Let’s now define the standard optimizer and training criteria as well as some helper functions
 for training and evaluation</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torchtext.functional</span> <span class="k">as</span> <span class="nn">F</span>
@@ -534,9 +537,9 @@ for training and evaluation</p>
     <span class="k">return</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">counter</span><span class="p">,</span> <span class="n">correct_predictions</span> <span class="o">/</span> <span class="n">total_predictions</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="train">
-<h2>Train<a class="headerlink" href="#train" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="train">
+<h2>Train<a class="headerlink" href="#train" title="Permalink to this heading">¶</a></h2>
 <p>Now we have all the ingredients to train our classification model. Note that we are able to directly iterate
 on our dataset object without using DataLoader. Our pre-process dataset  shall yield batches of data already,
 thanks to the batching datapipe we have applied. For distributed training, we would need to use DataLoader to
@@ -553,9 +556,9 @@ take care of data-sharding.</p>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epoch = [</span><span class="si">{}</span><span class="s2">], loss = [</span><span class="si">{}</span><span class="s2">], accuracy = [</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="output">
-<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>100%|██████████|5.07M/5.07M [00:00&lt;00:00, 40.8MB/s]
 Downloading: &quot;https://download.pytorch.org/models/text/xlmr.vocab.pt&quot; to /root/.cache/torch/hub/checkpoints/xlmr.vocab.pt
 100%|██████████|4.85M/4.85M [00:00&lt;00:00, 16.8MB/s]
@@ -574,8 +577,8 @@ Epoch = [0], loss = [0.2629831412637776], accuracy = [0.9105504587155964]
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
              </article>
@@ -648,8 +651,10 @@ Epoch = [0], loss = [0.2629831412637776], accuracy = [0.9105504587155964]
 
      
        <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
          <script src="../_static/jquery.js"></script>
          <script src="../_static/underscore.js"></script>
+         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="../_static/doctools.js"></script>
      
 

@@ -6,7 +6,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>torchtext.datasets &mdash; Torchtext nightly documentation</title>
@@ -27,6 +28,8 @@
 
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
   <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
@@ -204,7 +207,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220920) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20220921) &#x25BC</a>
     </div>
     
 
@@ -228,7 +231,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Package Reference</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -242,12 +245,12 @@
 <li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/sst2_classification_non_distributed.html">SST-2 Binary text classification with XLM-RoBERTa model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/t5_demo.html">T5-Base Model for Summarization, Sentiment Classification, and Translation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption" role="heading"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -330,8 +333,8 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="torchtext-datasets">
-<h1>torchtext.datasets<a class="headerlink" href="#torchtext-datasets" title="Permalink to this headline">¶</a></h1>
+  <section id="torchtext-datasets">
+<h1>torchtext.datasets<a class="headerlink" href="#torchtext-datasets" title="Permalink to this heading">¶</a></h1>
 <div class="admonition warning" id="datapipes-warnings">
 <p class="admonition-title">Warning</p>
 <p>The datasets supported by torchtext are datapipes from the <a class="reference external" href="https://pytorch.org/data/beta/index.html">torchdata
@@ -399,7 +402,7 @@ call <code class="docutils literal notranslate"><span class="pre">torch.utils.da
 </div>
 <p>The following datasets are currently available. If you would like to contribute
 new datasets to the repo or work with your own custom datasets, please refer to <a class="reference external" href="https://github.com/pytorch/text/blob/main/CONTRIBUTING_DATASETS.md">CONTRIBUTING_DATASETS.md</a> guide.</p>
-<div class="contents local topic" id="datasets">
+<nav class="contents local" id="datasets">
 <p class="topic-title">Datasets</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#text-classification" id="id1">Text Classification</a></p>
@@ -457,14 +460,14 @@ new datasets to the repo or work with your own custom datasets, please refer to 
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="text-classification">
-<h2><a class="toc-backref" href="#id1">Text Classification</a><a class="headerlink" href="#text-classification" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ag-news">
-<h3><a class="toc-backref" href="#id2">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this headline">¶</a></h3>
+</nav>
+<section id="text-classification">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Text Classification</a><a class="headerlink" href="#text-classification" title="Permalink to this heading">¶</a></h2>
+<section id="ag-news">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.AG_NEWS">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">AG_NEWS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/ag_news.html#AG_NEWS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.AG_NEWS">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">AG_NEWS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/ag_news.html#AG_NEWS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
 <dd><p>AG_NEWS Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -482,27 +485,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 4) and text</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="amazonreviewfull">
-<h3><a class="toc-backref" href="#id3">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="amazonreviewfull">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.AmazonReviewFull">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">AmazonReviewFull</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewfull.html#AmazonReviewFull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.AmazonReviewFull">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">AmazonReviewFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewfull.html#AmazonReviewFull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><p>AmazonReviewFull Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -520,27 +523,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 5) and text containing the review title and text</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="amazonreviewpolarity">
-<h3><a class="toc-backref" href="#id4">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="amazonreviewpolarity">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.AmazonReviewPolarity">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">AmazonReviewPolarity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewpolarity.html#AmazonReviewPolarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.AmazonReviewPolarity">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">AmazonReviewPolarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewpolarity.html#AmazonReviewPolarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>AmazonReviewPolarity Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -558,27 +561,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 2) and text containing the review title and text</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="cola">
-<h3><a class="toc-backref" href="#id5">CoLA</a><a class="headerlink" href="#cola" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="cola">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">CoLA</a><a class="headerlink" href="#cola" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.CoLA">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">CoLA</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/cola.html#CoLA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CoLA" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.CoLA">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">CoLA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/cola.html#CoLA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CoLA" title="Permalink to this definition">¶</a></dt>
 <dd><p>CoLA dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -597,27 +600,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields rows from CoLA dataset (source (str), label (int), sentence (str))</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="dbpedia">
-<h3><a class="toc-backref" href="#id6">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="dbpedia">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.DBpedia">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">DBpedia</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/dbpedia.html#DBpedia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.DBpedia">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">DBpedia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/dbpedia.html#DBpedia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
 <dd><p>DBpedia Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -635,27 +638,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 14) and text containing the news title and contents</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="imdb">
-<h3><a class="toc-backref" href="#id7">IMDb</a><a class="headerlink" href="#imdb" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="imdb">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">IMDb</a><a class="headerlink" href="#imdb" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.IMDB">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">IMDB</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IMDB" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.IMDB">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">IMDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IMDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>IMDB Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -673,16 +676,16 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 2) and text containing the movie review</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
@@ -694,12 +697,12 @@ instructions.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="mnli">
-<h3><a class="toc-backref" href="#id8">MNLI</a><a class="headerlink" href="#mnli" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="mnli">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">MNLI</a><a class="headerlink" href="#mnli" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.MNLI">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">MNLI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev_matched',</span> <span class="pre">'dev_mismatched')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/mnli.html#MNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.MNLI" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.MNLI">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">MNLI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev_matched',</span> <span class="pre">'dev_mismatched')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/mnli.html#MNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.MNLI" title="Permalink to this definition">¶</a></dt>
 <dd><p>MNLI Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -718,27 +721,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev_matched</cite>, <cite>dev_mismatched</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of text and label (0 to 2).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="mrpc">
-<h3><a class="toc-backref" href="#id9">MRPC</a><a class="headerlink" href="#mrpc" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="mrpc">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">MRPC</a><a class="headerlink" href="#mrpc" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.MRPC">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">MRPC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/mrpc.html#MRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.MRPC" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.MRPC">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">MRPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/mrpc.html#MRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.MRPC" title="Permalink to this definition">¶</a></dt>
 <dd><p>MRPC Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -756,27 +759,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields data points from MRPC dataset which consist of label, sentence1, sentence2</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="qnli">
-<h3><a class="toc-backref" href="#id10">QNLI</a><a class="headerlink" href="#qnli" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="qnli">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">QNLI</a><a class="headerlink" href="#qnli" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.QNLI">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">QNLI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/qnli.html#QNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.QNLI" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.QNLI">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">QNLI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/qnli.html#QNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.QNLI" title="Permalink to this definition">¶</a></dt>
 <dd><p>QNLI Dataset</p>
 <p>For additional details refer to <a class="reference external" href="https://arxiv.org/pdf/1804.07461.pdf">https://arxiv.org/pdf/1804.07461.pdf</a> (from GLUE paper)</p>
 <dl class="simple">
@@ -788,27 +791,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of text and label (0 and 1).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="qqp">
-<h3><a class="toc-backref" href="#id11">QQP</a><a class="headerlink" href="#qqp" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="qqp">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">QQP</a><a class="headerlink" href="#qqp" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.QQP">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">QQP</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/qqp.html#QQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.QQP" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.QQP">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">QQP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/qqp.html#QQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.QQP" title="Permalink to this definition">¶</a></dt>
 <dd><p>QQP dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -819,24 +822,24 @@ instructions.</p>
 </div>
 <p>For additional details refer to <a class="reference external" href="https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs">https://quoradata.quora.com/First-Quora-Dataset-Release-Question-Pairs</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields rows from QQP dataset (label (int), question1 (str), question2 (str))</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="rte">
-<h3><a class="toc-backref" href="#id12">RTE</a><a class="headerlink" href="#rte" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="rte">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">RTE</a><a class="headerlink" href="#rte" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.RTE">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">RTE</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/rte.html#RTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.RTE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.RTE">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">RTE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/rte.html#RTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.RTE" title="Permalink to this definition">¶</a></dt>
 <dd><p>RTE Dataset</p>
 <p>For additional details refer to <a class="reference external" href="https://aclweb.org/aclwiki/Recognizing_Textual_Entailment">https://aclweb.org/aclwiki/Recognizing_Textual_Entailment</a></p>
 <dl class="simple">
@@ -848,27 +851,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of text and/or label (0 and 1). The <cite>test</cite> split only returns text.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="sogounews">
-<h3><a class="toc-backref" href="#id13">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sogounews">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.SogouNews">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">SogouNews</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sogounews.html#SogouNews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.SogouNews">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">SogouNews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sogounews.html#SogouNews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
 <dd><p>SogouNews Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -890,22 +893,22 @@ split: split or splits to be returned. Can be a string or tuple of strings. Defa
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">returns</dt>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DataPipe that yields tuple of label (1 to 5) and text containing the news title and contents</p>
 </dd>
-<dt class="field-even">rtype</dt>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
 <dd class="field-even"><p>(int, str)</p>
 </dd>
 </dl>
 </div></blockquote>
 </dd></dl>
 
-</div>
-<div class="section" id="sst2">
-<h3><a class="toc-backref" href="#id14">SST2</a><a class="headerlink" href="#sst2" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sst2">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">SST2</a><a class="headerlink" href="#sst2" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.SST2">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">SST2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sst2.html#SST2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SST2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.SST2">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">SST2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sst2.html#SST2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SST2" title="Permalink to this definition">¶</a></dt>
 <dd><p>SST2 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -924,16 +927,16 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of text and/or label (1 to 4). The <cite>test</cite> split only returns text.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>,)]</p>
 </dd>
 </dl>
@@ -945,12 +948,12 @@ instructions.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="stsb">
-<h3><a class="toc-backref" href="#id15">STSB</a><a class="headerlink" href="#stsb" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="stsb">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">STSB</a><a class="headerlink" href="#stsb" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.STSB">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">STSB</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/stsb.html#STSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.STSB" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.STSB">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">STSB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/stsb.html#STSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.STSB" title="Permalink to this definition">¶</a></dt>
 <dd><p>STSB Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -969,27 +972,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of (index (int), label (float), sentence1 (str), sentence2 (str))</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="wnli">
-<h3><a class="toc-backref" href="#id16">WNLI</a><a class="headerlink" href="#wnli" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="wnli">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">WNLI</a><a class="headerlink" href="#wnli" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.WNLI">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">WNLI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wnli.html#WNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WNLI" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.WNLI">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">WNLI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wnli.html#WNLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WNLI" title="Permalink to this definition">¶</a></dt>
 <dd><p>WNLI Dataset</p>
 <p>For additional details refer to <a class="reference external" href="https://arxiv.org/pdf/1804.07461v3.pdf">https://arxiv.org/pdf/1804.07461v3.pdf</a></p>
 <dl class="simple">
@@ -1001,27 +1004,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of text and/or label (0 to 1). The <cite>test</cite> split only returns text.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="yahooanswers">
-<h3><a class="toc-backref" href="#id17">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="yahooanswers">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.YahooAnswers">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">YahooAnswers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yahooanswers.html#YahooAnswers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.YahooAnswers">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">YahooAnswers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yahooanswers.html#YahooAnswers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
 <dd><p>YahooAnswers Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1039,28 +1042,28 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 10) and text containing the question title, question
 content, and best answer</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="yelpreviewfull">
-<h3><a class="toc-backref" href="#id18">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="yelpreviewfull">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.YelpReviewFull">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">YelpReviewFull</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewfull.html#YelpReviewFull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.YelpReviewFull">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">YelpReviewFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewfull.html#YelpReviewFull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><p>YelpReviewFull Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1078,27 +1081,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 5) and text containing the review</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="yelpreviewpolarity">
-<h3><a class="toc-backref" href="#id19">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="yelpreviewpolarity">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.YelpReviewPolarity">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">YelpReviewPolarity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewpolarity.html#YelpReviewPolarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.YelpReviewPolarity">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">YelpReviewPolarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewpolarity.html#YelpReviewPolarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>YelpReviewPolarity Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1116,30 +1119,30 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of label (1 to 2) and text containing the review</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="language-modeling">
-<h2><a class="toc-backref" href="#id20">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="penntreebank">
-<h3><a class="toc-backref" href="#id21">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="language-modeling">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this heading">¶</a></h2>
+<section id="penntreebank">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.PennTreebank">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">PennTreebank</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/penntreebank.html#PennTreebank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.PennTreebank">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">PennTreebank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/penntreebank.html#PennTreebank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
 <dd><p>PennTreebank Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1158,27 +1161,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>valid</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields text from the Treebank corpus</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="wikitext-2">
-<h3><a class="toc-backref" href="#id22">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="wikitext-2">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.WikiText2">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">WikiText2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext2.html#WikiText2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.WikiText2">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">WikiText2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext2.html#WikiText2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
 <dd><p>WikiText2 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1197,27 +1200,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>valid</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields text from Wikipedia articles</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="wikitext103">
-<h3><a class="toc-backref" href="#id23">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="wikitext103">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.WikiText103">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">WikiText103</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext103.html#WikiText103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.WikiText103">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">WikiText103</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext103.html#WikiText103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
 <dd><p>WikiText103 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1236,30 +1239,30 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>valid</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields text from Wikipedia articles</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="machine-translation">
-<h2><a class="toc-backref" href="#id24">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="iwslt2016">
-<h3><a class="toc-backref" href="#id25">IWSLT2016</a><a class="headerlink" href="#iwslt2016" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="machine-translation">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this heading">¶</a></h2>
+<section id="iwslt2016">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">IWSLT2016</a><a class="headerlink" href="#iwslt2016" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.IWSLT2016">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">IWSLT2016</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tst2013'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tst2014'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt2016.html#IWSLT2016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IWSLT2016" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.IWSLT2016">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">IWSLT2016</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tst2013'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tst2014'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt2016.html#IWSLT2016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IWSLT2016" title="Permalink to this definition">¶</a></dt>
 <dd><p>IWSLT2016 dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1272,14 +1275,6 @@ instructions.</p>
 <p>The available datasets include following:</p>
 <p><strong>Language pairs</strong>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td></td>
 <td><p>“en”</p></td>
@@ -1327,7 +1322,7 @@ instructions.</p>
 </table>
 <p><strong>valid/test sets</strong>: [“dev2010”, “tst2010”, “tst2011”, “tst2012”, “tst2013”, “tst2014”]</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</p></li>
@@ -1336,10 +1331,10 @@ instructions.</p>
 <li><p><strong>test_set</strong> – a string to identify test set.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of source and target sentences</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
@@ -1351,12 +1346,12 @@ instructions.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="iwslt2017">
-<h3><a class="toc-backref" href="#id26">IWSLT2017</a><a class="headerlink" href="#iwslt2017" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="iwslt2017">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">IWSLT2017</a><a class="headerlink" href="#iwslt2017" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.IWSLT2017">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">IWSLT2017</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt2017.html#IWSLT2017"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IWSLT2017" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.IWSLT2017">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">IWSLT2017</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt2017.html#IWSLT2017"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.IWSLT2017" title="Permalink to this definition">¶</a></dt>
 <dd><p>IWSLT2017 dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1369,14 +1364,6 @@ instructions.</p>
 <p>The available datasets include following:</p>
 <p><strong>Language pairs</strong>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-<col style="width: 17%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td></td>
 <td><p>“en”</p></td>
@@ -1423,17 +1410,17 @@ instructions.</p>
 </tbody>
 </table>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</p></li>
 <li><p><strong>language_pair</strong> – tuple or list containing src and tgt language</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of source and target sentences</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
@@ -1445,12 +1432,12 @@ instructions.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="multi30k">
-<h3><a class="toc-backref" href="#id27">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="multi30k">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.Multi30k">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">Multi30k</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/multi30k.html#Multi30k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.Multi30k">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">Multi30k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/multi30k.html#Multi30k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi30k dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1469,17 +1456,17 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</p></li>
 <li><p><strong>language_pair</strong> – tuple or list containing src and tgt language. Available options are (‘de’,’en’) and (‘en’, ‘de’)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of source and target sentences</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
@@ -1491,15 +1478,15 @@ instructions.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="sequence-tagging">
-<h2><a class="toc-backref" href="#id28">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="conll2000chunking">
-<h3><a class="toc-backref" href="#id29">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="sequence-tagging">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this heading">¶</a></h2>
+<section id="conll2000chunking">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.CoNLL2000Chunking">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">CoNLL2000Chunking</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/conll2000chunking.html#CoNLL2000Chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.CoNLL2000Chunking">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">CoNLL2000Chunking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/conll2000chunking.html#CoNLL2000Chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
 <dd><p>CoNLL2000Chunking Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1517,27 +1504,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields list of words along with corresponding Parts-of-speech tag and chunk tag</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="udpos">
-<h3><a class="toc-backref" href="#id30">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="udpos">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.UDPOS">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">UDPOS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/udpos.html#UDPOS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.UDPOS">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">UDPOS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/udpos.html#UDPOS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
 <dd><p>UDPOS Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1555,30 +1542,30 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>valid</cite>, <cite>test</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields list of words along with corresponding parts-of-speech tags</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="question-answer">
-<h2><a class="toc-backref" href="#id31">Question Answer</a><a class="headerlink" href="#question-answer" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="squad-1-0">
-<h3><a class="toc-backref" href="#id32">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="question-answer">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">Question Answer</a><a class="headerlink" href="#question-answer" title="Permalink to this heading">¶</a></h2>
+<section id="squad-1-0">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.SQuAD1">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">SQuAD1</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad1.html#SQuAD1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.SQuAD1">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">SQuAD1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad1.html#SQuAD1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQuAD1 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1596,27 +1583,27 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields data points from SQuaAD1 dataset which consist of context, question, list of answers and corresponding index in context</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>))</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="squad-2-0">
-<h3><a class="toc-backref" href="#id33">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="squad-2-0">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.SQuAD2">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">SQuAD2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad2.html#SQuAD2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.SQuAD2">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">SQuAD2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.10)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'dev')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad2.html#SQuAD2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQuAD2 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1634,30 +1621,30 @@ instructions.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (<cite>train</cite>, <cite>dev</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields data points from SQuaAD1 dataset which consist of context, question, list of answers and corresponding index in context</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>), <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>))</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="unsupervised-learning">
-<h2><a class="toc-backref" href="#id34">Unsupervised Learning</a><a class="headerlink" href="#unsupervised-learning" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="cc100">
-<h3><a class="toc-backref" href="#id35">CC100</a><a class="headerlink" href="#cc100" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="unsupervised-learning">
+<h2><a class="toc-backref" href="#id34" role="doc-backlink">Unsupervised Learning</a><a class="headerlink" href="#unsupervised-learning" title="Permalink to this heading">¶</a></h2>
+<section id="cc100">
+<h3><a class="toc-backref" href="#id35" role="doc-backlink">CC100</a><a class="headerlink" href="#cc100" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.CC100">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">CC100</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/cc100.html#CC100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CC100" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.CC100">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">CC100</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/cc100.html#CC100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.CC100" title="Permalink to this definition">¶</a></dt>
 <dd><p>CC100 Dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1668,27 +1655,27 @@ instructions.</p>
 </div>
 <p>For additional details refer to <a class="reference external" href="https://data.statmt.org/cc-100/">https://data.statmt.org/cc-100/</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p></li>
 <li><p><strong>language_code</strong> – the language of the dataset</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields tuple of language code and text</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="enwik9">
-<h3><a class="toc-backref" href="#id36">EnWik9</a><a class="headerlink" href="#enwik9" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="enwik9">
+<h3><a class="toc-backref" href="#id36" role="doc-backlink">EnWik9</a><a class="headerlink" href="#enwik9" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
-<dt id="torchtext.datasets.EnWik9">
-<code class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></code><code class="sig-name descname"><span class="pre">EnWik9</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/enwik9.html#EnWik9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.EnWik9" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="torchtext.datasets.EnWik9">
+<span class="sig-prename descclassname"><span class="pre">torchtext.datasets.</span></span><span class="sig-name descname"><span class="pre">EnWik9</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/enwik9.html#EnWik9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.datasets.EnWik9" title="Permalink to this definition">¶</a></dt>
 <dd><p>EnWik9 dataset</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1700,21 +1687,21 @@ instructions.</p>
 <p>For additional details refer to <a class="reference external" href="http://mattmahoney.net/dc/textdata.html">http://mattmahoney.net/dc/textdata.html</a></p>
 <p>Number of lines in dataset: 13147026</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>root</strong> – Directory where the datasets are saved. Default: os.path.expanduser(‘~/.torchtext/cache’)</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataPipe that yields raw text rows from WnWik9 dataset</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
              </article>
@@ -1827,8 +1814,10 @@ instructions.</p>
 
      
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
+         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
          <script src="_static/doctools.js"></script>
      
 
