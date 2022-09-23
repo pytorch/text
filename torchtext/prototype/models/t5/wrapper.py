@@ -4,7 +4,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-from torchtext.prototype.models import T5_BASE_GENERATION, T5Conf, T5Transform, T5Bundle
+from torchtext.prototype.models import (
+    T5_BASE_GENERATION,
+    T5_SMALL_GENERATION,
+    T5_LARGE_GENERATION,
+    T5_3B_GENERATION,
+    T5_11B_GENERATION,
+    T5Conf,
+    T5Transform,
+    T5Bundle,
+)
+
+
+BUNDLERS = {
+    "base": T5_BASE_GENERATION,
+    "small": T5_SMALL_GENERATION,
+    "large": T5_LARGE_GENERATION,
+    "3b": T5_3B_GENERATION,
+    "11b": T5_11B_GENERATION,
+}
 
 
 class T5Wrapper(nn.Module):
@@ -21,7 +39,7 @@ class T5Wrapper(nn.Module):
     ) -> None:
         """
         Args:
-            configuration (str or None): The model configuration. Currently only support 'base'. Must be `None` if checkpoint is not `None`. (Default: `None`)
+            configuration (str or None): The model configuration. Only support 'base', 'small', 'large', '3b', and '11b' . Must be `None` if checkpoint is not `None`. (Default: `None`)
             checkpoint (str, Dict[str, torch.Tensor], or None): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder. Must be `None` if configuration is not `None`.(Default: ``None``)
             t5_config (T5Conf or None): An instance of T5Conf that defined the model configuration (i.e. number of layer, attention heads, etc). Must be provided if configuration is `None`. (Default: `None`)
             transform (T5Transfrom or None): An instance of T5Transform that defines the text processing pipeline. Must be provided if configuration is `None`. (Default: `None`)
@@ -34,15 +52,17 @@ class T5Wrapper(nn.Module):
         if configuration is None:
             assert checkpoint is not None, "Must provide a checkpoint if configuration is None"
             assert t5_config is not None, "Must provide t5_config if using checkpoint"
-            assert isinstance(t5_config, T5Conf), "t5_config must have type torchtext.prototype.models.T5Conf"
+            assert isinstance(t5_config, T5Conf), f"t5_config must have type {T5Conf.__module__}"
             assert not t5_config.encoder_only, "t5_config.encoder_only must be False"
             assert t5_config.linear_head, "t5_config.linear_head must be True"
             assert transform is not None, "Must provide transform if using checkpoint"
-            assert isinstance(transform, T5Transform), "transform must have type torchtext.prototype.models.T5Transform"
+            assert isinstance(transform, T5Transform), f"transform must have type {T5Transform.__module__}"
 
         else:
             assert checkpoint is None, "configuration and checkpoint were both provided. Can only provide one."
-            assert configuration in ("base"), "Invalid configuration provided. Only support 'base' configuration."
+            assert (
+                configuration in BUNDLERS
+            ), f"Invalid configuration provided. Only support the following configurations: {[key for key in BUNDLERS.keys()]}"
 
         if configuration is None and checkpoint is not None:
             self.bundler = T5Bundle(_path=checkpoint, _config=t5_config, transform=lambda: transform)
@@ -50,7 +70,7 @@ class T5Wrapper(nn.Module):
                 config=t5_config, freeze_model=freeze_model, checkpoint=checkpoint, strict=strict, dl_kwargs=dl_kwargs
             )
         else:
-            self.bundler = T5_BASE_GENERATION
+            self.bundler = BUNDLERS[configuration]
             self.model = self.bundler.get_model()
 
         self.transform = self.bundler.transform()

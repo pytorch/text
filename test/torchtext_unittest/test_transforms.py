@@ -586,7 +586,9 @@ class TestCLIPTokenizer(TorchtextTestCase):
 
 
 class TestBERTTokenizer(TorchtextTestCase):
-    def _load_tokenizer(self, test_scripting: bool, do_lower_case: bool, return_tokens: bool):
+    def _load_tokenizer(
+        self, test_scripting: bool, do_lower_case: bool, return_tokens: bool, never_split: Optional[List[str]] = None
+    ):
         if do_lower_case:
             vocab_file = "bert_base_uncased_vocab.txt"
         else:
@@ -596,46 +598,117 @@ class TestBERTTokenizer(TorchtextTestCase):
             vocab_path=get_asset_path(vocab_file),
             do_lower_case=do_lower_case,
             return_tokens=return_tokens,
+            never_split=never_split,
         )
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
         return tokenizer
 
-    def _bert_tokenizer(self, tokenizer, do_lower_case):
+    def _bert_tokenizer(self, tokenizer, do_lower_case, never_split: Optional[List[str]] = None):
         sample_texts = [
             "Hello World!, how are you?",
             "Hélló  WoŕlḊ¿",
             "Respublica superiorem",
             "Avdija Vršajević în",
+            " \tHeLLo!how  \n Are yoU? [UNK]",
+            "hi world [UNK] [CLS]",
+            "testing, [UNK] words! [SEP]",
         ]
 
-        if do_lower_case:
-            expected_tokens = [
-                ["hello", "world", "!", ",", "how", "are", "you", "?"],
-                ["hello", "world", "¿"],
-                ["res", "##pu", "##bl", "##ica", "superior", "##em"],
-                ["av", "##di", "##ja", "vr", "##sa", "##jevic", "in"],
-            ]
-            expected_token_ids = [
-                ["7592", "2088", "999", "1010", "2129", "2024", "2017", "1029"],
-                ["7592", "2088", "1094"],
-                ["24501", "14289", "16558", "5555", "6020", "6633"],
-                ["20704", "4305", "3900", "27830", "3736", "26782", "1999"],
-            ]
+        if not never_split:
+            if do_lower_case:
+                expected_tokens = [
+                    ["hello", "world", "!", ",", "how", "are", "you", "?"],
+                    ["hello", "world", "¿"],
+                    ["res", "##pu", "##bl", "##ica", "superior", "##em"],
+                    ["av", "##di", "##ja", "vr", "##sa", "##jevic", "in"],
+                    ["hello", "!", "how", "are", "you", "?", "[", "un", "##k", "]"],
+                    ["hi", "world", "[", "un", "##k", "]", "[", "cl", "##s", "]"],
+                    ["testing", ",", "[", "un", "##k", "]", "words", "!", "[", "sep", "]"],
+                ]
+                expected_token_ids = [
+                    ["7592", "2088", "999", "1010", "2129", "2024", "2017", "1029"],
+                    ["7592", "2088", "1094"],
+                    ["24501", "14289", "16558", "5555", "6020", "6633"],
+                    ["20704", "4305", "3900", "27830", "3736", "26782", "1999"],
+                    ["7592", "999", "2129", "2024", "2017", "1029", "1031", "4895", "2243", "1033"],
+                    ["7632", "2088", "1031", "4895", "2243", "1033", "1031", "18856", "2015", "1033"],
+                    ["5604", "1010", "1031", "4895", "2243", "1033", "2616", "999", "1031", "19802", "1033"],
+                ]
 
+            else:
+                expected_tokens = [
+                    ["Hello", "World", "!", ",", "how", "are", "you", "?"],
+                    ["H", "##é", "##ll", "##ó", "[UNK]", "¿"],
+                    ["Re", "##sp", "##ub", "##lica", "superior", "##em"],
+                    ["A", "##v", "##di", "##ja", "V", "##r", "##ša", "##je", "##vić", "î", "##n"],
+                    ["He", "##LL", "##o", "!", "how", "Are", "yo", "##U", "?", "[", "UN", "##K", "]"],
+                    ["hi", "world", "[", "UN", "##K", "]", "[", "C", "##LS", "]"],
+                    ["testing", ",", "[", "UN", "##K", "]", "words", "!", "[", "SE", "##P", "]"],
+                ]
+                expected_token_ids = [
+                    ["8667", "1291", "106", "117", "1293", "1132", "1128", "136"],
+                    ["145", "2744", "2339", "7774", "100", "225"],
+                    ["11336", "20080", "10354", "9538", "7298", "5521"],
+                    ["138", "1964", "3309", "3174", "159", "1197", "23834", "5561", "10225", "260", "1179"],
+                    [
+                        "1124",
+                        "23955",
+                        "1186",
+                        "106",
+                        "1293",
+                        "2372",
+                        "26063",
+                        "2591",
+                        "136",
+                        "164",
+                        "7414",
+                        "2428",
+                        "166",
+                    ],
+                    ["20844", "1362", "164", "7414", "2428", "166", "164", "140", "15928", "166"],
+                    ["5193", "117", "164", "7414", "2428", "166", "1734", "106", "164", "12342", "2101", "166"],
+                ]
         else:
-            expected_tokens = [
-                ["Hello", "World", "!", ",", "how", "are", "you", "?"],
-                ["H", "##é", "##ll", "##ó", "[UNK]", "¿"],
-                ["Re", "##sp", "##ub", "##lica", "superior", "##em"],
-                ["A", "##v", "##di", "##ja", "V", "##r", "##ša", "##je", "##vić", "î", "##n"],
-            ]
-            expected_token_ids = [
-                ["8667", "1291", "106", "117", "1293", "1132", "1128", "136"],
-                ["145", "2744", "2339", "7774", "100", "225"],
-                ["11336", "20080", "10354", "9538", "7298", "5521"],
-                ["138", "1964", "3309", "3174", "159", "1197", "23834", "5561", "10225", "260", "1179"],
-            ]
+            if do_lower_case:
+                expected_tokens = [
+                    ["hello", "world", "!", ",", "how", "are", "you", "?"],
+                    ["hello", "world", "¿"],
+                    ["res", "##pu", "##bl", "##ica", "superior", "##em"],
+                    ["av", "##di", "##ja", "vr", "##sa", "##jevic", "in"],
+                    ["hello", "!", "how", "are", "you", "?", "[UNK]"],
+                    ["hi", "world", "[UNK]", "[CLS]"],
+                    ["testing", ",", "[UNK]", "words", "!", "[", "sep", "]"],
+                ]
+                expected_token_ids = [
+                    ["7592", "2088", "999", "1010", "2129", "2024", "2017", "1029"],
+                    ["7592", "2088", "1094"],
+                    ["24501", "14289", "16558", "5555", "6020", "6633"],
+                    ["20704", "4305", "3900", "27830", "3736", "26782", "1999"],
+                    ["7592", "999", "2129", "2024", "2017", "1029", "100"],
+                    ["7632", "2088", "100", "101"],
+                    ["5604", "1010", "100", "2616", "999", "1031", "19802", "1033"],
+                ]
+
+            else:
+                expected_tokens = [
+                    ["Hello", "World", "!", ",", "how", "are", "you", "?"],
+                    ["H", "##é", "##ll", "##ó", "[UNK]", "¿"],
+                    ["Re", "##sp", "##ub", "##lica", "superior", "##em"],
+                    ["A", "##v", "##di", "##ja", "V", "##r", "##ša", "##je", "##vić", "î", "##n"],
+                    ["He", "##LL", "##o", "!", "how", "Are", "yo", "##U", "?", "[UNK]"],
+                    ["hi", "world", "[UNK]", "[CLS]"],
+                    ["testing", ",", "[UNK]", "words", "!", "[", "SE", "##P", "]"],
+                ]
+                expected_token_ids = [
+                    ["8667", "1291", "106", "117", "1293", "1132", "1128", "136"],
+                    ["145", "2744", "2339", "7774", "100", "225"],
+                    ["11336", "20080", "10354", "9538", "7298", "5521"],
+                    ["138", "1964", "3309", "3174", "159", "1197", "23834", "5561", "10225", "260", "1179"],
+                    ["1124", "23955", "1186", "106", "1293", "2372", "26063", "2591", "136", "100"],
+                    ["20844", "1362", "100", "101"],
+                    ["5193", "117", "100", "1734", "106", "164", "12342", "2101", "166"],
+                ]
 
         # test batch of sentences
         if tokenizer._return_tokens:
@@ -650,14 +723,18 @@ class TestBERTTokenizer(TorchtextTestCase):
             else:
                 self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
-    @nested_params([True, False], [True, False], [True, False])
-    def test_bert_tokenizer(self, test_scripting, do_lower_case, return_tokens):
+    @nested_params([True, False], [True, False], [True, False], [[], None, ["[UNK]", "[CLS]"]])
+    def test_bert_tokenizer(self, test_scripting, do_lower_case, return_tokens, never_split):
         """test tokenization on single sentence input as well as batch on sentences"""
         self._bert_tokenizer(
             self._load_tokenizer(
-                test_scripting=test_scripting, do_lower_case=do_lower_case, return_tokens=return_tokens
+                test_scripting=test_scripting,
+                do_lower_case=do_lower_case,
+                return_tokens=return_tokens,
+                never_split=never_split,
             ),
             do_lower_case=do_lower_case,
+            never_split=never_split,
         )
 
     @nested_params([True, False], [True, False], [True, False])

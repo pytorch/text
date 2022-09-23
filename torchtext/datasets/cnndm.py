@@ -20,7 +20,7 @@ if is_module_available("torchdata"):
 
 DATASET_NAME = "CNNDM"
 
-URL_LIST = {
+SPLIT_LIST = {
     "cnn_train": "https://raw.githubusercontent.com/abisee/cnn-dailymail/master/url_lists/cnn_wayback_training_urls.txt",
     "cnn_val": "https://raw.githubusercontent.com/abisee/cnn-dailymail/master/url_lists/cnn_wayback_validation_urls.txt",
     "cnn_test": "https://raw.githubusercontent.com/abisee/cnn-dailymail/master/url_lists/cnn_wayback_test_urls.txt",
@@ -29,7 +29,7 @@ URL_LIST = {
     "dailymail_test": "https://raw.githubusercontent.com/abisee/cnn-dailymail/master/url_lists/dailymail_wayback_test_urls.txt",
 }
 
-STORIES_LIST = {
+URL = {
     "cnn": "https://drive.google.com/uc?export=download&id=0BwmD_VLjROrfTHk4NFg2SndKcjQ",
     "dailymail": "https://drive.google.com/uc?export=download&id=0BwmD_VLjROrfM1BxdkxVaTY2bWs",
 }
@@ -39,11 +39,17 @@ PATH_LIST = {
     "dailymail": "dailymail_stories.tgz",
 }
 
-STORIES_MD5 = {"cnn": "85ac23a1926a831e8f46a6b8eaf57263", "dailymail": "f9c5f565e8abe86c38bfa4ae8f96fd72"}
+MD5 = {"cnn": "85ac23a1926a831e8f46a6b8eaf57263", "dailymail": "f9c5f565e8abe86c38bfa4ae8f96fd72"}
 
 _EXTRACTED_FOLDERS = {
     "cnn": os.path.join("cnn", "stories"),
     "dailymail": os.path.join("dailymail", "stories"),
+}
+
+NUM_LINES = {
+    "train": 287227,
+    "val": 13368,
+    "test": 11490,
 }
 
 story_fnames = defaultdict(set)
@@ -84,16 +90,16 @@ def _hash_urls(s: tuple):
 
 
 def _get_split_list(source: str, split: str):
-    url_dp = IterableWrapper([URL_LIST[source + "_" + split]])
+    url_dp = IterableWrapper([SPLIT_LIST[source + "_" + split]])
     online_dp = OnlineReader(url_dp)
     return online_dp.readlines().map(fn=_hash_urls)
 
 
 def _load_stories(root: str, source: str, split: str):
-    story_dp = IterableWrapper([STORIES_LIST[source]])
+    story_dp = IterableWrapper([URL[source]])
     cache_compressed_dp = story_dp.on_disk_cache(
         filepath_fn=partial(_filepath_fn, root, source),
-        hash_dict={_filepath_fn(root, source): STORIES_MD5[source]},
+        hash_dict={_filepath_fn(root, source): MD5[source]},
         hash_type="md5",
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)

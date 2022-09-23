@@ -5,16 +5,11 @@ import shutil
 import unittest
 from urllib.parse import urljoin
 
-from test.common.assets import get_asset_path
 from torchtext import _TEXT_BUCKET
 from torchtext import utils
+from torchtext_unittest.common.assets import conditional_remove, get_asset_path
 
 from .common.torchtext_test_case import TorchtextTestCase
-
-
-def conditional_remove(f):
-    if os.path.isfile(f):
-        os.remove(f)
 
 
 class TestUtils(TorchtextTestCase):

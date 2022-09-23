@@ -1,10 +1,11 @@
 import os
+import platform
 import shutil
 import tempfile
+import unittest
 from functools import partial
 
 import torch
-from test.common.torchtext_test_case import TorchtextTestCase
 from torch.utils.data import DataLoader
 from torchtext.data.functional import custom_replace
 from torchtext.prototype.transforms import (
@@ -17,6 +18,7 @@ from torchtext.prototype.transforms import (
 from torchtext.prototype.vectors import build_vectors, FastText, GloVe, load_vectors_from_file_path
 from torchtext.prototype.vocab_factory import build_vocab_from_text_file, load_vocab_from_file
 from torchtext.utils import download_from_url
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 from ..common.assets import get_asset_path
 
@@ -135,6 +137,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
+    # TODO(Nayef211): remove decorator once https://github.com/pytorch/text/issues/1900 is closed
+    @unittest.skipIf("CI" in os.environ and platform.system() == "Linux", "Test is known to fail on Linux.")
     def test_vocab_from_raw_text_file(self) -> None:
         asset_name = "vocab_raw_text_test.txt"
         asset_path = get_asset_path(asset_name)

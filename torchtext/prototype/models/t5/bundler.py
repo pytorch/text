@@ -68,7 +68,7 @@ class T5Bundle:
         *,
         load_weights: bool = True,
         freeze_model: bool = False,
-        dl_kwargs: Dict[str, Any] = None,
+        dl_kwargs: Optional[Dict[str, Any]] = None,
     ) -> T5Model:
         r"""get_model(load_weights: bool = True, freeze_model: bool = False, *, dl_kwargs=None) -> torctext.prototype.models.T5Model
 
@@ -104,8 +104,8 @@ class T5Bundle:
         *,
         freeze_model: bool = False,
         checkpoint: Optional[Union[str, Dict[str, torch.Tensor]]] = None,
-        strict=False,
-        dl_kwargs: Dict[str, Any] = None,
+        strict: bool = False,
+        dl_kwargs: Optional[Dict[str, Any]] = None,
     ) -> T5Model:
         """Class builder method
 
@@ -138,19 +138,8 @@ class T5Bundle:
         return self._config
 
 
-T5_BASE_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
-    _config=T5Conf(encoder_only=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE_ENCODER.__doc__ = """
-    T5_BASE_ENCODER is an encoder-only model from a pre-trained T5 model with the base configuration..
+ENCODER_DOC = """
+    T5_{}_ENCODER is an encoder-only model from a pre-trained T5 model with the {} configuration.
     It returns the normalized output from the final layer of the encoder.
 
     The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
@@ -166,22 +155,10 @@ T5_BASE_ENCODER.__doc__ = """
     `Source <https://github.com/google-research/text-to-text-transfer-transformer#released-model-checkpoints>`__]
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
-    """
+"""
 
-
-T5_BASE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
-    _config=T5Conf(encoder_only=False),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE.__doc__ = """
-    T5_BASE is an encoder-decoder model from a pre-trained T5 model with the base configuration.
+MODEL_DOC = """
+    T5_{} is an encoder-decoder model from a pre-trained T5 model with the {} configuration.
     It returns the normalized output from the final layer of the decoder.
 
     The T5 model was proposed in `Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
@@ -199,19 +176,8 @@ T5_BASE.__doc__ = """
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
 
-T5_BASE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.pt"),
-    _config=T5Conf(encoder_only=False, linear_head=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
-)
-
-T5_BASE_GENERATION.__doc__ = """
-    T5_BASE_GENERATION is an encoder-decoder model from a pre-trained T5 model with the base configuration.
+GENERATION_DOC = """
+    T5_{}_GENERATION is an encoder-decoder model from a pre-trained T5 model with the {} configuration.
     It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
     the model vocabulary. This output can then be used for language generation.
 
@@ -229,3 +195,293 @@ T5_BASE_GENERATION.__doc__ = """
 
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
+
+T5_BASE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
+    _config=T5Conf(encoder_only=True),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE_ENCODER.__doc__ = ENCODER_DOC.format("BASE", "base")
+
+T5_BASE = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
+    _config=T5Conf(encoder_only=False),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
+
+T5_BASE_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.pt"),
+    _config=T5Conf(encoder_only=False, linear_head=True),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_BASE_GENERATION.__doc__ = GENERATION_DOC.format("BASE", "base")
+
+T5_SMALL_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.small.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=512,
+        num_attention_heads=8,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        ffn_dimension=2048,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_SMALL_ENCODER.__doc__ = ENCODER_DOC.format("SMALL", "small")
+
+
+T5_SMALL = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.small.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=512,
+        num_attention_heads=8,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        ffn_dimension=2048,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_SMALL.__doc__ = MODEL_DOC.format("SMALL", "small")
+
+T5_SMALL_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.small.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=512,
+        num_attention_heads=8,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        ffn_dimension=2048,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_SMALL_GENERATION.__doc__ = GENERATION_DOC.format("SMALL", "small")
+
+T5_LARGE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.large.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=4096,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_LARGE_ENCODER.__doc__ = ENCODER_DOC.format("LARGE", "large")
+
+T5_LARGE = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.large.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=4096,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_LARGE.__doc__ = MODEL_DOC.format("LARGE", "large")
+
+T5_LARGE_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.large.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=4096,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_LARGE_GENERATION.__doc__ = GENERATION_DOC.format("LARGE", "large")
+
+T5_3B_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=16384,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_3B_ENCODER.__doc__ = ENCODER_DOC.format("3B", "3B")
+
+T5_3B = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=16384,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_3B.__doc__ = MODEL_DOC.format("3B", "3B")
+
+T5_3B_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=16384,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_3B_GENERATION.__doc__ = GENERATION_DOC.format("3B", "3B")
+
+T5_11B_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B_ENCODER.__doc__ = ENCODER_DOC.format("11B", "11B")
+
+T5_11B = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B.__doc__ = MODEL_DOC.format("11B", "11B")
+
+T5_11B_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        qkv_dim=128,
+        num_attention_heads=128,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=65536,
+    ),
+    transform=lambda: T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
+    ),
+)
+
+T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
