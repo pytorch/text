@@ -4,8 +4,8 @@ import platform
 import unittest
 
 import torch
-from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.vectors import build_vectors
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestVectors(TorchtextTestCase):

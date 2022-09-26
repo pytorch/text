@@ -564,21 +564,31 @@ class BERTTokenizer(Module):
     :type strip_accents: Optional[bool]
     :param return_tokens: Indicate whether to return tokens. If false, returns corresponding token IDs as strings (default: False)
     :type return_tokens: bool
+    :param never_split: Collection of tokens which will not be split during tokenization. (default: None)
+    :type never_split: Optional[List[str]]
     """
 
     __jit_unused_properties__ = ["is_jitable"]
 
     def __init__(
-        self, vocab_path: str, do_lower_case: bool = True, strip_accents: Optional[bool] = None, return_tokens=False
+        self,
+        vocab_path: str,
+        do_lower_case: bool = True,
+        strip_accents: Optional[bool] = None,
+        return_tokens=False,
+        never_split: Optional[List[str]] = None,
     ) -> None:
         super().__init__()
+        if never_split is None:
+            never_split = []
         self.bert_model = BERTEncoderPyBind(
-            get_asset_local_path(vocab_path, overwite=True), do_lower_case, strip_accents
+            get_asset_local_path(vocab_path, overwite=True), do_lower_case, strip_accents, never_split
         )
         self._return_tokens = return_tokens
         self._vocab_path = vocab_path
         self._do_lower_case = do_lower_case
         self._strip_accents = strip_accents
+        self._never_split = never_split
 
     @property
     def is_jitable(self):
@@ -654,7 +664,7 @@ class BERTTokenizer(Module):
         if not self.is_jitable:
             tokenizer_copy = deepcopy(self)
             tokenizer_copy.bert_model = torch.classes.torchtext.BERTEncoder(
-                self._vocab_path, self._do_lower_case, self._strip_accents
+                self._vocab_path, self._do_lower_case, self._strip_accents, self._never_split
             )
             return tokenizer_copy
 

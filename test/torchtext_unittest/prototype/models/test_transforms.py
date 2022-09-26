@@ -1,7 +1,7 @@
 import torch
-from test.common.assets import get_asset_path
-from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.prototype.models import T5Transform
+from torchtext_unittest.common.assets import get_asset_path
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestTransforms(TorchtextTestCase):

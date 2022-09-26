@@ -174,7 +174,11 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           });
 
   m.class_<BERTEncoder>("BERTEncoder")
-      .def(torch::init<const std::string, bool, c10::optional<bool>>())
+      .def(torch::init<
+           const std::string,
+           bool,
+           c10::optional<bool>,
+           std::vector<std::string>>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)
       .def(

@@ -21,6 +21,10 @@ _THIS_DIR = Path(__file__).parent.resolve()
 _ROOT_DIR = _THIS_DIR.parent.parent.resolve()
 
 
+def _get_cxx11_abi():
+    return "-D_GLIBCXX_USE_CXX11_ABI=" + str(int(torch.compiled_with_cxx11_abi()))
+
+
 def get_ext_modules():
     modules = [
         Extension(name=_LIBTORCHTEXT_NAME, sources=[]),
@@ -72,6 +76,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_POLICY_DEFAULT_CMP0063=NEW",
             "-DSPM_ENABLE_SHARED=OFF",
+            f"-DTORCH_COMPILED_WITH_CXX_ABI={_get_cxx11_abi()}",
         ]
         build_args = ["--target", "install"]
 
