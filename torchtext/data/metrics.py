@@ -84,7 +84,7 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
             clipped_counts[len(ngram) - 1] += count
 
         for i in range(max_n):
-            total_counts[i] += current_candidate_len - i
+            total_counts[i] += max(current_candidate_len - i, 0)
 
     if min(clipped_counts) == 0:
         return 0.0
