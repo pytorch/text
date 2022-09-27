@@ -84,6 +84,7 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
             clipped_counts[len(ngram) - 1] += count
 
         for i in range(max_n):
+            # The number of N-grams in a `candidate` of T tokens is `T - (N - 1)`
             total_counts[i] += max(current_candidate_len - i, 0)
 
     if min(clipped_counts) == 0:
