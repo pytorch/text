@@ -20,6 +20,8 @@ NUM_LINES = {
     "test": 25000,
 }
 
+MAP_LABELS = {"neg": 1, "pos": 2}
+
 _PATH = "aclImdb_v1.tar.gz"
 
 DATASET_NAME = "IMDB"
@@ -50,7 +52,7 @@ def _cache_filepath_fn(root, decompressed_folder, split, x):
 
 
 def _modify_res(t):
-    return Path(t[0]).parts[-1], t[1]
+    return MAP_LABELS[Path(t[0]).parts[-1]], t[1]
 
 
 def filter_imdb_data(key, fname):
