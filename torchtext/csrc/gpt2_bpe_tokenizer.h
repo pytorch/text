@@ -1,16 +1,19 @@
 #ifndef GPT2_BPE_TOKENIZER_H_
 #define GPT2_BPE_TOKENIZER_H_
-
 #include <torch/script.h>
 #include <torchtext/csrc/export.h>
 
 #include <cstdint>
+#include <set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
 
 namespace torchtext {
+
+// set to store tokens that are not to be split
+static std::set<std::string> bpe_never_split_set_;
 
 typedef std::tuple<
     std::unordered_map<std::string, int64_t>,
@@ -55,8 +58,13 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
  private:
   const int64_t inf_;
   // Encode byte into an unicode character.
-  std::vector<std::string> ByteEncode_(std::string token);
+  std::vector<std::string> ByteEncode_(
+      std::string token,
+      bool is_never_split_token);
   int64_t GetBPEMergeRank_(std::string pair);
+  int64_t added_to_vocab_tokens_count;
+  //   std::set<std::string> bpe_never_split_set_;
+  c10::Dict<std::string, int64_t> added_tokens_encoder;
 
  protected:
   c10::Dict<std::string, std::vector<std::string>> cache_;
@@ -103,6 +111,9 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<int64_t> Encode(const std::string& text);
   TORCHTEXT_API std::string Decode(const std::vector<int64_t>& tokens);
   TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
+  TORCHTEXT_API int64_t AddSpecialTokens(
+      const c10::Dict<std::string, std::string>& standard_special_tokens_dict,
+      const std::vector<std::string> additional_special_tokens);
 
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEMergeRanks()

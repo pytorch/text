@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <codecvt>
 #include <locale>
+#include <regex>
 #include <sstream>
+#include <string>
 #include <unordered_set>
 #include <utility>
 
@@ -63,28 +65,94 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   // - ELSE, add token to return list
   std::string token;
   std::vector<std::string> tokens;
-  re2::StringPiece inp(input);
   bool prepend_space = false;
-  while (kGPT2Regex.FindAndConsume(&inp, &token)) {
-    if (is_whitespace(token)) {
-      prepend_space = false;
-      if (inp.empty()) { // token is last token
-        tokens.push_back(token);
-      } else {
-        if (token.length() > 1) {
-          tokens.push_back(token.substr(0, token.length() - 1));
-        }
-        if (token[token.length() - 1] == ' ') { // last char is space
-          prepend_space = true;
-        } else { // push last whitespace char as a token if it is not a space
-          tokens.push_back(token.substr(token.length() - 1));
+  std::vector<std::string> index_matches;
+
+  if (bpe_never_split_set_.size() > 0) {
+    std::string pattern = "";
+    // escape regex characters for matching special tokens
+    for (std::string token : bpe_never_split_set_) {
+      std::string::size_type pos = 0;
+      while ((pos = token.find_first_of("|[]", pos)) != std::string::npos) {
+        switch (token[pos]) {
+          case '|':
+            token.replace(pos, 1, "\\|");
+            pos += 2;
+            break;
+          case '[':
+            token.replace(pos, 1, "\\[");
+            pos += 2;
+            break;
+          case ']':
+            token.replace(pos, 1, "\\]");
+            pos += 2;
+            break;
         }
       }
-    } else if (prepend_space) {
-      tokens.push_back(" " + token);
-      prepend_space = false;
-    } else {
-      tokens.push_back(token);
+      if (pattern.length() != 0)
+        pattern += "|";
+      pattern += token;
+    }
+
+    // break input into non-special and special parts
+    std::regex rx(pattern);
+    int64_t last_idx = 0;
+    for (auto it = std::sregex_iterator(input.begin(), input.end(), rx);
+         it != std::sregex_iterator();
+         ++it) {
+      if (it->position() > last_idx) {
+        if (isspace(input[it->position() - 1])) {
+          // lstrip
+          index_matches.push_back(
+              input.substr(last_idx, it->position() - last_idx - 1));
+        } else {
+          index_matches.push_back(
+              input.substr(last_idx, it->position() - last_idx));
+        }
+      }
+      index_matches.push_back(input.substr(it->position(), it->length()));
+      last_idx = it->position() + it->length() + 1;
+      if (isspace(input[last_idx])) {
+        // rstrip
+        last_idx++;
+      }
+    }
+    if (last_idx < input.length() - 1)
+      index_matches.push_back(
+          input.substr(last_idx, input.length() - last_idx));
+  } else {
+    index_matches.push_back(input);
+  }
+
+  for (std::string index_token : index_matches) {
+    bool is_never_split_token =
+        bpe_never_split_set_.find(index_token) != bpe_never_split_set_.end();
+    if (is_never_split_token) {
+      tokens.push_back(index_token);
+      continue;
+    }
+    re2::StringPiece inp(index_token);
+    while (kGPT2Regex.FindAndConsume(&inp, &token)) {
+      if (is_whitespace(token)) {
+        prepend_space = false;
+        if (inp.empty()) { // token is last token
+          tokens.push_back(token);
+        } else {
+          if (token.length() > 1) {
+            tokens.push_back(token.substr(0, token.length() - 1));
+          }
+          if (token[token.length() - 1] == ' ') { // last char is space
+            prepend_space = true;
+          } else { // push last whitespace char as a token if it is not a space
+            tokens.push_back(token.substr(token.length() - 1));
+          }
+        }
+      } else if (prepend_space) {
+        tokens.push_back(" " + token);
+        prepend_space = false;
+      } else {
+        tokens.push_back(token);
+      }
     }
   }
   return tokens;
@@ -155,6 +223,8 @@ GPT2BPEEncoder::GPT2BPEEncoder(
 
   for (auto const& x : byte_encoder_)
     byte_decoder_.insert(x.value(), x.key());
+
+  added_to_vocab_tokens_count = 0;
 }
 
 GPT2BPEEncoder::GPT2BPEEncoder(
@@ -170,11 +240,17 @@ GPT2BPEEncoder::GPT2BPEEncoder(
           _map_to_c10_dict<int64_t, std::string>(byte_encoder),
           caching_enabled) {}
 
-std::vector<std::string> GPT2BPEEncoder::ByteEncode_(std::string token) {
+std::vector<std::string> GPT2BPEEncoder::ByteEncode_(
+    std::string token,
+    bool is_never_split_token) {
   // Equivalent to: (self.byte_encoder[b] for b in token.encode('utf-8')
   std::vector<std::string> encoded;
-  for (auto& ch : token) {
-    encoded.push_back(byte_encoder_.at((unsigned char)ch));
+  if (is_never_split_token) {
+    encoded.push_back(token);
+  } else {
+    for (auto& ch : token) {
+      encoded.push_back(byte_encoder_.at((unsigned char)ch));
+    }
   }
   return encoded;
 }
@@ -279,7 +355,13 @@ std::vector<std::string> GPT2BPEEncoder::PreTokenize_(std::string input) {
 std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
   std::vector<int64_t> bpe_token_ids;
   for (const auto& token : PreTokenize_(text)) {
-    auto byte_encoded_token = ByteEncode_(token);
+    if (added_tokens_encoder.contains(token)) {
+      bpe_token_ids.push_back(added_tokens_encoder.at(token));
+      continue;
+    }
+    bool is_never_split_token =
+        bpe_never_split_set_.find(token) != bpe_never_split_set_.end();
+    auto byte_encoded_token = ByteEncode_(token, is_never_split_token);
     for (const auto& bpe_token : BPE_(byte_encoded_token)) {
       bpe_token_ids.push_back(bpe_encoder_.at(bpe_token));
     }
@@ -309,12 +391,45 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
 std::vector<std::string> GPT2BPEEncoder::Tokenize(const std::string& text) {
   std::vector<std::string> bpe_tokens;
   for (const auto& token : PreTokenize_(text)) {
-    auto byte_encoded_token = ByteEncode_(token);
+    bool is_never_split_token =
+        bpe_never_split_set_.find(token) != bpe_never_split_set_.end();
+    auto byte_encoded_token = ByteEncode_(token, is_never_split_token);
     for (const auto& bpe_token : BPE_(byte_encoded_token)) {
       bpe_tokens.push_back(bpe_token);
     }
   }
   return bpe_tokens;
+}
+
+int64_t GPT2BPEEncoder::AddSpecialTokens(
+    const c10::Dict<std::string, std::string>& standard_special_tokens_dict,
+    const std::vector<std::string> additional_special_tokens) {
+  int64_t newly_added = 0;
+
+  for (auto const& token : standard_special_tokens_dict) {
+    if (added_tokens_encoder.contains(token.value()))
+      continue;
+    bpe_never_split_set_.insert(token.value());
+    if (!bpe_encoder_.contains(token.value())) {
+      added_tokens_encoder.insert(
+          token.value(), bpe_encoder_.size() + added_tokens_encoder.size());
+      newly_added++;
+    }
+  }
+
+  for (auto const& token : additional_special_tokens) {
+    if (added_tokens_encoder.contains(token))
+      continue;
+    bpe_never_split_set_.insert(token);
+    if (!bpe_encoder_.contains(token)) {
+      added_tokens_encoder.insert(
+          token, bpe_encoder_.size() + added_tokens_encoder.size());
+      newly_added++;
+    }
+  }
+
+  added_to_vocab_tokens_count += newly_added;
+  return newly_added;
 }
 
 std::unordered_map<std::string, int64_t> GPT2BPEEncoder::GetBPEEncoder() const {
