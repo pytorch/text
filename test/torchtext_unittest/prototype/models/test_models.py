@@ -3,7 +3,59 @@ from unittest.mock import patch
 
 import torch
 from torch.nn import functional as F
+from torchtext.prototype.models.t5.bundler import T5Bundle
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
+
+def test_model(our_output, hf_output, config, encoder_only):
+    
+    if encoder_only:
+        #check that encoder layers match
+        for i in range(config.num_encoder_layers + 1):
+            if i < config.num_encoder_layers:
+                #self-attention scores
+                assert torch.equal(
+                    our_output['encoder_sa_scores'][i],
+                    hf_output.attentions[i]
+                ), f"Mismatched self-attention scores for encoder layer {i}"
+            #encoder hidden states
+            assert torch.equal(
+                our_output['encoder_hidden_states'][i],
+                hf_output.hidden_states[i]
+            ), f"Mismatched hidden states for encoder layer {i}"
+    
+    else:
+        #check that encoder layers match
+        for i in range(config.num_encoder_layers + 1):
+            if i < config.num_encoder_layers:
+                #self-attention scores
+                assert torch.equal(
+                    our_output['encoder_sa_scores'][i],
+                    hf_output.encoder_attentions[i]
+                ), f"Mismatched self-attention scores for encoder layer {i}"
+            #encoder hidden states
+            assert torch.equal(
+                our_output['encoder_hidden_states'][i],
+                hf_output.encoder_hidden_states[i]
+            ), f"Mismatched hidden states for encoder layer {i}"
+
+        # check that decoder layers match
+        for i in range(config.num_decoder_layers + 1):
+            if i < config.num_encoder_layers:
+                #self-attention scores
+                assert torch.equal(
+                    our_output['decoder_sa_scores'][i],
+                    hf_output.decoder_attentions[i]
+                ), f"Mismatched self-attention scores for decoder layer {i}"
+                #cross-attention scores
+                assert torch.equal(
+                    our_output['decoder_ca_scores'][i],
+                    hf_output.cross_attentions[i]
+                ), f"Mismatched cross-attention scores for decoder layer {i}"
+            #decoder hidden states
+            assert torch.equal(
+                our_output['decoder_hidden_states'][i],
+                hf_output.decoder_hidden_states[i]
+            ), f"Mismatched hidden states for decoder layer {i}"
 
 
 class TestModels(TorchtextTestCase):
@@ -181,3 +233,23 @@ class TestModels(TorchtextTestCase):
 
         _train(model)
         self.assertNotEqual(model.state_dict(), current_state_dict)
+
+    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_only(self) -> None:
+        from transformers import T5EncoderModel
+        hf_encoder = T5EncoderModel.from_pretrained("t5-small")
+
+        our_encoder = T5Bundle.build_model_from_huggingface_ckpt("t5-small")
+
+        encoder_input_ids = torch.tensor([[1,2,3,4,5,6],[7,8,9,0,0,0]])
+        encoder_padding_mask = torch.tensor([[1,1,1,1,1,1],[1,1,1,0,0,0]])
+
+        hf_output = hf_encoder(
+            input_ids=encoder_input_ids,
+            attention_mask=encoder_padding_mask,
+            output_hidden_states=True,
+            output_attentions=True
+        )
+
+        our_output = our_encoder(encoder_input_ids)
+
+        test_model(our_output, hf_output, our_encoder.config, encoder_only=True)
