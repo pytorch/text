@@ -12,11 +12,10 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, IterableWrapper
     from torchtext._download_hooks import HttpReader
 
-# TODO: Update URL to original once the server is back up (see https://github.com/pytorch/text/issues/1756)
 URL = {
-    "train": r"https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/training.tar.gz",
-    "valid": r"https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/validation.tar.gz",
-    "test": r"https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/mmt16_task1_test.tar.gz",
+    "train": "http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz",
+    "valid": "http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz",
+    "test": "http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/mmt16_task1_test.tar.gz",
 }
 
 MD5 = {
