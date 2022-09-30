@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
 import torch
 import torchtext  # noqa: F401
@@ -359,7 +359,7 @@ class GPT2BPETokenizer(Module):
         """
         return self.bpe.tokenize(text)
 
-    def add_special_tokens(self, special_tokens_dict: Dict[str, Union[str, List[str]]]) -> int:
+    def add_special_tokens(self, special_tokens_dict: Mapping[str, Union[str, Sequence[str]]]) -> int:
         """Add a dictionary of special tokens (eos, pad, cls…) to the encoder
 
         :param special_tokens_dict: dict of string. Keys should be in the list of predefined special attributes:
