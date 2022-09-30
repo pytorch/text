@@ -135,9 +135,12 @@ class T5Bundle:
 
         return model
 
-    @classmethod
+    @staticmethod
     def build_model_from_huggingface_ckpt(
-        cls, ckpt_path: Union[str, os.PathLike], *, freeze_model: bool = False, strict: bool = True
+        ckpt_path: Union[str, os.PathLike],
+        *,
+        freeze_model: bool = False,
+        strict: bool = True,
     ) -> T5Model:
         ckpt_path = os.PathLike(ckpt_path)
 
@@ -162,7 +165,7 @@ class T5Bundle:
             ffn_dimension=config_json["d_ff"],
         )
 
-        t5_model = cls(config, freeze_model)
+        t5_model = T5Model(config, freeze_model)
 
         t5_model_state_dict = {
             "token_embeddings.weight": hf_weights["shared.weight"],
