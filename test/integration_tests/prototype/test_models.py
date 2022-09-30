@@ -142,6 +142,7 @@ class TestT5WrapperCheckpoint(TorchtextTestCase):
 
 class TestLoadFromHFCheckpoints(TorchtextTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.encoder_input_ids = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
         self.encoder_padding_mask = torch.tensor([[1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0]])
         self.decoder_input_ids = torch.tensor([[7, 8, 9, 0, 0, 0], [10, 11, 12, 0, 0, 0]])
