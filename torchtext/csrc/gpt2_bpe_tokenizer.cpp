@@ -68,9 +68,35 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   bool prepend_space = false;
   std::vector<std::string> index_matches;
 
+  /* Notes on handling Special Tokens:
+  We use regex pattern to first identify the special tokens in the input text.
+  Other non-special tokens go through pre-tokenization as usual, but special
+  tokens skip those steps.
+
+  Steps:
+  * Loop over the set containing user-supplied strings that are to be treated as
+  special tokens. This set gets created through the calls to
+  `add_special_tokens` API.
+    - form a regex pattern that helps in extracting special tokens from the
+  input text.
+  * Crate a vector that contains chunks of input text, such that each chunk is
+  either a sequence of non-special token or a single special token. For example,
+  assuming <|special_tok|> and [SEP] are special tokens, the following text
+      "This is an example with <|special_tok|> and [SEP] and [SPAM]."
+  will get converted to a vector of strings:
+      ["This is an example with", "<|special_tok|>", "and", "[SEP]", "and
+  [SPAM]."]
+    - if the input does not contain any special tokens, the vector will just
+  contain a single token that is the whole original input text.
+  * For all of the tokens in the above vector, we proceed with BPE tokenization
+  as usual while skipping over certain steps as appropriate for special tokens.
+  */
+
   if (bpe_never_split_set_.size() > 0) {
     std::string pattern = "";
     // escape regex characters for matching special tokens
+    // this is done to ensure character like '|' in special like
+    // <|endoftext|> don't get special regex meaning
     for (std::string token : bpe_never_split_set_) {
       std::string::size_type pos = 0;
       while ((pos = token.find_first_of("|[]", pos)) != std::string::npos) {
@@ -102,7 +128,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
          ++it) {
       if (it->position() > last_idx) {
         if (isspace(input[it->position() - 1])) {
-          // lstrip
+          // strip space on the left of the special token
           index_matches.push_back(
               input.substr(last_idx, it->position() - last_idx - 1));
         } else {
@@ -113,7 +139,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
       index_matches.push_back(input.substr(it->position(), it->length()));
       last_idx = it->position() + it->length() + 1;
       if (isspace(input[last_idx])) {
-        // rstrip
+        // strip space on the right of the special token
         last_idx++;
       }
     }
@@ -121,6 +147,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
       index_matches.push_back(
           input.substr(last_idx, input.length() - last_idx));
   } else {
+    // input does not have any special tokens
     index_matches.push_back(input);
   }
 
@@ -128,6 +155,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
     bool is_never_split_token =
         bpe_never_split_set_.find(index_token) != bpe_never_split_set_.end();
     if (is_never_split_token) {
+      // skip the rest of pre-tokenization work for special tokens
       tokens.push_back(index_token);
       continue;
     }
@@ -223,8 +251,6 @@ GPT2BPEEncoder::GPT2BPEEncoder(
 
   for (auto const& x : byte_encoder_)
     byte_decoder_.insert(x.value(), x.key());
-
-  added_to_vocab_tokens_count = 0;
 }
 
 GPT2BPEEncoder::GPT2BPEEncoder(
@@ -406,6 +432,12 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
     const std::vector<std::string> additional_special_tokens) {
   int64_t newly_added = 0;
 
+  /* All special tokens get added to `bpe_never_split_set_` set to avoid being
+   * split during tokenization. Tokens are added to `added_tokens_encoder` only
+   * if they are not already known (i.e. present in `bpe_encoder_`).
+   */
+
+  // Loop for standard tokens such as "bos_token", "eos_token", etc.
   for (auto const& token : standard_special_tokens_dict) {
     if (added_tokens_encoder.contains(token.value()))
       continue;
@@ -417,6 +449,7 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
     }
   }
 
+  // Loop for any additional tokens
   for (auto const& token : additional_special_tokens) {
     if (added_tokens_encoder.contains(token))
       continue;
@@ -428,7 +461,6 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
     }
   }
 
-  added_to_vocab_tokens_count += newly_added;
   return newly_added;
 }
 
