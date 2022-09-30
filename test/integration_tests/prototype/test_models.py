@@ -1,5 +1,6 @@
 import pytest  # noqa: F401
 import torch
+import tempfile
 from parameterized import parameterized, parameterized_class
 from torchtext.prototype.models import (
     T5_BASE_ENCODER,
@@ -18,7 +19,8 @@ from torchtext.prototype.models.t5.wrapper import T5Wrapper
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
-
+from torchtext.prototype.models.t5.bundler import T5Bundle
+from transformers import T5Model, T5EncoderModel, T5ForConditionalGeneration
 
 BUNDLERS = {
     "base_model": T5_BASE,
@@ -135,3 +137,127 @@ class TestT5WrapperCheckpoint(TorchtextTestCase):
 
         output_text = model(test_text, beam_size, max_seq_len)
         self.assertEqual(output_text, expected_text)
+
+
+class TestLoadFromHFCheckpoints(TorchtextTestCase):
+    def check_outputs_of_models(self, our_output, hf_output, config, encoder_only) -> None:
+        if encoder_only:
+            # check that encoder layers match
+            for i in range(config.num_encoder_layers + 1):
+                if i < config.num_encoder_layers:
+                    # self-attention scores
+                    assert torch.equal(
+                        our_output["encoder_sa_scores"][i], hf_output.attentions[i]
+                    ), f"Mismatched self-attention scores for encoder layer {i}"
+                # encoder hidden states
+                assert torch.equal(
+                    our_output["encoder_hidden_states"][i], hf_output.hidden_states[i]
+                ), f"Mismatched hidden states for encoder layer {i}"
+
+        else:
+            # check that encoder layers match
+            for i in range(config.num_encoder_layers + 1):
+                if i < config.num_encoder_layers:
+                    # self-attention scores
+                    assert torch.equal(
+                        our_output["encoder_sa_scores"][i], hf_output.encoder_attentions[i]
+                    ), f"Mismatched self-attention scores for encoder layer {i}"
+                # encoder hidden states
+                assert torch.equal(
+                    our_output["encoder_hidden_states"][i], hf_output.encoder_hidden_states[i]
+                ), f"Mismatched hidden states for encoder layer {i}"
+
+            # check that decoder layers match
+            for i in range(config.num_decoder_layers + 1):
+                if i < config.num_encoder_layers:
+                    # self-attention scores
+                    assert torch.equal(
+                        our_output["decoder_sa_scores"][i], hf_output.decoder_attentions[i]
+                    ), f"Mismatched self-attention scores for decoder layer {i}"
+                    # cross-attention scores
+                    assert torch.equal(
+                        our_output["decoder_ca_scores"][i], hf_output.cross_attentions[i]
+                    ), f"Mismatched cross-attention scores for decoder layer {i}"
+                # decoder hidden states
+                assert torch.equal(
+                    our_output["decoder_hidden_states"][i], hf_output.decoder_hidden_states[i]
+                ), f"Mismatched hidden states for decoder layer {i}"
+
+    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_t5_small_enc"
+
+            t5_small_enc = T5EncoderModel.from_pretrained("t5-small")
+            t5_small_enc.save_pretrained(model_path)
+
+            our_encoder = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+
+            encoder_input_ids = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
+            encoder_padding_mask = torch.tensor([[1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0]])
+
+            hf_output = t5_small_enc(
+                input_ids=encoder_input_ids,
+                attention_mask=encoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_encoder(encoder_input_ids)
+
+            self.check_outputs_of_models(our_output, hf_output, our_encoder.config, encoder_only=True)
+
+    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_t5_small"
+
+            t5_small = T5Model.from_pretrained("t5-small")
+            t5_small.save_pretrained(model_path)
+
+            encoder_input_ids = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
+            encoder_padding_mask = torch.tensor([[1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0]])
+
+            decoder_input_ids = torch.tensor([[7, 8, 9, 0, 0, 0], [10, 11, 12, 0, 0, 0]])
+            decoder_padding_mask = torch.tensor([[1, 1, 1, 0, 0, 0], [1, 1, 1, 0, 0, 0]])
+
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+
+            hf_output = t5_small(
+                input_ids=encoder_input_ids,
+                decoder_input_ids=decoder_input_ids,
+                attention_mask=encoder_padding_mask,
+                decoder_attention_mask=decoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_t5(encoder_input_ids, decoder_input_ids)
+
+            self.check_outputs_of_models(our_output, hf_output, our_t5.config, encoder_only=False)
+
+    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder_with_gen(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_t5_small_gen"
+
+            t5_small_gen = T5ForConditionalGeneration.from_pretrained("t5-small")
+            t5_small_gen.save_pretrained(model_path)
+
+            encoder_input_ids = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
+            encoder_padding_mask = torch.tensor([[1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0]])
+
+            decoder_input_ids = torch.tensor([[7, 8, 9, 0, 0, 0], [10, 11, 12, 0, 0, 0]])
+            decoder_padding_mask = torch.tensor([[1, 1, 1, 0, 0, 0], [1, 1, 1, 0, 0, 0]])
+
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+
+            hf_output = t5_small_gen(
+                input_ids=encoder_input_ids,
+                decoder_input_ids=decoder_input_ids,
+                attention_mask=encoder_padding_mask,
+                decoder_attention_mask=decoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_t5(encoder_input_ids, decoder_input_ids)
+
+            self.check_outputs_of_models(our_output, hf_output, our_t5.config, encoder_only=False)
