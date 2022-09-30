@@ -1,4 +1,6 @@
+import json
 import logging
+import os
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional, Union
 from urllib.parse import urljoin
@@ -132,6 +134,129 @@ class T5Bundle:
             model.load_state_dict(state_dict, strict=strict)
 
         return model
+
+    @staticmethod
+    def build_model_from_huggingface_ckpt(
+        ckpt_path: Union[str, os.PathLike],
+        *,
+        freeze_model: bool = False,
+        strict: bool = True,
+    ) -> T5Model:
+        config_path = f"{ckpt_path}/config.json"
+        model_path = f"{ckpt_path}/pytorch_model.bin"
+
+        assert os.path.exists(model_path), f"No PyTorch model found at {model_path}"
+
+        with open(config_path, "r") as handle:
+            config_json = json.load(handle)
+
+        hf_weights = torch.load(model_path)
+
+        # TODO(joecummings): find better way to determine `encoder_only` and `linear_head`
+        config = T5Conf(
+            encoder_only="decoder.final_layer_norm.weight" not in hf_weights.keys(),
+            linear_head="lm_head.weight" in hf_weights.keys(),
+            embedding_dim=config_json["d_model"],
+            num_attention_heads=config_json["num_heads"],
+            num_encoder_layers=config_json["num_layers"],
+            num_decoder_layers=config_json["num_decoder_layers"],
+            ffn_dimension=config_json["d_ff"],
+        )
+
+        t5_model = T5Model(config, freeze_model)
+
+        t5_model_state_dict = {
+            "token_embeddings.weight": hf_weights["shared.weight"],
+            "norm1.weight": hf_weights["encoder.final_layer_norm.weight"],
+            "encoder.layers.0.self_attn.relative_attention_bias.weight": hf_weights[
+                "encoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight"
+            ],
+        }
+        # Convert encoder layers
+        for i in range(config.num_encoder_layers):
+            t5_model_state_dict[f"encoder.layers.{i}.linear1.weight"] = hf_weights[
+                f"encoder.block.{i}.layer.1.DenseReluDense.wi.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.linear2.weight"] = hf_weights[
+                f"encoder.block.{i}.layer.1.DenseReluDense.wo.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.norm1.weight"] = hf_weights[
+                f"encoder.block.{i}.layer.0.layer_norm.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.norm2.weight"] = hf_weights[
+                f"encoder.block.{i}.layer.1.layer_norm.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.self_attn.out_proj.weight"] = hf_weights[
+                f"encoder.block.{i}.layer.0.SelfAttention.o.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.self_attn.q_proj_weight"] = hf_weights[
+                f"encoder.block.{i}.layer.0.SelfAttention.q.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.self_attn.k_proj_weight"] = hf_weights[
+                f"encoder.block.{i}.layer.0.SelfAttention.k.weight"
+            ]
+            t5_model_state_dict[f"encoder.layers.{i}.self_attn.v_proj_weight"] = hf_weights[
+                f"encoder.block.{i}.layer.0.SelfAttention.v.weight"
+            ]
+
+        # Convert decoder layers if model is encoder-decoder
+        if not config.encoder_only:
+            t5_model_state_dict["norm2.weight"] = hf_weights["decoder.final_layer_norm.weight"]
+            t5_model_state_dict["decoder.layers.0.self_attn.relative_attention_bias.weight"] = hf_weights[
+                "decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight"
+            ]
+
+            for i in range(config.num_decoder_layers):
+                t5_model_state_dict[f"decoder.layers.{i}.linear1.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.2.DenseReluDense.wi.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.linear2.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.2.DenseReluDense.wo.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.norm1.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.0.layer_norm.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.norm2.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.2.layer_norm.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.norm3.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.1.layer_norm.weight"
+                ]
+
+                t5_model_state_dict[f"decoder.layers.{i}.self_attn.out_proj.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.0.SelfAttention.o.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.self_attn.q_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.0.SelfAttention.q.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.self_attn.k_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.0.SelfAttention.k.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.self_attn.v_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.0.SelfAttention.v.weight"
+                ]
+
+                t5_model_state_dict[f"decoder.layers.{i}.cross_attn.out_proj.weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.1.EncDecAttention.o.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.cross_attn.q_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.1.EncDecAttention.q.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.cross_attn.k_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.1.EncDecAttention.k.weight"
+                ]
+                t5_model_state_dict[f"decoder.layers.{i}.cross_attn.v_proj_weight"] = hf_weights[
+                    f"decoder.block.{i}.layer.1.EncDecAttention.v.weight"
+                ]
+
+        # Convert language modeling head if there is one
+        if config.linear_head:
+            t5_model_state_dict["lm_head.weight"] = hf_weights["lm_head.weight"]
+
+        # Load state dict into our model
+        t5_model.load_state_dict(t5_model_state_dict, strict)
+
+        return t5_model
 
     @property
     def config(self) -> T5Conf:
