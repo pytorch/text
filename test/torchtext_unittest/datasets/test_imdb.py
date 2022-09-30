@@ -29,8 +29,8 @@ def _get_mock_dataset(root_dir):
         for i in range(5):
             # all negative labels are read first before positive labels in the
             # IMDB dataset implementation
-            label = "neg" if i < 2 else "pos"
-            cur_dir = pos_dir if label == "pos" else neg_dir
+            label = 1 if i < 2 else 2
+            cur_dir = pos_dir if label == 2 else neg_dir
             txt_file = os.path.join(cur_dir, f"{i}{i}_{i}.txt")
             with open(txt_file, "w", encoding="utf-8") as f:
                 rand_string = get_random_unicode(seed)
