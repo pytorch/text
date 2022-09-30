@@ -151,13 +151,15 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
         # check that encoder layers match
         for i in range(config.num_encoder_layers + 1):
             if i < config.num_encoder_layers:
+                hf_output_sa = hf_output.attentions[i] if encoder_only else hf_output.encoder_attentions[i]
                 # self-attention scores
                 assert torch.equal(
-                    our_output["encoder_sa_scores"][i], hf_output.encoder_attentions[i]
+                    our_output["encoder_sa_scores"][i], hf_output_sa
                 ), f"Mismatched self-attention scores for encoder layer {i}"
+            hf_output_hs = hf_output.hidden_states[i] if encoder_only else hf_output.encoder_hidden_states[i]
             # encoder hidden states
             assert torch.equal(
-                our_output["encoder_hidden_states"][i], hf_output.encoder_hidden_states[i]
+                our_output["encoder_hidden_states"][i], hf_output_hs
             ), f"Mismatched hidden states for encoder layer {i}"
 
         if not encoder_only:
