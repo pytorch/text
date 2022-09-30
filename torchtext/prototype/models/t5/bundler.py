@@ -142,25 +142,23 @@ class T5Bundle:
         freeze_model: bool = False,
         strict: bool = True,
     ) -> T5Model:
-        ckpt_path = os.PathLike(ckpt_path)
+        config_path = f"{ckpt_path}/config.json"
+        model_path = f"{ckpt_path}/pytorch_model.bin"
 
-        config_path = ckpt_path / "config.json"
-        model_path = ckpt_path / "pytorch_model.bin"
-
-        assert model_path.exists(), f"No PyTorch model found at {ckpt_path}"
+        assert os.path.exists(model_path), f"No PyTorch model found at {model_path}"
 
         with open(config_path, "r") as handle:
             config_json = json.load(handle)
 
-        hf_weights = torch.load(model_path).state_dict()
+        hf_weights = torch.load(model_path)
 
         # TODO(joecummings): find better way to determine `encoder_only` and `linear_head`
         config = T5Conf(
-            encoder_only="decoder.layers.0.linear1.weight" in hf_weights.keys(),
+            encoder_only=not "decoder.final_layer_norm.weight" in hf_weights.keys(),
             linear_head="lm_head.weight" in hf_weights.keys(),
             embedding_dim=config_json["d_model"],
             num_attention_heads=config_json["num_heads"],
-            num_encoder_layers=config_json["num_encoder_layers"],
+            num_encoder_layers=config_json["num_layers"],
             num_decoder_layers=config_json["num_decoder_layers"],
             ffn_dimension=config_json["d_ff"],
         )
