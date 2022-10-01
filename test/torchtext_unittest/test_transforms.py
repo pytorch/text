@@ -364,10 +364,32 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             else:
                 self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
+    def _gpt2_bpe_decoder(self, tokenizer):
+        sample_ids = [
+            ["15496", "2159", "28265", "703", "389", "345", "30"],
+            ["39", "2634", "297", "10205", "220", "22173", "129", "243", "75", "41585", "232", "126", "123"],
+            ["4965", "11377", "64", "2208", "72", "29625"],
+            ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+        ]
+
+        expected_texts = [
+            "Hello World!, how are you?",
+            "Hélló  WoŕlḊ¿",
+            "Respublica superiorem",
+            "Avdija Vršajević în",
+        ]
+
+        for idx, ids in enumerate(sample_ids):
+            self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
+
     @nested_params([True, False], [True, False])
     def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
         self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
+
+    def test_gpt2_bpe_decoder(self):
+        """test string output returned by decoder given the token ids"""
+        self._gpt2_bpe_decoder(self._load_tokenizer(test_scripting=False, return_tokens=False))
 
     def test_gpt2_bpe_tokenizer_save_load_pybind(self) -> None:
         tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)

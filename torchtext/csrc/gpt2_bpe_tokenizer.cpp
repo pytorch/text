@@ -2,6 +2,8 @@
 #include <torchtext/csrc/regex.h> // @manual
 
 #include <algorithm>
+#include <codecvt>
+#include <locale>
 #include <sstream>
 #include <unordered_set>
 #include <utility>
@@ -147,7 +149,13 @@ GPT2BPEEncoder::GPT2BPEEncoder(
       bpe_merge_ranks_(std::move(bpe_merge_ranks)),
       byte_encoder_(std::move(byte_encoder)),
       seperator_(std::move(seperator)),
-      caching_enabled_(caching_enabled) {}
+      caching_enabled_(caching_enabled) {
+  for (auto const& x : bpe_encoder_)
+    bpe_decoder_.insert(x.value(), x.key());
+
+  for (auto const& x : byte_encoder_)
+    byte_decoder_.insert(x.value(), x.key());
+}
 
 GPT2BPEEncoder::GPT2BPEEncoder(
     const std::unordered_map<std::string, int64_t>& bpe_encoder,
@@ -277,6 +285,27 @@ std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
     }
   }
   return bpe_token_ids;
+}
+
+std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
+  std::string text;
+  for (const auto token : tokens) {
+    // get unicode string for given integer key
+    const std::string str = bpe_decoder_.at(token);
+    // convert unicode string to wide string
+    std::wstring ws(str.size(), L' '); // Overestimate number of code points.
+    ws.resize(std::mbstowcs(&ws[0], str.c_str(), str.size())); // Shrink to fit.
+    // stup converter for wide char back to string
+    using convert_type = std::codecvt_utf8<wchar_t>;
+    std::wstring_convert<convert_type, wchar_t> converter;
+
+    for (wchar_t wchr : ws) {
+      // get character from byte decoder for each wide character
+      unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
+      text += uchr;
+    }
+  }
+  return text;
 }
 
 std::vector<std::string> GPT2BPEEncoder::Tokenize(const std::string& text) {

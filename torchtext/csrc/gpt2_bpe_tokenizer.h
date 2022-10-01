@@ -69,8 +69,10 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
 
  public:
   const c10::Dict<std::string, int64_t> bpe_encoder_;
+  const c10::Dict<int64_t, std::string> bpe_decoder_;
   const c10::Dict<std::string, int64_t> bpe_merge_ranks_;
   const c10::Dict<int64_t, std::string> byte_encoder_;
+  const c10::Dict<std::string, int64_t> byte_decoder_;
   const std::string seperator_;
   const bool caching_enabled_;
   explicit GPT2BPEEncoder(
@@ -99,6 +101,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   //  --> result --> [707, 5927, 11, 707, 68]
   //
   TORCHTEXT_API std::vector<int64_t> Encode(const std::string& text);
+  TORCHTEXT_API std::string Decode(const std::vector<int64_t>& tokens);
   TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
 
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
