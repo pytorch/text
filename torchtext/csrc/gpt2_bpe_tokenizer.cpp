@@ -292,7 +292,7 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
   for (const auto token : tokens) {
     // get unicode string for given integer key
     const std::string str = bpe_decoder_.at(token);
-    // setup converter for converting wide char/string back to char/string
+    // setup converter for converting wide chars to/from chars
     using convert_type = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_type, wchar_t> converter;
 
@@ -300,7 +300,7 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
     for (wchar_t wchr : ws) {
       // get output character from byte decoder for each wide character
       unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
-      text += uchr;
+      text.push_back(uchr);
     }
   }
   return text;
