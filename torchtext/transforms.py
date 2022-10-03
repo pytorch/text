@@ -383,6 +383,16 @@ class GPT2BPETokenizer(Module):
             return tokenizer_copy
         return self
 
+    def decode(self, tokens: List[str]) -> str:
+        """Return a decoded string given a list of string token ids.
+
+        :param input: A list of strings, each string corresponds to token ids.
+        :type input: List[str]
+        :return: decoded text
+        :rtype: str
+        """
+        return self.bpe.decode([int(token) for token in tokens])
+
 
 class CLIPTokenizer(Module):
     """
