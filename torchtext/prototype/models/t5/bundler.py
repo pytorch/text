@@ -142,14 +142,25 @@ class T5Bundle:
         freeze_model: bool = False,
         strict: bool = True,
     ) -> T5Model:
+        """Build T5Model model from a HuggingFace checkpoint.
+
+        Note: Only works with Huggingface models saved in the PyTorch format. Will not work \
+            with TensorFlow or JAX.
+
+        Args:
+            ckpt_path (str, Path): Path to the HF checkpoint file. Assumes that the file \
+                is local.
+            freeze_model (bool): Freeze the model upon loading. (Default: `False`)
+            strict (bool): Load model in strict mode. (Default: `True`)
+
+        Returns:
+            T5Model loaded with the weights of the HuggingFace checkpoint provided
+        """
         config_path = f"{ckpt_path}/config.json"
         model_path = f"{ckpt_path}/pytorch_model.bin"
 
-        assert os.path.exists(model_path), f"No PyTorch model found at {model_path}"
-
         with open(config_path, "r") as handle:
             config_json = json.load(handle)
-
         hf_weights = torch.load(model_path)
 
         # TODO(joecummings): find better way to determine `encoder_only` and `linear_head`
