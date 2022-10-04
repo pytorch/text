@@ -144,12 +144,10 @@ class T5Bundle:
     ) -> T5Model:
         """Build T5Model model from a HuggingFace checkpoint.
 
-        Note: Only works with Huggingface models saved in the PyTorch format. Will not work \
-            with TensorFlow or JAX.
+        Note: Only works with Huggingface models saved in the PyTorch format. Will not work with TensorFlow or JAX.
 
         Args:
-            ckpt_path (str, Path): Path to the HF checkpoint file. Assumes that the file \
-                is local.
+            ckpt_path (str, Path): Path to the HF checkpoint file. Assumes that the file is local.
             freeze_model (bool): Freeze the model upon loading. (Default: `False`)
             strict (bool): Load model in strict mode. (Default: `True`)
 
