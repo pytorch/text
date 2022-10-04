@@ -14,7 +14,7 @@ from torchtext._torchtext import (
 )
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from torchtext.data.functional import load_sp_model
-from torchtext.utils import get_asset_local_path, SPECIAL_TOKENS_ATTRIBUTES
+from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
 
 from . import functional as F
@@ -288,6 +288,16 @@ class GPT2BPETokenizer(Module):
     :type return_input: bool
     """
 
+    SPECIAL_TOKENS_ATTRIBUTES = [
+        "bos_token",
+        "eos_token",
+        "unk_token",
+        "sep_token",
+        "pad_token",
+        "cls_token",
+        "mask_token",
+        "additional_special_tokens",
+    ]
     __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
@@ -361,8 +371,8 @@ class GPT2BPETokenizer(Module):
         """
         for key in special_tokens_dict.keys():
             assert (
-                key in SPECIAL_TOKENS_ATTRIBUTES
-            ), f"Key '{key}' is not in the special token list: {SPECIAL_TOKENS_ATTRIBUTES}"
+                key in self.SPECIAL_TOKENS_ATTRIBUTES
+            ), f"Key '{key}' is not in the special token list: {self.SPECIAL_TOKENS_ATTRIBUTES}"
 
         return self.bpe.add_special_tokens(
             {k: v for k, v in special_tokens_dict.items() if k != "additional_special_tokens"},

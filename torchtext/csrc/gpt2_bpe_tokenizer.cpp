@@ -70,7 +70,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
 
   /* Notes on handling Special Tokens:
   We use regex pattern to first identify the special tokens in the input text.
-  Other non-special tokens go through pre-tokenization as usual, but special
+  Other 'non-special' tokens go through pre-tokenization as usual, but special
   tokens skip those steps.
 
   Steps:
@@ -79,7 +79,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   `add_special_tokens` API.
     - form a regex pattern that helps in extracting special tokens from the
   input text.
-  * Crate a vector that contains chunks of input text, such that each chunk is
+  * Create a vector that contains chunks of input text, such that each chunk is
   either a sequence of non-special token or a single special token. For example,
   assuming <|special_tok|> and [SEP] are special tokens, the following text
       "This is an example with <|special_tok|> and [SEP] and [SPAM]."
@@ -94,9 +94,9 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
 
   if (bpe_never_split_set_.size() > 0) {
     std::string pattern = "";
-    // escape regex characters for matching special tokens
-    // this is done to ensure character like '|' in special like
-    // <|endoftext|> don't get special regex meaning
+    // Escape regex characters for matching special tokens. This is done to
+    // ensure that characters like '|' in certain special tokens such as
+    // <|endoftext|> don't get special regex treatment.
     for (std::string token : bpe_never_split_set_) {
       std::string::size_type pos = 0;
       while ((pos = token.find_first_of("|[]", pos)) != std::string::npos) {
