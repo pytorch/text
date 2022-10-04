@@ -141,6 +141,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
       .def("encode", &GPT2BPEEncoder::Encode)
       .def("decode", &GPT2BPEEncoder::Decode)
       .def("tokenize", &GPT2BPEEncoder::Tokenize)
+      .def("add_special_tokens", &GPT2BPEEncoder::AddSpecialTokens)
       .def_pickle(
           // __getstate__
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self)
