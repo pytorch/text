@@ -200,13 +200,13 @@ setup_pip_pytorch_version() {
 setup_conda_pytorch_constraint() {
   CONDA_CHANNEL_FLAGS=${CONDA_CHANNEL_FLAGS:-}
   if [[ -z "$PYTORCH_VERSION" ]]; then
-    export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-nightly"
+    export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-test"
    PYTHON="python"
     # Check if we have python 3 instead and prefer that
     if python3 --version >/dev/null 2>/dev/null; then
       PYTHON="python3"
     fi
-    export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-nightly]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
+    export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-test]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
   else
     export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch -c pytorch-${UPLOAD_CHANNEL}"
   fi
