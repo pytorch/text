@@ -139,6 +139,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
            c10::Dict<int64_t, std::string>,
            bool>())
       .def("encode", &GPT2BPEEncoder::Encode)
+      .def("decode", &GPT2BPEEncoder::Decode)
       .def("tokenize", &GPT2BPEEncoder::Tokenize)
       .def_pickle(
           // __getstate__
