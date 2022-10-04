@@ -560,6 +560,140 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         for idx, ids in enumerate(sample_ids):
             self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
 
+    def _gpt2_bpe_decoder_with_special_tokens(self, tokenizer):
+        sample_ids = [
+            [
+                "27",
+                "91",
+                "437",
+                "1659",
+                "5239",
+                "91",
+                "29",
+                "290",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "5239",
+                "91",
+                "29",
+                "389",
+                "2041",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "1370",
+                "91",
+                "29",
+                "318",
+                "407",
+                "0",
+            ],
+            [
+                "9288",
+                "15859",
+                "8905",
+                "51",
+                "1279",
+                "615",
+                "603",
+                "62",
+                "4658",
+                "29",
+                "351",
+                "27196",
+                "24027",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "5239",
+                "91",
+                "29",
+                "290",
+                "8005",
+                "62",
+                "44710",
+            ],
+            ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+            [
+                "40",
+                "423",
+                "281",
+                "16882",
+                "1359",
+                "428",
+                "318",
+                "257",
+                "1332",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "5239",
+                "91",
+                "29",
+            ],
+        ]
+
+        expected_texts = [
+            "<|endoftext|> and <|endoftext|> are special <|endofline|> is not!",
+            "test ACCEPT <avail_actions> with DECLINE <|endoftext|> and NO_ACTION",
+            "Avdija Vršajević în",
+            "I have an inkling this is a test <|endoftext|>",
+        ]
+
+        for idx, ids in enumerate(sample_ids):
+            self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
+
+        newly_added = tokenizer.add_special_tokens(
+            special_tokens_dict={
+                "unk_token": "<|endoftext|>",
+                "sep_token": "<avail_actions>",
+                "additional_special_tokens": [
+                    "ACCEPT",
+                    "DECLINE",
+                    "inkling",
+                ],
+            }
+        )
+        self.assertEqual(newly_added, 4)
+
+        sample_ids = [
+            [
+                "50256",
+                "392",
+                "50256",
+                "533",
+                "2041",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "1370",
+                "91",
+                "29",
+                "318",
+                "407",
+                "0",
+            ],
+            ["9288", "50258", "50257", "4480", "50259", "50256", "392", "8005", "62", "44710"],
+            ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+            ["40", "423", "281", "50260", "5661", "318", "257", "1332", "50256"],
+        ]
+
+        expected_texts = [
+            "<|endoftext|> and <|endoftext|> are special <|endofline|> is not!",
+            "test ACCEPT <avail_actions> with DECLINE <|endoftext|> and NO_ACTION",
+            "Avdija Vršajević în",
+            "I have an inkling this is a test <|endoftext|>",
+        ]
+
+        for idx, ids in enumerate(sample_ids):
+            self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
+
     @nested_params([True, False], [True, False])
     def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
@@ -568,6 +702,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
     def test_gpt2_bpe_decoder(self):
         """test string output returned by decoder given the token ids"""
         self._gpt2_bpe_decoder(self._load_tokenizer(test_scripting=False, return_tokens=False))
+        self._gpt2_bpe_decoder_with_special_tokens(self._load_tokenizer(test_scripting=False, return_tokens=False))
 
     @nested_params([True, False])
     def test_gpt2_bpe_tokenizer_with_added_vocab(self, return_tokens):
