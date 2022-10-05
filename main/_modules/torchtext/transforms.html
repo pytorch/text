@@ -204,7 +204,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20221004) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.14.0.dev20221005) &#x25BC</a>
     </div>
     
 
@@ -332,7 +332,7 @@
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torchtext</span>  <span class="c1"># noqa: F401</span>
@@ -619,6 +619,16 @@
 <span class="sd">    :type return_input: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">SPECIAL_TOKENS_ATTRIBUTES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;bos_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;eos_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unk_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sep_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pad_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cls_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mask_token&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;additional_special_tokens&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="n">_seperator</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
@@ -679,6 +689,26 @@
 <span class="sd">            --&gt; bpe --&gt; bpe tokens: [&quot;aw&quot;, &quot;esome&quot;], [&quot;,&quot;], [&quot;aw&quot;, e]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_special_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">special_tokens_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a dictionary of special tokens (eos, pad, cls…) to the encoder</span>
+
+<span class="sd">        :param special_tokens_dict: dict of string. Keys should be in the list of predefined special attributes:</span>
+<span class="sd">        [bos_token, eos_token, unk_token, sep_token, pad_token, cls_token, mask_token, additional_special_tokens].</span>
+<span class="sd">        Tokens are only added if they are not already in the vocabulary.</span>
+<span class="sd">        :type special_tokens_dict: Dict[str, Union[str, List[str]]]</span>
+<span class="sd">        :return: Number of tokens added to the vocabulary.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">special_tokens_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPECIAL_TOKENS_ATTRIBUTES</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is not in the special token list: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">SPECIAL_TOKENS_ATTRIBUTES</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">special_tokens_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;additional_special_tokens&quot;</span><span class="p">},</span>
+            <span class="n">special_tokens_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;additional_special_tokens&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="GPT2BPETokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.GPT2BPETokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
