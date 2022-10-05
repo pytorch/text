@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 from functools import lru_cache
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
 import torch
 import torchtext  # noqa: F401
@@ -288,6 +288,16 @@ class GPT2BPETokenizer(Module):
     :type return_input: bool
     """
 
+    SPECIAL_TOKENS_ATTRIBUTES = [
+        "bos_token",
+        "eos_token",
+        "unk_token",
+        "sep_token",
+        "pad_token",
+        "cls_token",
+        "mask_token",
+        "additional_special_tokens",
+    ]
     __jit_unused_properties__ = ["is_jitable"]
     _seperator: torch.jit.Final[str]
 
@@ -348,6 +358,26 @@ class GPT2BPETokenizer(Module):
             --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
         """
         return self.bpe.tokenize(text)
+
+    def add_special_tokens(self, special_tokens_dict: Mapping[str, Union[str, Sequence[str]]]) -> int:
+        """Add a dictionary of special tokens (eos, pad, cls…) to the encoder
+
+        :param special_tokens_dict: dict of string. Keys should be in the list of predefined special attributes:
+        [bos_token, eos_token, unk_token, sep_token, pad_token, cls_token, mask_token, additional_special_tokens].
+        Tokens are only added if they are not already in the vocabulary.
+        :type special_tokens_dict: Dict[str, Union[str, List[str]]]
+        :return: Number of tokens added to the vocabulary.
+        :rtype: int
+        """
+        for key in special_tokens_dict.keys():
+            assert (
+                key in self.SPECIAL_TOKENS_ATTRIBUTES
+            ), f"Key '{key}' is not in the special token list: {self.SPECIAL_TOKENS_ATTRIBUTES}"
+
+        return self.bpe.add_special_tokens(
+            {k: v for k, v in special_tokens_dict.items() if k != "additional_special_tokens"},
+            special_tokens_dict.get("additional_special_tokens", []),
+        )
 
     def forward(self, input: Any) -> Any:
         """
