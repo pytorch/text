@@ -186,8 +186,9 @@ PYBIND11_MODULE(_torchtext, m) {
              const std::unordered_map<std::string, std::string>& items,
              const std::vector<std::string>& additional) {
             c10::Dict<std::string, std::string> d;
-            for (const auto& item : items)
+            for (const auto& item : items) {
               d.insert(item.first, item.second);
+            }
             return (self->AddSpecialTokens(d, additional));
           })
       .def(py::pickle(
