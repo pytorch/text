@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <codecvt>
 #include <locale>
-#include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -63,7 +62,6 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   // - ELSE IF prepend_space == True, prepend a space to the token and add to
   // return list
   // - ELSE, add token to return list
-  std::string token;
   std::vector<std::string> tokens;
   bool prepend_space = false;
   std::vector<std::string> index_matches;
@@ -115,37 +113,39 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
             break;
         }
       }
-      if (pattern.length() != 0)
+      if (pattern.length() != 0) {
         pattern += "|";
+      }
       pattern += token;
     }
 
     // break input into non-special and special parts
-    std::regex rx(pattern);
+    const Regex specialTokenRegex("(" + pattern + ")");
+    re2::StringPiece input_strp(input);
+    std::string match;
     int64_t last_idx = 0;
-    for (auto it = std::sregex_iterator(input.begin(), input.end(), rx);
-         it != std::sregex_iterator();
-         ++it) {
-      if (it->position() > last_idx) {
-        if (isspace(input[it->position() - 1])) {
+    while (specialTokenRegex.FindAndConsume(&input_strp, &match)) {
+      int64_t start_idx = input.size() - input_strp.size() - match.size();
+      if (start_idx > last_idx) {
+        if (isspace(input[start_idx - 1])) {
           // strip space on the left of the special token
           index_matches.push_back(
-              input.substr(last_idx, it->position() - last_idx - 1));
+              input.substr(last_idx, start_idx - last_idx - 1));
         } else {
-          index_matches.push_back(
-              input.substr(last_idx, it->position() - last_idx));
+          index_matches.push_back(input.substr(last_idx, start_idx - last_idx));
         }
       }
-      index_matches.push_back(input.substr(it->position(), it->length()));
-      last_idx = it->position() + it->length() + 1;
+      index_matches.push_back(input.substr(start_idx, match.size()));
+      last_idx = start_idx + match.size();
       if (isspace(input[last_idx])) {
         // strip space on the right of the special token
         last_idx++;
       }
     }
-    if (last_idx < input.length() - 1)
+    if (last_idx <= input.length() - 1) {
       index_matches.push_back(
           input.substr(last_idx, input.length() - last_idx));
+    }
   } else {
     // input does not have any special tokens
     index_matches.push_back(input);
@@ -160,6 +160,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
       continue;
     }
     re2::StringPiece inp(index_token);
+    std::string token;
     while (kGPT2Regex.FindAndConsume(&inp, &token)) {
       if (is_whitespace(token)) {
         prepend_space = false;
@@ -246,11 +247,13 @@ GPT2BPEEncoder::GPT2BPEEncoder(
       byte_encoder_(std::move(byte_encoder)),
       seperator_(std::move(seperator)),
       caching_enabled_(caching_enabled) {
-  for (auto const& x : bpe_encoder_)
+  for (auto const& x : bpe_encoder_) {
     bpe_decoder_.insert(x.value(), x.key());
+  }
 
-  for (auto const& x : byte_encoder_)
+  for (auto const& x : byte_encoder_) {
     byte_decoder_.insert(x.value(), x.key());
+  }
 }
 
 GPT2BPEEncoder::GPT2BPEEncoder(
@@ -429,7 +432,7 @@ std::vector<std::string> GPT2BPEEncoder::Tokenize(const std::string& text) {
 
 int64_t GPT2BPEEncoder::AddSpecialTokens(
     const c10::Dict<std::string, std::string>& standard_special_tokens_dict,
-    const std::vector<std::string> additional_special_tokens) {
+    const std::vector<std::string>& additional_special_tokens) {
   int64_t newly_added = 0;
 
   /* All special tokens get added to `bpe_never_split_set_` set to avoid being
@@ -439,8 +442,9 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
 
   // Loop for standard tokens such as "bos_token", "eos_token", etc.
   for (auto const& token : standard_special_tokens_dict) {
-    if (added_tokens_encoder.contains(token.value()))
+    if (added_tokens_encoder.contains(token.value())) {
       continue;
+    }
     bpe_never_split_set_.insert(token.value());
     if (!bpe_encoder_.contains(token.value())) {
       added_tokens_encoder.insert(
