@@ -111,7 +111,7 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<std::string> Tokenize(const std::string& text);
   TORCHTEXT_API int64_t AddSpecialTokens(
       const c10::Dict<std::string, std::string>& standard_special_tokens_dict,
-      const std::vector<std::string> additional_special_tokens);
+      const std::vector<std::string>& additional_special_tokens);
 
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEEncoder() const;
   TORCHTEXT_API std::unordered_map<std::string, int64_t> GetBPEMergeRanks()
