@@ -179,6 +179,18 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_property_readonly("byte_encoder_", &GPT2BPEEncoder::GetByteEncoder)
       .def("encode", &GPT2BPEEncoder::Encode)
       .def("tokenize", &GPT2BPEEncoder::Tokenize)
+      .def("decode", &GPT2BPEEncoder::Decode)
+      .def(
+          "add_special_tokens",
+          [](const c10::intrusive_ptr<GPT2BPEEncoder>& self,
+             const std::unordered_map<std::string, std::string>& items,
+             const std::vector<std::string>& additional) {
+            c10::Dict<std::string, std::string> d;
+            for (const auto& item : items) {
+              d.insert(item.first, item.second);
+            }
+            return (self->AddSpecialTokens(d, additional));
+          })
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self)

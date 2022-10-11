@@ -336,6 +336,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             "Hélló  WoŕlḊ¿",
             "Respublica superiorem",
             "Avdija Vršajević în",
+            "multi      space",
         ]
 
         expected_tokens = [
@@ -343,12 +344,14 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             ["H", "Ã©", "ll", "Ã³", "Ġ", "ĠWo", "Å", "ķ", "l", "á¸", "Ĭ", "Â", "¿"],
             ["Res", "public", "a", "Ġsuper", "i", "orem"],
             ["Av", "d", "ija", "ĠV", "r", "Å¡", "aj", "ev", "i", "Äĩ", "ĠÃ", "®", "n"],
+            ["multi", "Ġ", "Ġ", "Ġ", "Ġ", "Ġ", "Ġspace"],
         ]
         expected_token_ids = [
             ["15496", "2159", "28265", "703", "389", "345", "30"],
             ["39", "2634", "297", "10205", "220", "22173", "129", "243", "75", "41585", "232", "126", "123"],
             ["4965", "11377", "64", "2208", "72", "29625"],
             ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+            ["41684", "220", "220", "220", "220", "220", "2272"],
         ]
 
         # test batch of sentences
@@ -364,10 +367,213 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
             else:
                 self.assertEqual(tokenizer(txt), expected_token_ids[idx])
 
+    def _gpt2_bpe_tokenizer_with_added_vocab(self, tokenizer):
+        sample_texts = [
+            "<|endoftext|> and <|endoftext|> are special <|endofline|> is not!",
+            "test ACCEPT <avail_actions> with DECLINE <|endoftext|> and NO_ACTION",
+            "none in vocab: <|endofline|> WALK_60M WALK_10M <state>",
+            "Respublica Vršajević în",
+            "some in vocab: <|endofline|> WALK_60M WALK_10M <state>",
+            "<|endoftext|> WALK_60M WALK_10M <reward> <state>",
+        ]
+
+        newly_added = tokenizer.add_special_tokens(
+            special_tokens_dict={
+                "unk_token": "<|endoftext|>",
+                "additional_special_tokens": [
+                    "ACCEPT",
+                    "DECLINE",
+                    "NO_ACTION",
+                    "WALK_10M",
+                    "WALK_60M",
+                    "<reward>",
+                ],
+            }
+        )
+        self.assertEqual(newly_added, 6)
+
+        newly_added = tokenizer.add_special_tokens(
+            special_tokens_dict={
+                "unk_token": "<|endoftext|>",
+                "sep_token": "<avail_actions>",
+                "additional_special_tokens": [
+                    "ACCEPT",
+                    "DECLINE",
+                    "NO_ACTION",
+                    "WALK_10M",
+                    "WALK_60M",
+                    "<reward>",
+                ],
+            }
+        )
+        self.assertEqual(newly_added, 1)
+
+        expected_tokens = [
+            [
+                "<|endoftext|>",
+                "and",
+                "<|endoftext|>",
+                "are",
+                "Ġspecial",
+                "Ġ<",
+                "|",
+                "end",
+                "of",
+                "line",
+                "|",
+                ">",
+                "Ġis",
+                "Ġnot",
+                "!",
+            ],
+            ["test", "ACCEPT", "<avail_actions>", "with", "DECLINE", "<|endoftext|>", "and", "NO_ACTION"],
+            [
+                "none",
+                "Ġin",
+                "Ġvoc",
+                "ab",
+                ":",
+                "Ġ<",
+                "|",
+                "end",
+                "of",
+                "line",
+                "|",
+                ">",
+                "WALK_60M",
+                "WALK_10M",
+                "<",
+                "state",
+                ">",
+            ],
+            ["Res", "public", "a", "ĠV", "r", "Å¡", "aj", "ev", "i", "Äĩ", "ĠÃ", "®", "n"],
+            [
+                "some",
+                "Ġin",
+                "Ġvoc",
+                "ab",
+                ":",
+                "Ġ<",
+                "|",
+                "end",
+                "of",
+                "line",
+                "|",
+                ">",
+                "WALK_60M",
+                "WALK_10M",
+                "<",
+                "state",
+                ">",
+            ],
+            ["<|endoftext|>", "WALK_60M", "WALK_10M", "<reward>", "<", "state", ">"],
+        ]
+        expected_token_ids = [
+            [
+                "50256",
+                "392",
+                "50256",
+                "533",
+                "2041",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "1370",
+                "91",
+                "29",
+                "318",
+                "407",
+                "0",
+            ],
+            ["9288", "50257", "50263", "4480", "50258", "50256", "392", "50259"],
+            [
+                "23108",
+                "287",
+                "12776",
+                "397",
+                "25",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "1370",
+                "91",
+                "29",
+                "50261",
+                "50260",
+                "27",
+                "5219",
+                "29",
+            ],
+            ["4965", "11377", "64", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+            [
+                "11246",
+                "287",
+                "12776",
+                "397",
+                "25",
+                "1279",
+                "91",
+                "437",
+                "1659",
+                "1370",
+                "91",
+                "29",
+                "50261",
+                "50260",
+                "27",
+                "5219",
+                "29",
+            ],
+            ["50256", "50261", "50260", "50262", "27", "5219", "29"],
+        ]
+
+        # test batch of sentences
+        if tokenizer._return_tokens:
+            self.assertEqual(tokenizer(sample_texts), expected_tokens)
+        else:
+            self.assertEqual(tokenizer(sample_texts), expected_token_ids)
+
+        # test individual sentences
+        for idx, txt in enumerate(sample_texts):
+            if tokenizer._return_tokens:
+                self.assertEqual(tokenizer(txt), expected_tokens[idx])
+            else:
+                self.assertEqual(tokenizer(txt), expected_token_ids[idx])
+
+    def _gpt2_bpe_decoder(self, tokenizer):
+        sample_ids = [
+            ["15496", "2159", "28265", "703", "389", "345", "30"],
+            ["39", "2634", "297", "10205", "220", "22173", "129", "243", "75", "41585", "232", "126", "123"],
+            ["4965", "11377", "64", "2208", "72", "29625"],
+            ["7355", "67", "34655", "569", "81", "32790", "1228", "1990", "72", "38325", "6184", "106", "77"],
+        ]
+
+        expected_texts = [
+            "Hello World!, how are you?",
+            "Hélló  WoŕlḊ¿",
+            "Respublica superiorem",
+            "Avdija Vršajević în",
+        ]
+
+        for idx, ids in enumerate(sample_ids):
+            self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
+
     @nested_params([True, False], [True, False])
     def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
         self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
+
+    def test_gpt2_bpe_decoder(self):
+        """test string output returned by decoder given the token ids"""
+        self._gpt2_bpe_decoder(self._load_tokenizer(test_scripting=False, return_tokens=False))
+
+    @nested_params([True, False])
+    def test_gpt2_bpe_tokenizer_with_added_vocab(self, return_tokens):
+        self._gpt2_bpe_tokenizer_with_added_vocab(
+            self._load_tokenizer(test_scripting=False, return_tokens=return_tokens)
+        )
 
     def test_gpt2_bpe_tokenizer_save_load_pybind(self) -> None:
         tokenizer = self._load_tokenizer(test_scripting=False, return_tokens=False)
