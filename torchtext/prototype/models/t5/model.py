@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union, Callable
+from typing import Callable, Dict, List, Optional, Union
 
 import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Encoder, T5Decoder, T5LayerNorm
+from .modules import T5Decoder, T5Encoder, T5LayerNorm
 
 
 @dataclass
@@ -88,7 +88,9 @@ class T5Model(nn.Module):
         self.device = device
         self.dtype = dtype
 
-        self.token_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim, config.padding_idx)
+        self.token_embeddings = nn.Embedding(
+            config.vocab_size, config.embedding_dim, config.padding_idx
+        )
         self.encoder = T5Encoder(
             d_model=config.embedding_dim,
             nhead=config.num_attention_heads,
@@ -129,7 +131,9 @@ class T5Model(nn.Module):
             self.decoder = None
 
         if config.linear_head:
-            self.lm_head = nn.Linear(config.embedding_dim, config.vocab_size, bias=False)
+            self.lm_head = nn.Linear(
+                config.embedding_dim, config.vocab_size, bias=False
+            )
         else:
             self.lm_head = None
 
@@ -140,23 +144,31 @@ class T5Model(nn.Module):
     def forward(
         self,
         encoder_tokens: Tensor,
-        decoder_tokens: Optional[Tensor] = None,
         encoder_mask: Optional[Tensor] = None,
+        encoder_padding_mask: Optional[Tensor] = None,
+        decoder_tokens: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
+        decoder_padding_mask: Optional[Tensor] = None,
+    ) -> Dict[
+        str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]
+    ]:
         r"""Pass the inputs (and mask) through the decoder layer in turn.
         Args:
             encoder_tokens: Tokenized input sequence to the encoder.
                 Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
                 encoder input sequence length. (required).
+            encoder_mask: Additive mask for the encoder input sequence.
+                Must have shape (Ne, Ne) (optional).
+            encoder_padding_mask: Padding mask for encoder input sequence.
+                Must have shape (B, Ne) (optional).
             decoder_tokens: Tokenized input sequence to the decoder.
                 Must be batch first with shape (B, Nd) where B is the batch size and Nd is the
                 decoder input sequence length. If None and model is encoder-decoder, will initialize decoder
                 input sequence to begin with padding index. (optional).
-            encoder_mask: Self-attention mask for the encoder input sequence.
-                Must have shape (Ne, Ne) (optional).
-            decoder_mask: Self-attention mask for the decoder input sequence.
+            decoder_mask: Additive mask for the decoder input sequence.
                 Must have shape (Nd, Nd) (optional).
+            decoder_padding_mask: Padding mask for decoder input sequence.
+                Must have shape (B, Ne) (optional).
         Returns:
             encoder_output: Output Tensor from the final layer of the encoder
             encoder_hidden_states: Tuple of output Tensors from each layer of the encoder
@@ -168,10 +180,24 @@ class T5Model(nn.Module):
             encoder_sa_scores: Tuple of self-attention scores computed at each layer of the decoder
             encoder_ca_scores: Tuple of cross-attention scores computed at each layer of the decoder
         """
-        encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
+        if encoder_padding_mask is None:
+            encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
+
+        batch_size = encoder_tokens.shape[0]
+        seq_len = encoder_tokens.shape[1]
+
+        assert encoder_padding_mask.shape == (batch_size, seq_len)
+
         encoder_embeddings = self.dropout1(self.token_embeddings(encoder_tokens))
-        encoder_output, encoder_hidden_states, encoder_position_bias, encoder_sa = self.encoder(
-            encoder_embeddings, tgt_mask=encoder_mask, tgt_key_padding_mask=encoder_padding_mask
+        (
+            encoder_output,
+            encoder_hidden_states,
+            encoder_position_bias,
+            encoder_sa,
+        ) = self.encoder(
+            encoder_embeddings,
+            tgt_mask=encoder_mask,
+            tgt_key_padding_mask=encoder_padding_mask,
         )
 
         encoder_output = self.norm1(encoder_output)
@@ -184,20 +210,34 @@ class T5Model(nn.Module):
 
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
-                decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * self.padding_idx
+                decoder_tokens = (
+                    torch.ones((encoder_tokens.size(0), 1), dtype=torch.long)
+                    * self.padding_idx
+                )
+
+            tgt_seq_len = decoder_tokens.shape[1]
 
             if decoder_mask is None:
                 assert decoder_tokens is not None and decoder_tokens.dim() == 2
-                tgt_len = decoder_tokens.shape[1]
-                decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
+                decoder_mask = torch.triu(
+                    torch.ones((tgt_seq_len, tgt_seq_len), dtype=torch.float64),
+                    diagonal=1,
+                )
                 decoder_mask = decoder_mask.to(torch.bool)
 
-            decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
-            # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
-            decoder_padding_mask[:, 0] = False
+            if decoder_padding_mask is None:
+                decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
+                # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
+                decoder_padding_mask[:, 0] = False
 
             decoder_embeddings = self.dropout3(self.token_embeddings(decoder_tokens))
-            decoder_output, decoder_hidden_states, decoder_position_bias, decoder_sa, decoder_ca = self.decoder(
+            (
+                decoder_output,
+                decoder_hidden_states,
+                decoder_position_bias,
+                decoder_sa,
+                decoder_ca,
+            ) = self.decoder(
                 decoder_embeddings,
                 memory=encoder_output,
                 tgt_mask=decoder_mask,
@@ -215,7 +255,7 @@ class T5Model(nn.Module):
                 # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
                 # same word embeddings, which is always the case in our t5 implementation.
                 # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
-                decoder_output = decoder_output * (self.embedding_dim ** -0.5)
+                decoder_output = decoder_output * (self.embedding_dim**-0.5)
                 decoder_output = self.lm_head(decoder_output)
 
             t5_output = {
@@ -238,7 +278,13 @@ class T5Model(nn.Module):
             }
 
             assert torch.jit.isinstance(
-                t5_output, Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
+                t5_output,
+                Dict[
+                    str,
+                    Union[
+                        Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]
+                    ],
+                ],
             )
 
         return t5_output
