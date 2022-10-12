@@ -592,6 +592,58 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         self._gpt2_bpe_tokenizer((loaded_tokenizer))
 
 
+class TestCharBPETokenizer(TorchtextTestCase):
+    def _load_tokenizer(self, return_tokens: bool):
+        encoder_json = "openai-gpt-vocab.json"
+        merges_file = "openai-gpt-merges.txt"
+        tokenizer = transforms.CharBPETokenizer(
+            bpe_encoder_path=get_asset_path(encoder_json),
+            bpe_merges_path=get_asset_path(merges_file),
+            suffix="</w>",
+            return_tokens=return_tokens,
+        )
+        return tokenizer
+
+    def _char_tokenizer(self, tokenizer):
+        sample_texts = [
+            "pytorch is a machine learning framework",
+            "torch uses a method called automatic differentiation!",
+            "what are tensors (torch.tensor)?",
+            "self.linear_relu_stack(x)",
+        ]
+
+        expected_tokens = [
+            ['py', 'torch</w>', 'is</w>', 'a</w>', 'machine</w>', 'learning</w>', 'framework</w>'],
+            ['torch</w>', 'uses</w>', 'a</w>', 'method</w>', 'called</w>', 'automatic</w>', 'differenti', 'ation', '!</w>'],
+            ['what</w>', 'are</w>', 'ten', 'sors</w>', '(', 'tor', 'ch', '.', 'ten', 'sor', ')', '?</w>'],
+            ['self', '.', 'lin', 'ear', '_', 're', 'lu', '_', 'st', 'ack', '(', 'x', ')</w>'],
+        ]
+        expected_token_ids = [
+            [5420, 9047, 544, 246, 4165, 6024, 31971],
+            [9047, 8411, 246, 11823, 1347, 10223, 31671, 7427, 267],
+            [599, 640, 821, 10824, 38, 1525, 573, 1, 821, 1050, 37, 257],
+            [20828, 1, 1446, 653, 41, 492, 717, 41, 495, 1170, 38, 34, 275],
+        ]
+
+        # test batch of sentences
+        if tokenizer._return_tokens:
+            self.assertEqual(tokenizer(sample_texts), expected_tokens)
+        else:
+            self.assertEqual(tokenizer(sample_texts), expected_token_ids)
+
+        # test individual sentences
+        for idx, txt in enumerate(sample_texts):
+            if tokenizer._return_tokens:
+                self.assertEqual(tokenizer(txt), expected_tokens[idx])
+            else:
+                self.assertEqual(tokenizer(txt), expected_token_ids[idx])
+
+    @nested_params([True, False])
+    def test_char_bpe_tokenizer(self, return_tokens):
+        """test tokenization on single sentence input as well as batch on sentences"""
+        self._char_tokenizer(self._load_tokenizer(return_tokens=return_tokens))
+
+
 class TestCLIPTokenizer(TorchtextTestCase):
     def _load_tokenizer(self, init_using_merge_only: bool, test_scripting: bool, return_tokens: bool):
         encoder_json = "clip_encoder.json"
