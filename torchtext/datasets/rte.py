@@ -22,9 +22,9 @@ URL = "https://dl.fbaipublicfiles.com/glue/data/RTE.zip"
 MD5 = "bef554d0cafd4ab6743488101c638539"
 
 NUM_LINES = {
-    "train": 67349,
-    "dev": 872,
-    "test": 1821,
+    "train": 2490,
+    "dev": 277,
+    "test": 3000,
 }
 
 _PATH = "RTE.zip"
@@ -67,9 +67,9 @@ def RTE(root, split):
     For additional details refer to https://aclweb.org/aclwiki/Recognizing_Textual_Entailment
 
     Number of lines per split:
-        - train: 67349
-        - dev: 872
-        - test: 1821
+        - train: 2490
+        - dev: 277
+        - test: 3000
 
     Args:
         root: Directory where the datasets are saved. Default: os.path.expanduser('~/.torchtext/cache')
