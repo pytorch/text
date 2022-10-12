@@ -1,6 +1,5 @@
 import hashlib
 import os
-from collections import defaultdict
 from functools import partial
 from typing import Union, Set, Tuple
 
@@ -52,6 +51,7 @@ NUM_LINES = {
     "test": 11490,
 }
 
+
 def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
 
@@ -91,9 +91,9 @@ def _get_split_list(source: str, split: str):
 
 
 def _load_stories(root: str, source: str, split: str):
-    
+
     split_list = set(_get_split_list(source, split))
-    
+
     story_dp = IterableWrapper([URL[source]])
     cache_compressed_dp = story_dp.on_disk_cache(
         filepath_fn=partial(_filepath_fn, root, source),
