@@ -448,7 +448,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         Returns:
             a Tensor with the same shape as relative_position, containing int32 values in the range [0, num_buckets)
         """
-        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long)
+        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long, device=relative_position.device)
         if bidirectional:
             num_buckets = num_buckets // 2
             relative_buckets += (relative_position > 0).to(torch.long) * num_buckets
