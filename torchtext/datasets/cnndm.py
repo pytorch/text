@@ -91,9 +91,7 @@ def _get_split_list(source: str, split: str):
 
 
 def _load_stories(root: str, source: str, split: str):
-
     split_list = set(_get_split_list(source, split))
-
     story_dp = IterableWrapper([URL[source]])
     cache_compressed_dp = story_dp.on_disk_cache(
         filepath_fn=partial(_filepath_fn, root, source),
