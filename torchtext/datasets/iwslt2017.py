@@ -240,7 +240,24 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
         filepath_fn=partial(_inner_iwslt_tar_filepath_fn, inner_iwslt_tar)
     )
     cache_decompressed_dp = cache_decompressed_dp.open_files(mode="b").load_from_tar()
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    # As we had filenames duplicated, any trash files in archive can become tgz
+
+    def extracted_file_name(inner_iwslt_tar, inner_tar_name):
+        name = os.path.basename(inner_tar_name)
+        path = os.path.dirname(inner_iwslt_tar)
+        return os.path.join(path, name)
+
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(
+        mode="wb", filepath_fn=partial(extracted_file_name, inner_iwslt_tar)
+    )
+    # As we corrected path, we need to leave tgz files only now and no dot files
+
+    def leave_only_tgz(file_name):
+        name = os.path.basename(file_name)
+        _, file_extension = os.path.splitext(file_name)
+        return file_extension == ".tgz" and name[0] != "."
+
+    cache_decompressed_dp = cache_decompressed_dp.filter(leave_only_tgz)
     cache_decompressed_dp_1, cache_decompressed_dp_2 = cache_decompressed_dp.fork(num_instances=2)
 
     src_filename = file_path_by_lang_and_split[src_language][split]
