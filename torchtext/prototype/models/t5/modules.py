@@ -402,7 +402,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         output = output.transpose(1, 2).contiguous().view(B, -1, H * E)
         return output, attn
 
-    # NOTE: modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L421
+    # NOTE: Modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L421
     def _compute_bias(
         self,
         query_length: int,
@@ -427,7 +427,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         values = values.permute([2, 0, 1]).unsqueeze(0)  # shape (1, num_heads, query_length, key_length)
         return values
 
-    # NOTE: Taken from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
+    # NOTE: Modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L374
     def _relative_position_bucket(
         self, relative_position: Tensor, bidirectional: bool = True, num_buckets: int = 32, max_distance: int = 128
     ) -> Tensor:
