@@ -87,8 +87,7 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         dataset = CNNDM(root=self.root_dir, split=split)
         samples = list(dataset)
         expected_samples = self.samples[split]
-        for sample, expected_sample in zip_equal(samples, expected_samples):
-            self.assertEqual(sample, expected_sample)
+        self.assertEqual(expected_samples, samples)
 
     @parameterized.expand(["train", "val", "test"])
     @patch("torchtext.datasets.cnndm._get_split_list", _mock_split_list)

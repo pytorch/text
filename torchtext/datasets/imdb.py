@@ -32,7 +32,7 @@ def _filepath_fn(root, _=None):
 
 
 def _decompressed_filepath_fn(root, decompressed_folder, split, labels, _=None):
-    return [os.path.join(root, decompressed_folder, split, label) for label in labels]
+    return os.path.join(root, decompressed_folder, split)
 
 
 def _filter_fn(filter_imdb_data, split, t):

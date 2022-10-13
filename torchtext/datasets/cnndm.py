@@ -1,8 +1,7 @@
 import hashlib
 import os
-from collections import defaultdict
 from functools import partial
-from typing import Union, Tuple
+from typing import Union, Set, Tuple
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -52,8 +51,6 @@ NUM_LINES = {
     "test": 11490,
 }
 
-story_fnames = defaultdict(set)
-
 
 def _filepath_fn(root: str, source: str, _=None):
     return os.path.join(root, PATH_LIST[source])
@@ -61,19 +58,17 @@ def _filepath_fn(root: str, source: str, _=None):
 
 # called once per tar file, therefore no duplicate processing
 def _extracted_folder_fn(root: str, source: str, split: str, _=None):
-    global story_fnames
     key = source + "_" + split
-    story_fnames[key] = set(_get_split_list(source, split))
-    filepaths = [os.path.join(root, _EXTRACTED_FOLDERS[source], story) for story in story_fnames[key]]
-    return filepaths
+    filepath = os.path.join(root, key)
+    return filepath
 
 
 def _extracted_filepath_fn(root: str, source: str, x: str):
     return os.path.join(root, _EXTRACTED_FOLDERS[source], os.path.basename(x))
 
 
-def _filter_fn(source: str, split: str, x: tuple):
-    return os.path.basename(x[0]) in story_fnames[source + "_" + split]
+def _filter_fn(split_list: Set[str], x: tuple):
+    return os.path.basename(x[0]) in split_list
 
 
 def _hash_urls(s: tuple):
@@ -96,6 +91,7 @@ def _get_split_list(source: str, split: str):
 
 
 def _load_stories(root: str, source: str, split: str):
+    split_list = set(_get_split_list(source, split))
     story_dp = IterableWrapper([URL[source]])
     cache_compressed_dp = story_dp.on_disk_cache(
         filepath_fn=partial(_filepath_fn, root, source),
@@ -108,7 +104,7 @@ def _load_stories(root: str, source: str, split: str):
         filepath_fn=partial(_extracted_folder_fn, root, source, split)
     )
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, source, split))
+        FileOpener(cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, split_list))
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(
         mode="wb", filepath_fn=partial(_extracted_filepath_fn, root, source)
