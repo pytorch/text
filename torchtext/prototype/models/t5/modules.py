@@ -74,6 +74,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         else:
             self.relative_attention_bias = None
 
+        self.device = device
+
     def forward(
         self,
         query: Tensor,
