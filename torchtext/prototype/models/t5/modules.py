@@ -258,7 +258,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                     tgt_len,
                     src_len,
                     bidirectional=(not self.is_decoder),
-                    device=k.device,
                 )
 
         # Calculate attention and out projection
