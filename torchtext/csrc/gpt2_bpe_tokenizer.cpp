@@ -422,12 +422,12 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
         is_current_special = true;
       } else {
         // string is a regular token from known vocab
+        is_current_special = false;
         const std::wstring ws = converter.from_bytes(str);
         for (wchar_t wchr : ws) {
           // get output character from byte decoder for each wide character
           unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
           decoded_token.push_back(uchr);
-          is_current_special = false;
         }
       }
     }
