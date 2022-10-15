@@ -400,7 +400,8 @@ std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
 
 std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
   std::string text;
-  std::vector<bool> special_token_flags(tokens.size());
+  bool is_prev_special = false;
+  bool is_current_special = false;
   // setup converter for converting wide chars to/from chars
   using convert_type = std::codecvt_utf8<wchar_t>;
   std::wstring_convert<convert_type, wchar_t> converter;
@@ -412,13 +413,13 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
     if (added_tokens_decoder_.contains(token)) {
       // string is a special token from extended vocab
       decoded_token = added_tokens_decoder_.at(token);
-      special_token_flags[tok_idx] = true;
+      is_current_special = true;
     } else {
       const std::string str = bpe_decoder_.at(token);
       if (bpe_never_split_set_.find(str) != bpe_never_split_set_.end()) {
         // string is a special token from known vocab
         decoded_token = str;
-        special_token_flags[tok_idx] = true;
+        is_current_special = true;
       } else {
         // string is a regular token from known vocab
         const std::wstring ws = converter.from_bytes(str);
@@ -426,20 +427,40 @@ std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
           // get output character from byte decoder for each wide character
           unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
           decoded_token.push_back(uchr);
+          is_current_special = false;
         }
       }
     }
 
+    /* Fixing leading/trailing space(s)
+
+    We need to ensure spaces before and after special tokens are removed
+    appropirately. Assuming <|endoftext|> and HELLO are special tokens:
+    string input: "<|endoftext|> <|endoftext|> and HELLO world !"
+      is to be tokenized as:
+    ['<|endoftext|>', '<|endoftext|>', 'and', 'HELLO', 'world', 'Ġ!']
+      whereas an input like:
+    "<|endoftext|> and anything else!", gets tokenized as:
+    ['<|endoftext|>', 'and', 'Ġanything', 'Ġelse', '!']
+
+    Hence while decoding the corresponding string tokens back to
+    the original string text, we will have to insert those spaces back again.
+    - Add empty space before a special token if it is not at the begining of the
+      sentence and if it is not following another special token.
+    - Add empty space after a special token if it is not at the end of the
+    sentence.
+    */
+
     // fix left space(s) for special tokens
-    if (special_token_flags[tok_idx] == true &&
-        (tok_idx > 0 && special_token_flags[tok_idx - 1] == false)) {
+    if (is_current_special && (tok_idx > 0 && !is_prev_special)) {
       text.push_back(' ');
     }
     text.append(decoded_token);
     // fix right space(s) for special tokens
-    if (special_token_flags[tok_idx] == true && tok_idx != tokens.size() - 1) {
+    if (is_current_special && tok_idx != tokens.size() - 1) {
       text.push_back(' ');
     }
+    is_prev_special = is_current_special;
   }
   return text;
 }
@@ -469,7 +490,7 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
 
   // Loop for standard tokens such as "bos_token", "eos_token", etc.
   for (auto const& token : standard_special_tokens_dict) {
-    if (added_tokens_encoder_.contains(token.value()))
+    if (added_tokens_encoder_.contains(token.value())) {
       continue;
     }
     bpe_never_split_set_.insert(token.value());
