@@ -44,6 +44,13 @@ BERTTokenizer
 
    .. automethod:: forward
 
+CharBPETokenizer
+-------------
+
+.. autoclass:: CharBPETokenizer
+
+   .. automethod:: forward
+
 VocabTransform
 --------------
 
