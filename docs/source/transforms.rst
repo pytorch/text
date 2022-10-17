@@ -45,7 +45,7 @@ BERTTokenizer
    .. automethod:: forward
 
 CharBPETokenizer
--------------
+----------------
 
 .. autoclass:: CharBPETokenizer
 
