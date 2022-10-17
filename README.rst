@@ -138,7 +138,6 @@ To get started with torchtext, users may refer to the following tutorial availab
 * `Translation trained with Multi30k dataset using transformers and torchtext <https://pytorch.org/tutorials/beginner/translation_transformer.html>`_
 * `Language modeling using transforms and torchtext <https://pytorch.org/tutorials/beginner/transformer_tutorial.html>`_
 
-
 Disclaimer on Datasets
 ======================
 
