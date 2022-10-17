@@ -613,10 +613,20 @@ class TestCharBPETokenizer(TorchtextTestCase):
         ]
 
         expected_tokens = [
-            ['py', 'torch</w>', 'is</w>', 'a</w>', 'machine</w>', 'learning</w>', 'framework</w>'],
-            ['torch</w>', 'uses</w>', 'a</w>', 'method</w>', 'called</w>', 'automatic</w>', 'differenti', 'ation', '!</w>'],
-            ['what</w>', 'are</w>', 'ten', 'sors</w>', '(', 'tor', 'ch', '.', 'ten', 'sor', ')', '?</w>'],
-            ['self', '.', 'lin', 'ear', '_', 're', 'lu', '_', 'st', 'ack', '(', 'x', ')</w>'],
+            ["py", "torch</w>", "is</w>", "a</w>", "machine</w>", "learning</w>", "framework</w>"],
+            [
+                "torch</w>",
+                "uses</w>",
+                "a</w>",
+                "method</w>",
+                "called</w>",
+                "automatic</w>",
+                "differenti",
+                "ation",
+                "!</w>",
+            ],
+            ["what</w>", "are</w>", "ten", "sors</w>", "(", "tor", "ch", ".", "ten", "sor", ")", "?</w>"],
+            ["self", ".", "lin", "ear", "_", "re", "lu", "_", "st", "ack", "(", "x", ")</w>"],
         ]
         expected_token_ids = [
             [5420, 9047, 544, 246, 4165, 6024, 31971],

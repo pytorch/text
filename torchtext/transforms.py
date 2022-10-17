@@ -1,9 +1,9 @@
 import json
 from copy import deepcopy
 from functools import lru_cache
-import regex as re
 from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
+import regex as re
 import torch
 import torchtext  # noqa: F401
 from torch import Tensor
@@ -587,9 +587,7 @@ class CharBPETokenizer(Module):
         """
         tokens = []
         for token in re.findall(self._pat, text):
-            tokens.extend(
-                bpe_token for bpe_token in self._bpe(token).split(" ")
-            )
+            tokens.extend(bpe_token for bpe_token in self._bpe(token).split(" "))
         return tokens
 
     def decode(self, tokens: Union[List[int], List[str]]) -> str:
