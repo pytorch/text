@@ -384,8 +384,8 @@ std::vector<std::string> GPT2BPEEncoder::PreTokenize_(std::string input) {
 std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
   std::vector<int64_t> bpe_token_ids;
   for (const auto& token : PreTokenize_(text)) {
-    if (added_tokens_encoder.contains(token)) {
-      bpe_token_ids.push_back(added_tokens_encoder.at(token));
+    if (added_tokens_encoder_.contains(token)) {
+      bpe_token_ids.push_back(added_tokens_encoder_.at(token));
       continue;
     }
     bool is_never_split_token =
@@ -400,19 +400,67 @@ std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string& text) {
 
 std::string GPT2BPEEncoder::Decode(const std::vector<int64_t>& tokens) {
   std::string text;
+  bool is_prev_special = false;
+  bool is_current_special = false;
   // setup converter for converting wide chars to/from chars
   using convert_type = std::codecvt_utf8<wchar_t>;
   std::wstring_convert<convert_type, wchar_t> converter;
 
-  for (const auto token : tokens) {
-    // get unicode string for given integer key
-    const std::string str = bpe_decoder_.at(token);
-    const std::wstring ws = converter.from_bytes(str);
-    for (wchar_t wchr : ws) {
-      // get output character from byte decoder for each wide character
-      unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
-      text.push_back(uchr);
+  for (int tok_idx = 0; tok_idx < tokens.size(); tok_idx++) {
+    const auto token = tokens[tok_idx];
+    std::string decoded_token;
+
+    if (added_tokens_decoder_.contains(token)) {
+      // string is a special token from extended vocab
+      decoded_token = added_tokens_decoder_.at(token);
+      is_current_special = true;
+    } else {
+      const std::string str = bpe_decoder_.at(token);
+      if (bpe_never_split_set_.find(str) != bpe_never_split_set_.end()) {
+        // string is a special token from known vocab
+        decoded_token = str;
+        is_current_special = true;
+      } else {
+        // string is a regular token from known vocab
+        is_current_special = false;
+        const std::wstring ws = converter.from_bytes(str);
+        for (wchar_t wchr : ws) {
+          // get output character from byte decoder for each wide character
+          unsigned char uchr = byte_decoder_.at(converter.to_bytes(wchr));
+          decoded_token.push_back(uchr);
+        }
+      }
     }
+
+    /* Fixing leading/trailing space(s)
+
+    We need to ensure spaces before and after special tokens are removed
+    appropirately. Assuming <|endoftext|> and HELLO are special tokens:
+    string input: "<|endoftext|> <|endoftext|> and HELLO world !"
+      is to be tokenized as:
+    ['<|endoftext|>', '<|endoftext|>', 'and', 'HELLO', 'world', 'Ġ!']
+      whereas an input like:
+    "<|endoftext|> and anything else!", gets tokenized as:
+    ['<|endoftext|>', 'and', 'Ġanything', 'Ġelse', '!']
+
+    Hence while decoding the corresponding string tokens back to
+    the original string text, we will have to insert those spaces back again.
+    - Add empty space before a special token if it is not at the begining of the
+      sentence and if it is not following another special token.
+    - Add empty space after a special token if it is not at the end of the
+    sentence.
+    */
+
+    // fix left space(s) for special tokens
+    if (is_current_special && (tok_idx > 0 && !is_prev_special)) {
+      text.push_back(' ');
+    }
+    text.append(decoded_token);
+    // fix right space(s) for special tokens
+    if (is_current_special && tok_idx != tokens.size() - 1) {
+      text.push_back(' ');
+    }
+    is_prev_special = is_current_special;
   }
   return text;
 }
@@ -436,31 +484,35 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
   int64_t newly_added = 0;
 
   /* All special tokens get added to `bpe_never_split_set_` set to avoid being
-   * split during tokenization. Tokens are added to `added_tokens_encoder` only
-   * if they are not already known (i.e. present in `bpe_encoder_`).
+   * split during tokenization. Tokens are added to `added_tokens_encoder_` only
+   * if they are not already known (i.e. not already present in `bpe_encoder_`).
    */
 
   // Loop for standard tokens such as "bos_token", "eos_token", etc.
   for (auto const& token : standard_special_tokens_dict) {
-    if (added_tokens_encoder.contains(token.value())) {
+    if (added_tokens_encoder_.contains(token.value())) {
       continue;
     }
     bpe_never_split_set_.insert(token.value());
     if (!bpe_encoder_.contains(token.value())) {
-      added_tokens_encoder.insert(
-          token.value(), bpe_encoder_.size() + added_tokens_encoder.size());
+      added_tokens_encoder_.insert(
+          token.value(), bpe_encoder_.size() + added_tokens_encoder_.size());
+      added_tokens_decoder_.insert(
+          bpe_decoder_.size() + added_tokens_decoder_.size(), token.value());
       newly_added++;
     }
   }
 
   // Loop for any additional tokens
   for (auto const& token : additional_special_tokens) {
-    if (added_tokens_encoder.contains(token))
+    if (added_tokens_encoder_.contains(token))
       continue;
     bpe_never_split_set_.insert(token);
     if (!bpe_encoder_.contains(token)) {
-      added_tokens_encoder.insert(
-          token, bpe_encoder_.size() + added_tokens_encoder.size());
+      added_tokens_encoder_.insert(
+          token, bpe_encoder_.size() + added_tokens_encoder_.size());
+      added_tokens_decoder_.insert(
+          bpe_decoder_.size() + added_tokens_decoder_.size(), token);
       newly_added++;
     }
   }
