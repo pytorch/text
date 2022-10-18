@@ -44,13 +44,6 @@ BERTTokenizer
 
    .. automethod:: forward
 
-CharBPETokenizer
-----------------
-
-.. autoclass:: CharBPETokenizer
-
-   .. automethod:: forward
-
 VocabTransform
 --------------
 
@@ -104,5 +97,12 @@ StrToIntTransform
 -----------------
 
 .. autoclass:: StrToIntTransform
+
+   .. automethod:: forward
+
+CharBPETokenizer
+----------------
+
+.. autoclass:: CharBPETokenizer
 
    .. automethod:: forward

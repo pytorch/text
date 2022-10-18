@@ -454,8 +454,7 @@ class CharBPETokenizer(Module):
         :type unk_token: Optional[str]
         :param suffix: The suffix to be used for every subword that is an end-of-word.
         :type suffix: Optional[str]
-        :param special_tokens: Special tokens which should not be split into individual characters.
-            If provided, these must exist in encoder.
+        :param special_tokens: Special tokens which should not be split into individual characters. If provided, these must exist in encoder.
         :type special_tokens: Optional[List[str]]
     """
 
