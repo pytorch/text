@@ -1,9 +1,9 @@
 import json
 from copy import deepcopy
 from functools import lru_cache
-import regex as re
 from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
+import regex as re
 import torch
 import torchtext  # noqa: F401
 from torch import Tensor
@@ -454,8 +454,7 @@ class CharBPETokenizer(Module):
         :type unk_token: Optional[str]
         :param suffix: The suffix to be used for every subword that is an end-of-word.
         :type suffix: Optional[str]
-        :param special_tokens: Special tokens which should not be split into individual characters.
-            If provided, these must exist in encoder.
+        :param special_tokens: Special tokens which should not be split into individual characters. If provided, these must exist in encoder.
         :type special_tokens: Optional[List[str]]
     """
 
@@ -587,9 +586,7 @@ class CharBPETokenizer(Module):
         """
         tokens = []
         for token in re.findall(self._pat, text):
-            tokens.extend(
-                bpe_token for bpe_token in self._bpe(token).split(" ")
-            )
+            tokens.extend(bpe_token for bpe_token in self._bpe(token).split(" "))
         return tokens
 
     def decode(self, tokens: Union[List[int], List[str]]) -> str:

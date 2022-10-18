@@ -62,7 +62,8 @@ struct GPT2BPEEncoder : torch::CustomClassHolder {
       std::string token,
       bool is_never_split_token);
   int64_t GetBPEMergeRank_(std::string pair);
-  c10::Dict<std::string, int64_t> added_tokens_encoder;
+  c10::Dict<std::string, int64_t> added_tokens_encoder_;
+  c10::Dict<int64_t, std::string> added_tokens_decoder_;
 
  protected:
   c10::Dict<std::string, std::vector<std::string>> cache_;
