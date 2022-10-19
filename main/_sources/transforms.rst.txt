@@ -99,3 +99,10 @@ StrToIntTransform
 .. autoclass:: StrToIntTransform
 
    .. automethod:: forward
+
+CharBPETokenizer
+----------------
+
+.. autoclass:: CharBPETokenizer
+
+   .. automethod:: forward
