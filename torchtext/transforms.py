@@ -3,6 +3,7 @@ from copy import deepcopy
 from functools import lru_cache
 from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
+import regex as re
 import torch
 import torchtext  # noqa: F401
 from torch import Tensor
@@ -29,6 +30,7 @@ __all__ = [
     "PadTransform",
     "StrToIntTransform",
     "GPT2BPETokenizer",
+    "CharBPETokenizer",
     "RegexTokenizer",
     "Sequential",
 ]
@@ -422,6 +424,212 @@ class GPT2BPETokenizer(Module):
         :rtype: str
         """
         return self.bpe.decode([int(token) for token in tokens])
+
+
+def get_pairs(word):
+    """
+    Return set of symbol pairs in a word.
+    Word is represented as tuple of symbols (symbols being variable-length strings).
+    """
+    pairs = set()
+    prev_char = word[0]
+    for char in word[1:]:
+        pairs.add((prev_char, char))
+        prev_char = char
+    return pairs
+
+
+class CharBPETokenizer(Module):
+    """
+    Transform for a Character Byte-Pair-Encoding Tokenizer.
+
+    Args:
+        :param bpe_encoder_path: Path to the BPE encoder json file.
+        :type bpe_encoder_path: str
+        :param bpe_merges_path: Path to the BPE merges text file.
+        :type bpe_merges_path: str
+        :param return_tokens: Indicate whether to return split tokens. If False, it will return encoded token IDs (default: False).
+        :type return_tokens: bool
+        :param unk_token: The unknown token. If provided, it must exist in encoder.
+        :type unk_token: Optional[str]
+        :param suffix: The suffix to be used for every subword that is an end-of-word.
+        :type suffix: Optional[str]
+        :param special_tokens: Special tokens which should not be split into individual characters. If provided, these must exist in encoder.
+        :type special_tokens: Optional[List[str]]
+    """
+
+    def __init__(
+        self,
+        bpe_encoder_path: str,
+        bpe_merges_path: str,
+        return_tokens: bool = False,
+        unk_token: Optional[str] = None,
+        suffix: Optional[str] = None,
+        special_tokens: Optional[List[str]] = None,
+    ):
+        super().__init__()
+        with open(get_asset_local_path(bpe_encoder_path), "r") as f:
+            self._encoder = dict(json.load(f))
+        with open(get_asset_local_path(bpe_merges_path), "r", encoding="utf-8") as f:
+            bpe_data = f.read()
+
+        merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
+        self._decoder = {v: k for k, v in self._encoder.items()}
+        self._bpe_ranks = dict(zip(merges, range(len(merges))))
+        self._return_tokens = return_tokens
+        self._cache = {}
+        self._pat = r"\S+\n?"
+        if unk_token and unk_token not in self._encoder:
+            raise RuntimeError(
+                "Unknown token {} not found in encoder. Special tokens must be in encoder.".format(unk_token)
+            )
+        self._unk_token = unk_token
+        self._suffix = suffix
+        if special_tokens:
+            for token in special_tokens:
+                if token not in self._encoder:
+                    raise RuntimeError(
+                        "Special token {} not found in encoder. Special tokens must be in encoder.".format(token)
+                    )
+                else:
+                    self._cache[token] = token
+
+    @property
+    def vocab_size(self):
+        return len(self._encoder)
+
+    def _bpe(self, token):
+        """Splits the input token into bpe tokens. The output depends on the encoder and merge list specified in the class
+        constructor. For example, _bpe("pytorch") may return "p y t o r c h" or "py tor ch" or "pytorch" depending on which
+        merges exist.
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A string of space separated bpe tokens.
+        """
+        if token in self._cache:
+            return self._cache[token]
+
+        if self._suffix:
+            word = tuple(token[:-1]) + (token[-1] + self._suffix,)
+        else:
+            word = tuple(token)
+
+        pairs = get_pairs(word)
+
+        if not pairs:
+            if self._suffix:
+                return token + self._suffix
+            else:
+                return token
+
+        while True:
+            bigram = min(pairs, key=lambda pair: self._bpe_ranks.get(pair, float("inf")))
+            if bigram not in self._bpe_ranks:
+                break
+            first, second = bigram
+            new_word = []
+            i = 0
+            while i < len(word):
+                try:
+                    j = word.index(first, i)
+                except ValueError:
+                    new_word.extend(word[i:])
+                    break
+                else:
+                    new_word.extend(word[i:j])
+                    i = j
+
+                if word[i] == first and i < len(word) - 1 and word[i + 1] == second:
+                    new_word.append(first + second)
+                    i += 2
+                else:
+                    new_word.append(word[i])
+                    i += 1
+            new_word = tuple(new_word)
+            word = new_word
+            if len(word) == 1:
+                break
+            else:
+                pairs = get_pairs(word)
+        word = " ".join(word)
+        self._cache[token] = word
+        return word
+
+    def encode(self, text: str) -> Union[List[int], List[str]]:
+        """Encode text into a list of tokens IDs
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe token. Return type depends on provided encoder file.
+        """
+        encoded_tokens = [
+            self._encoder.get(bpe_token, self._encoder.get(self._unk_token))
+            if self._unk_token
+            else self._encoder[bpe_token]
+            for bpe_token in self._tokenize(text)
+        ]
+        return encoded_tokens
+
+    def _tokenize(self, text: str) -> List[str]:
+        """Tokenize text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token strings
+        """
+        tokens = []
+        for token in re.findall(self._pat, text):
+            tokens.extend(bpe_token for bpe_token in self._bpe(token).split(" "))
+        return tokens
+
+    def decode(self, tokens: Union[List[int], List[str]]) -> str:
+        """Decode a list of token IDs into a string
+
+        Args:
+            token: A list of IDs (either str or int depending on encoder json)
+
+        Returns:
+            A decoded string
+        """
+        decoded_list = [
+            self._decoder.get(token, self._unk_token) if self._unk_token else self._decoder[token] for token in tokens
+        ]
+        if self._suffix:
+            return "".join(decoded_list).replace(self._suffix, " ")
+        else:
+            return " ".join(decoded_list)
+
+    def forward(self, input: Union[str, List[str]]) -> Union[List, List[List]]:
+        """Forward method of module encodes strings or list of strings into token ids
+
+        Args:
+            input: Input sentence or list of sentences on which to apply tokenizer.
+
+        Returns:
+            A list or list of lists of token IDs
+        """
+        if isinstance(input, List):
+            tokens: List[List[str]] = []
+            for text in input:
+                if self._return_tokens:
+                    tokens.append(self._tokenize(text))
+                else:
+                    tokens.append(self.encode(text))
+            return tokens
+        elif isinstance(input, str):
+            if self._return_tokens:
+                return self._tokenize(input)
+            else:
+                return self.encode(input)
+        else:
+            raise TypeError("Input type not supported")
 
 
 class CLIPTokenizer(Module):
