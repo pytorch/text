@@ -29,4 +29,4 @@ import torchtext.experimental.datasets.text_classification # noqa: F401
 import torchtext.utils # noqa: F401
 import torchtext.vocab # noqa: F401
 
-print('torchtext version is ', torchtext.__version__)"
+print('torchtext version is ', torchtext.__version__)
