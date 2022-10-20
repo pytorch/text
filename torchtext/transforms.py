@@ -1,9 +1,9 @@
 import json
+import re
 from copy import deepcopy
 from functools import lru_cache
 from typing import Any, List, Mapping, Optional, Sequence, Tuple, Union
 
-import regex as re
 import torch
 import torchtext  # noqa: F401
 from torch import Tensor

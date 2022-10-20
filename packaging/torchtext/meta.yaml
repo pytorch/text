@@ -23,7 +23,6 @@ requirements:
     - python
     - requests
     - tqdm
-    - regex
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
 
 build:
