@@ -1,6 +1,6 @@
 """Run smoke tests"""
 
-import torchtext # noqa: F401
+import torchtext
 import torchtext.data # noqa: F401
 import torchtext.data.batch # noqa: F401
 import torchtext.data.dataset # noqa: F401
@@ -28,3 +28,5 @@ import torchtext.experimental.datasets.language_modeling # noqa: F401
 import torchtext.experimental.datasets.text_classification # noqa: F401
 import torchtext.utils # noqa: F401
 import torchtext.vocab # noqa: F401
+
+print('torchtext version is ', torchtext.__version__)"
