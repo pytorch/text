@@ -1,6 +1,8 @@
 import os
 from functools import partial
 
+from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext._download_hooks import GDriveReader
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _clean_files,
@@ -8,10 +10,6 @@ from torchtext.data.datasets_utils import (
     _generate_iwslt_files_for_lang_and_split,
     _wrap_split_argument,
 )
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, IterableWrapper
-    from torchtext._download_hooks import GDriveReader
 
 URL = "https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8"
 
