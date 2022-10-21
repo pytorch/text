@@ -24,8 +24,8 @@ jobs:
           - repository: pytorch/text
             pre-script: ""
             post-script: ""
+            smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
-            # TODO: add smoke test script once it's present in nightly branch
     name: ${{ matrix.repository }}
     uses: pytorch/test-infra/.github/workflows/build_wheels_linux.yml@main
     with:
