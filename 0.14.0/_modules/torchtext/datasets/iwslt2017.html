@@ -571,7 +571,24 @@
         <span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">_inner_iwslt_tar_filepath_fn</span><span class="p">,</span> <span class="n">inner_iwslt_tar</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">open_files</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load_from_tar</span><span class="p">()</span>
-    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># As we had filenames duplicated, any trash files in archive can become tgz</span>
+
+    <span class="k">def</span> <span class="nf">extracted_file_name</span><span class="p">(</span><span class="n">inner_iwslt_tar</span><span class="p">,</span> <span class="n">inner_tar_name</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inner_tar_name</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">inner_iwslt_tar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">filepath_fn</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">extracted_file_name</span><span class="p">,</span> <span class="n">inner_iwslt_tar</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c1"># As we corrected path, we need to leave tgz files only now and no dot files</span>
+
+    <span class="k">def</span> <span class="nf">leave_only_tgz</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.tgz&quot;</span> <span class="ow">and</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span>
+
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">leave_only_tgz</span><span class="p">)</span>
     <span class="n">cache_decompressed_dp_1</span><span class="p">,</span> <span class="n">cache_decompressed_dp_2</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">fork</span><span class="p">(</span><span class="n">num_instances</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">src_filename</span> <span class="o">=</span> <span class="n">file_path_by_lang_and_split</span><span class="p">[</span><span class="n">src_language</span><span class="p">][</span><span class="n">split</span><span class="p">]</span>
