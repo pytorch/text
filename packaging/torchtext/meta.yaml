@@ -23,6 +23,7 @@ requirements:
     - python
     - requests
     - tqdm
+    - torchdata
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
 
 build:
