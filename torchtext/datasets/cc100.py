@@ -1,14 +1,11 @@
 import os.path
 from functools import partial
 
-from torchtext._internal.module_utils import is_module_available
+from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext._download_hooks import HttpReader
 from torchtext.data.datasets_utils import (
     _create_dataset_directory,
 )
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, IterableWrapper
-    from torchtext._download_hooks import HttpReader
 
 URL = "http://data.statmt.org/cc-100/%s.txt.xz"
 
