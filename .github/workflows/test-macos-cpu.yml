@@ -17,10 +17,11 @@ jobs:
     strategy:
       matrix:
         python_version: ["3.7", "3.8", "3.9", "3.10"]
+        runner: ["macos-12", "macos-m1-12"]
       fail-fast: false
     uses: pytorch/test-infra/.github/workflows/macos_job.yml@main
     with:
-      runner: macos-12
+      runner: ${{ matrix.runner }}
       repository: pytorch/text
       script: |
         # Mark Build Directory Safe
