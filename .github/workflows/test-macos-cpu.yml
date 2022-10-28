@@ -29,6 +29,7 @@ jobs:
 
         # Set up Environment Variables
         export PYTHON_VERSION="${{ matrix.python_version }}"
+        export RUNNER="${{ matrix.runner }}"
         export VERSION="cpu"
         export CUDATOOLKIT="cpuonly"
 
@@ -39,9 +40,13 @@ jobs:
           export CHANNEL=nightly
         fi
 
-        # TODO: this can be removed as soon as linking issue could be resolved
-        # see https://github.com/pytorch/pytorch/issues/62424 from details
-        export MKL_CONSTRAINT='mkl==2021.2.0'
+        if [[ ${RUNNER} = 'macos-12' ]]; then
+          # TODO: this can be removed as soon as linking issue could be resolved
+          # see https://github.com/pytorch/pytorch/issues/62424 from details
+          export MKL_CONSTRAINT='mkl==2021.2.0'
+        else
+          export MKL_CONSTRAINT=''
+        fi
 
         # Create Conda Env
         conda create -yp ./ci_env python="${PYTHON_VERSION}"
@@ -60,8 +65,7 @@ jobs:
         conda install \
           --yes \
           -c "pytorch-${CHANNEL}" \
-          -c nvidia \
-          "${MKL_CONSTRAINT}" \
+          -c nvidia "${MKL_CONSTRAINT}" \
           pytorch \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
