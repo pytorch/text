@@ -59,7 +59,9 @@ jobs:
         conda install \
           --yes \
           -c "pytorch-${CHANNEL}" \
-          -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
+          -c nvidia \
+          "${MKL_CONSTRAINT}" \
+          pytorch
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
         python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
