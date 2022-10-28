@@ -61,7 +61,7 @@ jobs:
           -c "pytorch-${CHANNEL}" \
           -c nvidia \
           "${MKL_CONSTRAINT}" \
-          pytorch
+          pytorch \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
         python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
