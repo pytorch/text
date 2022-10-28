@@ -25,12 +25,12 @@ jobs:
             pre-script: ""
             post-script: ""
             package-name: torchtext
-            #TODO: add smoke-tests once ready
+            smoke-test-script: test/smoke_tests/smoke_tests.py
     name: ${{ matrix.repository }}
     uses: pytorch/test-infra/.github/workflows/build_wheels_macos.yml@main
     with:
       repository: ${{ matrix.repository }}
-      ref: nightly
+      ref: ""
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       build-matrix: ${{ needs.generate-matrix.outputs.matrix }}
