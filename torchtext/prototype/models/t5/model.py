@@ -190,7 +190,7 @@ class T5Model(nn.Module):
                 assert decoder_tokens is not None and decoder_tokens.dim() == 2
                 tgt_len = decoder_tokens.shape[1]
                 decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
-                decoder_mask = decoder_mask.to(torch.bool)
+                decoder_mask = decoder_mask.to(self.device, dtype=torch.bool)
 
             decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
             # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
