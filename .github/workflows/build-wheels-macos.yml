@@ -26,13 +26,6 @@ jobs:
             post-script: ""
             package-name: torchtext
             smoke-test-script: test/smoke_tests/smoke_tests.py
-            runner: macos-12
-          - repository: pytorch/text
-            pre-script: ""
-            post-script: ""
-            package-name: torchtext
-            smoke-test-script: test/smoke_tests/smoke_tests.py
-            runner: macos-m1-12
     name: ${{ matrix.repository }}
     uses: pytorch/test-infra/.github/workflows/build_wheels_macos.yml@main
     with:
@@ -45,7 +38,7 @@ jobs:
       post-script: ${{ matrix.post-script }}
       package-name: ${{ matrix.package-name }}
       smoke-test-script: ${{ matrix.smoke-test-script }}
-      runner-type: ${{ matrix.runner }}
+      runner-type: macos-12
       # Using "development" as trigger event so these binaries are not uploaded
       # to official channels yet
       trigger-event: development
