@@ -1,4 +1,4 @@
-name: Build Linux Conda
+name: Build Macos Conda
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ jobs:
     uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@main
     with:
       package-type: conda
-      os: linux
+      os: macos
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
   build:
@@ -28,17 +28,19 @@ jobs:
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
     name: ${{ matrix.repository }}
-    uses: pytorch/test-infra/.github/workflows/build_conda_linux.yml@main
+    uses: pytorch/test-infra/.github/workflows/build_conda_macos.yml@main
     with:
       conda-package-directory: ${{ matrix.conda-package-directory }}
       repository: ${{ matrix.repository }}
-      ref: nightly
+      ref: ""
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       build-matrix: ${{ needs.generate-matrix.outputs.matrix }}
       pre-script: ${{ matrix.pre-script }}
       post-script: ${{ matrix.post-script }}
       package-name: ${{ matrix.package-name }}
+      smoke-test-script: ${{ matrix.smoke-test-script }}
+      runner-type: macos-12
       # Using "development" as trigger event so these binaries are not uploaded
       # to official channels yet
       trigger-event: development

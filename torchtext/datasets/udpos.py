@@ -2,13 +2,15 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
-from torchtext._download_hooks import HttpReader
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _create_dataset_directory,
 )
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, IterableWrapper
+    from torchtext._download_hooks import HttpReader
 
 URL = "https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip"
 
