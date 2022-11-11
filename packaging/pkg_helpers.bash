@@ -191,6 +191,14 @@ setup_pip_pytorch_version() {
       -f https://download.pytorch.org/whl/torch_stable.html \
       -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
   fi
+  if [[ -z "$TORCHDATA_VERSION" ]]; then
+    pip_install --pre torchdata -f "https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
+    export TORCHDATA_VERSION="$(pip show torchdata | grep ^Version: | sed 's/Version:  *//' | sed 's/+.\+//')"
+  else
+    pip_install "torchdata==$TORCHDATA_VERSION" \
+      -f https://download.pytorch.org/whl/torch_stable.html \
+      -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
+  fi 
 }
 
 # Fill PYTORCH_VERSION with the latest conda nightly version, and
