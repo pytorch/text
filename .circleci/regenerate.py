@@ -35,7 +35,10 @@ def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
                 if not fb and (os_type == "linux" and btype == "wheel" and python_version == "3.8"):
                     # the fields must match the build_docs "requires" dependency
                     fb = "/.*/"
-                if os_type == "linux" and btype == "wheel":
+                # We'll stop building Linux Wheels from CircleCI. Keeping
+                # around the Python3.8 build just for docs builds until those
+                # are also migrated.
+                if os_type == "linux" and btype == "wheel" and python_version != "3.8":
                     continue
                 w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
 
@@ -52,6 +55,9 @@ def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix=""
     base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
     w.append(generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype))
 
+    if os_type == "linux" and btype == "wheel" and python_version == "3.8":
+        upload = False
+
     if upload:
         w.append(generate_upload_workflow(base_workflow_name, filter_branch, btype))
         if filter_branch == "nightly" and os_type in ["linux", "windows"]:
@@ -65,7 +71,7 @@ def build_doc_job(filter_branch):
         "name": "build_docs",
         "python_version": "3.8",
         "requires": [
-            "binary_windows_wheel_py3.8",
+            "binary_linux_wheel_py3.8",
         ],
     }
 

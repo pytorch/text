@@ -128,6 +128,22 @@ jobs:
           name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
           command: exit 1
 
+  binary_linux_wheel:
+    <<: *binary_common
+    docker:
+      - image: "pytorch/manylinux-cuda102"
+    resource_class: 2xlarge+
+    steps:
+      - checkout
+      - designate_upload_channel
+      - run: packaging/build_wheel.sh
+      - store_artifacts:
+          path: dist
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - "*"
+
   binary_linux_conda:
     <<: *binary_common
     docker:
@@ -590,6 +606,14 @@ workflows:
       - lint_c
   build:
     jobs:
+      - binary_linux_wheel:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: binary_linux_wheel_py3.8
+          python_version: '3.8'
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.7
           python_version: '3.7'
@@ -659,7 +683,7 @@ workflows:
           name: build_docs
           python_version: '3.8'
           requires:
-          - binary_windows_wheel_py3.8
+          - binary_linux_wheel_py3.8
       - upload_docs:
           context: org-member
           filters:
@@ -715,6 +739,14 @@ workflows:
           filters:
             branches:
               only: nightly
+      - binary_linux_wheel:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.8
+          python_version: '3.8'
       - binary_macos_wheel:
           filters:
             branches:
