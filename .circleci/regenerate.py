@@ -50,6 +50,9 @@ def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix=""
     base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
     w.append(generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype))
 
+    if filter_branch == "nightly" and os_type == "linux" and btype == "wheel":
+        upload = False
+
     if upload:
         w.append(generate_upload_workflow(base_workflow_name, filter_branch, btype))
         if filter_branch == "nightly" and os_type in ["linux", "windows"]:
@@ -63,7 +66,7 @@ def build_doc_job(filter_branch):
         "name": "build_docs",
         "python_version": "3.8",
         "requires": [
-            "binary_linux_wheel_py3.8",
+            "binary_windows_wheel_py3.8",
         ],
     }
 

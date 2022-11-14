@@ -128,22 +128,6 @@ jobs:
           name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
           command: exit 1
 
-  binary_linux_wheel:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - run: packaging/build_wheel.sh
-      - store_artifacts:
-          path: dist
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - "*"
-
   binary_linux_conda:
     <<: *binary_common
     docker:
@@ -692,7 +676,7 @@ workflows:
           name: build_docs
           python_version: '3.8'
           requires:
-          - binary_linux_wheel_py3.8
+          - binary_windows_wheel_py3.8
       - upload_docs:
           context: org-member
           filters:
@@ -756,26 +740,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.7
           python_version: '3.7'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.7_upload
-          requires:
-          - nightly_binary_linux_wheel_py3.7
-      - smoke_test_linux_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.7_smoke_test_pip
-          python_version: '3.7'
-          requires:
-          - nightly_binary_linux_wheel_py3.7_upload
       - binary_linux_wheel:
           filters:
             branches:
@@ -784,26 +748,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.8
           python_version: '3.8'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.8_upload
-          requires:
-          - nightly_binary_linux_wheel_py3.8
-      - smoke_test_linux_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.8_smoke_test_pip
-          python_version: '3.8'
-          requires:
-          - nightly_binary_linux_wheel_py3.8_upload
       - binary_linux_wheel:
           filters:
             branches:
@@ -812,26 +756,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.9
           python_version: '3.9'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.9_upload
-          requires:
-          - nightly_binary_linux_wheel_py3.9
-      - smoke_test_linux_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.9_smoke_test_pip
-          python_version: '3.9'
-          requires:
-          - nightly_binary_linux_wheel_py3.9_upload
       - binary_linux_wheel:
           filters:
             branches:
@@ -840,26 +764,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.10
           python_version: '3.10'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.10_upload
-          requires:
-          - nightly_binary_linux_wheel_py3.10
-      - smoke_test_linux_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.10_smoke_test_pip
-          python_version: '3.10'
-          requires:
-          - nightly_binary_linux_wheel_py3.10_upload
       - binary_macos_wheel:
           filters:
             branches:

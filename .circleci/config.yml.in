@@ -128,22 +128,6 @@ jobs:
           name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
           command: exit 1
 
-  binary_linux_wheel:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - run: packaging/build_wheel.sh
-      - store_artifacts:
-          path: dist
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - "*"
-
   binary_linux_conda:
     <<: *binary_common
     docker:
