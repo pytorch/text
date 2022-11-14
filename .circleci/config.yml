@@ -590,23 +590,6 @@ workflows:
       - lint_c
   build:
     jobs:
-      - binary_linux_wheel:
-          name: binary_linux_wheel_py3.7
-          python_version: '3.7'
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: binary_linux_wheel_py3.8
-          python_version: '3.8'
-      - binary_linux_wheel:
-          name: binary_linux_wheel_py3.9
-          python_version: '3.9'
-      - binary_linux_wheel:
-          name: binary_linux_wheel_py3.10
-          python_version: '3.10'
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.7
           python_version: '3.7'
@@ -732,38 +715,6 @@ workflows:
           filters:
             branches:
               only: nightly
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.7
-          python_version: '3.7'
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.8
-          python_version: '3.8'
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.9
-          python_version: '3.9'
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.10
-          python_version: '3.10'
       - binary_macos_wheel:
           filters:
             branches:
