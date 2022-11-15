@@ -198,7 +198,7 @@ setup_pip_pytorch_version() {
     pip_install "torchdata==$TORCHDATA_VERSION" \
       -f https://download.pytorch.org/whl/torch_stable.html \
       -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
-  fi 
+  fi
 }
 
 # Fill PYTORCH_VERSION with the latest conda nightly version, and
@@ -233,6 +233,10 @@ setup_conda_pytorch_constraint() {
       export CONDA_EXTRA_BUILD_CONSTRAINT="- mkl<=2021.2.0"
     fi
   fi
+  if [[ -z "$TORCHDATA_VERSION" ]]; then
+    export TORCHDATA_VERSION="$(conda search --json 'torchdata[channel=pytorch-nightly]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['torchdata'][-1]['version']))")"
+  fi
+  export CONDA_TORCHDATA_CONSTRAINT="- torchdata==$TORCHDATA_VERSION"
 }
 
 # Translate CUDA_VERSION into CUDA_CUDATOOLKIT_CONSTRAINT
