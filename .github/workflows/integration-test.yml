@@ -23,7 +23,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --quiet --upgrade pip
-          python -m pip install --quiet --pre torch -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+          python -m pip install --quiet --pre torch torchdata -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
           python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm expecttest transformers
           python setup.py install
       - name: Run integration test
