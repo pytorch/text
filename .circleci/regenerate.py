@@ -40,6 +40,8 @@ def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
                 # are also migrated.
                 if os_type == "linux" and btype == "wheel" and python_version != "3.8":
                     continue
+                if os_type == "linux" and btype == "conda":
+                    continue
                 w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
 
     if not filter_branch:
