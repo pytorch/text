@@ -42,6 +42,8 @@ def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
                     continue
                 if os_type == "linux" and btype == "conda":
                     continue
+                if os_type == "macos":
+                    continue
                 w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
 
     if not filter_branch:
