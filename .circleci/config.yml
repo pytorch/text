@@ -48,6 +48,10 @@ binary_common: &binary_common
       description: "PyTorch version to build against; by default, use a nightly"
       type: string
       default: ""
+    torchdata_version:
+      description: "TorchData version to build against; by default, use a nightly"
+      type: string
+      default: ""
     # Don't edit these
     python_version:
       description: "Python version to build against (e.g., 3.8)"
@@ -56,6 +60,7 @@ binary_common: &binary_common
     PYTHON_VERSION: << parameters.python_version >>
     BUILD_VERSION: << parameters.build_version >>
     PYTORCH_VERSION: << parameters.pytorch_version >>
+    TORCHDATA_VERSION: << parameters.torchdata_version >>
     CU_VERSION: cpu
     MACOSX_DEPLOYMENT_TARGET: 10.9
 

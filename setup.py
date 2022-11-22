@@ -63,10 +63,14 @@ _export_version(VERSION, SHA)
 print("-- Building version " + VERSION)
 
 pytorch_package_version = os.getenv("PYTORCH_VERSION")
+torchdata_package_version = os.getenv("TORCHDATA_VERSION")
 
 pytorch_package_dep = "torch"
 if pytorch_package_version is not None:
     pytorch_package_dep += "==" + pytorch_package_version
+torchdata_package_dep = "torchdata"
+if torchdata_package_version is not None:
+    torchdata_package_dep += "==" + torchdata_package_version
 
 
 class clean(distutils.command.clean.clean):
@@ -100,7 +104,7 @@ setup_info = dict(
     description="Text utilities and datasets for PyTorch",
     long_description=read("README.rst"),
     license="BSD",
-    install_requires=["tqdm", "requests", pytorch_package_dep, "numpy"],
+    install_requires=["tqdm", "requests", pytorch_package_dep, "numpy", torchdata_package_dep],
     python_requires=">=3.7",
     classifiers=[
         "Programming Language :: Python :: 3.7",
