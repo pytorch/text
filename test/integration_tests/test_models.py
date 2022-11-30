@@ -4,6 +4,7 @@ from parameterized import parameterized, parameterized_class
 from torchtext.models import (
     ROBERTA_BASE_ENCODER,
     ROBERTA_LARGE_ENCODER,
+    ROBERTA_DISTILLED_ENCODER,
     XLMR_BASE_ENCODER,
     XLMR_LARGE_ENCODER,
 )
@@ -15,13 +16,7 @@ BUNDLERS = {
     "xlmr_large": XLMR_LARGE_ENCODER,
     "roberta_base": ROBERTA_BASE_ENCODER,
     "roberta_large": ROBERTA_LARGE_ENCODER,
-}
-
-BUNDLERS = {
-    "xlmr_base": XLMR_BASE_ENCODER,
-    "xlmr_large": XLMR_LARGE_ENCODER,
-    "roberta_base": ROBERTA_BASE_ENCODER,
-    "roberta_large": ROBERTA_LARGE_ENCODER,
+    "roberta_distilled": ROBERTA_DISTILLED_ENCODER,
 }
 
 
@@ -32,6 +27,7 @@ BUNDLERS = {
         ("xlmr_large",),
         ("roberta_base",),
         ("roberta_large",),
+        ("roberta_distilled",),
     ],
 )
 class TestRobertaEncoders(TorchtextTestCase):
