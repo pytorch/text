@@ -15,6 +15,7 @@ jobs:
       os: linux
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
+      with-cuda: disable
   build:
     needs: generate-matrix
     strategy:
