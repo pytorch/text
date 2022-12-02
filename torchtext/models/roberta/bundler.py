@@ -294,3 +294,40 @@ ROBERTA_LARGE_ENCODER.__doc__ = """
 
     Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
     """
+
+
+ROBERTA_DISTILLED_ENCODER = RobertaBundle(
+    _path=urljoin(_TEXT_BUCKET, "roberta.distilled.encoder.pt"),
+    _encoder_conf=RobertaEncoderConf(
+        num_encoder_layers=6,
+        padding_idx=1,
+    ),
+    transform=lambda: T.Sequential(
+        T.GPT2BPETokenizer(
+            encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
+            vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
+        ),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    ),
+)
+
+ROBERTA_DISTILLED_ENCODER.__doc__ = """
+    Roberta Encoder with Distilled Weights
+
+    DistilRoBERTa is trained using knowledge distillation, a technique to compress a large
+    model called the teacher into a smaller model called the student. By distillating RoBERTa,
+    a smaller and faster Transformer model is obtained while maintaining most of the performance.
+
+    DistilRoBERTa was pretrained solely on OpenWebTextCorpus, a reproduction of OpenAI's WebText dataset.
+    On average DistilRoBERTa is twice as fast as RoBERTa Base.
+
+    Originally published by Hugging Face under the Apache 2.0 License
+    and redistributed with the same license.
+    [`License <https://www.apache.org/licenses/LICENSE-2.0>`__,
+    `Source <https://github.com/huggingface/transformers/tree/main/examples/research_projects/distillation>`__]
+
+    Please refer to :func:`torchtext.models.RobertaBundle` for the usage.
+    """
