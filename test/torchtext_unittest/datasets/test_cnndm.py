@@ -29,7 +29,7 @@ def _get_mock_dataset(root_dir):
             stories = []
             for i in range(5):
                 url = "_".join([source, split, str(i)])
-                h = hashlib.sha1()
+                h = hashlib.new('sha1', usedforsecurity=False)
                 h.update(url.encode())
                 filename = h.hexdigest() + ".story"
                 txt_file = os.path.join(source_dir, filename)
@@ -74,7 +74,7 @@ class TestCNNDM(TempDirMixin, TorchtextTestCase):
         story_fnames = []
         for i in range(5):
             url = "_".join([source, split, str(i)])
-            h = hashlib.sha1()
+            h = hashlib.new('sha1', usedforsecurity=False)
             h.update(url.encode())
             filename = h.hexdigest() + ".story"
             story_fnames.append(filename)
