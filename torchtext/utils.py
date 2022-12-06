@@ -47,10 +47,8 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
         bool: return True if its a valid file, else False.
     """
 
-    if hash_type == "sha256":
-        hash_func = hashlib.sha256()
-    elif hash_type == "md5":
-        hash_func = hashlib.md5()
+    if hash_type in ("sha256", "md5"):
+        hash_func = hashlib.new(hash_type, usedforsecurity=False)
     else:
         raise ValueError
 
