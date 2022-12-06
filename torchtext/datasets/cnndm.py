@@ -3,19 +3,17 @@ import os
 from functools import partial
 from typing import Union, Set, Tuple
 
+from torchdata.datapipes.iter import (
+    FileOpener,
+    IterableWrapper,
+    OnlineReader,
+    GDriveReader,
+)
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _create_dataset_directory,
 )
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import (
-        FileOpener,
-        IterableWrapper,
-        OnlineReader,
-        GDriveReader,
-    )
 
 DATASET_NAME = "CNNDM"
 
@@ -77,7 +75,7 @@ def _hash_urls(s: tuple):
     Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py
     """
     url = s[1]
-    h = hashlib.sha1()
+    h = hashlib.new("sha1", usedforsecurity=False)
     h.update(url)
     url_hash = h.hexdigest()
     story_fname = url_hash + ".story"

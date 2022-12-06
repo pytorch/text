@@ -15,6 +15,7 @@ jobs:
       os: linux
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
+      with-cuda: disable
   build:
     needs: generate-matrix
     strategy:
@@ -22,7 +23,7 @@ jobs:
       matrix:
         include:
           - repository: pytorch/text
-            pre-script: ""
+            pre-script: packaging/install_torchdata.sh
             post-script: ""
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext

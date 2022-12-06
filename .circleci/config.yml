@@ -48,6 +48,10 @@ binary_common: &binary_common
       description: "PyTorch version to build against; by default, use a nightly"
       type: string
       default: ""
+    torchdata_version:
+      description: "TorchData version to build against; by default, use a nightly"
+      type: string
+      default: ""
     # Don't edit these
     python_version:
       description: "Python version to build against (e.g., 3.8)"
@@ -56,6 +60,7 @@ binary_common: &binary_common
     PYTHON_VERSION: << parameters.python_version >>
     BUILD_VERSION: << parameters.build_version >>
     PYTORCH_VERSION: << parameters.pytorch_version >>
+    TORCHDATA_VERSION: << parameters.torchdata_version >>
     CU_VERSION: cpu
     MACOSX_DEPLOYMENT_TARGET: 10.9
 
@@ -614,18 +619,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: binary_linux_wheel_py3.8
           python_version: '3.8'
-      - binary_macos_wheel:
-          name: binary_macos_wheel_py3.7
-          python_version: '3.7'
-      - binary_macos_wheel:
-          name: binary_macos_wheel_py3.8
-          python_version: '3.8'
-      - binary_macos_wheel:
-          name: binary_macos_wheel_py3.9
-          python_version: '3.9'
-      - binary_macos_wheel:
-          name: binary_macos_wheel_py3.10
-          python_version: '3.10'
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.7
           python_version: '3.7'
@@ -637,18 +630,6 @@ workflows:
           python_version: '3.9'
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.10
-          python_version: '3.10'
-      - binary_macos_conda:
-          name: binary_macos_conda_py3.7
-          python_version: '3.7'
-      - binary_macos_conda:
-          name: binary_macos_conda_py3.8
-          python_version: '3.8'
-      - binary_macos_conda:
-          name: binary_macos_conda_py3.9
-          python_version: '3.9'
-      - binary_macos_conda:
-          name: binary_macos_conda_py3.10
           python_version: '3.10'
       - binary_windows_conda:
           name: binary_windows_conda_py3.7
@@ -685,18 +666,6 @@ workflows:
           - build_docs
   unittest:
     jobs:
-      - unittest_linux:
-          name: unittest_linux_py3.7
-          python_version: '3.7'
-      - unittest_linux:
-          name: unittest_linux_py3.8
-          python_version: '3.8'
-      - unittest_linux:
-          name: unittest_linux_py3.9
-          python_version: '3.9'
-      - unittest_linux:
-          name: unittest_linux_py3.10
-          python_version: '3.10'
       - unittest_windows:
           name: unittest_windows_py3.7
           python_version: '3.7'
@@ -708,18 +677,6 @@ workflows:
           python_version: '3.9'
       - unittest_windows:
           name: unittest_windows_py3.10
-          python_version: '3.10'
-      - unittest_macos:
-          name: unittest_macos_py3.7
-          python_version: '3.7'
-      - unittest_macos:
-          name: unittest_macos_py3.8
-          python_version: '3.8'
-      - unittest_macos:
-          name: unittest_macos_py3.9
-          python_version: '3.9'
-      - unittest_macos:
-          name: unittest_macos_py3.10
           python_version: '3.10'
   nightly:
     jobs:
@@ -735,78 +692,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.8
           python_version: '3.8'
-      - binary_macos_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.7
-          python_version: '3.7'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.7_upload
-          requires:
-          - nightly_binary_macos_wheel_py3.7
-      - binary_macos_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.8
-          python_version: '3.8'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.8_upload
-          requires:
-          - nightly_binary_macos_wheel_py3.8
-      - binary_macos_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.9
-          python_version: '3.9'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.9_upload
-          requires:
-          - nightly_binary_macos_wheel_py3.9
-      - binary_macos_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.10
-          python_version: '3.10'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_wheel_py3.10_upload
-          requires:
-          - nightly_binary_macos_wheel_py3.10
       - binary_windows_wheel:
           filters:
             branches:
@@ -919,78 +804,6 @@ workflows:
           python_version: '3.10'
           requires:
           - nightly_binary_windows_wheel_py3.10_upload
-      - binary_macos_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.7
-          python_version: '3.7'
-      - binary_conda_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.7_upload
-          requires:
-          - nightly_binary_macos_conda_py3.7
-      - binary_macos_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.8
-          python_version: '3.8'
-      - binary_conda_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.8_upload
-          requires:
-          - nightly_binary_macos_conda_py3.8
-      - binary_macos_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.9
-          python_version: '3.9'
-      - binary_conda_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.9_upload
-          requires:
-          - nightly_binary_macos_conda_py3.9
-      - binary_macos_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.10
-          python_version: '3.10'
-      - binary_conda_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_macos_conda_py3.10_upload
-          requires:
-          - nightly_binary_macos_conda_py3.10
       - binary_windows_conda:
           filters:
             branches:

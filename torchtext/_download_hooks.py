@@ -4,11 +4,8 @@ import requests
 
 # This is to allow monkey-patching in fbcode
 from torch.hub import load_state_dict_from_url  # noqa
-from torchtext._internal.module_utils import is_module_available
+from torchdata.datapipes.iter import HttpReader, GDriveReader  # noqa F401
 from tqdm import tqdm
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import HttpReader, GDriveReader  # noqa F401
 
 
 def _stream_response(r, chunk_size=16 * 1024):

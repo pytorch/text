@@ -22,7 +22,7 @@ jobs:
       matrix:
         include:
           - repository: pytorch/text
-            pre-script: ""
+            pre-script: packaging/install_torchdata.sh
             post-script: ""
             conda-package-directory: packaging/torchtext
             smoke-test-script: test/smoke_tests/smoke_tests.py
@@ -43,6 +43,6 @@ jobs:
       runner-type: macos-m1-12
       # Using "development" as trigger event so these binaries are not uploaded
       # to official channels yet
-      trigger-event: development
+      trigger-event: ${{ github.event_name }}
     secrets:
       CONDA_PYTORCHBOT_TOKEN: ${{ secrets.CONDA_PYTORCHBOT_TOKEN }}

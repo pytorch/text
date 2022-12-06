@@ -2,18 +2,16 @@ import csv
 import os
 from functools import partial
 
+from torchdata.datapipes.iter import FileOpener, IterableWrapper
+
+# we import HttpReader from _download_hooks so we can swap out public URLs
+# with interal URLs when the dataset is used within Facebook
+from torchtext._download_hooks import HttpReader
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _create_dataset_directory,
     _wrap_split_argument,
 )
-
-if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, IterableWrapper
-
-    # we import HttpReader from _download_hooks so we can swap out public URLs
-    # with interal URLs when the dataset is used within Facebook
-    from torchtext._download_hooks import HttpReader
 
 
 URL = "http://ixa2.si.ehu.es/stswiki/images/4/48/Stsbenchmark.tar.gz"
@@ -95,7 +93,7 @@ def STSB(root, split):
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=partial(_extracted_filepath_fn, root, split))
     cache_decompressed_dp = (
-        FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(partial(_filter_fn, split))
+        FileOpener(cache_decompressed_dp, mode="b").load_from_tar().filter(partial(_filter_fn, split))
     )
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
