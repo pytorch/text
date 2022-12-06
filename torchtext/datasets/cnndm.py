@@ -75,7 +75,7 @@ def _hash_urls(s: tuple):
     Code is inspired from https://github.com/abisee/cnn-dailymail/blob/master/make_datafiles.py
     """
     url = s[1]
-    h = hashlib.sha1()
+    h = hashlib.new("sha1", usedforsecurity=False)
     h.update(url)
     url_hash = h.hexdigest()
     story_fname = url_hash + ".story"
