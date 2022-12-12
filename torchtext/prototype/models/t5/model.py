@@ -85,7 +85,6 @@ class T5Model(nn.Module):
         self.padding_idx = config.padding_idx
         self.training = config.training
         self.dropout = config.dropout if config.training else 0.0
-        self.device = device
         self.dtype = dtype
 
         self.token_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim, config.padding_idx)
@@ -184,13 +183,13 @@ class T5Model(nn.Module):
 
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
-                decoder_tokens = torch.ones((encoder_tokens.size(0), 1), dtype=torch.long) * self.padding_idx
+                decoder_tokens = torch.ones((encoder_tokens.size(0), 1), device=encoder_tokens.device, dtype=torch.long) * self.padding_idx
 
             if decoder_mask is None:
                 assert decoder_tokens is not None and decoder_tokens.dim() == 2
                 tgt_len = decoder_tokens.shape[1]
                 decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
-                decoder_mask = decoder_mask.to(self.device, dtype=torch.bool)
+                decoder_mask = decoder_mask.to(decoder_tokens.device, dtype=torch.bool)
 
             decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
             # T5 implemention uses padding idx to start sequence. Want to ignore this when masking

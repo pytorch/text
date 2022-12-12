@@ -74,8 +74,6 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         else:
             self.relative_attention_bias = None
 
-        self.device = device
-
     def forward(
         self,
         query: Tensor,
@@ -260,6 +258,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                     tgt_len,
                     src_len,
                     bidirectional=(not self.is_decoder),
+                    device=k.device
                 )
 
         # Calculate attention and out projection
@@ -409,11 +408,12 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         query_length: int,
         key_length: int,
         bidirectional: bool = True,
+        device: Optional[torch.device] = None
     ) -> Tensor:
         """Compute binned relative position bias"""
         assert self.relative_attention_bias is not None
-        context_position = torch.arange(query_length, dtype=torch.long, device=self.device)[:, None]
-        memory_position = torch.arange(key_length, dtype=torch.long, device=self.device)[None, :]
+        context_position = torch.arange(query_length, dtype=torch.long, device=device)[:, None]
+        memory_position = torch.arange(key_length, dtype=torch.long, device=device)[None, :]
         relative_position = memory_position - context_position  # shape (query_length, key_length)
         relative_position_bucket = self._relative_position_bucket(
             relative_position,  # shape (query_length, key_length)
@@ -446,7 +446,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         Returns:
             a Tensor with the same shape as relative_position, containing int32 values in the range [0, num_buckets)
         """
-        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long, device=self.device)
+        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long, device=relative_position.device)
         if bidirectional:
             num_buckets = num_buckets // 2
             relative_buckets += (relative_position > 0).to(torch.long) * num_buckets
