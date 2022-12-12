@@ -255,10 +255,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 ).unsqueeze(0)
             else:
                 position_bias = self._compute_bias(
-                    tgt_len,
-                    src_len,
-                    bidirectional=(not self.is_decoder),
-                    device=k.device
+                    tgt_len, src_len, bidirectional=(not self.is_decoder), device=k.device
                 )
 
         # Calculate attention and out projection
@@ -404,11 +401,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
     # NOTE: Modified from https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L421
     def _compute_bias(
-        self,
-        query_length: int,
-        key_length: int,
-        bidirectional: bool = True,
-        device: Optional[torch.device] = None
+        self, query_length: int, key_length: int, bidirectional: bool = True, device: Optional[torch.device] = None
     ) -> Tensor:
         """Compute binned relative position bias"""
         assert self.relative_attention_bias is not None

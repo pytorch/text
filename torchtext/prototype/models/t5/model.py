@@ -183,7 +183,10 @@ class T5Model(nn.Module):
 
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
-                decoder_tokens = torch.ones((encoder_tokens.size(0), 1), device=encoder_tokens.device, dtype=torch.long) * self.padding_idx
+                decoder_tokens = (
+                    torch.ones((encoder_tokens.size(0), 1), device=encoder_tokens.device, dtype=torch.long)
+                    * self.padding_idx
+                )
 
             if decoder_mask is None:
                 assert decoder_tokens is not None and decoder_tokens.dim() == 2
