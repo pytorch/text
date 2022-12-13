@@ -830,7 +830,7 @@ class BERTTokenizer(Module):
         if never_split is None:
             never_split = []
         self.bert_model = BERTEncoderPyBind(
-            get_asset_local_path(vocab_path, overwite=True), do_lower_case, strip_accents, never_split
+            get_asset_local_path(vocab_path, overwrite=True), do_lower_case, strip_accents, never_split
         )
         self._return_tokens = return_tokens
         self._vocab_path = vocab_path
@@ -929,7 +929,7 @@ class RegexTokenizer(Module):
 
     Caveats
         - The RE2 library does not support arbitrary lookahead or lookbehind assertions, nor does it support backreferences. Look at the `docs <https://swtch.com/~rsc/regexp/regexp3.html#caveats>`_ here for more info.
-        - The final tokenization step always uses spaces as seperators. To split strings based on a specific regex pattern, similar to Python's `re.split <https://docs.python.org/3/library/re.html#re.split>`_, a tuple of ``('<regex_pattern>', ' ')`` can be provided.
+        - The final tokenization step always uses spaces as separators. To split strings based on a specific regex pattern, similar to Python's `re.split <https://docs.python.org/3/library/re.html#re.split>`_, a tuple of ``('<regex_pattern>', ' ')`` can be provided.
 
     Example
         Regex tokenization based on ``(patterns, replacements)`` list.
@@ -998,7 +998,7 @@ def bytes_to_unicode():
     The reversible bpe codes work on unicode strings.
     This means you need a large # of unicode characters in your vocab if you want to avoid UNKs.
     When you're at something like a 10B token dataset you end up needing around 5K for decent coverage.
-    This is a signficant percentage of your normal, say, 32K bpe vocab.
+    This is a significant percentage of your normal, say, 32K bpe vocab.
     To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
     And avoids mapping to whitespace/control characters the bpe code barfs on.
     """
