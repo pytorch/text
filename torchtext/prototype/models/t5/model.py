@@ -134,7 +134,6 @@ class T5Model(nn.Module):
             for p in self.parameters():
                 p.requires_grad = False
 
-    @torch.jit.ignore
     def prepare_inputs_for_generation(self, input_ids, encoder_outputs):
         return {"decoder_tokens": input_ids, "encoder_outputs": encoder_outputs}
 

@@ -29,6 +29,7 @@ class GenerationUtil:
 
     More examples can be found in the `notebooks` directory of this repository.
     """
+
     def __init__(self, model: nn.Module, is_encoder_decoder: bool = True, is_huggingface_model: bool = False) -> None:
         self.model = model
         self.is_encoder_decoder = is_encoder_decoder
@@ -53,7 +54,7 @@ class GenerationUtil:
             eos_idx (int): End of sequence index.
             pad_idx (int): Padding index.
             **model_kwargs
-        
+
         Returns:
             Batch of sequences decoded by greedy search.
         """
@@ -125,7 +126,7 @@ class GenerationUtil:
             encoder = self.model.get_encoder()
             model_kwargs["encoder_outputs"] = encoder(inputs)
             inputs = self._prepare_decoder_ids_for_generation(len(inputs), device=inputs.device, **model_kwargs)
-        
+
         if max_len is None:
             # Too hard to try to figure out the exact max_seq_length for each model
             logger.warning("`max_len` was not specified. Defaulting to 256 tokens.")
