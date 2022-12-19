@@ -15,6 +15,8 @@ from torchtext.prototype.models import (
     T5Bundle,
 )
 
+import warnings
+
 
 BUNDLERS = {
     "base": T5_BASE_GENERATION,
@@ -47,6 +49,8 @@ class T5Wrapper(nn.Module):
             strict (bool): Passed to :func: `torch.nn.Module.load_state_dict` method. (Default: `False`)
             dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
         """
+        warnings.warn("`T5Wrapper` is being deprecated. Please use new `GenerationUtils`.", category=DeprecationWarning)
+
         super().__init__()
 
         if configuration is None:
@@ -138,12 +142,9 @@ class T5Wrapper(nn.Module):
 
         # pass tokens through encoder
         bsz = encoder_tokens.size(0)
+        encoder = self.model.get_encoder()
         encoder_padding_mask = encoder_tokens.eq(self.model.padding_idx)
-        encoder_embeddings = self.model.dropout1(self.model.token_embeddings(encoder_tokens))
-        encoder_output = self.model.encoder(encoder_embeddings, tgt_key_padding_mask=encoder_padding_mask)[0]
-
-        encoder_output = self.model.norm1(encoder_output)
-        encoder_output = self.model.dropout2(encoder_output)
+        encoder_outputs = encoder(tgt=encoder_tokens, tgt_key_padding_mask=encoder_padding_mask)
 
         # initialize decoder input sequence; T5 uses padding index as starter index to decoder sequence
         decoder_tokens = torch.ones((bsz, 1), dtype=torch.long) * self.model.padding_idx
@@ -157,34 +158,19 @@ class T5Wrapper(nn.Module):
 
             if step == 1:
                 # duplicate and order encoder output so that each beam is treated as its own independent sequence
+                encoder_output = encoder_outputs.get("encoder_output")
                 new_order = torch.arange(bsz).view(-1, 1).repeat(1, beam_size).view(-1)
                 new_order = new_order.to(encoder_tokens.device).long()
                 encoder_output = encoder_output.index_select(0, new_order)
+                encoder_outputs["encoder_output"] = encoder_output
                 encoder_padding_mask = encoder_padding_mask.index_select(0, new_order)
 
-            # causal mask and padding mask for decoder sequence
-            tgt_len = decoder_tokens.shape[1]
-            decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
-            decoder_mask = decoder_mask.to(torch.bool)
-            decoder_padding_mask = decoder_tokens.eq(self.model.padding_idx)
-
-            # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
-            decoder_padding_mask[:, 0] = False
-
             # pass decoder sequence through decoder
-            decoder_embeddings = self.model.dropout3(self.model.token_embeddings(decoder_tokens))
-            decoder_output = self.model.decoder(
-                decoder_embeddings,
-                memory=encoder_output,
-                tgt_mask=decoder_mask,
-                tgt_key_padding_mask=decoder_padding_mask,
-                memory_key_padding_mask=encoder_padding_mask,
-            )[0]
-
-            decoder_output = self.model.norm2(decoder_output)
-            decoder_output = self.model.dropout4(decoder_output)
-            decoder_output = decoder_output * (self.model.embedding_dim ** -0.5)
-            decoder_output = self.model.lm_head(decoder_output)
+            decoder_output = self.model(
+                decoder_tokens=decoder_tokens,
+                encoder_padding_mask=encoder_padding_mask,
+                encoder_outputs=encoder_outputs,
+            ).get("decoder_output")
 
             decoder_tokens, scores, incomplete_sentences = self.beam_search(
                 beam_size, step + 1, bsz, decoder_output, decoder_tokens, scores, incomplete_sentences

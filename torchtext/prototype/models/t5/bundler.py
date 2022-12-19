@@ -176,7 +176,8 @@ class T5Bundle:
 
         t5_model_state_dict = {
             "token_embeddings.weight": hf_weights["shared.weight"],
-            "norm1.weight": hf_weights["encoder.final_layer_norm.weight"],
+            "encoder.token_embeddings.weight": hf_weights["shared.weight"],
+            "encoder.norm.weight": hf_weights["encoder.final_layer_norm.weight"],
             "encoder.layers.0.self_attn.relative_attention_bias.weight": hf_weights[
                 "encoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight"
             ],
@@ -210,7 +211,7 @@ class T5Bundle:
 
         # Convert decoder layers if model is encoder-decoder
         if not config.encoder_only:
-            t5_model_state_dict["norm2.weight"] = hf_weights["decoder.final_layer_norm.weight"]
+            t5_model_state_dict["decoder.norm.weight"] = hf_weights["decoder.final_layer_norm.weight"]
             t5_model_state_dict["decoder.layers.0.self_attn.relative_attention_bias.weight"] = hf_weights[
                 "decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight"
             ]
@@ -331,7 +332,7 @@ GENERATION_DOC = """
     """
 
 T5_BASE_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.v2.pt"),
     _config=T5Conf(encoder_only=True),
     transform=lambda: T5Transform(
         urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
@@ -344,7 +345,7 @@ T5_BASE_ENCODER = T5Bundle(
 T5_BASE_ENCODER.__doc__ = ENCODER_DOC.format("BASE", "base")
 
 T5_BASE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.base.v2.pt"),
     _config=T5Conf(encoder_only=False),
     transform=lambda: T5Transform(
         urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
@@ -357,7 +358,7 @@ T5_BASE = T5Bundle(
 T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
 
 T5_BASE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.base.generation.v2.pt"),
     _config=T5Conf(encoder_only=False, linear_head=True),
     transform=lambda: T5Transform(
         urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
@@ -370,7 +371,7 @@ T5_BASE_GENERATION = T5Bundle(
 T5_BASE_GENERATION.__doc__ = GENERATION_DOC.format("BASE", "base")
 
 T5_SMALL_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.small.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.small.encoder.v2.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=512,
@@ -391,7 +392,7 @@ T5_SMALL_ENCODER.__doc__ = ENCODER_DOC.format("SMALL", "small")
 
 
 T5_SMALL = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.small.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.small.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=512,
@@ -411,7 +412,7 @@ T5_SMALL = T5Bundle(
 T5_SMALL.__doc__ = MODEL_DOC.format("SMALL", "small")
 
 T5_SMALL_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.small.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.small.generation.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -432,7 +433,7 @@ T5_SMALL_GENERATION = T5Bundle(
 T5_SMALL_GENERATION.__doc__ = GENERATION_DOC.format("SMALL", "small")
 
 T5_LARGE_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.large.encoder.v2.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=1024,
@@ -452,7 +453,7 @@ T5_LARGE_ENCODER = T5Bundle(
 T5_LARGE_ENCODER.__doc__ = ENCODER_DOC.format("LARGE", "large")
 
 T5_LARGE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.large.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.large.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=1024,
@@ -472,7 +473,7 @@ T5_LARGE = T5Bundle(
 T5_LARGE.__doc__ = MODEL_DOC.format("LARGE", "large")
 
 T5_LARGE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.large.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.large.generation.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -493,7 +494,7 @@ T5_LARGE_GENERATION = T5Bundle(
 T5_LARGE_GENERATION.__doc__ = GENERATION_DOC.format("LARGE", "large")
 
 T5_3B_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.3b.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.encoder.v2.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=1024,
@@ -514,7 +515,7 @@ T5_3B_ENCODER = T5Bundle(
 T5_3B_ENCODER.__doc__ = ENCODER_DOC.format("3B", "3B")
 
 T5_3B = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.3b.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=1024,
@@ -535,7 +536,7 @@ T5_3B = T5Bundle(
 T5_3B.__doc__ = MODEL_DOC.format("3B", "3B")
 
 T5_3B_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.3b.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.3b.generation.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -557,7 +558,7 @@ T5_3B_GENERATION = T5Bundle(
 T5_3B_GENERATION.__doc__ = GENERATION_DOC.format("3B", "3B")
 
 T5_11B_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.11b.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.encoder.v2.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=1024,
@@ -578,7 +579,7 @@ T5_11B_ENCODER = T5Bundle(
 T5_11B_ENCODER.__doc__ = ENCODER_DOC.format("11B", "11B")
 
 T5_11B = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.11b.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=1024,
@@ -599,7 +600,7 @@ T5_11B = T5Bundle(
 T5_11B.__doc__ = MODEL_DOC.format("11B", "11B")
 
 T5_11B_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.11b.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.11b.generation.v2.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
