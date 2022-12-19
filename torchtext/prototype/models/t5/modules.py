@@ -84,7 +84,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
         position_bias: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
+        past_key_value: Optional[Tuple[Tensor]] = None,
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
         r"""
         Allows the model to jointly attend to information from different representation subspaces
         as described in the paper:
@@ -129,7 +130,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             - **position_bias** - Used in attention scoring. Only computed when `compute_relative_attention_bias=True`
                 and `position_bias=None`. Has shape :math:`(1, num_heads, L, S)`.
         """
-        attn_output, position_bias, attn_output_weights = self._t5_multi_head_attention_forward(
+        attn_output, position_bias, attn_output_weights, key_value = self._t5_multi_head_attention_forward(
             query,
             key,
             value,
@@ -138,8 +139,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             need_weights=need_weights,
             attn_mask=attn_mask,
             average_attn_weights=average_attn_weights,
+            past_key_value=past_key_value,
         )
-        return attn_output, position_bias, attn_output_weights
+        return attn_output, position_bias, attn_output_weights, key_value
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4909
     def _t5_multi_head_attention_forward(
@@ -152,7 +154,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor]]:
+        past_key_value: Optional[Tuple[Tensor]] = None,
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
         is_batched = F._mha_shape_check(query, key, value, key_padding_mask, attn_mask, self.num_heads)
 
         # For unbatched input, we unsqueeze at the expected batch-dim to pretend that the input
@@ -187,8 +190,20 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             b_q = b_k = b_v = None
         else:
             b_q, b_k, b_v = self.in_proj_bias.chunk(3)
+
         q, k, v = self._t5_in_projection(
-            query, key, value, self.q_proj_weight, self.k_proj_weight, self.v_proj_weight, b_q, b_k, b_v
+            query,
+            key,
+            value,
+            self.q_proj_weight,
+            self.k_proj_weight,
+            self.v_proj_weight,
+            b_q,
+            b_k,
+            b_v,
+            past_key_value,
+            bsz,
+            head_dim
         )
 
         # Prep attention mask
@@ -218,9 +233,10 @@ class T5MultiheadAttention(nn.MultiheadAttention):
 
         # Reshape q, k, v for multihead attention and make them batch first
         q = q.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
-        k = k.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
-        v = v.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
-        src_len = k.size(2)
+        if past_key_value is None:
+            k = k.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
+            v = v.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
+        # src_len = k.size(2)
 
         if key_padding_mask is not None:
             assert key_padding_mask.shape == (
@@ -258,6 +274,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                     tgt_len, src_len, bidirectional=(not self.is_decoder), device=k.device
                 )
 
+        # Always return KV pair - can get rid of it later if need be
+        new_key_val = (k, v)
+
         # Calculate attention and out projection
         attn_output, attn_output_weights = self._t5_dot_product_attention(q, k, v, position_bias, attn_mask, dropout_p)
         attn_output = F.linear(attn_output, self.out_proj.weight, self.out_proj.bias)
@@ -272,14 +291,14 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 attn_output = attn_output.squeeze(1)
                 attn_output_weights = attn_output_weights.squeeze(0)
 
-            return attn_output, position_bias, attn_output_weights
+            return attn_output, position_bias, attn_output_weights, new_key_val
 
         else:
             if not is_batched:
                 # Squeeze the output if input was unbatched
                 attn_output = attn_output.squeeze(1)
 
-            return attn_output, position_bias, None
+            return attn_output, position_bias, None, new_key_val
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4761
     def _t5_in_projection(
@@ -293,6 +312,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         b_q: Optional[Tensor] = None,
         b_k: Optional[Tensor] = None,
         b_v: Optional[Tensor] = None,
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
+        bsz: Optional[int] = None,
+        head_dim: Optional[int] = None,
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""
         Performs the in-projection step of the attention operation. This is simply
@@ -345,7 +367,27 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         assert b_v is None or b_v.shape == (
             self.inner_dim,
         ), f"expecting value bias shape of {(self.inner_dim,)}, but got {b_v.shape}"
-        return F.linear(q, w_q, b_q), F.linear(k, w_k, b_k), F.linear(v, w_v, b_v)
+
+        query_proj = F.linear(q, w_q, b_q)
+        if past_key_value is not None:
+            if self.is_decoder:
+                # cross-attention
+                key_proj = past_key_value[0]
+                value_proj = past_key_value[1]
+            else:
+                # self-attention within decoding context
+                key_proj = F.linear(k, w_k, b_k)
+                value_proj = F.linear(v, w_v, b_v)
+                key_proj = key_proj.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
+                value_proj = value_proj.view(bsz, -1, self.num_heads, head_dim).transpose(1, 2)
+                key_proj = torch.cat([past_key_value[0], key_proj], dim=2)
+                value_proj = torch.cat([past_key_value[1], value_proj], dim=2)
+        else:
+            # self-attention within encoding context
+            key_proj = F.linear(k, w_k, b_k)
+            value_proj = F.linear(v, w_v, b_v)
+
+        return query_proj, key_proj, value_proj
 
     # NOTE: Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4814
     def _t5_dot_product_attention(
@@ -618,7 +660,9 @@ class T5EncoderLayer(nn.Module):
 
         # See Fig. 1 of https://arxiv.org/pdf/2002.04745v1.pdf
         x = tgt
-        sa_out, position_bias, sa_scores = self._sa_block(self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias)
+        sa_out, position_bias, sa_scores, _ = self._sa_block(
+            self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias
+        )
         x = x + sa_out
         x = x + self._ff_block(self.norm2(x))
 
@@ -631,8 +675,9 @@ class T5EncoderLayer(nn.Module):
         attn_mask: Optional[Tensor],
         key_padding_mask: Optional[Tensor],
         position_bias: Optional[Tensor],
-    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
-        attn = self.self_attn(
+        past_key_value: Optional[Tuple[Tensor]] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
+        attn, curr_position_bias, scores, curr_key_value = self.self_attn(
             x,
             x,
             x,
@@ -640,14 +685,13 @@ class T5EncoderLayer(nn.Module):
             key_padding_mask=key_padding_mask,
             need_weights=True,
             position_bias=position_bias,
+            past_key_value=past_key_value,
         )
 
-        x = attn[0]
-        scores = attn[2]
-        if self.compute_relative_attention_bias and position_bias is None:
-            position_bias = attn[1]
+        if self.compute_relative_attention_bias:
+            position_bias = curr_position_bias
 
-        return self.dropout1(x), position_bias, scores
+        return self.dropout1(attn), position_bias, scores, curr_key_value
 
     # Feed forward block
     def _ff_block(self, x: Tensor) -> Tensor:
@@ -756,7 +800,8 @@ class T5DecoderLayer(T5EncoderLayer):
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]]:
+        past_key_values: Optional[Tuple[Tensor, Tensor, Tensor, Tensor]] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Optional[Tuple[Tensor, Tensor, Tensor, Tensor]]]:
         r"""Pass the inputs (and mask) through the encoder/decoder layer.
         Args:
             tgt: Input sequence to the decoder layer. (required).
@@ -776,25 +821,47 @@ class T5DecoderLayer(T5EncoderLayer):
             position_bias: Relative attention bias to be used when computing self-attention scores (optional)
                 Must have shape (B, H, Nt, Nt) where H is the number of heads.
         """
-
         # See Fig. 1 of https://arxiv.org/pdf/2002.04745v1.pdf
+        if past_key_values is not None:
+            self_attn_past_key_value = past_key_values[:2]
+            cross_attn_past_key_value = past_key_values[2:]
+        else:
+            self_attn_past_key_value, cross_attn_past_key_value = None, None
+
         x = tgt
-        sa_out, position_bias, sa_scores = self._sa_block(self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias)
+        sa_out, position_bias, sa_scores, sa_kv = self._sa_block(
+            self.norm1(x), tgt_mask, tgt_key_padding_mask, position_bias, self_attn_past_key_value
+        )
         x = x + sa_out
-        ca_out, ca_scores = self._ca_block(self.norm3(x), memory, memory_mask, memory_key_padding_mask)
+        ca_out, ca_scores, ca_kv = self._ca_block(
+            self.norm3(x), memory, memory_mask, memory_key_padding_mask, cross_attn_past_key_value
+        )
         x = x + ca_out
         x = x + self._ff_block(self.norm2(x))
 
-        return x, position_bias, sa_scores, ca_scores
+        new_key_value = sa_kv + ca_kv
+
+        return x, position_bias, sa_scores, ca_scores, new_key_value
 
     # Cross attention block
     def _ca_block(
-        self, x: Tensor, mem: Tensor, attn_mask: Optional[Tensor], key_padding_mask: Optional[Tensor]
-    ) -> Tuple[Tensor, Optional[Tensor]]:
-        attn = self.cross_attn(x, mem, mem, attn_mask=attn_mask, key_padding_mask=key_padding_mask, need_weights=True)
-        x = attn[0]
-        scores = attn[2]
-        return self.dropout4(x), scores
+        self,
+        x: Tensor,
+        mem: Tensor,
+        attn_mask: Optional[Tensor],
+        key_padding_mask: Optional[Tensor],
+        past_key_value: Optional[Tuple[Tensor]] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
+        attn, _, scores, curr_key_value = self.cross_attn(
+            x,
+            mem,
+            mem,
+            attn_mask=attn_mask,
+            key_padding_mask=key_padding_mask,
+            need_weights=True,
+            past_key_value=past_key_value,
+        )
+        return self.dropout4(attn), scores, curr_key_value
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
@@ -873,9 +940,8 @@ class T5Encoder(nn.Module):
         tgt_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         embedded_tgt: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
+    ) -> Dict[str, Union[Optional[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Tensor, Tensor]]]]:
         r"""Pass the input (and masks) through the stack of encoder layers.
-
         Args:
             tgt (Optional[Tensor]): Tokenized input sequence to the encoder.
                 Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
@@ -889,7 +955,6 @@ class T5Encoder(nn.Module):
                 length, and E is the model dimension.
                 *Note*: If you do not provide this `embedded_tgt`, you must have provided a `token_embedding` layer \
                     in the initialization of the T5Encoder.
-
         Returns:
             Tuple of last hidden layer, all hidden layers, position bias, and self-attention scores
         """
@@ -1001,7 +1066,9 @@ class T5Decoder(nn.Module):
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]]:
+        past_key_values: Optional[List[Tuple[Tensor]]] = None,
+        return_past_key_values: bool = False,
+    ) -> Dict[str, Union[Optional[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Tensor, Tensor]],],]:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
         Args:
             embedded_tgt: Input sequence to the decoder layer. (required).
@@ -1025,9 +1092,10 @@ class T5Decoder(nn.Module):
         all_outputs = torch.jit.annotate(List[Tensor], [])
         all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
         all_ca_scores = torch.jit.annotate(List[Optional[Tensor]], [])
-        for mod in self.layers:
+        all_key_values = torch.jit.annotate(List[Tuple[Tensor, Tensor, Tensor, Tensor]], [])
+        for i, mod in enumerate(self.layers):
             all_outputs.append(output)
-            output, position_bias, sa_score, ca_score = mod(
+            output, position_bias, sa_score, ca_score, past_key_value = mod(
                 output,
                 memory,
                 tgt_mask=tgt_mask,
@@ -1035,14 +1103,20 @@ class T5Decoder(nn.Module):
                 tgt_key_padding_mask=tgt_key_padding_mask,
                 memory_key_padding_mask=memory_key_padding_mask,
                 position_bias=position_bias,
+                past_key_values=past_key_values[i] if past_key_values else None,
             )
             all_sa_scores.append(sa_score)
             all_ca_scores.append(ca_score)
+            if past_key_value is not None and return_past_key_values:
+                all_key_values.append(past_key_value)
 
         output = self.norm(output)
         output = self.dropout2(output)
 
         all_outputs.append(output)
+
+        if not all_key_values:
+            all_key_values = None
 
         return {
             "decoder_output": output,
@@ -1050,4 +1124,5 @@ class T5Decoder(nn.Module):
             "decoder_position_bias": position_bias,
             "decoder_sa_scores": all_sa_scores,
             "decoder_ca_scores": all_ca_scores,
+            "past_key_values": all_key_values,
         }

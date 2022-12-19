@@ -16,6 +16,8 @@ from torchtext.prototype.models import (
     T5Transform,
 )
 
+import warnings
+
 
 BUNDLERS = {
     "base": T5_BASE_GENERATION,
