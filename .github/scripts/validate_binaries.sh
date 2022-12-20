@@ -28,4 +28,4 @@ else
     pip install ${PIP_PREFIX} torchtext torch --extra-index-url ${PIP_DOWNLOAD_URL}
 fi
 
-python  ./test/smoke_tests/smoke_tests.py
+python3  ./test/smoke_tests/smoke_tests.py
