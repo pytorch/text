@@ -25,7 +25,7 @@ fi
 if [[ ${PACKAGE_TYPE} = 'conda' ]]; then
     conda install -y torchtext pytorch -c ${CONDA_CHANNEL}
 else
-    pip install ${PIP_PREFIX} torchtext torch --extra-index-url ${PIP_DOWNLOAD_URL}
+    conda run -n ${ENV_NAME} pip install ${PIP_PREFIX} torchtext torch --extra-index-url ${PIP_DOWNLOAD_URL}
 fi
 
 python  ./test/smoke_tests/smoke_tests.py
