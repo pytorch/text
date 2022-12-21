@@ -11,10 +11,10 @@ conda create -y -n ${ENV_NAME} python=${DESIRED_PYTHON} numpy
 conda activate ${ENV_NAME}
 export CONDA_CHANNEL="pytorch"
 export PIP_DOWNLOAD_URL="https://download.pytorch.org/whl/cpu"
-export PIP_PREFIX=""
+export TEXT_PIP_PREFIX=""
 
 if [[ ${CHANNEL} = 'nightly' ]]; then
-    export TEXT_PIP_PREFIX="--pre "
+    export TEXT_PIP_PREFIX="--pre"
     export PIP_DOWNLOAD_URL="https://download.pytorch.org/whl/nightly/cpu"
     export CONDA_CHANNEL="pytorch-nightly"
 elif [[ ${CHANNEL} = 'test' ]]; then
