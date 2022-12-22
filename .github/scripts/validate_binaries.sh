@@ -11,10 +11,10 @@ conda create -y -n ${ENV_NAME} python=${DESIRED_PYTHON} numpy
 conda activate ${ENV_NAME}
 export CONDA_CHANNEL="pytorch"
 export PIP_DOWNLOAD_URL="https://download.pytorch.org/whl/cpu"
-export PIP_PREFIX=""
+export TEXT_PIP_PREFIX=""
 
 if [[ ${CHANNEL} = 'nightly' ]]; then
-    export PIP_PREFIX="--pre "
+    export TEXT_PIP_PREFIX="--pre"
     export PIP_DOWNLOAD_URL="https://download.pytorch.org/whl/nightly/cpu"
     export CONDA_CHANNEL="pytorch-nightly"
 elif [[ ${CHANNEL} = 'test' ]]; then
@@ -25,7 +25,7 @@ fi
 if [[ ${PACKAGE_TYPE} = 'conda' ]]; then
     conda install -y torchtext pytorch -c ${CONDA_CHANNEL}
 else
-    pip install ${PIP_PREFIX} torchtext torch --extra-index-url ${PIP_DOWNLOAD_URL}
+    pip install ${TEXT_PIP_PREFIX} torchtext torch --extra-index-url ${PIP_DOWNLOAD_URL}
 fi
 
 python  ./test/smoke_tests/smoke_tests.py
