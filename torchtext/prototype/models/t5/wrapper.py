@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
@@ -5,17 +6,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torchtext.prototype.models import (
-    T5_BASE_GENERATION,
-    T5_SMALL_GENERATION,
-    T5_LARGE_GENERATION,
-    T5_3B_GENERATION,
     T5_11B_GENERATION,
+    T5_3B_GENERATION,
+    T5_BASE_GENERATION,
+    T5_LARGE_GENERATION,
+    T5_SMALL_GENERATION,
+    T5Bundle,
     T5Conf,
     T5Transform,
-    T5Bundle,
 )
-
-import warnings
 
 
 BUNDLERS = {
@@ -139,7 +138,6 @@ class T5Wrapper(nn.Module):
         return new_decoder_tokens, new_scores, new_incomplete_sentences
 
     def generate(self, encoder_tokens: Tensor, beam_size: int, eos_idx: int = 1, max_seq_len: int = 512) -> Tensor:
-
         # pass tokens through encoder
         bsz = encoder_tokens.size(0)
         encoder = self.model.get_encoder()
@@ -155,7 +153,6 @@ class T5Wrapper(nn.Module):
 
         # iteratively generate output sequence until all sequences in the batch have generated the end-of-sequence token
         for step in range(max_seq_len):
-
             if step == 1:
                 # duplicate and order encoder output so that each beam is treated as its own independent sequence
                 encoder_output = encoder_outputs.get("encoder_output")
@@ -189,7 +186,6 @@ class T5Wrapper(nn.Module):
         return decoder_tokens
 
     def forward(self, input_text: List[str], beam_size: int, max_seq_len: int) -> Union[List[str], str]:
-
         model_input = self.transform(input_text)
         model_output_tensor = self.generate(encoder_tokens=model_input, beam_size=beam_size, max_seq_len=max_seq_len)
         model_output_list = torch.jit.annotate(List[List[int]], model_output_tensor.tolist())

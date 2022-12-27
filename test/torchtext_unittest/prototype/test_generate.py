@@ -1,8 +1,9 @@
 from unittest.mock import patch
+
+import torch
 from torchtext.prototype.generate import GenerationUtil
 from torchtext.prototype.models import T5_BASE_GENERATION
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
-import torch
 
 
 class TestGenerationUtil(TorchtextTestCase):

@@ -15,7 +15,7 @@
 
 import math
 import warnings
-from typing import Dict, List, Optional, Tuple, Union, Callable
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
@@ -843,7 +843,7 @@ class T5Encoder(nn.Module):
         embedded_tgt: Optional[Tensor] = None,
     ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
         r"""Pass the input (and masks) through the stack of encoder layers.
-        
+
         Args:
             tgt (Optional[Tensor]): Tokenized input sequence to the encoder.
                 Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
@@ -857,7 +857,7 @@ class T5Encoder(nn.Module):
                 length, and E is the model dimension.
                 *Note*: If you do not provide this `embedded_tgt`, you must have provided a `token_embedding` layer \
                     in the initialization of the T5Encoder.
-        
+
         Returns:
             Tuple of last hidden layer, all hidden layers, position bias, and self-attention scores
         """

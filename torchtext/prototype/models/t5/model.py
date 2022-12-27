@@ -1,14 +1,13 @@
+# logging library is not automatically supported by Torchscript
+import warnings
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union, Callable
+from typing import Callable, Dict, List, Optional, Union
 
 import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Encoder, T5Decoder
-
-# logging library is not automatically supported by Torchscript
-import warnings
+from .modules import T5Decoder, T5Encoder
 
 
 @dataclass(frozen=True)
@@ -194,7 +193,6 @@ class T5Model(nn.Module):
             )
 
         if not self.encoder_only:
-
             assert self.decoder is not None
             assert encoder_outputs is not None
 
@@ -238,7 +236,7 @@ class T5Model(nn.Module):
                 # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
                 # same word embeddings, which is always the case in our t5 implementation.
                 # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
-                decoder_output = decoder_output * (self.embedding_dim**-0.5)
+                decoder_output = decoder_output * (self.embedding_dim ** -0.5)
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
