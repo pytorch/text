@@ -773,7 +773,8 @@ class T5DecoderLayer(T5EncoderLayer):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
 class T5Encoder(nn.Module):
-    r"""T5Encoder is a stack of N encoder layers
+    """T5Encoder is a stack of N encoder layers.
+
     Args:
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
@@ -787,7 +788,10 @@ class T5Encoder(nn.Module):
         relative_attention_num_buckets: Number of relative position buckets (default: 32)
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
-    Examples::
+        token_embeddings (nn.Module): Embedding layer to be passed in the case that the input to `forward`
+            is not already embedded.
+
+    Examples:
         >>> encoder = T5Encoder(d_model=768, nhead=12, num_layers=12)
         >>> tgt = torch.rand(32, 10, 512)
         >>> out = encoder(tgt)
