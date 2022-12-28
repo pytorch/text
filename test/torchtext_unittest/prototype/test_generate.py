@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import torch
-from torchtext.prototype.generate import GenerationUtil
+from torchtext.prototype.generate import DEFAULT_MAX_SEQ_LEN, GenerationUtil
 from torchtext.prototype.models import T5_BASE_GENERATION
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
@@ -51,4 +51,4 @@ class TestGenerationUtil(TorchtextTestCase):
     def test_warns_when_no_max_len_provided(self, mock) -> None:
         generation_model = GenerationUtil(self.model)
         generation_model.generate(self.inputs)
-        mock.assert_called_with("`max_len` was not specified. Defaulting to 256 tokens.")
+        mock.assert_called_with(f"`max_len` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")

@@ -7,6 +7,8 @@ from torch import nn
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_MAX_SEQ_LEN = 256
+
 
 class GenerationUtil:
     """Wrapper to provide generation utils for encoder/decoder models and decoder models.
@@ -128,8 +130,8 @@ class GenerationUtil:
 
         if max_len is None:
             # Too hard to try to figure out the exact max_seq_length for each model
-            logger.warning("`max_len` was not specified. Defaulting to 256 tokens.")
-            max_len = 256
+            logger.warning(f"`max_len` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")
+            max_len = DEFAULT_MAX_SEQ_LEN
 
         if num_beams == 1 or num_beams is None:
             return self.greedy_search(inputs, max_len, eos_idx, pad_idx=pad_idx, **model_kwargs)
