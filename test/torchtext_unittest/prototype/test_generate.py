@@ -51,4 +51,4 @@ class TestGenerationUtil(TorchtextTestCase):
     def test_warns_when_no_max_len_provided(self, mock) -> None:
         generation_model = GenerationUtil(self.model)
         generation_model.generate(self.inputs)
-        mock.assert_called_with("`max_len` was not specified. Defaulting to 100 tokens.")
+        mock.assert_called_with("`max_len` was not specified. Defaulting to 256 tokens.")
