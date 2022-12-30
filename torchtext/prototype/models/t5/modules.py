@@ -15,7 +15,7 @@
 
 import math
 import warnings
-from typing import List, Optional, Tuple, Union, Callable
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
@@ -773,7 +773,8 @@ class T5DecoderLayer(T5EncoderLayer):
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
 class T5Encoder(nn.Module):
-    r"""T5Encoder is a stack of N encoder layers
+    """T5Encoder is a stack of N encoder layers.
+
     Args:
         d_model: Number of expected features in the input (required).
         nhead: Number of heads in the multihead attention models (required).
@@ -787,7 +788,10 @@ class T5Encoder(nn.Module):
         relative_attention_num_buckets: Number of relative position buckets (default: 32)
         relative_attention_max_distance: Maximum threshold on the relative distance used to
             allocate buckets. Anything larger gets placed in the same bucket (defulat: 128)
-    Examples::
+        token_embeddings (nn.Module): Embedding layer to be passed in the case that the input to `forward`
+            is not already embedded.
+
+    Examples:
         >>> encoder = T5Encoder(d_model=768, nhead=12, num_layers=12)
         >>> tgt = torch.rand(32, 10, 512)
         >>> out = encoder(tgt)
@@ -805,11 +809,12 @@ class T5Encoder(nn.Module):
         layer_norm_eps: float = 1e-6,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
+        token_embeddings: Optional[nn.Module] = None,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
         super().__init__()
-
+        self.token_embeddings = token_embeddings
         self.layers = nn.ModuleList(
             [
                 T5EncoderLayer(
@@ -830,24 +835,44 @@ class T5Encoder(nn.Module):
             ]
         )
         self.num_layers = num_layers
+        self.norm = T5LayerNorm(d_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
 
     def forward(
         self,
-        tgt: Tensor,
+        tgt: Optional[Tensor] = None,
         tgt_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]:
+        embedded_tgt: Optional[Tensor] = None,
+    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
         r"""Pass the input (and masks) through the stack of encoder layers.
+
         Args:
-            tgt: Input sequence to the encoder layer. (required).
+            tgt (Optional[Tensor]): Tokenized input sequence to the encoder.
+                Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
+                encoder input sequence length.
+            tgt_mask (Optional[Tensor]): Attention mask for self-attention.
+                Must have shape (Nt, Nt).
+            tgt_key_padding_mask (Optional[Tensor]): Mask for the tgt keys per batch.
+                Must have shape (B, Nt).
+            embedded_tgt (Optional[Tensor]): Embedded input sequence to the encoder layer.
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
-            tgt_mask: Attention mask for self-attention. (optional).
-                Must have shape (Nt, Nt).
-            tgt_key_padding_mask: Mask for the tgt keys per batch (optional).
-                Must have shape (B, Nt).
+                *Note*: If you do not provide this `embedded_tgt`, you must have provided a `token_embedding` layer \
+                    in the initialization of the T5Encoder.
+
+        Returns:
+            Tuple of last hidden layer, all hidden layers, position bias, and self-attention scores
         """
-        output = tgt
+        # This keeps the encoder self-contained and easy to use individually
+        if embedded_tgt is None:
+            assert (
+                self.token_embeddings is not None and tgt is not None
+            ), "Must provide `token_embeddings` and `tgt` if not providing already embedded tokens."
+            embedded_tgt = self.token_embeddings(tgt)
+
+        output = self.dropout1(embedded_tgt)
         position_bias = None
         all_outputs = torch.jit.annotate(List[Tensor], [])
         all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
@@ -861,7 +886,17 @@ class T5Encoder(nn.Module):
             )
             all_sa_scores.append(sa_score)
 
-        return output, all_outputs, position_bias, all_sa_scores
+        output = self.norm(output)
+        output = self.dropout2(output)
+
+        all_outputs.append(output)
+
+        return {
+            "encoder_output": output,
+            "encoder_hidden_states": all_outputs,
+            "encoder_position_bias": position_bias,
+            "encoder_sa_scores": all_sa_scores,
+        }
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L835
@@ -923,20 +958,23 @@ class T5Decoder(nn.Module):
                 for i in range(num_layers)
             ]
         )
+        self.norm = T5LayerNorm(d_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
         self.num_layers = num_layers
 
     def forward(
         self,
-        tgt: Tensor,
+        embedded_tgt: Tensor,
         memory: Tensor,
         tgt_mask: Optional[Tensor] = None,
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
-    ) -> Tuple[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]:
+    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], List[Optional[Tensor]]]]:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
         Args:
-            tgt: Input sequence to the decoder layer. (required).
+            embedded_tgt: Input sequence to the decoder layer. (required).
                 Must have shape (B, Nt, E) where B is the batch size, Nt is the target sequence
                 length, and E is the model dimension.
             memory: Sequence from the last layer of the encoder. (required).
@@ -951,7 +989,8 @@ class T5Decoder(nn.Module):
             memory_key_padding_mask: Mask for the memory keys per batch (optional).
                 Must have shape (B, Ns).
         """
-        output = tgt
+
+        output = self.dropout1(embedded_tgt)
         position_bias = None
         all_outputs = torch.jit.annotate(List[Tensor], [])
         all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
@@ -970,4 +1009,15 @@ class T5Decoder(nn.Module):
             all_sa_scores.append(sa_score)
             all_ca_scores.append(ca_score)
 
-        return output, all_outputs, position_bias, all_sa_scores, all_ca_scores
+        output = self.norm(output)
+        output = self.dropout2(output)
+
+        all_outputs.append(output)
+
+        return {
+            "decoder_output": output,
+            "decoder_hidden_states": all_outputs,
+            "decoder_position_bias": position_bias,
+            "decoder_sa_scores": all_sa_scores,
+            "decoder_ca_scores": all_ca_scores,
+        }

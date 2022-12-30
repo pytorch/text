@@ -66,12 +66,21 @@ class TestT5Model(TorchtextTestCase):
 
         model_input = transform(test_text)
         if model.encoder_only:
-            actual = model(model_input)["encoder_output"]
+            actual = model(encoder_tokens=model_input)["encoder_output"]
+            if not is_jit:
+                self._t5_get_encoder(model, model_input, actual)
         else:
-            actual = model(model_input)["decoder_output"]
+            actual = model(encoder_tokens=model_input)["decoder_output"]
 
         expected = torch.load(expected_asset_path)
         torch.testing.assert_close(actual, expected, atol=1e-04, rtol=2.5e-06)
+
+    def _t5_get_encoder(self, model, model_input, encoder_output):
+        encoder = model.get_encoder()
+        # Need to set the tgt_key_padding_mask to ensure the same results
+        encoder_padding_mask = model_input.eq(model.padding_idx)
+        output_from_get_encoder = encoder(tgt=model_input, tgt_key_padding_mask=encoder_padding_mask)["encoder_output"]
+        assert torch.all(output_from_get_encoder.eq(encoder_output))
 
     @nested_params(["jit", "not_jit"])
     def test_t5_model(self, name) -> None:
@@ -93,7 +102,8 @@ class TestT5Model(TorchtextTestCase):
     ],
 )
 class TestT5Wrapper(TorchtextTestCase):
-    @parameterized.expand(["jit", "not_jit"])
+    # No longer Torchscriptable
+    @parameterized.expand(["no_jit"])
     def test_t5_wrapper(self, name) -> None:
         configuration = self.configuration
         test_text = ["translate English to French: I want to eat pizza for dinner."]
@@ -113,7 +123,8 @@ class TestT5Wrapper(TorchtextTestCase):
 
 
 class TestT5WrapperCheckpoint(TorchtextTestCase):
-    @parameterized.expand(["jit", "not_jit"])
+    # No longer Torchscriptable
+    @parameterized.expand(["no_jit"])
     def test_t5_wrapper_checkpoint(self, name) -> None:
         test_text = ["translate English to French: I want to eat pizza for dinner."]
         expected_text = ["Je veux manger de la pizza pour le dîner."]
@@ -127,7 +138,7 @@ class TestT5WrapperCheckpoint(TorchtextTestCase):
             padding_idx=0,
         )
         model = T5Wrapper(
-            checkpoint="https://download.pytorch.org/models/text/t5.base.generation.pt",
+            checkpoint="https://download.pytorch.org/models/text/t5.base.generation.v2.pt",
             t5_config=config,
             transform=transform,
             freeze_model=True,
