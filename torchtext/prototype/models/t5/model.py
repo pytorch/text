@@ -1,14 +1,16 @@
+# logging library is not automatically supported by Torchscript
+import warnings
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union, Callable
+from typing import Callable, Dict, List, Optional, Union
 
 import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Encoder, T5Decoder, T5LayerNorm
+from .modules import T5Decoder, T5Encoder
 
 
-@dataclass
+@dataclass(frozen=True)
 class T5Conf:
     encoder_only: bool = False
     linear_head: bool = False
@@ -99,12 +101,10 @@ class T5Model(nn.Module):
             layer_norm_eps=config.layer_norm_eps,
             relative_attention_num_buckets=config.relative_attention_num_buckets,
             relative_attention_max_distance=config.relative_attention_max_distance,
+            token_embeddings=self.token_embeddings,
             device=device,
             dtype=dtype,
         )
-        self.norm1 = T5LayerNorm(config.embedding_dim)
-        self.dropout1 = nn.Dropout(self.dropout)
-        self.dropout2 = nn.Dropout(self.dropout)
 
         if not config.encoder_only:
             self.decoder = T5Decoder(
@@ -121,9 +121,6 @@ class T5Model(nn.Module):
                 device=device,
                 dtype=dtype,
             )
-            self.norm2 = T5LayerNorm(config.embedding_dim)
-            self.dropout3 = nn.Dropout(self.dropout)
-            self.dropout4 = nn.Dropout(self.dropout)
         else:
             self.decoder = None
 
@@ -136,12 +133,30 @@ class T5Model(nn.Module):
             for p in self.parameters():
                 p.requires_grad = False
 
+    def prepare_inputs_for_generation(self, input_ids, encoder_outputs):
+        return {"decoder_tokens": input_ids, "encoder_outputs": encoder_outputs}
+
+    @torch.jit.ignore
+    def get_encoder(self) -> T5Encoder:
+        return self.encoder
+
+    @torch.jit.ignore
+    def get_decoder(self) -> Optional[T5Decoder]:
+        if self.decoder is None:
+            warnings.warn("Decoder is not set on this model.")
+        return self.decoder
+
     def forward(
         self,
-        encoder_tokens: Tensor,
+        encoder_tokens: Optional[Tensor] = None,
         decoder_tokens: Optional[Tensor] = None,
         encoder_mask: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
+        encoder_padding_mask: Optional[Tensor] = None,
+        decoder_padding_mask: Optional[Tensor] = None,
+        encoder_outputs: Optional[
+            Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
+        ] = None,
     ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
         r"""Pass the inputs (and mask) through the decoder layer in turn.
         Args:
@@ -167,25 +182,29 @@ class T5Model(nn.Module):
             encoder_sa_scores: Tuple of self-attention scores computed at each layer of the decoder
             encoder_ca_scores: Tuple of cross-attention scores computed at each layer of the decoder
         """
-        encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
-        encoder_embeddings = self.dropout1(self.token_embeddings(encoder_tokens))
-        encoder_output, encoder_hidden_states, encoder_position_bias, encoder_sa = self.encoder(
-            encoder_embeddings, tgt_mask=encoder_mask, tgt_key_padding_mask=encoder_padding_mask
-        )
+        if encoder_outputs is None:
+            assert encoder_tokens is not None, "If `encoder_outputs` is not specified, must provide `encoder_tokens`"
 
-        encoder_output = self.norm1(encoder_output)
-        encoder_output = self.dropout2(encoder_output)
-        encoder_hidden_states.append(encoder_output)
+            if encoder_padding_mask is None:
+                encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
+
+            encoder_outputs = self.encoder(
+                tgt=encoder_tokens, tgt_mask=encoder_mask, tgt_key_padding_mask=encoder_padding_mask
+            )
 
         if not self.encoder_only:
-
             assert self.decoder is not None
+            assert encoder_outputs is not None
+
+            encoder_output = encoder_outputs.get("encoder_output")
+            assert torch.jit.isinstance(encoder_output, Tensor)
 
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
+                batch_size = encoder_output.size()[0]
+                encoder_output_device = encoder_output.device
                 decoder_tokens = (
-                    torch.ones((encoder_tokens.size(0), 1), device=encoder_tokens.device, dtype=torch.long)
-                    * self.padding_idx
+                    torch.ones((batch_size, 1), device=encoder_output_device, dtype=torch.long) * self.padding_idx
                 )
 
             if decoder_mask is None:
@@ -194,12 +213,13 @@ class T5Model(nn.Module):
                 decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
                 decoder_mask = decoder_mask.to(decoder_tokens.device, dtype=torch.bool)
 
-            decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
-            # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
-            decoder_padding_mask[:, 0] = False
+            if decoder_padding_mask is None:
+                decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
+                # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
+                decoder_padding_mask[:, 0] = False
 
-            decoder_embeddings = self.dropout3(self.token_embeddings(decoder_tokens))
-            decoder_output, decoder_hidden_states, decoder_position_bias, decoder_sa, decoder_ca = self.decoder(
+            decoder_embeddings = self.token_embeddings(decoder_tokens)
+            decoder_outputs = self.decoder(
                 decoder_embeddings,
                 memory=encoder_output,
                 tgt_mask=decoder_mask,
@@ -208,9 +228,8 @@ class T5Model(nn.Module):
                 memory_key_padding_mask=encoder_padding_mask,
             )
 
-            decoder_output = self.norm2(decoder_output)
-            decoder_output = self.dropout4(decoder_output)
-            decoder_hidden_states.append(decoder_output)
+            decoder_output = decoder_outputs.get("decoder_output")
+            assert torch.jit.isinstance(decoder_output, Tensor)
 
             if self.linear_head:
                 assert self.lm_head is not None
@@ -219,28 +238,16 @@ class T5Model(nn.Module):
                 # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
                 decoder_output = decoder_output * (self.embedding_dim ** -0.5)
                 decoder_output = self.lm_head(decoder_output)
+                decoder_outputs["decoder_output"] = decoder_output
 
-            t5_output = {
-                "encoder_output": encoder_output,
-                "encoder_hidden_states": encoder_hidden_states,
-                "encoder_position_bias": encoder_position_bias,
-                "encoder_sa_scores": encoder_sa,
-                "decoder_output": decoder_output,
-                "decoder_hidden_states": decoder_hidden_states,
-                "decoder_position_bias": decoder_position_bias,
-                "decoder_sa_scores": decoder_sa,
-                "decoder_ca_scores": decoder_ca,
-            }
-        else:
-            t5_output = {
-                "encoder_output": encoder_output,
-                "encoder_hidden_states": encoder_hidden_states,
-                "encoder_position_bias": encoder_position_bias,
-                "encoder_sa_scores": encoder_sa,
-            }
+            encoder_outputs.update(decoder_outputs)
+            encoder_decoder_outputs = encoder_outputs
 
             assert torch.jit.isinstance(
-                t5_output, Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
+                encoder_decoder_outputs,
+                Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]],
             )
 
-        return t5_output
+            return encoder_decoder_outputs
+
+        return encoder_outputs
