@@ -204,7 +204,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.15.0.dev20221228) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.15.0.dev20230104) &#x25BC</a>
     </div>
     
 
@@ -368,7 +368,7 @@
 
 
 <div class="viewcode-block" id="SentencePieceTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.SentencePieceTokenizer">[docs]</a><span class="k">class</span> <span class="nc">SentencePieceTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for Sentence Piece tokenizer from pre-trained sentencepiece model</span>
 
 <span class="sd">    Additiona details: https://github.com/google/sentencepiece</span>
@@ -387,7 +387,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">sp_model_path</span><span class="p">))</span>
 
 <div class="viewcode-block" id="SentencePieceTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.SentencePieceTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
 <span class="sd">        :type input: Union[str, List[str]]</span>
 <span class="sd">        :return: tokenized text</span>
@@ -405,7 +405,7 @@
 
 
 <div class="viewcode-block" id="VocabTransform"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.VocabTransform">[docs]</a><span class="k">class</span> <span class="nc">VocabTransform</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vocab transform to convert input batch of tokens into corresponding token ids</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vocab transform to convert input batch of tokens into corresponding token ids</span>
 
 <span class="sd">    :param vocab: an instance of :class:`torchtext.vocab.Vocab` class.</span>
 
@@ -426,7 +426,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
 
 <div class="viewcode-block" id="VocabTransform.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.VocabTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input batch of token to convert to correspnding token ids</span>
 <span class="sd">        :type input: Union[List[str], List[List[str]]]</span>
 <span class="sd">        :return: Converted input into corresponding token ids</span>
@@ -446,7 +446,7 @@
 
 
 <div class="viewcode-block" id="ToTensor"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.ToTensor">[docs]</a><span class="k">class</span> <span class="nc">ToTensor</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert input to torch tensor</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert input to torch tensor</span>
 
 <span class="sd">    :param padding_value: Pad value to make each input in the batch of length equal to the longest sequence in the batch.</span>
 <span class="sd">    :type padding_value: Optional[int]</span>
@@ -460,7 +460,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
 
 <div class="viewcode-block" id="ToTensor.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.ToTensor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Sequence or batch of token ids</span>
 <span class="sd">        :type input: Union[List[int], List[List[int]]]</span>
 <span class="sd">        :rtype: Tensor</span>
@@ -469,7 +469,7 @@
 
 
 <div class="viewcode-block" id="LabelToIndex"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.LabelToIndex">[docs]</a><span class="k">class</span> <span class="nc">LabelToIndex</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform labels from string names to ids.</span>
 
 <span class="sd">    :param label_names: a list of unique label names</span>
@@ -501,7 +501,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="n">get_itos</span><span class="p">()</span>
 
 <div class="viewcode-block" id="LabelToIndex.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.LabelToIndex.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input labels to convert to corresponding ids</span>
 <span class="sd">        :type input: Union[str, List[str]]</span>
 <span class="sd">        :rtype: Union[int, List[int]]</span>
@@ -519,7 +519,7 @@
 
 
 <div class="viewcode-block" id="Truncate"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Truncate">[docs]</a><span class="k">class</span> <span class="nc">Truncate</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Truncate input sequence</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Truncate input sequence</span>
 
 <span class="sd">    :param max_seq_len: The maximum allowable length for input sequence</span>
 <span class="sd">    :type max_seq_len: int</span>
@@ -530,7 +530,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_seq_len</span> <span class="o">=</span> <span class="n">max_seq_len</span>
 
 <div class="viewcode-block" id="Truncate.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Truncate.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sequence or batch of sequence to be truncated</span>
 <span class="sd">        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]</span>
 <span class="sd">        :return: Truncated sequence</span>
@@ -540,7 +540,7 @@
 
 
 <div class="viewcode-block" id="AddToken"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.AddToken">[docs]</a><span class="k">class</span> <span class="nc">AddToken</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add token to beginning or end of sequence</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add token to beginning or end of sequence</span>
 
 <span class="sd">    :param token: The token to be added</span>
 <span class="sd">    :type token: Union[int, str]</span>
@@ -554,7 +554,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">begin</span> <span class="o">=</span> <span class="n">begin</span>
 
 <div class="viewcode-block" id="AddToken.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.AddToken.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sequence or batch</span>
 <span class="sd">        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -563,7 +563,7 @@
 
 
 <div class="viewcode-block" id="PadTransform"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.PadTransform">[docs]</a><span class="k">class</span> <span class="nc">PadTransform</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pad tensor to a fixed length with given padding value.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pad tensor to a fixed length with given padding value.</span>
 
 <span class="sd">    :param max_length: Maximum length to pad to</span>
 <span class="sd">    :type max_length: int</span>
@@ -577,7 +577,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pad_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pad_value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PadTransform.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.PadTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param x: The tensor to pad</span>
 <span class="sd">        :type x: Tensor</span>
 <span class="sd">        :return: Tensor padded up to max_length with pad_value</span>
@@ -591,13 +591,13 @@
 
 
 <div class="viewcode-block" id="StrToIntTransform"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.StrToIntTransform">[docs]</a><span class="k">class</span> <span class="nc">StrToIntTransform</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert string tokens to integers (either single sequence or batch).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert string tokens to integers (either single sequence or batch).&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="StrToIntTransform.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.StrToIntTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: sequence or batch of string tokens to convert</span>
 <span class="sd">        :type input: Union[List[str], List[List[str]]]</span>
 <span class="sd">        :return: sequence or batch converted into corresponding token ids</span>
@@ -607,7 +607,7 @@
 
 
 <div class="viewcode-block" id="GPT2BPETokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.GPT2BPETokenizer">[docs]</a><span class="k">class</span> <span class="nc">GPT2BPETokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for GPT-2 BPE Tokenizer.</span>
 
 <span class="sd">    Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation</span>
@@ -657,7 +657,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -679,7 +679,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -693,7 +693,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_special_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">special_tokens_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a dictionary of special tokens (eos, pad, cls…) to the encoder</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a dictionary of special tokens (eos, pad, cls…) to the encoder</span>
 
 <span class="sd">        :param special_tokens_dict: dict of string. Keys should be in the list of predefined special attributes:</span>
 <span class="sd">        [bos_token, eos_token, unk_token, sep_token, pad_token, cls_token, mask_token, additional_special_tokens].</span>
@@ -713,7 +713,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="GPT2BPETokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.GPT2BPETokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
 <span class="sd">        :type input: Union[str, List[str]]</span>
 <span class="sd">        :return: tokenized text</span>
@@ -736,7 +736,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable tokenizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable tokenizer.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
             <span class="n">tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="c1"># Disable caching in script mode</span>
@@ -747,7 +747,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a decoded string given a list of string token ids.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a decoded string given a list of string token ids.</span>
 
 <span class="sd">        :param input: A list of strings, each string corresponds to token ids.</span>
 <span class="sd">        :type input: List[str]</span>
@@ -758,7 +758,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_pairs</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return set of symbol pairs in a word.</span>
 <span class="sd">    Word is represented as tuple of symbols (symbols being variable-length strings).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -771,7 +771,7 @@
 
 
 <div class="viewcode-block" id="CharBPETokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.CharBPETokenizer">[docs]</a><span class="k">class</span> <span class="nc">CharBPETokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for a Character Byte-Pair-Encoding Tokenizer.</span>
 
 <span class="sd">    Args:</span>
@@ -830,7 +830,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoder</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_bpe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Splits the input token into bpe tokens. The output depends on the encoder and merge list specified in the class</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Splits the input token into bpe tokens. The output depends on the encoder and merge list specified in the class</span>
 <span class="sd">        constructor. For example, _bpe(&quot;pytorch&quot;) may return &quot;p y t o r c h&quot; or &quot;py tor ch&quot; or &quot;pytorch&quot; depending on which</span>
 <span class="sd">        merges exist.</span>
 
@@ -890,7 +890,7 @@
         <span class="k">return</span> <span class="n">word</span>
 
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -907,7 +907,7 @@
         <span class="k">return</span> <span class="n">encoded_tokens</span>
 
     <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -921,7 +921,7 @@
         <span class="k">return</span> <span class="n">tokens</span>
 
     <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Decode a list of token IDs into a string</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decode a list of token IDs into a string</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            token: A list of IDs (either str or int depending on encoder json)</span>
@@ -938,7 +938,7 @@
             <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoded_list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CharBPETokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.CharBPETokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Forward method of module encodes strings or list of strings into token ids</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method of module encodes strings or list of strings into token ids</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            input: Input sentence or list of sentences on which to apply tokenizer.</span>
@@ -964,7 +964,7 @@
 
 
 <div class="viewcode-block" id="CLIPTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.CLIPTokenizer">[docs]</a><span class="k">class</span> <span class="nc">CLIPTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for CLIP Tokenizer. Based on Byte-Level BPE.</span>
 
 <span class="sd">    Reimplements CLIP Tokenizer in TorchScript. Original implementation:</span>
@@ -1043,7 +1043,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -1066,7 +1066,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -1081,7 +1081,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CLIPTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.CLIPTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
 <span class="sd">        :type input: Union[str, List[str]]</span>
 <span class="sd">        :return: tokenized text</span>
@@ -1104,7 +1104,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable tokenizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable tokenizer.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
             <span class="n">tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="c1"># Disable caching in script mode</span>
@@ -1116,7 +1116,7 @@
 
 
 <div class="viewcode-block" id="BERTTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.BERTTokenizer">[docs]</a><span class="k">class</span> <span class="nc">BERTTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for BERT Tokenizer.</span>
 
 <span class="sd">    Based on WordPiece algorithm introduced in paper:</span>
@@ -1175,7 +1175,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode text into a list of tokens IDs</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -1192,14 +1192,14 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_batch_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Batch version of _encode i.e operate on list of str&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Batch version of _encode i.e operate on list of str&quot;&quot;&quot;</span>
         <span class="n">token_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span><span class="o">.</span><span class="n">batch_encode</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text</span><span class="p">])</span>
         <span class="n">tokens_ids_str</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">token_ids</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">tokens_ids_str</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tokenize text into a list of tokens</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text: An input text string.</span>
@@ -1214,11 +1214,11 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
     <span class="k">def</span> <span class="nf">_batch_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Batch version of _tokenize i.e operate on list of str&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Batch version of _tokenize i.e operate on list of str&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bert_model</span><span class="o">.</span><span class="n">batch_tokenize</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text</span><span class="p">])</span>
 
 <div class="viewcode-block" id="BERTTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.BERTTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
 <span class="sd">        :type input: Union[str, List[str]]</span>
 <span class="sd">        :return: tokenized text</span>
@@ -1251,7 +1251,7 @@
 
 
 <div class="viewcode-block" id="RegexTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.RegexTokenizer">[docs]</a><span class="k">class</span> <span class="nc">RegexTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list. It is backed by the `C++ RE2 regular expression engine &lt;https://github.com/google/re2&gt;`_ from Google.</span>
 
 <span class="sd">    Args:</span>
@@ -1297,7 +1297,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="p">,</span> <span class="n">RegexTokenizerPybind</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RegexTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.RegexTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            lines (str): a text string to tokenize.</span>
 
@@ -1308,7 +1308,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable RegexTokenizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable RegexTokenizer.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
             <span class="n">regex_tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1322,7 +1322,7 @@
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">bytes_to_unicode</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Original Source: https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9</span>
 
 <span class="sd">    Returns list of utf-8 byte and a corresponding list of unicode strings.</span>
@@ -1346,10 +1346,10 @@
 
 
 <div class="viewcode-block" id="Sequential"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Sequential">[docs]</a><span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;A container to host a sequence of text transforms.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A container to host a sequence of text transforms.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Sequential.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Sequential.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param input: Input sequence or batch. The input type must be supported by the first transform in the sequence.</span>
 <span class="sd">        :type input: `Any`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1359,7 +1359,7 @@
 
 
 <span class="k">class</span> <span class="nc">MaskTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The transform chooses mask_prob% (example 15%) of the token positions at random for</span>
 <span class="sd">    prediction.</span>
 
@@ -1421,7 +1421,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_bos</span> <span class="o">=</span> <span class="n">mask_bos</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies mask to input tokens.</span>
 
 <span class="sd">        Inputs:</span>
@@ -1453,7 +1453,7 @@
         <span class="k">return</span> <span class="n">masked_tokens</span><span class="p">,</span> <span class="n">target_tokens</span><span class="p">,</span> <span class="n">mask</span>
 
     <span class="k">def</span> <span class="nf">_random_masking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="n">mask_prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to mask tokens randomly.</span>
 
 <span class="sd">        Inputs:</span>
@@ -1513,7 +1513,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Torchtext Contributors.
+        &copy; Copyright 2023, Torchtext Contributors.
 
     </p>
   </div>
