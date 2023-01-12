@@ -51,4 +51,4 @@ jobs:
       os: ${{ inputs.os }}
       channel: ${{ inputs.channel }}
       repository: "pytorch/text"
-      smoke_test: "./.github/scripts/validate_binaries.sh"
+      smoke_test: "source ./.github/scripts/validate_binaries.sh"

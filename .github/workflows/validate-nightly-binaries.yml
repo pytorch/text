@@ -13,12 +13,12 @@ on:
     paths:
       - .github/workflows/validate-nightly-binaries.yml
       - .github/workflows/validate-binaries.yml
-      - .github/scripts/validate-binaries.sh
+      - .github/scripts/validate_binaries.sh
   pull_request:
     paths:
       - .github/workflows/validate-nightly-binaries.yml
       - .github/workflows/validate-binaries.yml
-      - .github/scripts/validate-binaries.sh
+      - .github/scripts/validate_binaries.sh
 jobs:
   nightly:
     uses: ./.github/workflows/validate-binaries.yml
