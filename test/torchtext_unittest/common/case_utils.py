@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from itertools import zip_longest
 
+import torch
 from torchtext._internal.module_utils import is_module_available
 
 
@@ -37,9 +38,32 @@ class TempDirMixin:
         return path
 
 
+class TestBaseMixin:
+    """Mixin to provide consistent way to define device/dtype/backend aware TestCase"""
+
+    dtype = None
+    device = None
+
+    def setUp(self):
+        super().setUp()
+        torch.random.manual_seed(2434)
+
+    @property
+    def complex_dtype(self):
+        if self.dtype in ["float32", "float", torch.float, torch.float32]:
+            return torch.cfloat
+        if self.dtype in ["float64", "double", torch.double, torch.float64]:
+            return torch.cdouble
+        raise ValueError(f"No corresponding complex dtype for {self.dtype}")
+
+
 def skipIfNoModule(module, display_name=None):
     display_name = display_name or module
     return unittest.skipIf(not is_module_available(module), f'"{display_name}" is not available')
+
+
+def skipIfNoCuda(module):
+    return unittest.skipIf(not torch.cuda.is_available(), "CUDA is not available.")
 
 
 def zip_equal(*iterables):
