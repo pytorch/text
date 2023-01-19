@@ -6,6 +6,6 @@ from .models_test_impl import BaseTestModels
 
 
 @skipIfNoCuda
-class TestModels32GPUTest(BaseTestModels, TorchtextTestCase):
+class TestModels32GPU(BaseTestModels, TorchtextTestCase):
     dtype = torch.float32
     device = torch.device("cuda")
