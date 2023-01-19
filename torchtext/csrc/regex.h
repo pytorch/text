@@ -13,6 +13,7 @@ struct Regex : torch::CustomClassHolder {
   std::string re_str_;
 
   TORCHTEXT_API Regex(const std::string& re_str);
+  TORCHTEXT_API ~Regex();
   TORCHTEXT_API std::string Sub(std::string str, const std::string& repl) const;
   TORCHTEXT_API bool FindAndConsume(re2::StringPiece* input, std::string* text)
       const;
