@@ -195,7 +195,7 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_path = f"{tmp_dir}/hf_t5_small_enc"
 
-            t5_small_enc = T5EncoderModel.from_pretrained("t5-small")
+            t5_small_enc = T5EncoderModel.from_pretrained("t5-small", encoder_only=True)
             t5_small_enc.save_pretrained(model_path)
 
             our_encoder = T5Bundle.build_model_from_huggingface_ckpt(model_path)
@@ -218,7 +218,7 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             t5_small = T5Model.from_pretrained("t5-small")
             t5_small.save_pretrained(model_path)
 
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=False)
 
             hf_output = t5_small(
                 input_ids=self.encoder_input_ids,
@@ -240,7 +240,7 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             t5_small_gen = T5ForConditionalGeneration.from_pretrained("t5-small")
             t5_small_gen.save_pretrained(model_path)
 
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=False)
 
             hf_output = t5_small_gen(
                 input_ids=self.encoder_input_ids,

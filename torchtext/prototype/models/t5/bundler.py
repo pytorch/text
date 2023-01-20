@@ -138,6 +138,7 @@ class T5Bundle:
     @staticmethod
     def build_model_from_huggingface_ckpt(
         ckpt_path: Union[str, os.PathLike],
+        encoder_only: bool,
         *,
         freeze_model: bool = False,
         strict: bool = True,
@@ -163,13 +164,14 @@ class T5Bundle:
 
         # TODO(joecummings): find better way to determine `encoder_only` and `linear_head`
         config = T5Conf(
-            encoder_only="decoder.final_layer_norm.weight" not in hf_weights.keys(),
+            encoder_only=encoder_only,
             linear_head="lm_head.weight" in hf_weights.keys(),
             embedding_dim=config_json["d_model"],
             num_attention_heads=config_json["num_heads"],
             num_encoder_layers=config_json["num_layers"],
             num_decoder_layers=config_json["num_decoder_layers"],
             ffn_dimension=config_json["d_ff"],
+            feed_forward_proj=config_json.get("feed_forward_proj"),
         )
 
         t5_model = T5Model(config, freeze_model)
@@ -184,9 +186,20 @@ class T5Bundle:
         }
         # Convert encoder layers
         for i in range(config.num_encoder_layers):
-            t5_model_state_dict[f"encoder.layers.{i}.linear1.weight"] = hf_weights[
-                f"encoder.block.{i}.layer.1.DenseReluDense.wi.weight"
-            ]
+            if config.is_gated_act:
+                t5_model_state_dict[f"encoder.layers.{i}.linear1_0.weight"] = hf_weights[
+                    f"encoder.block.{i}.layer.1.DenseReluDense.wi_0.weight"
+                ]
+
+                t5_model_state_dict[f"encoder.layers.{i}.linear1_1.weight"] = hf_weights[
+                    f"encoder.block.{i}.layer.1.DenseReluDense.wi_1.weight"
+                ]
+
+            else:
+                t5_model_state_dict[f"encoder.layers.{i}.linear1.weight"] = hf_weights[
+                    f"encoder.block.{i}.layer.1.DenseReluDense.wi.weight"
+                ]
+
             t5_model_state_dict[f"encoder.layers.{i}.linear2.weight"] = hf_weights[
                 f"encoder.block.{i}.layer.1.DenseReluDense.wo.weight"
             ]
