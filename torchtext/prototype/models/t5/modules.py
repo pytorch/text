@@ -542,7 +542,6 @@ class T5EncoderLayer(nn.Module):
         relative_attention_max_distance: int = 128,
         is_gated_act: bool = False,
         compute_relative_attention_bias: bool = False,
-
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -593,7 +592,7 @@ class T5EncoderLayer(nn.Module):
                 self.activation = F.gelu
             elif activation == "gelu_new":
                 # the following should match the math of https://github.com/huggingface/transformers/blob/main/src/transformers/activations.py
-                self.activation = nn.GELU(approximate='tanh')
+                self.activation = nn.GELU(approximate="tanh")
         else:
             self.activation = activation
 

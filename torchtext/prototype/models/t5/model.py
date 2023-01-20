@@ -43,7 +43,7 @@ class T5Conf:
         if self.feed_forward_proj:
             act_info = self.feed_forward_proj.split("-")
             self.activation = act_info[-1]
-            self.is_gated_act = (act_info[0] == "gated")
+            self.is_gated_act = act_info[0] == "gated"
 
             if len(act_info) > 1 and act_info[0] != "gated" or len(act_info) > 2:
                 raise ValueError(
