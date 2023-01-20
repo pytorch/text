@@ -10,7 +10,7 @@ from torch import Tensor
 from .modules import T5Decoder, T5Encoder
 
 
-@dataclass(frozen=True)
+@dataclass
 class T5Conf:
     encoder_only: bool = False
     linear_head: bool = False
@@ -29,6 +29,32 @@ class T5Conf:
     max_seq_len: int = 512
     vocab_size: int = 32128
     training: bool = False
+    feed_forward_proj: str = None
+    is_gated_act: bool = False
+
+    def __post_init__(self):
+        """
+        the following is modified from
+        https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/configuration_t5.py
+
+        It's to support T5 1.1 and FLAN-T5.
+        """
+
+        if self.feed_forward_proj:
+            act_info = self.feed_forward_proj.split("-")
+            self.activation = act_info[-1]
+            self.is_gated_act = (act_info[0] == "gated")
+
+            if len(act_info) > 1 and act_info[0] != "gated" or len(act_info) > 2:
+                raise ValueError(
+                    f"`feed_forward_proj`: {self.feed_forward_proj} is not a valid activation function of the dense layer."
+                    "Please make sure `feed_forward_proj` is of the format `gated-{ACT_FN}` or `{ACT_FN}`, e.g. "
+                    "'gated-gelu' or 'relu'"
+                )
+
+            # for backwards compatibility
+            if self.feed_forward_proj == "gated-gelu":
+                self.activation = "gelu_new"
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L1269
@@ -102,6 +128,7 @@ class T5Model(nn.Module):
             relative_attention_num_buckets=config.relative_attention_num_buckets,
             relative_attention_max_distance=config.relative_attention_max_distance,
             token_embeddings=self.token_embeddings,
+            is_gated_act=config.is_gated_act,
             device=device,
             dtype=dtype,
         )
