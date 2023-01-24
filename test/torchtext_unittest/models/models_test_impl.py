@@ -75,8 +75,8 @@ class BaseTestModels(TestBaseMixin):
 
         def _train(model):
             optim = SGD(model.parameters(), lr=1)
-            model_input = torch.tensor([[0, 1, 2, 3, 4, 5]])
-            target = torch.tensor([0])
+            model_input = torch.tensor([[0, 1, 2, 3, 4, 5]]).to(device=self.device)
+            target = torch.tensor([0]).to(device=self.device)
             logits = model(model_input)
             loss = torch_F.cross_entropy(logits, target)
             loss.backward()
