@@ -14,8 +14,6 @@ def validateTorchdataVersion():
 
     date_t_str = re.findall(r"dev\d+", torchdata.__version__)[0]
     date_t_delta = datetime.now() - datetime.strptime(date_t_str[3:], "%Y%m%d")
-    print(date_t_str, date_t_str[0][3:])
-    print(date_t_delta.days)
 
     if date_t_delta.days >= NIGHTLY_ALLOWED_DELTA:
         raise RuntimeError(f"torchdata binary {torchdata.__version__} is more than {NIGHTLY_ALLOWED_DELTA} days old!")
