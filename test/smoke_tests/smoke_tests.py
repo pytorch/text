@@ -1,23 +1,24 @@
 """Run smoke tests"""
 
+import re
 
 import torchdata
 import torchtext
 import torchtext.version  # noqa: F401
 
+NIGHTLY_ALLOWED_DELTA = 3
+
 
 def validateTorchdataVersion():
-    from datetime import datetime, timedelta
+    from datetime import datetime
 
-    # validate torchdata version is within 3 days of current day
-    torchdata_date_str = torchdata.__version__[-8:]
-    torchdata_datetime = datetime(
-        year=int(torchdata_date_str[:4]), month=int(torchdata_date_str[4:6]), day=int(torchdata_date_str[6:])
-    )
+    date_t_str = re.findall(r"dev\d+", torchdata.__version__)[0]
+    date_t_delta = datetime.now() - datetime.strptime(date_t_str[3:], "%Y%m%d")
+    print(date_t_str, date_t_str[0][3:])
+    print(date_t_delta.days)
 
-    assert torchdata_datetime >= datetime.now() - timedelta(
-        days=3
-    ), f"torchdata package version '{torchdata.__version__}' cannot be older than 3 days"
+    if date_t_delta.days >= NIGHTLY_ALLOWED_DELTA:
+        raise RuntimeError(f"torchdata binary {torchdata.__version__} is more than {NIGHTLY_ALLOWED_DELTA} days old!")
 
 
 validateTorchdataVersion()
