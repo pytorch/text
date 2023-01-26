@@ -43,7 +43,7 @@ jobs:
         fi
 
         # Create Conda Env
-        conda create -yp ci_env python="${PYTHON_VERSION}"
+        conda create --quiet -yp ci_env python="${PYTHON_VERSION}"
         conda activate /work/ci_env
         python3 -m pip --quiet install cmake>=3.18.0 ninja
         conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
@@ -58,15 +58,16 @@ jobs:
         set -ex
         conda install \
           --yes \
+          --quiet \
           -c "pytorch-${CHANNEL}" \
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
-        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu --quiet
         python3 setup.py develop
-        python3 -m pip install parameterized
+        python3 -m pip install parameterized --quiet
 
         # Run Tests
         python3 -m torch.utils.collect_env
         cd test
-        python3 -m pytest --cov=torchtext --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest
+        python3 -m pytest --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest/models/gpu_tests
