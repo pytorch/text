@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from itertools import zip_longest
 
+import torch
 from torchtext._internal.module_utils import is_module_available
 
 
@@ -35,6 +36,17 @@ class TempDirMixin:
         path = os.path.join(temp_dir, *paths)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         return path
+
+
+class TestBaseMixin:
+    """Mixin to provide consistent way to define device/dtype/backend aware TestCase"""
+
+    dtype = None
+    device = None
+
+    def setUp(self):
+        super().setUp()
+        torch.random.manual_seed(2434)
 
 
 def skipIfNoModule(module, display_name=None):
