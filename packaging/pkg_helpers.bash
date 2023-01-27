@@ -136,7 +136,7 @@ retry () {
 }
 
 # Inputs:
-#   PYTHON_VERSION (2.7, 3.5, 3.6, 3.7)
+#   PYTHON_VERSION (2.7, 3.8, 3.9, 3.10)
 #   UNICODE_ABI (bool)
 #
 # Outputs:
@@ -158,7 +158,6 @@ setup_wheel_python() {
           python_abi=cp27-cp27m
         fi
         ;;
-      3.7) python_abi=cp37-cp37m ;;
       3.8) python_abi=cp38-cp38 ;;
       3.9) python_abi=cp39-cp39 ;;
       3.10) python_abi=cp310-cp310 ;;
