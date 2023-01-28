@@ -88,7 +88,7 @@ jobs:
 
   lint_python_and_config:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     steps:
       - checkout
       - run:
@@ -107,7 +107,7 @@ jobs:
 
   lint_c:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     steps:
       - run:
           name: Install additional system libraries
@@ -620,9 +620,6 @@ workflows:
           name: binary_linux_wheel_py3.8
           python_version: '3.8'
       - binary_windows_wheel:
-          name: binary_windows_wheel_py3.7
-          python_version: '3.7'
-      - binary_windows_wheel:
           name: binary_windows_wheel_py3.8
           python_version: '3.8'
       - binary_windows_wheel:
@@ -631,9 +628,6 @@ workflows:
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.10
           python_version: '3.10'
-      - binary_windows_conda:
-          name: binary_windows_conda_py3.7
-          python_version: '3.7'
       - binary_windows_conda:
           name: binary_windows_conda_py3.8
           python_version: '3.8'
@@ -667,9 +661,6 @@ workflows:
   unittest:
     jobs:
       - unittest_windows:
-          name: unittest_windows_py3.7
-          python_version: '3.7'
-      - unittest_windows:
           name: unittest_windows_py3.8
           python_version: '3.8'
       - unittest_windows:
@@ -692,34 +683,6 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: nightly_binary_linux_wheel_py3.8
           python_version: '3.8'
-      - binary_windows_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.7
-          python_version: '3.7'
-      - binary_wheel_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.7_upload
-          requires:
-          - nightly_binary_windows_wheel_py3.7
-      - smoke_test_windows_pip:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_wheel_py3.7_smoke_test_pip
-          python_version: '3.7'
-          requires:
-          - nightly_binary_windows_wheel_py3.7_upload
       - binary_windows_wheel:
           filters:
             branches:
@@ -804,34 +767,6 @@ workflows:
           python_version: '3.10'
           requires:
           - nightly_binary_windows_wheel_py3.10_upload
-      - binary_windows_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.7
-          python_version: '3.7'
-      - binary_conda_upload:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.7_upload
-          requires:
-          - nightly_binary_windows_conda_py3.7
-      - smoke_test_windows_conda:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_windows_conda_py3.7_smoke_test_conda
-          python_version: '3.7'
-          requires:
-          - nightly_binary_windows_conda_py3.7_upload
       - binary_windows_conda:
           filters:
             branches:
