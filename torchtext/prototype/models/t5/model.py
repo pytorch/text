@@ -33,8 +33,7 @@ class T5Conf:
     is_gated_act: bool = False
 
     def __post_init__(self):
-        """
-        the following is modified from
+        """ The following is modified from:
         https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/configuration_t5.py
 
         It's to support T5 1.1 and FLAN-T5.
@@ -145,6 +144,7 @@ class T5Model(nn.Module):
                 layer_norm_eps=config.layer_norm_eps,
                 relative_attention_num_buckets=config.relative_attention_num_buckets,
                 relative_attention_max_distance=config.relative_attention_max_distance,
+                is_gated_act=config.is_gated_act,
                 device=device,
                 dtype=dtype,
             )
