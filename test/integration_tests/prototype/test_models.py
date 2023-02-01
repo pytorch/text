@@ -4,15 +4,15 @@ import pytest  # noqa: F401
 import torch
 from parameterized import parameterized, parameterized_class
 from torchtext.prototype.models import (
-    T5_BASE_ENCODER,
     T5_BASE,
+    T5_BASE_ENCODER,
     T5_BASE_GENERATION,
-    T5_SMALL_ENCODER,
-    T5_SMALL,
-    T5_SMALL_GENERATION,
-    T5_LARGE_ENCODER,
     T5_LARGE,
+    T5_LARGE_ENCODER,
     T5_LARGE_GENERATION,
+    T5_SMALL,
+    T5_SMALL_ENCODER,
+    T5_SMALL_GENERATION,
     T5Conf,
     T5Transform,
 )
@@ -21,7 +21,7 @@ from torchtext.prototype.models.t5.wrapper import T5Wrapper
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
-from transformers import T5Model, T5EncoderModel, T5ForConditionalGeneration
+from transformers import T5EncoderModel, T5ForConditionalGeneration, T5Model
 
 BUNDLERS = {
     "base_model": T5_BASE,
@@ -254,7 +254,7 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
 
             self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
-    
+
     def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder(self) -> None:
-        #TODO(joecummings): Download FLAN-T5 chkpts and test here
+        # TODO(joecummings): Download FLAN-T5 chkpts and test here
         pass

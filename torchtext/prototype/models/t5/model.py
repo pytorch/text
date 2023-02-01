@@ -33,7 +33,7 @@ class T5Conf:
     is_gated_act: bool = False
 
     def __post_init__(self):
-        """ The following is modified from:
+        """The following is modified from:
         https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/configuration_t5.py
 
         It's to support T5 1.1 and FLAN-T5.
