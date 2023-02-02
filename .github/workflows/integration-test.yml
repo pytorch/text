@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: linux.large
+    runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
@@ -29,3 +29,5 @@ jobs:
       - name: Run integration test
         run: |
           cd test && pytest integration_tests -v --use-tmp-hub-dir
+        with:
+          runner: linux.2xlarge
