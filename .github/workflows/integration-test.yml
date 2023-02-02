@@ -8,12 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: linux.12xlarge
     strategy:
       fail-fast: false
       matrix:
         python-version: [3.8]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -29,5 +28,3 @@ jobs:
       - name: Run integration test
         run: |
           cd test && pytest integration_tests -v --use-tmp-hub-dir
-        with:
-          runner: linux.2xlarge
