@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: linux.2xlarge
+    runs-on: linux.large
     strategy:
       fail-fast: false
       matrix:
