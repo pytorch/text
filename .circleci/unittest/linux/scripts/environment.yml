@@ -1,7 +1,6 @@
 channels:
   - defaults
 dependencies:
-  - codecov
   - pip
   - pip:
       - dataclasses
