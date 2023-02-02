@@ -16,7 +16,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        python_version: ["3.8", "3.9", "3.10"]
+        python_version: ["3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
@@ -39,7 +39,12 @@ jobs:
         fi
 
         # Create Conda Env
-        conda create -yp ci_env python="${PYTHON_VERSION}"
+        if [[ "${PYTHON_VERSION}" = "3.11" ]]; then
+          conda create -yp ci_env -c conda-forge python="${PYTHON_VERSION}"
+        else
+          conda create -yp ci_env python="${PYTHON_VERSION}"
+        fi
+
         conda activate /work/ci_env
         python3 -m pip --quiet install cmake>=3.18.0 ninja
         conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
@@ -52,11 +57,15 @@ jobs:
 
         # Install PyTorch, Torchvision, and TorchData
         set -ex
-        conda install \
-          --yes \
-          -c "pytorch-${CHANNEL}" \
-          -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
-          "${CUDATOOLKIT}"
+        if [[ "${PYTHON_VERSION}" = "3.11" ]]; then
+          conda install \
+            --yes \
+            -c "pytorch-${CHANNEL}" \
+            -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
+            "${CUDATOOLKIT}"
+        else
+          python -m pip install --pre torch --index-url https://download.pytorch.org/whl/nightly/cpu
+        fi
         printf "Installing torchdata nightly\n"
         python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
         python3 setup.py develop
