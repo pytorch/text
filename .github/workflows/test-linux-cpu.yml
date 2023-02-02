@@ -48,7 +48,8 @@ jobs:
 
         conda activate /work/ci_env
         python3 -m pip --quiet install cmake>=3.18.0 ninja
-        conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
+        # conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
+        python3 -m pip install dataclasses nltk requests revtok pytest pytest-cov ptest-pythonpath sacremoses spacy tqdm expecttest
 
         # TorchText-specific Setup
         printf "* Downloading SpaCy English models\n"
