@@ -19,7 +19,7 @@ Sphinx
 pytest
 expecttest
 parameterized
-torchdata
+torchdata>0.5
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath
