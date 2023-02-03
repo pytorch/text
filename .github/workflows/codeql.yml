@@ -35,7 +35,9 @@ jobs:
           sudo ln -s /usr/bin/ninja /usr/bin/ninja-build
 
       - name: Build TorchText
-        run: python setup.py develop --user
+        run: |
+          python -m pip install setuptools==65.7.0
+          python setup.py develop --user
 
       # If any code scanning alerts are found, they will be under Security -> CodeQL
       # Link: https://github.com/pytorch/text/security/code-scanning
