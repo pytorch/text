@@ -91,6 +91,9 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
 If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/main/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/main/manywheel>`_.
 
+Additionally, datasets in torchtext are implemented using the torchdata library. Please take a look at the
+`installation instructions <https://github.com/pytorch/data#installation>`_ to download the latest nightlies or install from source.
+
 Documentation
 =============
 
