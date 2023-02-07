@@ -1,9 +1,9 @@
 TorchText Logo
 ===============
 
-If you make your project using TorchText and you want to mention TorchText, you can use TorchText logo. There are couple of variations. You can download them from `here <https://download.pytorch.org/torchaudio/logo/v1.zip>`__.
+If you make your project using TorchText and you want to mention TorchText, you can use TorchText logo. There are couple of variations. You can download them from `here <https://download.pytorch.org/torchtext/logo/v1/torchtext-logo.zip>`__.
 
-Please follow `the guideline <https://download.pytorch.org/torchaudio/logo/v1/guidelines.pdf>`__ for the proper usage.
+Please follow `the guideline <https://download.pytorch.org/torchtext/logo/v1/guidelines.pdf>`__ for the proper usage.
 
 .. warning::
 
@@ -12,39 +12,39 @@ Please follow `the guideline <https://download.pytorch.org/torchaudio/logo/v1/gu
 Icon
 ----
 
-.. image:: https://download.pytorch.org/torchaudio/logo/v1/icon.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Favicon32px.png
    :width: 400
 
 Horizontal
 ----------
 
-.. image:: https://download.pytorch.org/torchaudio/logo/v1/logo_horizontal_fullcolor.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_fullColor_RGB.png
    :width: 400
 
 |
-.. image:: https://download.pytorch.org/torchaudio/logo/v1/logo_horizontal_black.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_black_RGB.png
    :width: 400
 
 |
 .. raw:: html
 
     <div style="background-color:black; width: 400px;">
-      <img src="https://download.pytorch.org/torchaudio/logo/v1/logo_horizontal_white.png" width="400"></img>
+      <img src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_white_RGB.png" width="400"></img>
     </div>
 
 Vertical
 --------
 
-.. image:: https://download.pytorch.org/torchaudio/logo/v1/logo_vertical_fullcolor.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_fullColor_RGB.png
    :width: 400
 
 |
-.. image:: https://download.pytorch.org/torchaudio/logo/v1/logo_vertical_black.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_black_RGB.png
    :width: 400
 
 |
 .. raw:: html
 
     <div style="background-color:black; width: 400px;">
-      <img src="https://download.pytorch.org/torchaudio/logo/v1/logo_vertical_white.png" width="400"></img>
+      <img src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_white_RGB.png" width="400"></img>
     </div>
