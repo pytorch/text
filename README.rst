@@ -1,3 +1,5 @@
+.. image:: docs/source/_static/img/torchtext_logo.png
+
 .. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
     :target: https://circleci.com/gh/pytorch/text
 

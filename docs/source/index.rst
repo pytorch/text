@@ -1,5 +1,6 @@
 torchtext
 =========
+.. image:: _static/img/torchtext_logo.png
 
 This library is part of the `PyTorch
 <http://pytorch.org/>`_ project. PyTorch is an open source
