@@ -12,7 +12,7 @@ Please follow `the guideline <https://download.pytorch.org/torchtext/logo/v1/gui
 Icon
 ----
 
-.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Favicon32px.png
+.. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Symbol_fullColor_RGB.png
    :width: 400
 
 Horizontal
