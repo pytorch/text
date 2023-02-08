@@ -7,7 +7,7 @@ Please follow `the guideline <https://download.pytorch.org/torchtext/logo/v1/gui
 
 .. warning::
 
-Please do not alter the logo. The guideline lists examples of improper usages as well, so please check them out before using the logos.
+   Please do not alter the logo. The guideline lists examples of improper usages as well, so please check them out before using the logos.
 
 Icon
 ----
