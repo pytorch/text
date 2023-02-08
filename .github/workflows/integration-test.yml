@@ -7,27 +7,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-    with:
-      runner: linux.2xlarge
+  tests:
     strategy:
-      fail-fast: false
       matrix:
-        python-version: [3.8]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install packages
-        run: |
-          python -m pip install --quiet --upgrade pip
-          python -m pip install --quiet --pre torch torchdata -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
-          python -m pip install --quiet pytest requests cmake ninja sentencepiece parameterized tqdm expecttest transformers
-          python setup.py install
-      - name: Run integration test
-        run: |
-          cd test && pytest integration_tests -v --use-tmp-hub-dir
+        python_version: ["3.8"]
+      fail-fast: false
+    uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
+    with:
+      runner: linux.12xlarge
+      repository: pytorch/text
+      script: |
+        # Mark Build Directory Safe
+        git config --global --add safe.directory /__w/text/text
+        # Set up Environment Variables
+        export PYTHON_VERSION="${{ matrix.python_version }}"
+        export VERSION="cpu"
+        export CUDATOOLKIT="cpuonly"
+        # Set CHANNEL
+        if [[ (${GITHUB_EVENT_NAME} = 'pull_request' && (${GITHUB_BASE_REF} = 'release'*)) || (${GITHUB_REF} = 'refs/heads/release'*) ]]; then
+          export CHANNEL=test
+        else
+          export CHANNEL=nightly
+        fi
+        # Create Conda Env
+        conda create -yp ci_env python="${PYTHON_VERSION}"
+        conda activate /work/ci_env
+        python3 -m pip --quiet install cmake>=3.18.0 ninja
+        conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
+        # TorchText-specific Setup
+        printf "* Downloading SpaCy English models\n"
+        python -m spacy download en_core_web_sm
+        printf "* Downloading SpaCy German models\n"
+        python -m spacy download de_core_news_sm
+        # Install PyTorch, Torchvision, and TorchData
+        set -ex
+        conda install \
+          --yes \
+          -c "pytorch-${CHANNEL}" \
+          -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
+          "${CUDATOOLKIT}"
+        printf "Installing torchdata nightly\n"
+        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+        python3 setup.py develop
+        python3 -m pip install parameterized
+        # Run Tests
+        python3 -m torch.utils.collect_env
+        cd test
+        pytest integration_tests -v --use-tmp-hub-dir
