@@ -1,13 +1,13 @@
 TorchText Logo
 ===============
 
-If you make your project using TorchText and you want to mention TorchText, you can use TorchText logo. There are couple of variations. You can download them from `here <https://download.pytorch.org/torchtext/logo/v1/torchtext-logo.zip>`__.
+If you make your project using TorchText and you want to mention TorchText, you can use the TorchText logo. There are couple of variations. You can download them from `here <https://download.pytorch.org/torchtext/logo/v1/torchtext-logo.zip>`__.
 
 Please follow `the guideline <https://download.pytorch.org/torchtext/logo/v1/guidelines.pdf>`__ for the proper usage.
 
 .. warning::
 
-   Please do not alter the logo. The guideline lists examples of inproper usages as well, so please check them out before using the logos.
+Please do not alter the logo. The guideline lists examples of improper usages as well, so please check them out before using the logos.
 
 Icon
 ----
