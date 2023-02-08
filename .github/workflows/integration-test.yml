@@ -49,7 +49,13 @@ jobs:
         printf "Installing torchdata nightly\n"
         python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
         python3 setup.py develop
-        python3 -m pip install parameterized
+        # Install integration test dependencies
+        python3 -m pip --quiet install parameterized
+        python3 -m pip --quiet install requests
+        python3 -m pip --quiet install sentencepiece
+        python3 -m pip --quiet install tqdm
+        python3 -m pip --quiet install expecttest
+        python3 -m pip --quiet install transformers
         # Run Tests
         python3 -m torch.utils.collect_env
         cd test
