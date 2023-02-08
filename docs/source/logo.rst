@@ -22,10 +22,12 @@ Horizontal
    :width: 400
 
 |
+
 .. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_black_RGB.png
    :width: 400
 
 |
+
 .. raw:: html
 
     <div style="background-color:black; width: 400px;">
@@ -39,10 +41,12 @@ Vertical
    :width: 400
 
 |
+
 .. image:: https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_black_RGB.png
    :width: 400
 
 |
+
 .. raw:: html
 
     <div style="background-color:black; width: 400px;">
