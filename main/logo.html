@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.utils &mdash; Torchtext nightly documentation</title>
+  <title>TorchText Logo &mdash; Torchtext nightly documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.datasets" href="datasets.html" />
-    <link rel="prev" title="torchtext.data.metrics" href="data_metrics.html" />
+    <link rel="next" title="torchtext.nn" href="nn_modules.html" />
+    <link rel="prev" title="torchtext" href="index.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -232,16 +232,16 @@
             
             
               <p class="caption" role="heading"><span class="caption-text">Torchtext Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Index</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logo.html">TorchText Logo</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TorchText Logo</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
@@ -303,13 +303,13 @@
       </li>
 
         
-      <li>torchtext.data.utils</li>
+      <li>TorchText Logo</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/data_utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/logo.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -337,63 +337,44 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="module-torchtext.data.utils">
-<span id="torchtext-data-utils"></span><h1>torchtext.data.utils<a class="headerlink" href="#module-torchtext.data.utils" title="Permalink to this heading">¶</a></h1>
-<section id="get-tokenizer">
-<h2><span class="hidden-section">get_tokenizer</span><a class="headerlink" href="#get-tokenizer" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="torchtext.data.utils.get_tokenizer">
-<span class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></span><span class="sig-name descname"><span class="pre">get_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.get_tokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate tokenizer function for a string sentence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
-function, which splits the string sentence by space.
-If basic_english, it returns _basic_english_normalize() function,
-which normalize the string first and split by space. If a callable
-function, it will return the function. If a tokenizer library
-(e.g. spacy, moses, toktok, revtok, subword), it returns the
-corresponding library.</p></li>
-<li><p><strong>language</strong> – Default en</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchtext</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;You can now install TorchText using pip!&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;you&#39;</span><span class="p">,</span> <span class="s1">&#39;can&#39;</span><span class="p">,</span> <span class="s1">&#39;now&#39;</span><span class="p">,</span> <span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="s1">&#39;torchtext&#39;</span><span class="p">,</span> <span class="s1">&#39;using&#39;</span><span class="p">,</span> <span class="s1">&#39;pip&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span>
-</pre></div>
+  <section id="torchtext-logo">
+<h1>TorchText Logo<a class="headerlink" href="#torchtext-logo" title="Permalink to this heading">¶</a></h1>
+<p>If you make your project using TorchText and you want to mention TorchText, you can use the TorchText logo. There are couple of variations. You can download them from <a class="reference external" href="https://download.pytorch.org/torchtext/logo/v1/torchtext-logo.zip">here</a>.</p>
+<p>Please follow <a class="reference external" href="https://download.pytorch.org/torchtext/logo/v1/guidelines.pdf">the guideline</a> for the proper usage.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please do not alter the logo. The guideline lists examples of improper usages as well, so please check them out before using the logos.</p>
 </div>
-</dd></dl>
-
+<section id="icon">
+<h2>Icon<a class="headerlink" href="#icon" title="Permalink to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="https://download.pytorch.org/torchtext/logo/v1/TorchText_Symbol_fullColor_RGB.png"><img alt="https://download.pytorch.org/torchtext/logo/v1/TorchText_Symbol_fullColor_RGB.png" src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Symbol_fullColor_RGB.png" style="width: 400px;" /></a>
 </section>
-<section id="ngrams-iterator">
-<h2><span class="hidden-section">ngrams_iterator</span><a class="headerlink" href="#ngrams-iterator" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="torchtext.data.utils.ngrams_iterator">
-<span class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></span><span class="sig-name descname"><span class="pre">ngrams_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngrams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#ngrams_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.ngrams_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator that yields the given tokens and their ngrams.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token_list</strong> – A list of tokens</p></li>
-<li><p><strong>ngrams</strong> – the number of ngrams.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;here we&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;we are&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-</pre></div>
+<section id="horizontal">
+<h2>Horizontal<a class="headerlink" href="#horizontal" title="Permalink to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_fullColor_RGB.png"><img alt="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_fullColor_RGB.png" src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_fullColor_RGB.png" style="width: 400px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
-</dd></dl>
-
-</section>
+<a class="reference internal image-reference" href="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_black_RGB.png"><img alt="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_black_RGB.png" src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_black_RGB.png" style="width: 400px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div style="background-color:black; width: 400px;">
+  <img src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Horiz_white_RGB.png" width="400"></img>
+</div></section>
+<section id="vertical">
+<h2>Vertical<a class="headerlink" href="#vertical" title="Permalink to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_fullColor_RGB.png"><img alt="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_fullColor_RGB.png" src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_fullColor_RGB.png" style="width: 400px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_black_RGB.png"><img alt="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_black_RGB.png" src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_black_RGB.png" style="width: 400px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div style="background-color:black; width: 400px;">
+  <img src="https://download.pytorch.org/torchtext/logo/v1/TorchText_Vertical_white_RGB.png" width="400"></img>
+</div></section>
 </section>
 
 
@@ -404,10 +385,10 @@ corresponding library.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="datasets.html" class="btn btn-neutral float-right" title="torchtext.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="nn_modules.html" class="btn btn-neutral float-right" title="torchtext.nn" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="data_metrics.html" class="btn btn-neutral" title="torchtext.data.metrics" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="torchtext" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -441,9 +422,10 @@ corresponding library.</p></li>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.data.utils</a><ul>
-<li><a class="reference internal" href="#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li><a class="reference internal" href="#ngrams-iterator"><span class="hidden-section">ngrams_iterator</span></a></li>
+<li><a class="reference internal" href="#">TorchText Logo</a><ul>
+<li><a class="reference internal" href="#icon">Icon</a></li>
+<li><a class="reference internal" href="#horizontal">Horizontal</a></li>
+<li><a class="reference internal" href="#vertical">Vertical</a></li>
 </ul>
 </li>
 </ul>
