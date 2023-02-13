@@ -70,4 +70,4 @@ jobs:
         # Run Tests
         python3 -m torch.utils.collect_env
         cd test
-        python3 -m pytest --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest/models/gpu_tests
+        python3 -m pytest --junitxml=test-results/junit.xml -v --durations 20 -m gpu_test torchtext_unittest
