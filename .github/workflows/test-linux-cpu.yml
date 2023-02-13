@@ -58,6 +58,7 @@ jobs:
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
+        python3 -m pip install "portalocker>=2.0.0"
         python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
         python3 setup.py develop
         python3 -m pip install parameterized
