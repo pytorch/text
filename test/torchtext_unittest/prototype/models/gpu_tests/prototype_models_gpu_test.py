@@ -3,7 +3,7 @@ import unittest
 import pytest
 import torch
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
-from torchtext_unittest.models.models_test_impl import BaseTestModels
+from torchtext_unittest.prototype.models.models_test_impl import BaseTestModels
 
 
 @pytest.mark.gpu_test

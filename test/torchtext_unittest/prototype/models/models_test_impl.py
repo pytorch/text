@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 import torch
 from torch.nn import functional as F
-from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.case_utils import TestBaseMixin
 
 
-class TestModels(TorchtextTestCase):
+class BaseTestModels(TestBaseMixin):
     def test_t5_bundler_build_model(self) -> None:
         from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 
@@ -152,8 +152,8 @@ class TestModels(TorchtextTestCase):
 
         def _train(model):
             optim = SGD(model.parameters(), lr=1)
-            model_input = torch.tensor([[1, 2, 3, 4, 5]])
-            target = torch.tensor([1])
+            model_input = torch.tensor([[1, 2, 3, 4, 5]]).to(device=self.device)
+            target = torch.tensor([1]).to(device=self.device)
             output = model(model_input)["decoder_output"]
             logits = F.log_softmax(output[:, -1], dim=-1)
             loss = F.cross_entropy(logits, target)
@@ -177,6 +177,7 @@ class TestModels(TorchtextTestCase):
             freeze_model=False,
             checkpoint=dummy_model.state_dict(),
         )
+        model.to(device=self.device, dtype=self.dtype)
         current_state_dict = copy.deepcopy(model.state_dict())
 
         _train(model)
