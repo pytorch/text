@@ -150,6 +150,8 @@ class BaseTestModels(TestBaseMixin):
         from torch.optim import SGD
         from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
 
+        torch.manual_seed(123)
+
         def _train(model):
             optim = SGD(model.parameters(), lr=1)
             model_input = torch.tensor([[1, 2, 3, 4, 5]]).to(device=self.device)
