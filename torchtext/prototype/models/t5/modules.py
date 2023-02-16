@@ -542,7 +542,6 @@ class T5EncoderLayer(nn.Module):
         relative_attention_max_distance: int = 128,
         is_gated_act: bool = False,
         compute_relative_attention_bias: bool = False,
-
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -593,7 +592,7 @@ class T5EncoderLayer(nn.Module):
                 self.activation = F.gelu
             elif activation == "gelu_new":
                 # the following should match the math of https://github.com/huggingface/transformers/blob/main/src/transformers/activations.py
-                self.activation = nn.GELU(approximate='tanh')
+                self.activation = nn.GELU(approximate="tanh")
         else:
             self.activation = activation
 
@@ -653,18 +652,17 @@ class T5EncoderLayer(nn.Module):
     # Feed forward block
     def _ff_block(self, x: Tensor) -> Tensor:
         if self.is_gated_act:
+            assert self.linear1_0 is not None
+            assert self.linear1_1 is not None
             wi_0 = self.activation(self.linear1_0(x))
             wi_1 = self.linear1_1(x)
             hidden_states = wi_0 * wi_1
             hidden_states = self.dropout2(hidden_states)
             hidden_states = self.linear2(hidden_states)
-            hidden_states = self.dropout3(hidden_states)
-            return hidden_states
-
         else:
             assert self.linear1 is not None
-            x = self.linear2(self.dropout2(self.activation(self.linear1(x))))
-            return self.dropout3(x)
+            hidden_states = self.linear2(self.dropout2(self.activation(self.linear1(x))))
+        return self.dropout3(hidden_states)
 
 
 # NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L622
@@ -711,6 +709,7 @@ class T5DecoderLayer(T5EncoderLayer):
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
         compute_relative_attention_bias: bool = False,
+        is_gated_act: bool = False,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -724,6 +723,7 @@ class T5DecoderLayer(T5EncoderLayer):
             layer_norm_eps,
             relative_attention_num_buckets,
             relative_attention_max_distance,
+            is_gated_act,
             compute_relative_attention_bias,
             device,
             dtype,
@@ -962,6 +962,7 @@ class T5Decoder(nn.Module):
         layer_norm_eps: float = 1e-6,
         relative_attention_num_buckets: int = 32,
         relative_attention_max_distance: int = 128,
+        is_gated_act: bool = False,
         device: Optional[torch.device] = None,
         dtype=None,
     ) -> None:
@@ -980,6 +981,7 @@ class T5Decoder(nn.Module):
                     relative_attention_num_buckets,
                     relative_attention_max_distance,
                     compute_relative_attention_bias=True if i == 0 else False,
+                    is_gated_act=is_gated_act,
                     device=device,
                     dtype=dtype,
                 )

@@ -1,3 +1,5 @@
+.. image:: docs/source/_static/img/torchtext_logo.png
+
 .. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
     :target: https://circleci.com/gh/pytorch/text
 
@@ -29,7 +31,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :header: "PyTorch version", "torchtext version", "Supported Python version"
    :widths: 10, 10, 10
 
-   nightly build, main, ">=3.7, <=3.10"
+   nightly build, main, ">=3.8, <=3.10"
    1.13.0, 0.14.0, ">=3.7, <=3.10"
    1.12.0, 0.13.0, ">=3.7, <=3.10"
    1.11.0, 0.12.0, ">=3.6, <=3.9"
@@ -90,6 +92,9 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
 If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/main/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/main/manywheel>`_.
+
+Additionally, datasets in torchtext are implemented using the torchdata library. Please take a look at the
+`installation instructions <https://github.com/pytorch/data#installation>`_ to download the latest nightlies or install from source.
 
 Documentation
 =============

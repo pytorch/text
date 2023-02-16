@@ -1,62 +1,73 @@
-name: Integration Test
+name: Unit-tests on Linux GPU
 
 on:
   pull_request:
-    branches: [main]
-
+  push:
+    branches:
+      - nightly
+      - main
+      - release/*
   workflow_dispatch:
+
+env:
+  CHANNEL: "nightly"
 
 jobs:
   tests:
     strategy:
       matrix:
         python_version: ["3.8"]
+        cuda_arch_version: ["11.7"]
       fail-fast: false
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
-      runner: linux.12xlarge
+      runner: linux.g5.4xlarge.nvidia.gpu
       repository: pytorch/text
+      gpu-arch-type: cuda
+      gpu-arch-version: ${{ matrix.cuda_arch_version }}
+      timeout: 120
       script: |
         # Mark Build Directory Safe
         git config --global --add safe.directory /__w/text/text
+
         # Set up Environment Variables
         export PYTHON_VERSION="${{ matrix.python_version }}"
-        export VERSION="cpu"
-        export CUDATOOLKIT="cpuonly"
+        export VERSION="${{ matrix.cuda_arch_version }}"
+        export CUDATOOLKIT="pytorch-cuda=${VERSION}"
+
         # Set CHANNEL
         if [[ (${GITHUB_EVENT_NAME} = 'pull_request' && (${GITHUB_BASE_REF} = 'release'*)) || (${GITHUB_REF} = 'refs/heads/release'*) ]]; then
           export CHANNEL=test
         else
           export CHANNEL=nightly
         fi
+
         # Create Conda Env
-        conda create -yp ci_env python="${PYTHON_VERSION}"
+        conda create --quiet -yp ci_env python="${PYTHON_VERSION}"
         conda activate /work/ci_env
         python3 -m pip --quiet install cmake>=3.18.0 ninja
         conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
+
         # TorchText-specific Setup
         printf "* Downloading SpaCy English models\n"
         python -m spacy download en_core_web_sm
         printf "* Downloading SpaCy German models\n"
         python -m spacy download de_core_news_sm
-        # Install PyTorch, Torchvision, and TorchData
+
+        # Install PyTorch and TorchData
         set -ex
         conda install \
           --yes \
+          --quiet \
           -c "pytorch-${CHANNEL}" \
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
-        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu --quiet
         python3 setup.py develop
-        # Install integration test dependencies
-        python3 -m pip --quiet install parameterized
-        python3 -m pip --quiet install requests
-        python3 -m pip --quiet install sentencepiece
-        python3 -m pip --quiet install tqdm
-        python3 -m pip --quiet install expecttest
-        python3 -m pip --quiet install transformers
+        python3 -m pip install parameterized --quiet
+
         # Run Tests
         python3 -m torch.utils.collect_env
         cd test
-        pytest integration_tests -v --use-tmp-hub-dir
+        python3 -m pytest --junitxml=test-results/junit.xml -v --durations 20 -m gpu_test torchtext_unittest
