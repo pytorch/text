@@ -1,11 +1,11 @@
 #!/bin/bash
 package_type="$PACKAGE_TYPE"
-channel="$CHANNEl"
+channel="test"
 if [ -z "$package_type" ]; then
   package_type="wheel"
 fi
 if [ -z "$channel" ]; then
-  channel="nightly"
+  channel="test"
 fi
 
 # Wrong values

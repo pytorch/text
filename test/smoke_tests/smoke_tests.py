@@ -19,5 +19,5 @@ def validateTorchdataVersion():
         raise RuntimeError(f"torchdata binary {torchdata.__version__} is more than {NIGHTLY_ALLOWED_DELTA} days old!")
 
 
-validateTorchdataVersion()
+# validateTorchdataVersion()
 print("torchtext version is ", torchtext.__version__)
