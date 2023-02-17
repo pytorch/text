@@ -7,7 +7,13 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Decoder, T5Encoder
+from .modules import (
+    T5Decoder,
+    T5Encoder,
+    PAST_KEY_VALUES_TYPE,
+    ENCODER_OUTPUTS_TYPE,
+    DECODER_OUTPUTS_TYPE,
+)
 
 
 @dataclass
@@ -161,15 +167,13 @@ class T5Model(nn.Module):
                 p.requires_grad = False
 
     @torch.jit.export
-    def _reorder_cache(
-        self, past: List[Tuple[Tensor, Tensor, Tensor, Tensor]], beam_idx: Tensor
-    ) -> List[Tuple[Tensor, Tensor, Tensor, Tensor]]:
+    def _reorder_cache(self, past: List[PAST_KEY_VALUES_TYPE], beam_idx: Tensor) -> List[PAST_KEY_VALUES_TYPE]:
         # if decoder past is not included in output
         # speedy decoding is disabled and no need to reorder
         if past is None:
             return past
 
-        reordered_decoder_past: List[Tuple[Tensor, Tensor, Tensor, Tensor]] = []
+        reordered_decoder_past: List[PAST_KEY_VALUES_TYPE] = []
         for layer_past_states in past:
             # get the correct batch idx from layer past batch dim
             # batch dim of `past` is at 2nd position
@@ -189,18 +193,10 @@ class T5Model(nn.Module):
     def prepare_inputs_for_generation(
         self,
         input_ids: Tensor,
-        encoder_outputs: Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
-        past: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
+        encoder_outputs: ENCODER_OUTPUTS_TYPE,
+        past: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = True,
-    ) -> Dict[
-        str,
-        Union[
-            Tensor,
-            Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
-            Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]],
-            bool,
-        ],
-    ]:
+    ) -> Dict[str, Union[Tensor, ENCODER_OUTPUTS_TYPE, Optional[List[PAST_KEY_VALUES_TYPE]], bool]]:
         # Incremental decoding if past key values are provided
         if past is not None:
             input_ids = input_ids[:, -1:]
@@ -228,21 +224,10 @@ class T5Model(nn.Module):
         decoder_mask: Optional[Tensor] = None,
         encoder_padding_mask: Optional[Tensor] = None,
         decoder_padding_mask: Optional[Tensor] = None,
-        encoder_outputs: Optional[Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]] = None,
-        past_key_values: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
+        encoder_outputs: Optional[ENCODER_OUTPUTS_TYPE] = None,
+        past_key_values: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = False,
-    ) -> Union[
-        Dict[
-            str,
-            Union[
-                Optional[Tensor],
-                List[Tensor],
-                List[Optional[Tensor]],
-                List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
-            ],
-        ],
-        Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
-    ]:
+    ) -> Union[DECODER_OUTPUTS_TYPE, ENCODER_OUTPUTS_TYPE]:
         r"""Pass the inputs (and mask) through the T5Encoder/T5Decoder in turn.
 
         Args:
@@ -332,16 +317,8 @@ class T5Model(nn.Module):
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
-            # Hack to make TorchScript pick up the correct types
-            encoder_decoder_outputs: Dict[
-                str,
-                Union[
-                    Optional[Tensor],
-                    List[Tensor],
-                    List[Optional[Tensor]],
-                    List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
-                ],
-            ] = {}
+            # Make TorchScript pick up the correct types
+            encoder_decoder_outputs: DECODER_OUTPUTS_TYPE = {}
             for key, val in encoder_outputs.items():
                 encoder_decoder_outputs[key] = val
             for key, val in decoder_outputs.items():

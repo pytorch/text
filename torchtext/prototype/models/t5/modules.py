@@ -23,6 +23,18 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch.nn.modules.linear import NonDynamicallyQuantizableLinear
 
+# Define reusable types for past_key_values
+PAST_KEY_VALUES_TYPE = Tuple[Tensor, Tensor, Tensor, Tensor]
+PAST_KEY_VALUE_TYPE = Tuple[Tensor, Tensor]
+# If running forward pass in encoder only, there won't be KVs from cross-attention therefore we need a version with optional tensors
+PAST_KEY_VALUES_UNFILLED_TYPE = Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]
+
+# Define reusable types for encoder/decoder outputs
+ENCODER_OUTPUTS_TYPE = Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]
+DECODER_OUTPUTS_TYPE = Dict[
+    str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], List[PAST_KEY_VALUES_UNFILLED_TYPE]]
+]
+
 
 class T5MultiheadAttention(nn.MultiheadAttention):
     def __init__(
@@ -86,8 +98,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
         position_bias: Optional[Tensor] = None,
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
+        past_key_value: Optional[PAST_KEY_VALUE_TYPE] = None,
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor], PAST_KEY_VALUE_TYPE]:
         r"""Allows the model to jointly attend to information from different representation subspaces
         as described in the paper: `Attention Is All You Need <https://arxiv.org/abs/1706.03762>`.
         Also incorporates relative attention bias when computing attention scores as descripted in the paper:
@@ -157,8 +169,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
+        past_key_value: Optional[PAST_KEY_VALUE_TYPE] = None,
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor], PAST_KEY_VALUE_TYPE]:
         """Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4909."""
         is_self_attention = torch.equal(query, key)
         is_batched = F._mha_shape_check(query, key, value, key_padding_mask, attn_mask, self.num_heads)
@@ -346,7 +358,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         b_k: Optional[Tensor] = None,
         b_v: Optional[Tensor] = None,
         is_self_attention: bool = True,
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
+        past_key_value: Optional[PAST_KEY_VALUE_TYPE] = None,
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""Performs the in-projection step of the attention operation. This is simply
         a triple of linear projections, with shape constraints on the weights which
@@ -737,14 +749,8 @@ class T5Layer(nn.Module):
         memory_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
-        past_key_values: Optional[Tuple[Tensor, Tensor, Tensor, Tensor]] = None,
-    ) -> Tuple[
-        Tensor,
-        Optional[Tensor],
-        Optional[Tensor],
-        Optional[Tensor],
-        Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]],
-    ]:
+        past_key_values: Optional[PAST_KEY_VALUES_TYPE] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor], PAST_KEY_VALUES_UNFILLED_TYPE]:
         r"""Pass the inputs (and mask) through the encoder layer.
 
         Args:
@@ -806,7 +812,7 @@ class T5Layer(nn.Module):
             )
         )
 
-        assert torch.jit.isinstance(new_key_value, Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]])
+        assert torch.jit.isinstance(new_key_value, PAST_KEY_VALUES_UNFILLED_TYPE)
 
         return x, position_bias, sa_scores, ca_scores, new_key_value
 
@@ -816,8 +822,8 @@ class T5Layer(nn.Module):
         attn_mask: Optional[Tensor],
         key_padding_mask: Optional[Tensor],
         position_bias: Optional[Tensor],
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Tuple[Tensor, Tensor]]:
+        past_key_value: Optional[PAST_KEY_VALUE_TYPE] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], PAST_KEY_VALUE_TYPE]:
         """Self-attention block."""
         attn, curr_position_bias, scores, curr_key_value = self.self_attn(
             x,
@@ -842,8 +848,8 @@ class T5Layer(nn.Module):
         query_length: Optional[int],
         attn_mask: Optional[Tensor],
         key_padding_mask: Optional[Tensor],
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
+        past_key_value: Optional[PAST_KEY_VALUE_TYPE] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], PAST_KEY_VALUE_TYPE]:
         """Cross-attention block."""
         assert self.cross_attn is not None
         assert self.dropout4 is not None
@@ -955,7 +961,7 @@ class T5Encoder(nn.Module):
         mask: Optional[Tensor] = None,
         src_key_padding_mask: Optional[Tensor] = None,
         embedded_src: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]:
+    ) -> ENCODER_OUTPUTS_TYPE:
         r"""Pass the input (and masks) through the stack of encoder layers.
         
         Args:
@@ -1090,17 +1096,9 @@ class T5Decoder(nn.Module):
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
-        past_key_values: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
+        past_key_values: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = False,
-    ) -> Dict[
-        str,
-        Union[
-            Optional[Tensor],
-            List[Tensor],
-            List[Optional[Tensor]],
-            List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
-        ],
-    ]:
+    ) -> DECODER_OUTPUTS_TYPE:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
 
         Args:
