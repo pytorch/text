@@ -369,7 +369,7 @@ jobs:
               export CONDA_CHANNEL_FLAGS=" -c malfet"
             fi
             conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" pytorch
-            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c ~/workspace/conda-bld torchtext
+            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" -c ~/workspace/conda-bld torchtext
       - run:
           name: smoke test
           command: |
