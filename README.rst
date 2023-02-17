@@ -31,7 +31,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :header: "PyTorch version", "torchtext version", "Supported Python version"
    :widths: 10, 10, 10
 
-   nightly build, main, ">=3.8, <=3.10"
+   nightly build, main, ">=3.8, <=3.11"
    1.13.0, 0.14.0, ">=3.7, <=3.10"
    1.12.0, 0.13.0, ">=3.7, <=3.10"
    1.11.0, 0.12.0, ">=3.6, <=3.9"
