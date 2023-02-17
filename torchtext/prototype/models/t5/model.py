@@ -1,3 +1,4 @@
+# logging library is not automatically supported by Torchscript
 import warnings
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Tuple, Union
@@ -7,9 +8,6 @@ import torch.nn as nn
 from torch import Tensor
 
 from .modules import T5Decoder, T5Encoder
-
-# logging library is not automatically supported by Torchscript
-import warnings
 
 
 @dataclass

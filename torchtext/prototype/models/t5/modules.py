@@ -263,7 +263,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         if key_padding_mask is not None:
             if key_padding_mask.shape != (bsz, src_len):
                 # It's possible that padding mask only takes into acct curr tgt_length instead of past_key_value
-                assert past_key_value is not None, f""
+                assert (
+                    past_key_value is not None
+                ), "Must provide past_key_value if key_padding_mask needs to be expanded."
                 key_padding_mask = key_padding_mask.expand(bsz, src_len)
 
             assert key_padding_mask.shape == (
@@ -783,7 +785,7 @@ class T5Layer(nn.Module):
         x = x + sa_out
 
         if self.is_decoder:
-            assert memory is not None, f"Must provide memory (encoder hidden states)."
+            assert memory is not None, "Must provide memory (encoder hidden states)."
             assert self.norm3 is not None
             query_length = sa_kv[0].shape[2]
             ca_out, ca_scores, ca_kv = self._ca_block(
@@ -1090,7 +1092,15 @@ class T5Decoder(nn.Module):
         memory_key_padding_mask: Optional[Tensor] = None,
         past_key_values: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
         return_past_key_values: bool = False,
-    ) -> Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]]]]:
+    ) -> Dict[
+        str,
+        Union[
+            Optional[Tensor],
+            List[Tensor],
+            List[Optional[Tensor]],
+            List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
+        ],
+    ]:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
 
         Args:
