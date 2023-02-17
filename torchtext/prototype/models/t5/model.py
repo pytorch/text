@@ -163,13 +163,15 @@ class T5Model(nn.Module):
                 p.requires_grad = False
 
     @torch.jit.export
-    def _reorder_cache(self, past: List[Tuple[Tensor, ...]], beam_idx: Tensor) -> List[Tuple[Tensor, ...]]:
+    def _reorder_cache(
+        self, past: List[Tuple[Tensor, Tensor, Tensor, Tensor]], beam_idx: Tensor
+    ) -> List[Tuple[Tensor, Tensor, Tensor, Tensor]]:
         # if decoder past is not included in output
         # speedy decoding is disabled and no need to reorder
         if past is None:
             return past
 
-        reordered_decoder_past = ()
+        reordered_decoder_past: List[Tuple[Tensor, Tensor, Tensor, Tensor]] = []
         for layer_past_states in past:
             # get the correct batch idx from layer past batch dim
             # batch dim of `past` is at 2nd position
@@ -182,18 +184,25 @@ class T5Model(nn.Module):
 
             assert len(reordered_layer_past_states) == len(layer_past_states)
 
-            reordered_decoder_past = reordered_decoder_past + (reordered_layer_past_states,)
+            reordered_decoder_past.append(reordered_layer_past_states)
         return reordered_decoder_past
 
     @torch.jit.export
     def prepare_inputs_for_generation(
         self,
-        input_ids: torch.Tensor,
-        encoder_outputs: torch.Tensor,
-        past: Tuple[Tuple[torch.Tensor]] = None,
+        input_ids: Tensor,
+        encoder_outputs: Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
+        past: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
         return_past_key_values: bool = True,
-        **kwargs,
-    ) -> Dict[str, torch.Tensor]:
+    ) -> Dict[
+        str,
+        Union[
+            Tensor,
+            Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
+            Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]],
+            bool,
+        ],
+    ]:
         # Incremental decoding if past key values are provided
         if past is not None:
             input_ids = input_ids[:, -1:]
@@ -205,11 +214,9 @@ class T5Model(nn.Module):
             "return_past_key_values": return_past_key_values,
         }
 
-    @torch.jit.export
     def get_encoder(self) -> T5Encoder:
         return self.encoder
 
-    @torch.jit.export
     def get_decoder(self) -> Optional[T5Decoder]:
         if self.decoder is None:
             warnings.warn("Decoder is not set on this model.")
@@ -221,16 +228,22 @@ class T5Model(nn.Module):
         decoder_tokens: Optional[Tensor] = None,
         encoder_mask: Optional[Tensor] = None,
         decoder_mask: Optional[Tensor] = None,
-        # memory_mask: Optional[Tensor] = None,
         encoder_padding_mask: Optional[Tensor] = None,
         decoder_padding_mask: Optional[Tensor] = None,
-        encoder_outputs: Optional[
-            Dict[str, Union[Optional[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Tensor, Tensor]]]]
-        ] = None,
-        past_key_values: Optional[Tuple[Tuple[Tensor]]] = None,
+        encoder_outputs: Optional[Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]] = None,
+        past_key_values: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
         return_past_key_values: bool = False,
-    ) -> Dict[
-        str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]], Optional[List[Tuple[Tensor]]]]
+    ) -> Union[
+        Dict[
+            str,
+            Union[
+                Optional[Tensor],
+                List[Tensor],
+                List[Optional[Tensor]],
+                List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
+            ],
+        ],
+        Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]],
     ]:
         r"""Pass the inputs (and mask) through the T5Encoder/T5Decoder in turn.
 
@@ -321,20 +334,20 @@ class T5Model(nn.Module):
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
-            encoder_outputs.update(decoder_outputs)
-            encoder_decoder_outputs = encoder_outputs
-
-            assert torch.jit.isinstance(
-                encoder_decoder_outputs,
-                Dict[
-                    str,
-                    Union[
-                        Optional[Tensor],
-                        List[Optional[Tensor]],
-                        List[Tuple[Tensor, Tensor, Tensor, Tensor]],
-                    ],
+            # Hack to make TorchScript pick up the correct types
+            encoder_decoder_outputs: Dict[
+                str,
+                Union[
+                    Optional[Tensor],
+                    List[Tensor],
+                    List[Optional[Tensor]],
+                    List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]],
                 ],
-            )
+            ] = {}
+            for key, val in encoder_outputs.items():
+                encoder_decoder_outputs[key] = val
+            for key, val in decoder_outputs.items():
+                encoder_decoder_outputs[key] = val
 
             return encoder_decoder_outputs
 

@@ -78,7 +78,7 @@ class TestT5Model(TorchtextTestCase):
         encoder = model.get_encoder()
         # Need to set the tgt_key_padding_mask to ensure the same results
         encoder_padding_mask = model_input.eq(model.padding_idx)
-        output_from_get_encoder = encoder(tgt=model_input, tgt_key_padding_mask=encoder_padding_mask)["encoder_output"]
+        output_from_get_encoder = encoder(model_input, src_key_padding_mask=encoder_padding_mask)["encoder_output"]
         assert torch.all(output_from_get_encoder.eq(encoder_output))
 
     @nested_params(["jit", "not_jit"])

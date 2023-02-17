@@ -86,8 +86,8 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
         position_bias: Optional[Tensor] = None,
-        past_key_value: Optional[Tuple[Tensor]] = None,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
+    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
         r"""Allows the model to jointly attend to information from different representation subspaces
         as described in the paper: `Attention Is All You Need <https://arxiv.org/abs/1706.03762>`.
         Also incorporates relative attention bias when computing attention scores as descripted in the paper:
@@ -157,7 +157,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         need_weights: bool = True,
         attn_mask: Optional[Tensor] = None,
         average_attn_weights: bool = False,
-        past_key_value: Optional[Tuple[Tensor]] = None,
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
     ) -> Tuple[Tensor, Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
         """Modified from https://github.com/pytorch/pytorch/blob/5953fd9133c0bdcc0158acf1472fac403bc5f636/torch/nn/functional.py#L4909."""
         is_self_attention = torch.equal(query, key)
@@ -208,16 +208,16 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             query,
             key,
             value,
+            bsz,
+            head_dim,
             self.q_proj_weight,
             self.k_proj_weight,
             self.v_proj_weight,
             b_q,
             b_k,
             b_v,
-            past_key_value,
-            bsz,
-            head_dim,
             is_self_attention,
+            past_key_value,
         )
 
         if attn_mask is None:
@@ -335,16 +335,16 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         query: Tensor,
         key: Tensor,
         value: Tensor,
+        bsz: int,
+        head_dim: int,
         w_q: Tensor,
         w_k: Tensor,
         w_v: Tensor,
         b_q: Optional[Tensor] = None,
         b_k: Optional[Tensor] = None,
         b_v: Optional[Tensor] = None,
-        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
-        bsz: Optional[int] = None,
-        head_dim: Optional[int] = None,
         is_self_attention: bool = True,
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""Performs the in-projection step of the attention operation. This is simply
         a triple of linear projections, with shape constraints on the weights which
@@ -406,10 +406,15 @@ class T5MultiheadAttention(nn.MultiheadAttention):
             # Self-attention over query (hidden states)
             key_proj = F.linear(query, w_k, b_k)
             value_proj = F.linear(query, w_v, b_v)
-        elif past_key_value is None:
-            # Cross-attention (over current key/val states)
-            key_proj = F.linear(key, w_k, b_k)
-            value_proj = F.linear(value, w_v, b_v)
+        else:
+            if past_key_value is None:
+                # Cross-attention (over current key/val states)
+                key_proj = F.linear(key, w_k, b_k)
+                value_proj = F.linear(value, w_v, b_v)
+            else:
+                # Should never reach this branch
+                key_proj = key
+                value_proj = value
 
         if past_key_value is not None:
             if is_self_attention:
@@ -422,6 +427,9 @@ class T5MultiheadAttention(nn.MultiheadAttention):
                 # Cross-attention context
                 key_proj = past_key_value[0]
                 value_proj = past_key_value[1]
+
+        assert key_proj is not None
+        assert value_proj is not None
 
         return query_proj, key_proj, value_proj
 
@@ -527,7 +535,7 @@ class T5MultiheadAttention(nn.MultiheadAttention):
         Returns:
             Tensor with the same shape as relative_position, containing int32 values in the range [0, num_buckets).
         """
-        relative_buckets = 0  # torch.zeros(relative_position.shape, dtype=torch.long, device=relative_position.device)
+        relative_buckets = torch.zeros(relative_position.shape, dtype=torch.long, device=relative_position.device)
         if bidirectional:
             num_buckets = num_buckets // 2
             relative_buckets += (relative_position > 0).to(torch.long) * num_buckets
@@ -681,6 +689,10 @@ class T5Layer(nn.Module):
             )
             self.norm3 = T5LayerNorm(d_model, eps=layer_norm_eps)
             self.dropout4 = nn.Dropout(dropout)
+        else:
+            self.cross_attn = None
+            self.norm3 = None
+            self.dropout4 = None
 
         if self.is_gated_act:
             self.linear1 = None
@@ -723,8 +735,14 @@ class T5Layer(nn.Module):
         memory_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
         position_bias: Optional[Tensor] = None,
-        past_key_values: Optional[Tuple[Tensor]] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+        past_key_values: Optional[Tuple[Tensor, Tensor, Tensor, Tensor]] = None,
+    ) -> Tuple[
+        Tensor,
+        Optional[Tensor],
+        Optional[Tensor],
+        Optional[Tensor],
+        Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]],
+    ]:
         r"""Pass the inputs (and mask) through the encoder layer.
 
         Args:
@@ -759,27 +777,34 @@ class T5Layer(nn.Module):
             self_attn_past_key_value, cross_attn_past_key_value = None, None
 
         x = seq
-        # import pdb
-        # pdb.set_trace()
         sa_out, position_bias, sa_scores, sa_kv = self._sa_block(
             self.norm1(x), mask, seq_key_padding_mask, position_bias, self_attn_past_key_value
         )
         x = x + sa_out
 
-        new_key_value = sa_kv
-
         if self.is_decoder:
             assert memory is not None, f"Must provide memory (encoder hidden states)."
+            assert self.norm3 is not None
             query_length = sa_kv[0].shape[2]
             ca_out, ca_scores, ca_kv = self._ca_block(
                 self.norm3(x), memory, query_length, memory_mask, memory_key_padding_mask, cross_attn_past_key_value
             )
             x = x + ca_out
-            new_key_value = new_key_value + ca_kv
         else:
-            ca_scores = None
+            ca_scores, ca_kv = None, None
 
         x = x + self._ff_block(self.norm2(x))
+
+        new_key_value = sa_kv + (
+            ca_kv
+            if ca_kv is not None
+            else (
+                None,
+                None,
+            )
+        )
+
+        assert torch.jit.isinstance(new_key_value, Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]])
 
         return x, position_bias, sa_scores, ca_scores, new_key_value
 
@@ -789,8 +814,8 @@ class T5Layer(nn.Module):
         attn_mask: Optional[Tensor],
         key_padding_mask: Optional[Tensor],
         position_bias: Optional[Tensor],
-        past_key_value: Optional[Tuple[Tensor]] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Optional[Tensor], Tuple[Tensor, Tensor]]:
         """Self-attention block."""
         attn, curr_position_bias, scores, curr_key_value = self.self_attn(
             x,
@@ -815,9 +840,11 @@ class T5Layer(nn.Module):
         query_length: Optional[int],
         attn_mask: Optional[Tensor],
         key_padding_mask: Optional[Tensor],
-        past_key_value: Optional[Tuple[Tensor]] = None,
-    ) -> Tuple[Tensor, Optional[Tensor], Tuple[Tensor, Tensor, Tensor, Tensor]]:
+        past_key_value: Optional[Tuple[Tensor, Tensor]] = None,
+    ) -> Tuple[Tensor, Optional[Tensor], Tuple[Tensor, Tensor]]:
         """Cross-attention block."""
+        assert self.cross_attn is not None
+        assert self.dropout4 is not None
         attn, _, scores, curr_key_value = self.cross_attn(
             x,
             mem,  # Pass in memory (enc) states as keys
@@ -926,7 +953,7 @@ class T5Encoder(nn.Module):
         mask: Optional[Tensor] = None,
         src_key_padding_mask: Optional[Tensor] = None,
         embedded_src: Optional[Tensor] = None,
-    ) -> Dict[str, Union[Optional[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Tensor, Tensor]]]]:
+    ) -> Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]:
         r"""Pass the input (and masks) through the stack of encoder layers.
         
         Args:
@@ -1061,9 +1088,9 @@ class T5Decoder(nn.Module):
         memory_mask: Optional[Tensor] = None,
         tgt_key_padding_mask: Optional[Tensor] = None,
         memory_key_padding_mask: Optional[Tensor] = None,
-        past_key_values: Optional[List[Tuple[Tensor]]] = None,
+        past_key_values: Optional[List[Tuple[Tensor, Tensor, Tensor, Tensor]]] = None,
         return_past_key_values: bool = False,
-    ) -> Dict[str, Union[Optional[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Tensor, Tensor]],],]:
+    ) -> Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]]]]:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
 
         Args:
@@ -1094,7 +1121,7 @@ class T5Decoder(nn.Module):
         all_outputs = torch.jit.annotate(List[Tensor], [])
         all_sa_scores = torch.jit.annotate(List[Optional[Tensor]], [])
         all_ca_scores = torch.jit.annotate(List[Optional[Tensor]], [])
-        all_key_values = torch.jit.annotate(List[Tuple[Tensor, Tensor, Tensor, Tensor]], [])
+        all_key_values = torch.jit.annotate(List[Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]], [])
         for i, mod in enumerate(self.layers):
             all_outputs.append(output)
             output, position_bias, sa_score, ca_score, past_key_value = mod(
@@ -1105,7 +1132,7 @@ class T5Decoder(nn.Module):
                 seq_key_padding_mask=tgt_key_padding_mask,
                 memory_key_padding_mask=memory_key_padding_mask,
                 position_bias=position_bias,
-                past_key_values=past_key_values[i] if past_key_values else None,
+                past_key_values=past_key_values[i] if past_key_values is not None else None,
             )
             all_sa_scores.append(sa_score)
             all_ca_scores.append(ca_score)
@@ -1115,11 +1142,7 @@ class T5Decoder(nn.Module):
 
         output = self.norm(output)
         output = self.dropout2(output)
-
         all_outputs.append(output)
-
-        if not all_key_values:
-            all_key_values = None
 
         return {
             "decoder_output": output,
