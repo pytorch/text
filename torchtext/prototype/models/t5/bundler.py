@@ -237,7 +237,6 @@ class T5Bundle:
             ]
 
             for i in range(config.num_decoder_layers):
-
                 if config.is_gated_act:
                     t5_model_state_dict[f"encoder.layers.{i}.linear1_0.weight"] = hf_weights[
                         f"decoder.block.{i}.layer.1.DenseReluDense.wi_0.weight"
@@ -362,28 +361,92 @@ GENERATION_DOC = """
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
 
-T5_BASE_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.v2.pt"),
-    _config=T5Conf(encoder_only=True),
-    transform=lambda: T5Transform(
+FLAN_ENCODER_DOC = """
+    FLAN_T5_{}_ENCODER is an encoder model from a pre-trained Flan-T5 model with the {} configuration.
+
+    From the Flan-T5 paper entitled `Scaling Instruction-Finetuned Language Models <https://arxiv.org/pdf/2210.11416.pdf>`:
+    > Finetuning language models on a collection of datasets phrased as instructions has been shown to improve
+    model performance and generalization to unseen tasks. In this paper we explore instruction finetuning
+    with a particular focus on (1) scaling the number of tasks, (2) scaling the model size, and (3) finetuning on
+    chain-of-thought data. We find that instruction finetuning with the above aspects dramatically improves
+    performance on a variety of model classes (PaLM, T5, U-PaLM), prompting setups (zero-shot, few-shot, CoT),
+    and evaluation benchmarks (MMLU, BBH, TyDiQA, MGSM, open-ended generation, RealToxicityPrompts).
+    For instance, Flan-PaLM 540B instruction-finetuned on 1.8K tasks outperforms PaLM 540B by a large margin
+    (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
+    75.2% on five-shot MMLU.
+
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
+    [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
+    `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
+
+    Please refer to :func:`torchtext.models.T5Bundle` for the usage.
+"""
+
+FLAN_DOC = """
+    FLAN_T5_{} is an encoder-decoder model from a pre-trained Flan-T5 model with the {} configuration.
+    It returns the normalized output from the final layer of the decoder.
+
+    From the Flan-T5 paper entitled `Scaling Instruction-Finetuned Language Models <https://arxiv.org/pdf/2210.11416.pdf>`:
+    > Finetuning language models on a collection of datasets phrased as instructions has been shown to improve
+    model performance and generalization to unseen tasks. In this paper we explore instruction finetuning
+    with a particular focus on (1) scaling the number of tasks, (2) scaling the model size, and (3) finetuning on
+    chain-of-thought data. We find that instruction finetuning with the above aspects dramatically improves
+    performance on a variety of model classes (PaLM, T5, U-PaLM), prompting setups (zero-shot, few-shot, CoT),
+    and evaluation benchmarks (MMLU, BBH, TyDiQA, MGSM, open-ended generation, RealToxicityPrompts).
+    For instance, Flan-PaLM 540B instruction-finetuned on 1.8K tasks outperforms PaLM 540B by a large margin
+    (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
+    75.2% on five-shot MMLU.
+
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
+    [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
+    `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
+
+    Please refer to :func:`torchtext.models.T5Bundle` for the usage.
+"""
+
+FLAN_GENERATION_DOC = """
+    FLAN_T5_{}_GENERATION is an encoder-decoder model with a language modeling head from a pre-trained Flan-T5 model with the {} configuration.
+    It returns the output of the final layer of the decoder after passing through a linear layer to project the hidden states to
+    the model vocabulary. This output can then be used for language generation.
+
+    From the Flan-T5 paper entitled `Scaling Instruction-Finetuned Language Models <https://arxiv.org/pdf/2210.11416.pdf>`:
+    > Finetuning language models on a collection of datasets phrased as instructions has been shown to improve
+    model performance and generalization to unseen tasks. In this paper we explore instruction finetuning
+    with a particular focus on (1) scaling the number of tasks, (2) scaling the model size, and (3) finetuning on
+    chain-of-thought data. We find that instruction finetuning with the above aspects dramatically improves
+    performance on a variety of model classes (PaLM, T5, U-PaLM), prompting setups (zero-shot, few-shot, CoT),
+    and evaluation benchmarks (MMLU, BBH, TyDiQA, MGSM, open-ended generation, RealToxicityPrompts).
+    For instance, Flan-PaLM 540B instruction-finetuned on 1.8K tasks outperforms PaLM 540B by a large margin
+    (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
+    75.2% on five-shot MMLU.
+
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
+    [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
+    `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
+
+    Please refer to :func:`torchtext.models.T5Bundle` for the usage.
+"""
+
+
+def t5_transform() -> T5Transform:
+    return T5Transform(
         urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
         max_seq_len=512,
         eos_idx=1,
         padding_idx=0,
-    ),
+    )
+
+
+T5_BASE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.v2.pt"),
+    _config=T5Conf(encoder_only=True),
+    transform=t5_transform,
 )
 
 T5_BASE_ENCODER.__doc__ = ENCODER_DOC.format("BASE", "base")
 
 T5_BASE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.v2.pt"),
-    _config=T5Conf(encoder_only=False),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    _path=urljoin(_TEXT_BUCKET, "t5.base.v2.pt"), _config=T5Conf(encoder_only=False), transform=t5_transform
 )
 
 T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
@@ -391,12 +454,7 @@ T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
 T5_BASE_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.base.generation.v2.pt"),
     _config=T5Conf(encoder_only=False, linear_head=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_BASE_GENERATION.__doc__ = GENERATION_DOC.format("BASE", "base")
@@ -411,12 +469,7 @@ T5_SMALL_ENCODER = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL_ENCODER.__doc__ = ENCODER_DOC.format("SMALL", "small")
@@ -432,12 +485,7 @@ T5_SMALL = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL.__doc__ = MODEL_DOC.format("SMALL", "small")
@@ -453,12 +501,7 @@ T5_SMALL_GENERATION = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL_GENERATION.__doc__ = GENERATION_DOC.format("SMALL", "small")
@@ -473,12 +516,7 @@ T5_LARGE_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE_ENCODER.__doc__ = ENCODER_DOC.format("LARGE", "large")
@@ -493,12 +531,7 @@ T5_LARGE = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE.__doc__ = MODEL_DOC.format("LARGE", "large")
@@ -514,12 +547,7 @@ T5_LARGE_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE_GENERATION.__doc__ = GENERATION_DOC.format("LARGE", "large")
@@ -535,12 +563,7 @@ T5_3B_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B_ENCODER.__doc__ = ENCODER_DOC.format("3B", "3B")
@@ -556,12 +579,7 @@ T5_3B = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B.__doc__ = MODEL_DOC.format("3B", "3B")
@@ -578,12 +596,7 @@ T5_3B_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B_GENERATION.__doc__ = GENERATION_DOC.format("3B", "3B")
@@ -599,12 +612,7 @@ T5_11B_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B_ENCODER.__doc__ = ENCODER_DOC.format("11B", "11B")
@@ -620,12 +628,7 @@ T5_11B = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B.__doc__ = MODEL_DOC.format("11B", "11B")
@@ -642,12 +645,239 @@ T5_11B_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
+
+
+FLAN_T5_SMALL_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_SMALL_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("SMALL", "SMALL")
+
+FLAN_T5_SMALL = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_SMALL.__doc__ = FLAN_DOC.format("SMALL", "SMALL")
+
+FLAN_T5_SMALL_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_SMALL_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("SMALL", "SMALL")
+
+FLAN_T5_BASE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),
+    _config=T5Conf(encoder_only=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("BASE", "BASE")
+
+
+FLAN_T5_BASE = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.pt"),
+    _config=T5Conf(encoder_only=False, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE.__doc__ = FLAN_DOC.format("BASE", "BASE")
+
+
+FLAN_T5_BASE_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.generation.pt"),
+    _config=T5Conf(encoder_only=False, linear_head=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("BASE", "BASE")
+
+
+FLAN_T5_LARGE_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_LARGE_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("LARGE", "LARGE")
+
+
+FLAN_T5_LARGE = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE.__doc__ = FLAN_DOC.format("LARGE", "LARGE")
+
+
+FLAN_T5_LARGE_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("LARGE", "LARGE")
+
+
+FLAN_T5_XL_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("XL", "XL")
+
+
+FLAN_T5_XL = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL.__doc__ = FLAN_DOC.format("XL", "XL")
+
+
+FLAN_T5_XL_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("XL", "XL")
+
+
+FLAN_T5_XXL_ENCODER = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=4096,
+        num_attention_heads=64,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=10240,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XXL_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("XXL", "XXL")
+
+
+FLAN_T5_XXL = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=4096,
+        num_attention_heads=64,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=10240,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XXL.__doc__ = FLAN_DOC.format("XXL", "XXL")
+
+
+FLAN_T5_XXL_GENERATION = T5Bundle(
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=4096,
+        num_attention_heads=64,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=10240,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XXL_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("XXL", "XXL")
