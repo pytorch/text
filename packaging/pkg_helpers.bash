@@ -181,7 +181,7 @@ setup_pip_pytorch_version() {
   if [[ -z "$PYTORCH_VERSION" ]]; then
     # Install latest prerelease version of torch, per our nightlies, consistent
     # with the requested cuda version
-    pip_install --pre torch -f "https://download.pytorch.org/whl/test/${WHEEL_DIR}torch_test.html"
+    pip_install --pre torch -f "https://download.pytorch.org/whl/nightly/${WHEEL_DIR}torch_nightly.html"
     # CUDA and CPU are ABI compatible on the CPU-only parts, so strip
     # in this case
     export PYTORCH_VERSION="$(pip show torch | grep ^Version: | sed 's/Version:  *//' | sed 's/+.\+//')"
@@ -191,7 +191,7 @@ setup_pip_pytorch_version() {
       -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
   fi
   if [[ -z "$TORCHDATA_VERSION" ]]; then
-    pip_install --pre torchdata -f "https://download.pytorch.org/whl/test/cpu/torch_test.html"
+    pip_install --pre torchdata -f "https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html"
     export TORCHDATA_VERSION="$(pip show torchdata | grep ^Version: | sed 's/Version:  *//' | sed 's/+.\+//')"
   else
     pip_install "torchdata==$TORCHDATA_VERSION" \
@@ -207,13 +207,13 @@ setup_pip_pytorch_version() {
 setup_conda_pytorch_constraint() {
   CONDA_CHANNEL_FLAGS=${CONDA_CHANNEL_FLAGS:-}
   if [[ -z "$PYTORCH_VERSION" ]]; then
-    export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-${UPLOAD_CHANNEL}"
+    export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-nightly"
    PYTHON="python"
     # Check if we have python 3 instead and prefer that
     if python3 --version >/dev/null 2>/dev/null; then
       PYTHON="python3"
     fi
-    export PYTORCH_VERSION="$(conda search --json pytorch[channel=pytorch-${UPLOAD_CHANNEL}] | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
+    export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-nightly]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
   else
     export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch -c pytorch-${UPLOAD_CHANNEL}"
   fi
@@ -233,7 +233,7 @@ setup_conda_pytorch_constraint() {
     fi
   fi
   if [[ -z "$TORCHDATA_VERSION" ]]; then
-    export TORCHDATA_VERSION="$(conda search --json 'torchdata[channel=pytorch-test]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['torchdata'][-1]['version']))")"
+    export TORCHDATA_VERSION="$(conda search --json 'torchdata[channel=pytorch-nightly]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['torchdata'][-1]['version']))")"
   fi
   export CONDA_TORCHDATA_CONSTRAINT="- torchdata==$TORCHDATA_VERSION"
 }

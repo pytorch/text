@@ -23,8 +23,12 @@ commands:
       - run:
           name: adding UPLOAD_CHANNEL to BASH_ENV
           command: |
-            # hardcoded upload channel for release
-            echo "export UPLOAD_CHANNEL=test" >> ${BASH_ENV}
+            our_upload_channel=nightly
+            # On tags upload to test instead
+            if [[ -n "${CIRCLE_TAG}" ]] || [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
+              our_upload_channel=test
+            fi
+            echo "export UPLOAD_CHANNEL=${our_upload_channel}" >> ${BASH_ENV}
   load_conda_channel_flags:
     description: "Determines whether we need extra conda channels"
     steps:
@@ -39,15 +43,15 @@ binary_common: &binary_common
     build_version:
       description: "version number of release binary; by default, build a nightly"
       type: string
-      default: "0.15.0"
+      default: ""
     pytorch_version:
       description: "PyTorch version to build against; by default, use a nightly"
       type: string
-      default: "2.0.0"
+      default: ""
     torchdata_version:
       description: "TorchData version to build against; by default, use a nightly"
       type: string
-      default: "0.6.0"
+      default: ""
     # Don't edit these
     python_version:
       description: "Python version to build against (e.g., 3.8)"
