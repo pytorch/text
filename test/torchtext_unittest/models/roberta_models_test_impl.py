@@ -7,7 +7,7 @@ from torch.nn import functional as torch_F
 from ..common.case_utils import TestBaseMixin
 
 
-class BaseTestModels(TestBaseMixin):
+class RobertaBaseTestModels(TestBaseMixin):
     def get_model(self, encoder_conf, head=None, freeze_encoder=False, checkpoint=None, override_checkpoint_head=False):
         from torchtext.models import RobertaBundle
 

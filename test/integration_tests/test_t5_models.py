@@ -3,7 +3,8 @@ import tempfile
 import pytest  # noqa: F401
 import torch
 from parameterized import parameterized_class
-from torchtext.prototype.models import (
+from torchtext.models import T5Bundle
+from torchtext.models import (
     T5_BASE,
     T5_BASE_ENCODER,
     T5_BASE_GENERATION,
@@ -14,7 +15,6 @@ from torchtext.prototype.models import (
     T5_SMALL_ENCODER,
     T5_SMALL_GENERATION,
 )
-from torchtext.prototype.models.t5.bundler import T5Bundle
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
