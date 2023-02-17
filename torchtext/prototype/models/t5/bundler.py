@@ -365,7 +365,7 @@ FLAN_ENCODER_DOC = """
     (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
     75.2% on five-shot MMLU.
 
-    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license. 
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
     [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
     `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
 
@@ -387,7 +387,7 @@ FLAN_DOC = """
     (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
     75.2% on five-shot MMLU.
 
-    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license. 
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
     [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
     `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
 
@@ -410,7 +410,7 @@ FLAN_GENERATION_DOC = """
     (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as
     75.2% on five-shot MMLU.
 
-    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license. 
+    Originally published by Google under Apache License, Version 2.0 and redistributed with the same license.
     [`License <https://github.com/google-research/t5x/blob/main/LICENSE>`__,
     `Source <https://console.cloud.google.com/storage/browser/t5-data/pretrained_models/t5x;tab=objects?pli=1&prefix=&forceOnObjectsSortingFiltering=false>`__]
 
