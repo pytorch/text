@@ -317,7 +317,7 @@ class T5Model(nn.Module):
                 # Rescale output before projecting on vocab. This happens when the encoder and decoder share the
                 # same word embeddings, which is always the case in our t5 implementation.
                 # See https://github.com/huggingface/transformers/blob/d0acc9537829e7d067edbb791473bbceb2ecf056/src/transformers/models/t5/modeling_t5.py#L1661
-                decoder_output = decoder_output * (self.embedding_dim**-0.5)
+                decoder_output = decoder_output * (self.embedding_dim ** -0.5)
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
