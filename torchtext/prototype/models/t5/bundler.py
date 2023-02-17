@@ -227,7 +227,6 @@ class T5Bundle:
             ]
 
             for i in range(config.num_decoder_layers):
-
                 if config.is_gated_act:
                     t5_model_state_dict[f"encoder.layers.{i}.linear1_0.weight"] = hf_weights[
                         f"decoder.block.{i}.layer.1.DenseReluDense.wi_0.weight"
@@ -352,28 +351,28 @@ GENERATION_DOC = """
     Please refer to :func:`torchtext.prototype.models.T5Bundle` for the usage.
     """
 
+
+def t5_transform() -> T5Transform:
+    return (
+        T5Transform(
+            urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+            max_seq_len=512,
+            eos_idx=1,
+            padding_idx=0,
+        ),
+    )
+
+
 T5_BASE_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.base.encoder.v2.pt"),
     _config=T5Conf(encoder_only=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_BASE_ENCODER.__doc__ = ENCODER_DOC.format("BASE", "base")
 
 T5_BASE = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.base.v2.pt"),
-    _config=T5Conf(encoder_only=False),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    _path=urljoin(_TEXT_BUCKET, "t5.base.v2.pt"), _config=T5Conf(encoder_only=False), transform=t5_transform
 )
 
 T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
@@ -381,12 +380,7 @@ T5_BASE.__doc__ = MODEL_DOC.format("BASE", "base")
 T5_BASE_GENERATION = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.base.generation.v2.pt"),
     _config=T5Conf(encoder_only=False, linear_head=True),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_BASE_GENERATION.__doc__ = GENERATION_DOC.format("BASE", "base")
@@ -401,12 +395,7 @@ T5_SMALL_ENCODER = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL_ENCODER.__doc__ = ENCODER_DOC.format("SMALL", "small")
@@ -422,12 +411,7 @@ T5_SMALL = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL.__doc__ = MODEL_DOC.format("SMALL", "small")
@@ -443,12 +427,7 @@ T5_SMALL_GENERATION = T5Bundle(
         num_decoder_layers=6,
         ffn_dimension=2048,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_SMALL_GENERATION.__doc__ = GENERATION_DOC.format("SMALL", "small")
@@ -463,12 +442,7 @@ T5_LARGE_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE_ENCODER.__doc__ = ENCODER_DOC.format("LARGE", "large")
@@ -483,12 +457,7 @@ T5_LARGE = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE.__doc__ = MODEL_DOC.format("LARGE", "large")
@@ -504,12 +473,7 @@ T5_LARGE_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=4096,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_LARGE_GENERATION.__doc__ = GENERATION_DOC.format("LARGE", "large")
@@ -525,12 +489,7 @@ T5_3B_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B_ENCODER.__doc__ = ENCODER_DOC.format("3B", "3B")
@@ -546,12 +505,7 @@ T5_3B = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B.__doc__ = MODEL_DOC.format("3B", "3B")
@@ -568,12 +522,7 @@ T5_3B_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=16384,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_3B_GENERATION.__doc__ = GENERATION_DOC.format("3B", "3B")
@@ -589,12 +538,7 @@ T5_11B_ENCODER = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B_ENCODER.__doc__ = ENCODER_DOC.format("11B", "11B")
@@ -610,12 +554,7 @@ T5_11B = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B.__doc__ = MODEL_DOC.format("11B", "11B")
@@ -632,12 +571,169 @@ T5_11B_GENERATION = T5Bundle(
         num_decoder_layers=24,
         ffn_dimension=65536,
     ),
-    transform=lambda: T5Transform(
-        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-        max_seq_len=512,
-        eos_idx=1,
-        padding_idx=0,
-    ),
+    transform=t5_transform,
 )
 
 T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
+
+
+FLAN_T5_SMALL_ENCODER = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_SMALL = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_SMALL_GENERATION = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=512,
+        num_attention_heads=6,
+        num_encoder_layers=8,
+        num_decoder_layers=8,
+        ffn_dimension=1024,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE_ENCODER = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),
+    _config=T5Conf(encoder_only=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.base.pt"),
+    _config=T5Conf(encoder_only=False, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_BASE_GENERATION = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.base.generation.pt"),
+    _config=T5Conf(encoder_only=False, linear_head=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
+    transform=t5_transform,
+)
+
+FLAN_T5_LARGE_ENCODER = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_LARGE = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.large.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_LARGE_GENERATION = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=1024,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=2816,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL_ENCODER = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XL_GENERATION = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.generation.pt"),
+    _config=T5Conf(
+        encoder_only=False,
+        linear_head=True,
+        embedding_dim=2048,
+        num_attention_heads=32,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=5120,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
+
+FLAN_T5_XXL_ENCODER = T5Bundle(
+    path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.encoder.pt"),
+    _config=T5Conf(
+        encoder_only=True,
+        embedding_dim=4096,
+        num_attention_heads=64,
+        num_encoder_layers=24,
+        num_decoder_layers=24,
+        ffn_dimension=10240,
+        feed_forward_proj="gated-gelu",
+    ),
+    transform=t5_transform,
+)
