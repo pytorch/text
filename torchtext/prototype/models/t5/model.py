@@ -12,7 +12,7 @@ from .modules import T5Decoder, T5Encoder
 import warnings
 
 
-@dataclass(frozen=True)
+@dataclass
 class T5Conf:
     encoder_only: bool = False
     linear_head: bool = False
