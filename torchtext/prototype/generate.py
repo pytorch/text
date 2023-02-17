@@ -36,8 +36,8 @@ class GenerationUtils:
 
     def __init__(self, model: nn.Module, **kwargs) -> None:
         self.model = model
-        self.is_encoder_decoder = kwargs.pop("is_encoder_decoder")
-        self.is_huggingface_model = kwargs.pop("is_huggingface_model")
+        self.is_encoder_decoder = kwargs.pop("is_encoder_decoder", True)
+        self.is_huggingface_model = kwargs.pop("is_huggingface_model", False)
 
     def _prepare_decoder_ids_for_generation(
         self, batch_size: int, pad_idx: int = 0, device: Optional[torch.device] = None, **model_kwargs
