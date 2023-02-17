@@ -25,7 +25,7 @@ class GenerationUtil:
     This means that popular HuggingFace implementation of T5, Bart, and GPT-2 can all be used with these generation utils!
     >>> from transformers import T5Model
     >>> model = T5Model.from_pretrained("t5-base")
-    >>> generative_model = GenerationUtil(model=model, is_huggingface_model=True)
+    >>> generative_model = GenerationUtils(model=model, is_huggingface_model=True)
     >>> generative_model.generate(input_ids, num_beams=1, max_len=100)
 
     More examples can be found in the `notebooks` directory of this repository.
