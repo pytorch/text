@@ -227,7 +227,7 @@ setup_conda_pytorch_constraint() {
   # TODO: Remove me later, see https://github.com/pytorch/pytorch/issues/62424 for more details
   if [[ "$(uname)" == Darwin ]]; then
     arch_name="$(uname -m)"
-    if [ "${arch_name}" != "arm64" ]; then
+    if [[ "${arch_name}" != "arm64" && "${PYTHON_VERSION}" != "3.11" ]]; then
       # Use less than equal to avoid version conflict in python=3.6 environment
       export CONDA_EXTRA_BUILD_CONSTRAINT="- mkl<=2021.2.0"
     fi
