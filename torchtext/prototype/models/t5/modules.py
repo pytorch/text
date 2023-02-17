@@ -963,7 +963,7 @@ class T5Encoder(nn.Module):
         embedded_src: Optional[Tensor] = None,
     ) -> ENCODER_OUTPUTS_TYPE:
         r"""Pass the input (and masks) through the stack of encoder layers.
-        
+
         Args:
             src (Optional[Tensor]): Tokenized input sequence to the encoder.
                 Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
@@ -977,7 +977,7 @@ class T5Encoder(nn.Module):
                 length, and E is the model dimension.
                 *Note*: If you do not provide this `embedded_tgt`, you must have provided a `token_embedding` layer \
                     in the initialization of the T5Encoder.
-        
+
         Returns:
             Dictionary of last hidden layer, all hidden layers, position bias, and self-attention scores.
         """
