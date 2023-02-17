@@ -578,7 +578,7 @@ T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
 
 
 FLAN_T5_SMALL_ENCODER = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=512,
@@ -592,7 +592,7 @@ FLAN_T5_SMALL_ENCODER = T5Bundle(
 )
 
 FLAN_T5_SMALL = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=512,
@@ -606,7 +606,7 @@ FLAN_T5_SMALL = T5Bundle(
 )
 
 FLAN_T5_SMALL_GENERATION = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -621,25 +621,25 @@ FLAN_T5_SMALL_GENERATION = T5Bundle(
 )
 
 FLAN_T5_BASE_ENCODER = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),
     _config=T5Conf(encoder_only=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
     transform=t5_transform,
 )
 
 FLAN_T5_BASE = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.base.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.pt"),
     _config=T5Conf(encoder_only=False, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
     transform=t5_transform,
 )
 
 FLAN_T5_BASE_GENERATION = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.base.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.base.generation.pt"),
     _config=T5Conf(encoder_only=False, linear_head=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
     transform=t5_transform,
 )
 
 FLAN_T5_LARGE_ENCODER = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=1024,
@@ -653,7 +653,7 @@ FLAN_T5_LARGE_ENCODER = T5Bundle(
 )
 
 FLAN_T5_LARGE = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.large.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=1024,
@@ -667,7 +667,7 @@ FLAN_T5_LARGE = T5Bundle(
 )
 
 FLAN_T5_LARGE_GENERATION = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -682,7 +682,7 @@ FLAN_T5_LARGE_GENERATION = T5Bundle(
 )
 
 FLAN_T5_XL_ENCODER = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.encoder.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=2048,
@@ -696,7 +696,7 @@ FLAN_T5_XL_ENCODER = T5Bundle(
 )
 
 FLAN_T5_XL = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.pt"),
     _config=T5Conf(
         encoder_only=False,
         embedding_dim=2048,
@@ -710,7 +710,7 @@ FLAN_T5_XL = T5Bundle(
 )
 
 FLAN_T5_XL_GENERATION = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.xl.generation.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xl.generation.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
@@ -725,7 +725,7 @@ FLAN_T5_XL_GENERATION = T5Bundle(
 )
 
 FLAN_T5_XXL_ENCODER = T5Bundle(
-    path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.xxl.encoder.pt"),
     _config=T5Conf(
         encoder_only=True,
         embedding_dim=4096,
