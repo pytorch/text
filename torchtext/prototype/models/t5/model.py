@@ -168,6 +168,7 @@ class T5Model(nn.Module):
 
     @torch.jit.export
     def _reorder_cache(self, past: List[PAST_KEY_VALUES_TYPE], beam_idx: Tensor) -> List[PAST_KEY_VALUES_TYPE]:
+        """Reorder past key value pairs in cache. Only relevant in incremental decoding with beam search generation."""
         # if decoder past is not included in output
         # speedy decoding is disabled and no need to reorder
         if past is None:
