@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import torch
-from torchtext.prototype.generate import DEFAULT_MAX_SEQ_LEN, GenerationUtil
 from torchtext.models import T5_BASE_GENERATION
+from torchtext.prototype.generate import DEFAULT_MAX_SEQ_LEN, GenerationUtil
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
