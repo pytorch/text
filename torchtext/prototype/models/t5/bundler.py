@@ -419,13 +419,11 @@ FLAN_GENERATION_DOC = """
 
 
 def t5_transform() -> T5Transform:
-    return (
-        T5Transform(
-            urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
-            max_seq_len=512,
-            eos_idx=1,
-            padding_idx=0,
-        ),
+    return T5Transform(
+        urljoin(_TEXT_BUCKET, "t5_tokenizer_base.model"),
+        max_seq_len=512,
+        eos_idx=1,
+        padding_idx=0,
     )
 
 
