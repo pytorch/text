@@ -369,6 +369,9 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
+            if [[ "${PYTHON_VERSION}" == "3.11" ]]; then
+              export CONDA_CHANNEL_FLAGS=" -c malfet"
+            fi
             conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" pytorch
             conda install -v -y ${CONDA_CHANNEL_FLAGS} -c ~/workspace/conda-bld torchtext
       - run:
@@ -640,6 +643,9 @@ workflows:
       - binary_windows_conda:
           name: binary_windows_conda_py3.10
           python_version: '3.10'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.11
+          python_version: '3.11'
       - build_docs:
           filters:
             branches:
@@ -885,6 +891,34 @@ workflows:
           python_version: '3.10'
           requires:
           - nightly_binary_windows_conda_py3.10_upload
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.11
+          python_version: '3.11'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.11_upload
+          requires:
+          - nightly_binary_windows_conda_py3.11
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.11_smoke_test_conda
+          python_version: '3.11'
+          requires:
+          - nightly_binary_windows_conda_py3.11_upload
   docker_build:
     triggers:
       - schedule:

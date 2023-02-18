@@ -2,8 +2,9 @@ import tempfile
 
 import pytest  # noqa: F401
 import torch
-from parameterized import parameterized, parameterized_class
-from torchtext.prototype.models import (
+from parameterized import parameterized_class
+from torchtext.models import T5Bundle
+from torchtext.models import (
     T5_BASE,
     T5_BASE_ENCODER,
     T5_BASE_GENERATION,
@@ -13,11 +14,7 @@ from torchtext.prototype.models import (
     T5_SMALL,
     T5_SMALL_ENCODER,
     T5_SMALL_GENERATION,
-    T5Conf,
-    T5Transform,
 )
-from torchtext.prototype.models.t5.bundler import T5Bundle
-from torchtext.prototype.models.t5.wrapper import T5Wrapper
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
@@ -79,7 +76,7 @@ class TestT5Model(TorchtextTestCase):
         encoder = model.get_encoder()
         # Need to set the tgt_key_padding_mask to ensure the same results
         encoder_padding_mask = model_input.eq(model.padding_idx)
-        output_from_get_encoder = encoder(tgt=model_input, tgt_key_padding_mask=encoder_padding_mask)["encoder_output"]
+        output_from_get_encoder = encoder(model_input, src_key_padding_mask=encoder_padding_mask)["encoder_output"]
         assert torch.all(output_from_get_encoder.eq(encoder_output))
 
     @nested_params(["jit", "not_jit"])
@@ -91,64 +88,6 @@ class TestT5Model(TorchtextTestCase):
         is_jit = name == "jit"
         t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
-
-
-@parameterized_class(
-    ("configuration",),
-    [
-        ("small",),
-        ("base",),
-        ("large",),
-    ],
-)
-class TestT5Wrapper(TorchtextTestCase):
-    # No longer Torchscriptable
-    @parameterized.expand(["no_jit"])
-    def test_t5_wrapper(self, name) -> None:
-        configuration = self.configuration
-        test_text = ["translate English to French: I want to eat pizza for dinner."]
-        if configuration == "small":
-            expected_text = ["Je veux manger la pizza pour le dîner."]
-        else:
-            expected_text = ["Je veux manger de la pizza pour le dîner."]
-
-        beam_size = 3
-        max_seq_len = 512
-        model = T5Wrapper(configuration=configuration, strict=False)
-        if name == "jit":
-            model = torch.jit.script(model)
-
-        output_text = model(test_text, beam_size, max_seq_len)
-        self.assertEqual(output_text, expected_text)
-
-
-class TestT5WrapperCheckpoint(TorchtextTestCase):
-    # No longer Torchscriptable
-    @parameterized.expand(["no_jit"])
-    def test_t5_wrapper_checkpoint(self, name) -> None:
-        test_text = ["translate English to French: I want to eat pizza for dinner."]
-        expected_text = ["Je veux manger de la pizza pour le dîner."]
-        beam_size = 3
-        max_seq_len = 512
-        config = T5Conf(encoder_only=False, linear_head=True)
-        transform = T5Transform(
-            "https://download.pytorch.org/models/text/t5_tokenizer_base.model",
-            max_seq_len=512,
-            eos_idx=1,
-            padding_idx=0,
-        )
-        model = T5Wrapper(
-            checkpoint="https://download.pytorch.org/models/text/t5.base.generation.v2.pt",
-            t5_config=config,
-            transform=transform,
-            freeze_model=True,
-            strict=True,
-        )
-        if name == "jit":
-            model = torch.jit.script(model)
-
-        output_text = model(test_text, beam_size, max_seq_len)
-        self.assertEqual(output_text, expected_text)
 
 
 class TestLoadFromHFCheckpoints(TorchtextTestCase):

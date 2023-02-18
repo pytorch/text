@@ -1,4 +1,13 @@
-# logging library is not automatically supported by Torchscript
+# /* Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License. */
 import warnings
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Union
@@ -7,7 +16,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import T5Decoder, T5Encoder
+from .modules import DECODER_OUTPUTS_TYPE, ENCODER_OUTPUTS_TYPE, PAST_KEY_VALUES_TYPE, T5Decoder, T5Encoder
 
 
 @dataclass
@@ -36,9 +45,8 @@ class T5Conf:
         """The following is modified from:
         https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/configuration_t5.py
 
-        It's to support T5 1.1 and FLAN-T5.
+        Supports T5 1.1 and FLAN-T5.
         """
-
         if self.feed_forward_proj:
             act_info = self.feed_forward_proj.split("-")
             self.activation = act_info[-1]
@@ -56,13 +64,13 @@ class T5Conf:
                 self.activation = "gelu_new"
 
 
-# NOTE: Comparable HuggingFace implentation can be found at https://github.com/huggingface/transformers/blob/8581a798c0a48fca07b29ce2ca2ef55adcae8c7e/src/transformers/models/t5/modeling_t5.py#L1269
 class T5Model(nn.Module):
     r"""A T5 model. User is able to modify the attributes as needed. The architecture
     is based on the paper "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer".
     Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena,
     Yanqi Zhou, Wei Li, and Peter J. Liu. 2020. Journal of Machine Learning Research.
     Volume 21 Issue 140 pages 1-67. http://jmlr.org/papers/v21/20-074.html
+
     Args:
         config.encoder_only: Whether or not model should consist of only the encoder as opposed to encoder-decoder (default=False).
         config.linear_head: Whether or not a linear layer should be used to project the output of the decoder's last layer to the vocab (default=False).
@@ -84,8 +92,9 @@ class T5Model(nn.Module):
         config.vocab_size: Size of vocabulary (default: 32128)
         config.training: Whether or not to apply dropout (default: False)
         freeze: Indicates whether or not to freeze the model weights. (default: False)
+
     Examples:
-        >>> from torchtext.prototype.models import T5Conf, T5Model
+        >>> from torchtext.models import T5Conf, T5Model
         >>> t5_config = T5Conf(encoder_only=False, linear_head=True)
         >>> t5_model = T5Model(t5_config)
         >>> encoder_input = torch.randint(0, t5_config.vocab_size, (32, 512))
@@ -160,14 +169,52 @@ class T5Model(nn.Module):
             for p in self.parameters():
                 p.requires_grad = False
 
-    def prepare_inputs_for_generation(self, input_ids, encoder_outputs):
-        return {"decoder_tokens": input_ids, "encoder_outputs": encoder_outputs}
+    @torch.jit.export
+    def _reorder_cache(self, past: List[PAST_KEY_VALUES_TYPE], beam_idx: Tensor) -> List[PAST_KEY_VALUES_TYPE]:
+        """Reorder past key value pairs in cache. Only relevant in incremental decoding with beam search generation."""
+        # if decoder past is not included in output
+        # speedy decoding is disabled and no need to reorder
+        if past is None:
+            return past
 
-    @torch.jit.ignore
+        reordered_decoder_past: List[PAST_KEY_VALUES_TYPE] = []
+        for layer_past_states in past:
+            # get the correct batch idx from layer past batch dim
+            # batch dim of `past` is at 2nd position
+            reordered_layer_past_states = ()
+            for layer_past_state in layer_past_states:
+                # need to set correct `past` for each of the four key / value states
+                reordered_layer_past_states = reordered_layer_past_states + (
+                    layer_past_state.index_select(0, beam_idx.to(layer_past_state.device)),
+                )
+
+            assert len(reordered_layer_past_states) == len(layer_past_states)
+
+            reordered_decoder_past.append(reordered_layer_past_states)
+        return reordered_decoder_past
+
+    @torch.jit.export
+    def prepare_inputs_for_generation(
+        self,
+        input_ids: Tensor,
+        encoder_outputs: ENCODER_OUTPUTS_TYPE,
+        past: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
+        return_past_key_values: bool = True,
+    ) -> Dict[str, Union[Tensor, ENCODER_OUTPUTS_TYPE, Optional[List[PAST_KEY_VALUES_TYPE]], bool]]:
+        # Incremental decoding if past key values are provided
+        if past is not None:
+            input_ids = input_ids[:, -1:]
+
+        return {
+            "decoder_tokens": input_ids,
+            "encoder_outputs": encoder_outputs,
+            "past_key_values": past,
+            "return_past_key_values": return_past_key_values,
+        }
+
     def get_encoder(self) -> T5Encoder:
         return self.encoder
 
-    @torch.jit.ignore
     def get_decoder(self) -> Optional[T5Decoder]:
         if self.decoder is None:
             warnings.warn("Decoder is not set on this model.")
@@ -181,15 +228,16 @@ class T5Model(nn.Module):
         decoder_mask: Optional[Tensor] = None,
         encoder_padding_mask: Optional[Tensor] = None,
         decoder_padding_mask: Optional[Tensor] = None,
-        encoder_outputs: Optional[
-            Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]
-        ] = None,
-    ) -> Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]]:
-        r"""Pass the inputs (and mask) through the decoder layer in turn.
+        encoder_outputs: Optional[ENCODER_OUTPUTS_TYPE] = None,
+        past_key_values: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
+        return_past_key_values: bool = False,
+    ) -> Union[DECODER_OUTPUTS_TYPE, ENCODER_OUTPUTS_TYPE]:
+        r"""Pass the inputs (and mask) through the T5Encoder/T5Decoder in turn.
+
         Args:
             encoder_tokens: Tokenized input sequence to the encoder.
                 Must be batch first with shape (B, Ne) where B is the batch size and Ne is the
-                encoder input sequence length. (required).
+                encoder input sequence length. (optional if `encoder_outputs` is provided)
             decoder_tokens: Tokenized input sequence to the decoder.
                 Must be batch first with shape (B, Nd) where B is the batch size and Nd is the
                 decoder input sequence length. If None and model is encoder-decoder, will initialize decoder
@@ -198,6 +246,14 @@ class T5Model(nn.Module):
                 Must have shape (Ne, Ne) (optional).
             decoder_mask: Self-attention mask for the decoder input sequence.
                 Must have shape (Nd, Nd) (optional).
+            encoder_padding_mask: Padding mask for encoder input sequence.
+                Must have shape (B, Ne) (optional).
+            decoder_padding_mask: Padding mask for decoder input sequence.
+                Must have shape (B, Nd) (optional).
+            encoder_outputs: Outputs from previous run of T5Encoder. (optional)
+            past_key_values: Previously calculated key values, used in incremental decoding. (optional)
+            return_past_key_values: Boolean indicating whether to return key values to user. (default: False)
+
         Returns:
             encoder_output: Output Tensor from the final layer of the encoder
             encoder_hidden_states: Tuple of output Tensors from each layer of the encoder
@@ -208,15 +264,16 @@ class T5Model(nn.Module):
             decoder_position_bias: Tensor of relative attention bias computed for input sequence to decoder
             encoder_sa_scores: Tuple of self-attention scores computed at each layer of the decoder
             encoder_ca_scores: Tuple of cross-attention scores computed at each layer of the decoder
+            past_key_values: List of Tuples of key values calculated during this run, or None.
         """
         if encoder_outputs is None:
             assert encoder_tokens is not None, "If `encoder_outputs` is not specified, must provide `encoder_tokens`"
 
             if encoder_padding_mask is None:
-                encoder_padding_mask = encoder_tokens.eq(self.padding_idx)
+                encoder_padding_mask = encoder_tokens.eq(self.padding_idx).to(device=encoder_tokens.device)
 
             encoder_outputs = self.encoder(
-                tgt=encoder_tokens, tgt_mask=encoder_mask, tgt_key_padding_mask=encoder_padding_mask
+                src=encoder_tokens, mask=encoder_mask, src_key_padding_mask=encoder_padding_mask
             )
 
         if not self.encoder_only:
@@ -226,19 +283,14 @@ class T5Model(nn.Module):
             encoder_output = encoder_outputs.get("encoder_output")
             assert torch.jit.isinstance(encoder_output, Tensor)
 
+            batch_size = encoder_output.size(0)
+            encoder_output_device = encoder_output.device
+
             # decoder_tokens is None means at start of inference, in which case decoder sequence should begin with padding idx.
             if decoder_tokens is None:
-                batch_size = encoder_output.size()[0]
-                encoder_output_device = encoder_output.device
                 decoder_tokens = (
                     torch.ones((batch_size, 1), device=encoder_output_device, dtype=torch.long) * self.padding_idx
                 )
-
-            if decoder_mask is None:
-                assert decoder_tokens is not None and decoder_tokens.dim() == 2
-                tgt_len = decoder_tokens.shape[1]
-                decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1)
-                decoder_mask = decoder_mask.to(decoder_tokens.device, dtype=torch.bool)
 
             if decoder_padding_mask is None:
                 decoder_padding_mask = decoder_tokens.eq(self.padding_idx)
@@ -253,6 +305,8 @@ class T5Model(nn.Module):
                 memory_mask=encoder_mask,
                 tgt_key_padding_mask=decoder_padding_mask,
                 memory_key_padding_mask=encoder_padding_mask,
+                past_key_values=past_key_values,
+                return_past_key_values=return_past_key_values,
             )
 
             decoder_output = decoder_outputs.get("decoder_output")
@@ -267,13 +321,12 @@ class T5Model(nn.Module):
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
-            encoder_outputs.update(decoder_outputs)
-            encoder_decoder_outputs = encoder_outputs
-
-            assert torch.jit.isinstance(
-                encoder_decoder_outputs,
-                Dict[str, Union[Tensor, List[Tensor], Optional[Tensor], List[Optional[Tensor]]]],
-            )
+            # Make TorchScript pick up the correct types
+            encoder_decoder_outputs: DECODER_OUTPUTS_TYPE = {}
+            for key, val in encoder_outputs.items():
+                encoder_decoder_outputs[key] = val
+            for key, val in decoder_outputs.items():
+                encoder_decoder_outputs[key] = val
 
             return encoder_decoder_outputs
 
