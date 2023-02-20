@@ -1,13 +1,13 @@
 """Run smoke tests"""
 
 import re
-
+import os
 import torchdata
 import torchtext
 import torchtext.version  # noqa: F401
 
 NIGHTLY_ALLOWED_DELTA = 3
-
+channel = os.getenv("MATRIX_CHANNEL")
 
 def validateTorchdataVersion():
     from datetime import datetime
@@ -19,5 +19,8 @@ def validateTorchdataVersion():
         raise RuntimeError(f"torchdata binary {torchdata.__version__} is more than {NIGHTLY_ALLOWED_DELTA} days old!")
 
 
-validateTorchdataVersion()
+if channel == "nightly":
+    validateTorchdataVersion()
+
 print("torchtext version is ", torchtext.__version__)
+print("torchdata version is ", torchdata.__version__)
