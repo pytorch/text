@@ -1,13 +1,15 @@
 """Run smoke tests"""
 
-import re
 import os
+import re
+
 import torchdata
 import torchtext
 import torchtext.version  # noqa: F401
 
 NIGHTLY_ALLOWED_DELTA = 3
 channel = os.getenv("MATRIX_CHANNEL")
+
 
 def validateTorchdataVersion():
     from datetime import datetime
