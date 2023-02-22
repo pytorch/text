@@ -155,6 +155,7 @@ class T5Bundle:
         """Build T5Model model from a HuggingFace checkpoint.
 
         Note: Only works with Huggingface models saved in the PyTorch format. Will not work with TensorFlow or JAX.
+        This also requires a fully saved model, sharded checkpoints are not supported.
 
         Args:
             ckpt_path (str, Path): Path to the HF checkpoint file. Assumes that the file is local.
@@ -238,12 +239,12 @@ class T5Bundle:
 
             for i in range(config.num_decoder_layers):
                 if config.is_gated_act:
-                    t5_model_state_dict[f"encoder.layers.{i}.linear1_0.weight"] = hf_weights[
-                        f"decoder.block.{i}.layer.1.DenseReluDense.wi_0.weight"
+                    t5_model_state_dict[f"decoder.layers.{i}.linear1_0.weight"] = hf_weights[
+                        f"decoder.block.{i}.layer.2.DenseReluDense.wi_0.weight"
                     ]
 
-                    t5_model_state_dict[f"encoder.layers.{i}.linear1_1.weight"] = hf_weights[
-                        f"decoder.block.{i}.layer.1.DenseReluDense.wi_1.weight"
+                    t5_model_state_dict[f"decoder.layers.{i}.linear1_1.weight"] = hf_weights[
+                        f"decoder.block.{i}.layer.2.DenseReluDense.wi_1.weight"
                     ]
                 else:
                     t5_model_state_dict[f"decoder.layers.{i}.linear1.weight"] = hf_weights[
@@ -649,56 +650,6 @@ T5_11B_GENERATION = T5Bundle(
 )
 
 T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
-
-
-FLAN_T5_SMALL_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
-    _config=T5Conf(
-        encoder_only=True,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("SMALL", "SMALL")
-
-FLAN_T5_SMALL = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
-    _config=T5Conf(
-        encoder_only=False,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL.__doc__ = FLAN_DOC.format("SMALL", "SMALL")
-
-FLAN_T5_SMALL_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
-    _config=T5Conf(
-        encoder_only=False,
-        linear_head=True,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("SMALL", "SMALL")
 
 FLAN_T5_BASE_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),

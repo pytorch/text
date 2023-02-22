@@ -14,6 +14,18 @@ from torchtext.models import (
     T5_SMALL,
     T5_SMALL_ENCODER,
     T5_SMALL_GENERATION,
+    FLAN_T5_BASE_ENCODER,
+    FLAN_T5_BASE,
+    FLAN_T5_BASE_GENERATION,
+    FLAN_T5_LARGE_ENCODER,
+    FLAN_T5_LARGE,
+    FLAN_T5_LARGE_GENERATION,
+    FLAN_T5_XL_ENCODER,
+    FLAN_T5_XL,
+    FLAN_T5_XL_GENERATION,
+    FLAN_T5_XXL_ENCODER,
+    FLAN_T5_XXL,
+    FLAN_T5_XXL_GENERATION,
 )
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
@@ -30,6 +42,18 @@ BUNDLERS = {
     "large_model": T5_LARGE,
     "large_encoder": T5_LARGE_ENCODER,
     "large_generation": T5_LARGE_GENERATION,
+    "flan_base_encoder": FLAN_T5_BASE_ENCODER,
+    "flan_base_model": FLAN_T5_BASE,
+    "flan_base_generation": FLAN_T5_BASE_GENERATION,
+    "flan_large_encoder": FLAN_T5_LARGE_ENCODER,
+    "flan_large_model": FLAN_T5_LARGE,
+    "flan_large_generation": FLAN_T5_LARGE_GENERATION,
+    "flan_xl_encoder": FLAN_T5_XL_ENCODER,
+    "flan_xl_model": FLAN_T5_XL,
+    "flan_xl_generation": FLAN_T5_XL_GENERATION,
+    "flan_xxl_encoder": FLAN_T5_XXL_ENCODER,
+    "flan_xxl_model": FLAN_T5_XXL,
+    "flan_xxl_generation": FLAN_T5_XXL_GENERATION,
 }
 
 
@@ -45,6 +69,21 @@ BUNDLERS = {
         ("large_model",),
         ("large_encoder",),
         ("large_generation",),
+        ("flan_small_encoder",),
+        ("flan_small_model",),
+        ("flan_small_generation",),
+        ("flan_base_encoder",),
+        ("flan_base_model",),
+        ("flan_base_generation",),
+        ("flan_large_encoder",),
+        ("flan_large_model",),
+        ("flan_large_generation",),
+        ("flan_xl_encoder",),
+        ("flan_xl_model",),
+        ("flan_xl_generation",),
+        ("flan_xxl_encoder",),
+        ("flan_xxl_model",),
+        ("flan_xxl_generation",),
     ],
 )
 class TestT5Model(TorchtextTestCase):
@@ -94,9 +133,13 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.encoder_input_ids = torch.tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 0, 0, 0]])
-        self.encoder_padding_mask = torch.tensor([[1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0]])
+        self.encoder_padding_mask = torch.tensor(
+            [[False, False, False, False, False, False], [False, False, False, True, True, True]]
+        )
         self.decoder_input_ids = torch.tensor([[7, 8, 9, 0, 0, 0], [10, 11, 12, 0, 0, 0]])
-        self.decoder_padding_mask = torch.tensor([[1, 1, 1, 0, 0, 0], [1, 1, 1, 0, 0, 0]])
+        self.decoder_padding_mask = torch.tensor(
+            [[False, False, False, True, True, True], [False, False, False, True, True, True]]
+        )
 
     def check_outputs_of_models(self, our_output, hf_output, config, encoder_only) -> None:
         # check that encoder layers match
@@ -194,6 +237,87 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
 
             self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
 
+    def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_flan_base_enc"
+
+            flan_t5_base_enc = T5EncoderModel.from_pretrained("google/flan-t5-base")
+            flan_t5_base_enc.save_pretrained(model_path)
+
+            our_encoder = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=True)
+
+            hf_output = flan_t5_base_enc(
+                input_ids=self.encoder_input_ids,
+                attention_mask=~self.encoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_encoder(self.encoder_input_ids, encoder_padding_mask=self.encoder_padding_mask)
+
+            self.check_outputs_of_models(our_output, hf_output, our_encoder.config, True)
+
     def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder(self) -> None:
-        # TODO(joecummings): Download FLAN-T5 chkpts and test here
-        pass
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_flan_base"
+
+            flan_t5_base = T5Model.from_pretrained("google/flan-t5-base")
+            flan_t5_base.save_pretrained(model_path)
+
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+
+            hf_output = flan_t5_base(
+                input_ids=self.encoder_input_ids,
+                decoder_input_ids=self.decoder_input_ids,
+                attention_mask=~self.encoder_padding_mask,
+                decoder_attention_mask=~self.decoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_t5(
+                self.encoder_input_ids,
+                self.decoder_input_ids,
+                encoder_padding_mask=self.encoder_padding_mask,
+                decoder_padding_mask=self.decoder_padding_mask,
+            )
+
+            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
+
+    def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder_with_gen(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = f"{tmp_dir}/hf_flan_base_gen"
+
+            flan_t5_base_gen = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base")
+            flan_t5_base_gen.save_pretrained(model_path)
+
+            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+
+            hf_output = flan_t5_base_gen(
+                input_ids=self.encoder_input_ids,
+                decoder_input_ids=self.decoder_input_ids,
+                attention_mask=~self.encoder_padding_mask,
+                decoder_attention_mask=~self.decoder_padding_mask,
+                output_hidden_states=True,
+                output_attentions=True,
+            )
+
+            our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
+
+            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
+
+    def load_and_save_for_tt(self) -> None:
+        for variant, variant_out_name in zip(
+            {"flan-t5-base", "flan-t5-large", "flan-t5-xl", "flan-t5-xxl"},
+            {"t5.flan.base", "t5.flan.large", "t5.flan.xl", "t5.flan.xxl"}
+            ):
+            for model, type in zip(
+                {T5EncoderModel, T5Model, T5ForConditionalGeneration},
+                {".encoder", "", ".generation"}
+            ):
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    model_path = f"{tmp_dir}/variant"
+                    hf_flan = model.from_pretrained(f"google/{variant}")
+                    hf_flan.save_pretrained(model_path)
+                    our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
+                    torch.save(our_t5.state_dict(), f"/Users/jrcummings/Desktop/{variant_out_name}{type}.pt")
