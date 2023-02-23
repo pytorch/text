@@ -17,15 +17,6 @@ from torchtext.models import (
     FLAN_T5_BASE_ENCODER,
     FLAN_T5_BASE,
     FLAN_T5_BASE_GENERATION,
-    FLAN_T5_LARGE_ENCODER,
-    FLAN_T5_LARGE,
-    FLAN_T5_LARGE_GENERATION,
-    FLAN_T5_XL_ENCODER,
-    FLAN_T5_XL,
-    FLAN_T5_XL_GENERATION,
-    FLAN_T5_XXL_ENCODER,
-    FLAN_T5_XXL,
-    FLAN_T5_XXL_GENERATION,
 )
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
@@ -45,15 +36,6 @@ BUNDLERS = {
     "flan_base_encoder": FLAN_T5_BASE_ENCODER,
     "flan_base_model": FLAN_T5_BASE,
     "flan_base_generation": FLAN_T5_BASE_GENERATION,
-    "flan_large_encoder": FLAN_T5_LARGE_ENCODER,
-    "flan_large_model": FLAN_T5_LARGE,
-    "flan_large_generation": FLAN_T5_LARGE_GENERATION,
-    "flan_xl_encoder": FLAN_T5_XL_ENCODER,
-    "flan_xl_model": FLAN_T5_XL,
-    "flan_xl_generation": FLAN_T5_XL_GENERATION,
-    "flan_xxl_encoder": FLAN_T5_XXL_ENCODER,
-    "flan_xxl_model": FLAN_T5_XXL,
-    "flan_xxl_generation": FLAN_T5_XXL_GENERATION,
 }
 
 
@@ -69,21 +51,9 @@ BUNDLERS = {
         ("large_model",),
         ("large_encoder",),
         ("large_generation",),
-        ("flan_small_encoder",),
-        ("flan_small_model",),
-        ("flan_small_generation",),
         ("flan_base_encoder",),
         ("flan_base_model",),
         ("flan_base_generation",),
-        ("flan_large_encoder",),
-        ("flan_large_model",),
-        ("flan_large_generation",),
-        ("flan_xl_encoder",),
-        ("flan_xl_model",),
-        ("flan_xl_generation",),
-        ("flan_xxl_encoder",),
-        ("flan_xxl_model",),
-        ("flan_xxl_generation",),
     ],
 )
 class TestT5Model(TorchtextTestCase):
@@ -113,19 +83,33 @@ class TestT5Model(TorchtextTestCase):
 
     def _t5_get_encoder(self, model, model_input, encoder_output):
         encoder = model.get_encoder()
-        # Need to set the tgt_key_padding_mask to ensure the same results
+        # Need to set the key_padding_mask to ensure the same results
         encoder_padding_mask = model_input.eq(model.padding_idx)
         output_from_get_encoder = encoder(model_input, src_key_padding_mask=encoder_padding_mask)["encoder_output"]
         assert torch.all(output_from_get_encoder.eq(encoder_output))
 
-    @nested_params(["jit", "not_jit"])
+    @nested_params(["not_jit", "jit"])
     def test_t5_model(self, name) -> None:
-        configuration, type = self.model_name.split("_")
+        names = self.model_name.split("_")
 
-        expected_asset_name = f"t5.{configuration}.{type}.output.pt"
+        num_names = len(names)
+
+        if num_names == 3:
+            # Handled slightly differently for Flan-T5 model naming
+            configuration = names[1]
+            type = names[2]
+            expected_asset_name = f"t5.flan.{configuration}.{type}.output.pt"
+            t5_model = BUNDLERS["flan_" + configuration + "_" + type]
+        elif num_names == 2:
+            configuration = names[0]
+            type = names[1]
+            expected_asset_name = f"t5.{configuration}.{type}.output.pt"
+            t5_model = BUNDLERS[configuration + "_" + type]
+        else:
+            raise RuntimeError(f"Unknown model name: {self.model_name}")
+
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
-        t5_model = BUNDLERS[configuration + "_" + type]
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
 
@@ -184,7 +168,7 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
 
             hf_output = t5_small_enc(
                 input_ids=self.encoder_input_ids,
-                attention_mask=self.encoder_padding_mask,
+                attention_mask=~self.encoder_padding_mask,
                 output_hidden_states=True,
                 output_attentions=True,
             )
@@ -205,8 +189,8 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             hf_output = t5_small(
                 input_ids=self.encoder_input_ids,
                 decoder_input_ids=self.decoder_input_ids,
-                attention_mask=self.encoder_padding_mask,
-                decoder_attention_mask=self.decoder_padding_mask,
+                attention_mask=~self.encoder_padding_mask,
+                decoder_attention_mask=~self.decoder_padding_mask,
                 output_hidden_states=True,
                 output_attentions=True,
             )
@@ -227,8 +211,8 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             hf_output = t5_small_gen(
                 input_ids=self.encoder_input_ids,
                 decoder_input_ids=self.decoder_input_ids,
-                attention_mask=self.encoder_padding_mask,
-                decoder_attention_mask=self.decoder_padding_mask,
+                attention_mask=~self.encoder_padding_mask,
+                decoder_attention_mask=~self.decoder_padding_mask,
                 output_hidden_states=True,
                 output_attentions=True,
             )
@@ -305,19 +289,3 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
 
             self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
-
-    def load_and_save_for_tt(self) -> None:
-        for variant, variant_out_name in zip(
-            {"flan-t5-base", "flan-t5-large", "flan-t5-xl", "flan-t5-xxl"},
-            {"t5.flan.base", "t5.flan.large", "t5.flan.xl", "t5.flan.xxl"}
-            ):
-            for model, type in zip(
-                {T5EncoderModel, T5Model, T5ForConditionalGeneration},
-                {".encoder", "", ".generation"}
-            ):
-                with tempfile.TemporaryDirectory() as tmp_dir:
-                    model_path = f"{tmp_dir}/variant"
-                    hf_flan = model.from_pretrained(f"google/{variant}")
-                    hf_flan.save_pretrained(model_path)
-                    our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
-                    torch.save(our_t5.state_dict(), f"/Users/jrcummings/Desktop/{variant_out_name}{type}.pt")

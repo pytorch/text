@@ -713,7 +713,7 @@ FLAN_T5_BASE.__doc__ = FLAN_DOC.format("LARGE", "LARGE")
 
 
 FLAN_T5_LARGE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.generation.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,
