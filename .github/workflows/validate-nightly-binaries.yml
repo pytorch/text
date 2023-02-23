@@ -23,5 +23,5 @@ jobs:
   nightly:
     uses: ./.github/workflows/validate-binaries.yml
     with:
-      channel: test
+      channel: nightly
       os: all
