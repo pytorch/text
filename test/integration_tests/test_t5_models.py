@@ -1,8 +1,15 @@
+import os
+import tempfile
+
 import pytest  # noqa: F401
 import torch
 from parameterized import parameterized_class
-from torchtext.models import T5Bundle
+from torchtext import _TEXT_BUCKET
+from torchtext._download_hooks import _TEST_DOWNLOAD_MANAGER
 from torchtext.models import (
+    FLAN_T5_BASE,
+    FLAN_T5_BASE_ENCODER,
+    FLAN_T5_BASE_GENERATION,
     T5_BASE,
     T5_BASE_ENCODER,
     T5_BASE_GENERATION,
@@ -12,9 +19,7 @@ from torchtext.models import (
     T5_SMALL,
     T5_SMALL_ENCODER,
     T5_SMALL_GENERATION,
-    FLAN_T5_BASE_ENCODER,
-    FLAN_T5_BASE,
-    FLAN_T5_BASE_GENERATION,
+    T5Bundle,
 )
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
@@ -134,18 +139,27 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
         )
 
     def test_t5_bundler_load_hf_ckpt_pretrained(self) -> None:
-        names = self.model.split("_")
-        is_encoder_only = names[-1] == "encoder"
+        with tempfile.TemporaryDirectory() as tmp:
+            local_path = f"{tmp}/{self.model}"
+            remote_bucket = f"{_TEXT_BUCKET}test_models"
 
-        model_path = get_asset_path(self.model)
+            os.mkdir(local_path)
 
-        model = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=is_encoder_only)
-        if is_encoder_only:
-            model(self.encoder_input_ids, encoder_padding_mask=self.encoder_padding_mask)
-        else:
-            model(
-                self.encoder_input_ids,
-                self.decoder_input_ids,
-                encoder_padding_mask=self.encoder_padding_mask,
-                decoder_padding_mask=self.decoder_padding_mask,
-            )
+            for f in {"config.json", "pytorch_model.bin"}:
+                destination = f"{local_path}/{f}"
+                remote_path = f"{remote_bucket}/{self.model}/{f}"
+                _TEST_DOWNLOAD_MANAGER.get_local_path(url=remote_path, destination=destination)
+
+            names = self.model.split("_")
+            is_encoder_only = names[-1] == "encoder"
+
+            model = T5Bundle.build_model_from_huggingface_ckpt(local_path, encoder_only=is_encoder_only)
+            if is_encoder_only:
+                model(self.encoder_input_ids, encoder_padding_mask=self.encoder_padding_mask)
+            else:
+                model(
+                    self.encoder_input_ids,
+                    self.decoder_input_ids,
+                    encoder_padding_mask=self.encoder_padding_mask,
+                    decoder_padding_mask=self.decoder_padding_mask,
+                )
