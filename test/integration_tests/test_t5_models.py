@@ -1,5 +1,3 @@
-import tempfile
-
 import pytest  # noqa: F401
 import torch
 from parameterized import parameterized_class
@@ -110,6 +108,7 @@ class TestT5Model(TorchtextTestCase):
         test_text = ["Hello world", "Attention rocks!"]
         is_jit = name == "jit"
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
+
 
 @parameterized_class(
     ("model",),
