@@ -21,7 +21,6 @@ from torchtext.models import (
 from torchtext_unittest.common.assets import get_asset_path
 from torchtext_unittest.common.parameterized_utils import nested_params
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
-from transformers import T5EncoderModel, T5ForConditionalGeneration, T5Model
 
 BUNDLERS = {
     "base_model": T5_BASE,
@@ -112,7 +111,17 @@ class TestT5Model(TorchtextTestCase):
         is_jit = name == "jit"
         self._t5_model(is_jit=is_jit, t5_model=t5_model, expected_asset_name=expected_asset_name, test_text=test_text)
 
-
+@parameterized_class(
+    ("model",),
+    [
+        ("hf_t5_small_encoder",),
+        ("hf_t5_small",),
+        ("hf_t5_small_generation",),
+        ("hf_flan_base_encoder",),
+        ("hf_flan_base",),
+        ("hf_flan_base_generation",),
+    ],
+)
 class TestLoadFromHFCheckpoints(TorchtextTestCase):
     def setUp(self) -> None:
         super().setUp()
@@ -125,167 +134,19 @@ class TestLoadFromHFCheckpoints(TorchtextTestCase):
             [[False, False, False, True, True, True], [False, False, False, True, True, True]]
         )
 
-    def check_outputs_of_models(self, our_output, hf_output, config, encoder_only) -> None:
-        # check that encoder layers match
-        for i in range(config.num_encoder_layers + 1):
-            if i < config.num_encoder_layers:
-                hf_output_sa = hf_output.attentions[i] if encoder_only else hf_output.encoder_attentions[i]
-                # self-attention scores
-                assert torch.equal(
-                    our_output["encoder_sa_scores"][i], hf_output_sa
-                ), f"Mismatched self-attention scores for encoder layer {i}"
-            hf_output_hs = hf_output.hidden_states[i] if encoder_only else hf_output.encoder_hidden_states[i]
-            # encoder hidden states
-            assert torch.equal(
-                our_output["encoder_hidden_states"][i], hf_output_hs
-            ), f"Mismatched hidden states for encoder layer {i}"
+    def test_t5_bundler_load_hf_ckpt_pretrained(self) -> None:
+        names = self.model.split("_")
+        is_encoder_only = names[-1] == "encoder"
 
-        if not encoder_only:
-            # check that decoder layers match
-            for i in range(config.num_decoder_layers + 1):
-                if i < config.num_encoder_layers:
-                    # self-attention scores
-                    assert torch.equal(
-                        our_output["decoder_sa_scores"][i], hf_output.decoder_attentions[i]
-                    ), f"Mismatched self-attention scores for decoder layer {i}"
-                    # cross-attention scores
-                    assert torch.equal(
-                        our_output["decoder_ca_scores"][i], hf_output.cross_attentions[i]
-                    ), f"Mismatched cross-attention scores for decoder layer {i}"
-                # decoder hidden states
-                assert torch.equal(
-                    our_output["decoder_hidden_states"][i], hf_output.decoder_hidden_states[i]
-                ), f"Mismatched hidden states for decoder layer {i}"
+        model_path = get_asset_path(self.model)
 
-    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_only(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_t5_small_enc"
-
-            t5_small_enc = T5EncoderModel.from_pretrained("t5-small")
-            t5_small_enc.save_pretrained(model_path)
-
-            our_encoder = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=True)
-
-            hf_output = t5_small_enc(
-                input_ids=self.encoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_encoder(self.encoder_input_ids)
-
-            self.check_outputs_of_models(our_output, hf_output, our_encoder.config, True)
-
-    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_t5_small"
-
-            t5_small = T5Model.from_pretrained("t5-small")
-            t5_small.save_pretrained(model_path)
-
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
-
-            hf_output = t5_small(
-                input_ids=self.encoder_input_ids,
-                decoder_input_ids=self.decoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                decoder_attention_mask=~self.decoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
-
-            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
-
-    def test_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder_with_gen(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_t5_small_gen"
-
-            t5_small_gen = T5ForConditionalGeneration.from_pretrained("t5-small")
-            t5_small_gen.save_pretrained(model_path)
-
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
-
-            hf_output = t5_small_gen(
-                input_ids=self.encoder_input_ids,
-                decoder_input_ids=self.decoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                decoder_attention_mask=~self.decoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
-
-            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
-
-    def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_only(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_flan_base_enc"
-
-            flan_t5_base_enc = T5EncoderModel.from_pretrained("google/flan-t5-base")
-            flan_t5_base_enc.save_pretrained(model_path)
-
-            our_encoder = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=True)
-
-            hf_output = flan_t5_base_enc(
-                input_ids=self.encoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_encoder(self.encoder_input_ids, encoder_padding_mask=self.encoder_padding_mask)
-
-            self.check_outputs_of_models(our_output, hf_output, our_encoder.config, True)
-
-    def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_flan_base"
-
-            flan_t5_base = T5Model.from_pretrained("google/flan-t5-base")
-            flan_t5_base.save_pretrained(model_path)
-
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
-
-            hf_output = flan_t5_base(
-                input_ids=self.encoder_input_ids,
-                decoder_input_ids=self.decoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                decoder_attention_mask=~self.decoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_t5(
+        model = T5Bundle.build_model_from_huggingface_ckpt(model_path, encoder_only=is_encoder_only)
+        if is_encoder_only:
+            model(self.encoder_input_ids, encoder_padding_mask=self.encoder_padding_mask)
+        else:
+            model(
                 self.encoder_input_ids,
                 self.decoder_input_ids,
                 encoder_padding_mask=self.encoder_padding_mask,
                 decoder_padding_mask=self.decoder_padding_mask,
             )
-
-            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)
-
-    def test_flan_t5_bundler_load_hf_ckpt_pretrained_encoder_decoder_with_gen(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = f"{tmp_dir}/hf_flan_base_gen"
-
-            flan_t5_base_gen = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base")
-            flan_t5_base_gen.save_pretrained(model_path)
-
-            our_t5 = T5Bundle.build_model_from_huggingface_ckpt(model_path)
-
-            hf_output = flan_t5_base_gen(
-                input_ids=self.encoder_input_ids,
-                decoder_input_ids=self.decoder_input_ids,
-                attention_mask=~self.encoder_padding_mask,
-                decoder_attention_mask=~self.decoder_padding_mask,
-                output_hidden_states=True,
-                output_attentions=True,
-            )
-
-            our_output = our_t5(self.encoder_input_ids, self.decoder_input_ids)
-
-            self.check_outputs_of_models(our_output, hf_output, our_t5.config, False)

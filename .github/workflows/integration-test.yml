@@ -55,7 +55,6 @@ jobs:
         python3 -m pip --quiet install sentencepiece
         python3 -m pip --quiet install tqdm
         python3 -m pip --quiet install expecttest
-        python3 -m pip --quiet install transformers==4.26.1
         # Run Tests
         python3 -m torch.utils.collect_env
         cd test
