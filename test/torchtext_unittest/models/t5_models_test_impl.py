@@ -6,9 +6,9 @@ from torch.nn import functional as F
 from torchtext_unittest.common.case_utils import TestBaseMixin
 
 
-class BaseTestModels(TestBaseMixin):
+class T5BaseTestModels(TestBaseMixin):
     def test_t5_bundler_build_model(self) -> None:
-        from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
+        from torchtext.models import T5Conf, T5Model, T5Bundle
 
         # case: user provides encoder checkpoint state dict
         dummy_encoder_conf = T5Conf(
@@ -57,7 +57,7 @@ class BaseTestModels(TestBaseMixin):
 
     @patch("logging.Logger.warning")
     def test_t5_bundler_get_model(self, mock):
-        from torchtext.prototype.models import T5Conf, T5Bundle
+        from torchtext.models import T5Conf, T5Bundle
 
         # encoder-decoder with generation
         dummy_t5_generation_conf = T5Conf(
@@ -77,7 +77,7 @@ class BaseTestModels(TestBaseMixin):
         )
 
     def test_t5_bundler_raise_checkpoint(self) -> None:
-        from torchtext.prototype.models import T5Conf, T5Bundle
+        from torchtext.models import T5Conf, T5Bundle
 
         # encoder-only
         with self.assertRaises(TypeError):
@@ -132,7 +132,7 @@ class BaseTestModels(TestBaseMixin):
             )
 
     def test_t5_bundler_conf_property(self) -> None:
-        from torchtext.prototype.models import T5Conf, T5Bundle
+        from torchtext.models import T5Conf, T5Bundle
 
         dummy_t5_conf = T5Conf(
             encoder_only=False,
@@ -148,7 +148,9 @@ class BaseTestModels(TestBaseMixin):
 
     def test_t5_bundler_train(self) -> None:
         from torch.optim import SGD
-        from torchtext.prototype.models import T5Conf, T5Model, T5Bundle
+        from torchtext.models import T5Conf, T5Model, T5Bundle
+
+        torch.manual_seed(123)
 
         def _train(model):
             optim = SGD(model.parameters(), lr=1)

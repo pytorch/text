@@ -44,12 +44,6 @@ def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
                     continue
                 if os_type == "macos":
                     continue
-                # Not supporting Python 3.11 conda packages at the
-                # moment since the necessary dependencies are not
-                # available. Windows 3.11 Wheels will be built from
-                # CircleCI here, however.
-                if python_version == "3.11" and btype == "conda":
-                    continue
 
                 w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
 

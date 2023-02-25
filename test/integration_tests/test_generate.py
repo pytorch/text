@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import torch
-from torchtext.prototype.generate import DEFAULT_MAX_SEQ_LEN, GenerationUtil
-from torchtext.prototype.models import T5_BASE_GENERATION
+from torchtext.models import T5_BASE_GENERATION
+from torchtext.prototype.generate import DEFAULT_MAX_SEQ_LEN, GenerationUtils
 from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
@@ -26,9 +26,9 @@ class TestGenerationUtil(TorchtextTestCase):
         torch.manual_seed(0)
 
     def test_greedy_generate_with_t5(self) -> None:
-        generation_model = GenerationUtil(self.model)
+        generation_model = GenerationUtils(self.model)
 
-        tokens = generation_model.generate(self.inputs, num_beams=1, max_len=30)
+        tokens = generation_model.generate(self.inputs, num_beams=1, max_length=30)
         generated_text = self.transform.decode(tokens.tolist())
 
         expected_generated_text = [
@@ -42,13 +42,13 @@ class TestGenerationUtil(TorchtextTestCase):
         self.assertEqual(generated_text, expected_generated_text)
 
     def test_generate_errors_with_incorrect_beams(self) -> None:
-        generation_model = GenerationUtil(self.model, is_encoder_decoder=True)
+        generation_model = GenerationUtils(self.model, is_encoder_decoder=True)
 
         with self.assertRaises(ValueError):
             generation_model.generate(self.inputs, num_beams=0)
 
     @patch("logging.Logger.warning")
     def test_warns_when_no_max_len_provided(self, mock) -> None:
-        generation_model = GenerationUtil(self.model)
+        generation_model = GenerationUtils(self.model)
         generation_model.generate(self.inputs)
-        mock.assert_called_with(f"`max_len` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")
+        mock.assert_called_with(f"`max_length` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")

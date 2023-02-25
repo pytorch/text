@@ -179,16 +179,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_property_readonly("byte_encoder_", &GPT2BPEEncoder::GetByteEncoder)
       .def("encode", &GPT2BPEEncoder::Encode)
       .def("tokenize", &GPT2BPEEncoder::Tokenize)
-      .def(
-          "decode",
-          [](const c10::intrusive_ptr<GPT2BPEEncoder>& self,
-             const std::vector<int64_t>& tokens) {
-            std::string s = self->Decode(tokens);
-            PyObject* py_obj =
-                PyUnicode_DecodeUTF8(s.data(), s.length(), "ignore");
-            py::str py_s = py::reinterpret_steal<py::str>(py_obj);
-            return py_s;
-          })
+      .def("decode", &GPT2BPEEncoder::Decode)
       .def(
           "add_special_tokens",
           [](const c10::intrusive_ptr<GPT2BPEEncoder>& self,

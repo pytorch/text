@@ -30,7 +30,8 @@ printf "* Installing PyTorch\n"
 )
 
 
-printf "Installing torchdata nightly\n"
+printf "Installing torchdata nightly with portalocker\n"
+pip install "portalocker>=2.0.0"
 pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 
 printf "* Installing torchtext\n"
