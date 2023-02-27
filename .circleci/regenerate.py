@@ -162,6 +162,10 @@ def unittest_workflows(indentation=6):
     w = []
     for os_type in ["windows"]:
         for python_version in PYTHON_VERSIONS:
+            # Turn off unit tests for 3.11, unit test are not setup properly in circleci
+            if python_version == "3.11":
+                continue
+
             w.append(
                 {
                     f"unittest_{os_type}": {
