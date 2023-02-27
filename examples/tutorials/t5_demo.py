@@ -25,7 +25,6 @@ T5-Base Model for Summarization, Sentiment Classification, and Translation
 # Common imports
 # --------------
 import torch
-import torch.nn.functional as F
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
