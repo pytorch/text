@@ -266,15 +266,15 @@ class GenerationUtils(nn.Module):
                 lm_scores = outputs[output_key]
 
                 # Keep track of probabilities over vocab for this pairing
-                for i in range(lm_scores.shape[0]):
-                    sample_lm_scores = lm_scores[i, -1]
+                for sample_idx in range(num_samples):
+                    sample_lm_scores = lm_scores[sample_idx, -1]
                     out_probs.append(sample_lm_scores.tolist())
                     # Keep track of sequence and decoder hidden states
                     model_states.append(
                         create_emitting_model_state(
                             Seq2SeqModelState(
                                 timestep=timestep,
-                                sequence=state_and_tokens[i].unsqueeze(0),
+                                sequence=state_and_tokens[sample_idx].unsqueeze(0),
                                 lm_scores=sample_lm_scores,
                             )
                         )
