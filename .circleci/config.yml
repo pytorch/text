@@ -674,9 +674,6 @@ workflows:
       - unittest_windows:
           name: unittest_windows_py3.10
           python_version: '3.10'
-      - unittest_windows:
-          name: unittest_windows_py3.11
-          python_version: '3.11'
   nightly:
     jobs:
       - circleci_consistency:
