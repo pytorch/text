@@ -29,7 +29,7 @@ Tutorials
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Pendo Abbo &lt;pabbo@fb.com&gt;`__">
+    <div class="sphx-glr-thumbcontainer" tooltip="**Author**: `Pendo Abbo &lt;pabbo@fb.com&gt;`__ **Author**: `Joe Cummings &lt;jrcummings@fb.com&gt;`__">
 
 .. only:: html
 
