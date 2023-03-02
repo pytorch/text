@@ -28,7 +28,7 @@ class TestGenerationUtil(TorchtextTestCase):
     def test_greedy_generate_with_t5(self) -> None:
         generation_model = GenerationUtils(self.model)
 
-        tokens = generation_model.generate(self.inputs, num_beams=1, max_length=30)
+        tokens = generation_model.generate(self.inputs, num_beams=1)
         generated_text = self.transform.decode(tokens.tolist())
 
         expected_generated_text = [
@@ -41,13 +41,97 @@ class TestGenerationUtil(TorchtextTestCase):
 
         self.assertEqual(generated_text, expected_generated_text)
 
+    def test_beam_search_generate_t5(self) -> None:
+        generation_model = GenerationUtils(self.model)
+
+        tokens = generation_model.generate(
+            self.inputs, num_beams=3, vocab_size=self.model.config.vocab_size, max_length=30
+        )
+        generated_text = self.transform.decode(tokens.tolist())
+
+        expected_generated_text = [
+            "kate mccartney: a dog is good for you . she says studies have shown that dog ownership is good for",
+            "Das ist gut.",
+            "acceptable",
+            "4.0",
+            "a tornado ripped through a swath of a lake in southeastern michigan . a spokesman",
+        ]
+
+        self.assertEqual(generated_text, expected_generated_text)
+
+    def test_beam_search_generate_t5_small_batch_size(self) -> None:
+        generation_model = GenerationUtils(self.model)
+
+        tokens = generation_model.generate(
+            self.inputs, num_beams=3, vocab_size=self.model.config.vocab_size, max_length=30, max_inference_batch_size=3
+        )
+        generated_text = self.transform.decode(tokens.tolist())
+
+        expected_generated_text = [
+            "kate mccartney: a dog is good for you . she says studies have shown that dog ownership is good for",
+            "Das ist gut.",
+            "acceptable",
+            "4.0",
+            "a tornado ripped through a swath of a lake in southeastern michigan . a spokesman",
+        ]
+
+        self.assertEqual(generated_text, expected_generated_text)
+
+    def test_beam_search_generate_t5_with_small_beam_threshold(self) -> None:
+        generation_model = GenerationUtils(self.model)
+
+        tokens = generation_model.generate(
+            self.inputs, num_beams=3, vocab_size=self.model.config.vocab_size, max_length=30, beam_threshold=5
+        )
+        generated_text = self.transform.decode(tokens.tolist())
+
+        expected_text = [
+            "kate mccartney: a dog is good for you . kate mccartney: dogs",
+            "Das ist gut.",
+            "acceptable",
+            "4.0",
+            "a tornado ripped through a swath of a lake in southeastern mississippi, causing",
+        ]
+
+        self.assertEqual(generated_text, expected_text)
+
+    def test_beam_search_generate_t5_large_num_beams(self) -> None:
+        generation_model = GenerationUtils(self.model)
+
+        tokens = generation_model.generate(
+            self.inputs, num_beams=25, vocab_size=self.model.config.vocab_size, max_length=30
+        )
+        generated_text = self.transform.decode(tokens.tolist())
+
+        expected_text = [
+            "aaron carroll, aaron jones, aaron jones and aaron jones",
+            "Das ist gut.",
+            "acceptable",
+            "4.0",
+            "a blizzard and power outages have prompted a blizzard and power outages, a spokesman says",
+        ]
+
+        self.assertEqual(generated_text, expected_text)
+
+    def test_beam_search_generate_t5_large_num_beams_eos_score(self) -> None:
+        generation_model = GenerationUtils(self.model)
+
+        tokens = generation_model.generate(
+            self.inputs, num_beams=25, vocab_size=self.model.config.vocab_size, max_length=30, eos_score=10.0
+        )
+        generated_text = self.transform.decode(tokens.tolist())
+
+        expected_text = ["", "Das ist gut.", "acceptable", "4.0", ""]
+
+        self.assertEqual(generated_text, expected_text)
+
     def test_generate_errors_with_incorrect_beams(self) -> None:
         generation_model = GenerationUtils(self.model, is_encoder_decoder=True)
 
         with self.assertRaises(ValueError):
             generation_model.generate(self.inputs, num_beams=0)
 
-    @patch("logging.Logger.warning")
+    @patch("warnings.warn")
     def test_warns_when_no_max_len_provided(self, mock) -> None:
         generation_model = GenerationUtils(self.model)
         generation_model.generate(self.inputs)
