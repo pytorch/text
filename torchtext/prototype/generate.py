@@ -16,7 +16,7 @@ from torch import nn
 
 MODEL_KWARGS_TYPE = Dict[str, Dict[str, Union[torch.Tensor, List[Optional[torch.Tensor]], List[torch.Tensor], None]]]
 
-DEFAULT_MAX_SEQ_LEN = 256
+DEFAULT_MAX_SEQ_LEN = 128
 
 
 @dataclass
@@ -213,8 +213,8 @@ class GenerationUtils(nn.Module):
 
             start = 0
             # This is the parallelism level at which elements in the beam will be batched
-            step = min(
-                max_inference_batch_size, 1000 / (timestep + 1)
+            step = int(
+                min(max_inference_batch_size, 1000 / (timestep + 1))
             )  # many hypotheses will EOS, so increase the batch size gradually
             curr_beam_size = len(prev_step_token_idxs)
 
@@ -310,8 +310,11 @@ class GenerationUtils(nn.Module):
 
             # Decode step takes ptr to encoder emissions, i, and beam size token
             # but actually these aren't currently being used.
-            decoder.decode_step(0, timestep, 0)
+            decoder.decode_step(encoder_output.data_ptr(), timestep, beam_size_token)
             hyps = decoder.get_all_final_hypothesis()
+
+            # import pdb
+            # pdb.set_trace()
 
             # Find the best beam
             token_scores = [(hyp.tokens, hyp.score) for hyp in hyps]
@@ -328,12 +331,18 @@ class GenerationUtils(nn.Module):
             # Convert from list to tensors
             final_tokens_as_tensors = torch.Tensor(final_tokens).to(torch.long)
 
+            import pdb
+
+            pdb.set_trace()
+
             return final_tokens_as_tensors
 
         if num_python_workers > 1:
+            # with multiprocessing.Pool(num_python_workers) as pool:
+            #     all_final_tokens = pool.map(beam_decode_step, range(len(input_ids)))
             warnings.warn("Multiprocessing has not yet been implemented.")
-
-        all_final_tokens = [beam_decode_step(i) for i in range(len(input_ids))]
+        else:
+            all_final_tokens = [beam_decode_step(i) for i in range(len(input_ids))]
 
         # 5. Return top hypotheses for all input sequences
         return torch.stack(all_final_tokens, dim=0)
@@ -376,8 +385,8 @@ class GenerationUtils(nn.Module):
         num_python_workers: int = 1,
         beam_threshold: int = 100,
         vocab_size: Optional[int] = None,
-        eos_score: float = -1.0,
-        max_inference_batch_size: int = 16,
+        eos_score: float = 0.0,
+        max_inference_batch_size: int = 32,
     ) -> torch.Tensor:
         """Entrypoint generation method.
 
@@ -391,7 +400,7 @@ class GenerationUtils(nn.Module):
             vocab_size (int): Vocab size for the beam search algo to evaluate, can typically default to vocab size of the model.
             beam_threshold (int): Threshold before pruning; specific to beam search.
             eos_score (float): Score to input when `eos_idx` is generated; specific to beam search.
-            max_inference_batch_size (int): In beam search, to avoid OOMs, can choose to batch smaller amounts of hypothesis; defaults to 16.
+            max_inference_batch_size (int): In beam search, to avoid OOMs, can choose to batch smaller amounts of hypothesis; defaults to 32.
 
         Returns:
             Tensor of Tensors containing output sequences as ids.
@@ -411,8 +420,8 @@ class GenerationUtils(nn.Module):
 
         if max_length is None:
             # Too hard to try to figure out the exact max_seq_length for each model
-            warnings.warn("`max_length` was not specified. Defaulting to 256 tokens.")
-            max_length = 256
+            warnings.warn(f"`max_length` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")
+            max_length = DEFAULT_MAX_SEQ_LEN
 
         if num_beams is None or num_beams == 1:
             if num_python_workers > 1:

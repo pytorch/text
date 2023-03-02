@@ -3,13 +3,11 @@ from functools import partial
 
 from torch.utils.data import DataLoader
 from torcheval.metrics.functional import word_error_rate
-from torchtext.data.metrics import bleu_score
-from torchtext.datasets import CNNDM
 from torchtext.datasets import Multi30k
-from torchtext.models import T5_BASE_GENERATION
+from torchtext.models import T5_BASE_GENERATION, T5_3B_GENERATION
 from torchtext.prototype.generate import GenerationUtils
 
-multi_batch_size = 5
+multi_batch_size = 16
 language_pair = ("en", "de")
 multi_datapipe = Multi30k(split="test", language_pair=language_pair)
 task = "translate English to German"
@@ -34,10 +32,18 @@ def benchmark_beam_search_wer():
     batch = next(iter(multi_dataloader))
     input_text = batch["english"]
     target = batch["german"]
-    beam_size = 4
+    beam_size = 8
 
     model_input = transform(input_text)
-    model_output = seq_generator.generate(model_input, num_beams=beam_size, vocab_size=model.config.vocab_size)
+    model_output = seq_generator.generate(
+        model_input,
+        num_beams=beam_size,
+        beam_threshold=1000,
+        vocab_size=model.config.vocab_size,
+        eos_score=-1.0,
+        eos_idx=1,
+        pad_idx=0,
+    )
     output_text = transform.decode(model_output.tolist())
 
     print(word_error_rate(output_text, target))
