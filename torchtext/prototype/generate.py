@@ -48,7 +48,7 @@ class GenerationUtils:
             return torch.ones((batch_size, 1), dtype=torch.long, device=device) * pad_idx
 
     def greedy_search(
-        self, input_ids: torch.Tensor, max_length: int, eos_idx: int, pad_idx: Optional[int] = None, **model_kwargs
+        self, input_ids: torch.Tensor, max_length: int, eos_idx: int, pad_idx: int, **model_kwargs
     ) -> torch.Tensor:
         """Greedy search decoding for text generation. Takes the most likely next token every time.
 
@@ -62,10 +62,11 @@ class GenerationUtils:
         Returns:
             Batch of sequences decoded by greedy search.
         """
-        unfinished_sequences = torch.ones((input_ids.shape[0], 1), device=input_ids.device, dtype=torch.long)
+        unfinished_sequences = torch.ones((input_ids.shape[0]), device=input_ids.device, dtype=torch.long)
 
         while True:
             model_inputs = self.model.prepare_inputs_for_generation(input_ids, **model_kwargs)
+
             if self.is_huggingface_model:
                 model_inputs["return_dict"] = True
                 model_inputs["output_hidden_states"] = True
@@ -77,18 +78,16 @@ class GenerationUtils:
 
             # Calculate probabilities and take the most likely next token
             probs = F.log_softmax(decoder_output[:, -1], dim=-1)
-            _, next_tokens = torch.topk(probs, 1)
+            next_tokens = torch.argmax(probs, dim=-1)
 
             # For any finished sequences, padding idx should be the last token
-            if eos_idx is not None:
-                if pad_idx is not None:
-                    next_tokens = next_tokens * unfinished_sequences + pad_idx * (1 - unfinished_sequences)
+            next_tokens = next_tokens * unfinished_sequences + pad_idx * (1 - unfinished_sequences)
 
             # Append the next tokens to the previous tokens
-            input_ids = torch.cat([input_ids, next_tokens], dim=-1)
+            input_ids = torch.cat([input_ids, next_tokens[:, None]], dim=-1)
 
-            if eos_idx is not None:
-                unfinished_sequences = unfinished_sequences.mul((next_tokens != eos_idx).long())
+            # Update unfinished sequences count
+            unfinished_sequences = unfinished_sequences.mul((next_tokens != eos_idx)).long()
 
             # Stop iterating once all sequences are finished or exceed the max_length
             if unfinished_sequences.max() == 0 or len(input_ids[0]) >= max_length:
@@ -128,8 +127,10 @@ class GenerationUtils:
 
         if self.is_encoder_decoder:
             encoder = self.model.get_encoder()
-            model_kwargs["encoder_outputs"] = encoder(inputs)
+            encoder_model_kwargs = {"src_key_padding_mask": inputs.eq(pad_idx)}
+            model_kwargs["encoder_outputs"] = encoder(inputs, **encoder_model_kwargs)
             inputs = self._prepare_decoder_ids_for_generation(len(inputs), device=inputs.device, **model_kwargs)
+            model_kwargs["encoder_padding_mask"] = encoder_model_kwargs.pop("src_key_padding_mask")
 
         if max_length is None:
             # Too hard to try to figure out the exact max_seq_length for each model
