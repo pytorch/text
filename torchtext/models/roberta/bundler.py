@@ -10,7 +10,6 @@ from torchtext._download_hooks import load_state_dict_from_url
 
 logger = logging.getLogger(__name__)
 
-import torchtext.transforms as T
 from torchtext import _TEXT_BUCKET
 
 from .model import RobertaEncoderConf, RobertaModel
