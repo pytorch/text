@@ -198,6 +198,7 @@ class T5Model(nn.Module):
         self,
         input_ids: Tensor,
         encoder_outputs: ENCODER_OUTPUTS_TYPE,
+        encoder_padding_mask: Optional[Tensor] = None,
         past: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = True,
     ) -> Dict[str, Union[Tensor, ENCODER_OUTPUTS_TYPE, Optional[List[PAST_KEY_VALUES_TYPE]], bool]]:
@@ -209,6 +210,7 @@ class T5Model(nn.Module):
             "decoder_tokens": input_ids,
             "encoder_outputs": encoder_outputs,
             "past_key_values": past,
+            "encoder_padding_mask": encoder_padding_mask,
             "return_past_key_values": return_past_key_values,
         }
 
