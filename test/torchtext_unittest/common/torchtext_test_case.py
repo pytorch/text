@@ -18,7 +18,7 @@ def third_party_download(test_func):
         try:
             return test_func(*args, **kwargs)
         except HTTPError as e:
-            logger.warning(e)
+            logger.warning(f"Cannot access URL in {test_func.__name__}. Error message {e}")
 
     return inner
 
