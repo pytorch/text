@@ -98,10 +98,10 @@ setup_info = dict(
     # Metadata
     name="torchtext",
     version=VERSION,
-    author="PyTorch core devs and James Bradbury",
-    author_email="jekbradbury@gmail.com",
+    author='PyTorch Team',
+    author_email='packages@pytorch.org',
     url="https://github.com/pytorch/text",
-    description="Text utilities and datasets for PyTorch",
+    description="Text utilities, models, and datasets for PyTorch",
     long_description=read("README.rst"),
     license="BSD",
     install_requires=["tqdm", "requests", pytorch_package_dep, "numpy", torchdata_package_dep],
