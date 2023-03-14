@@ -11,8 +11,8 @@ else
     echo $filedownload
     curl -O ${filedownload}
     unzip -o torchtext-0.15.*
-    sleep 30
     export textdist=$(ls | grep -Ei "torchtext.*dist-info")
+    while [ ! -f ./${textdist}/METADATA ]; do sleep 1; done
     export match=$(cat ./${textdist}/METADATA | grep "torch (==2.0.0)")
     echo $match
     [[ -z "$match" ]] && { echo "Torch is not Pinned!!!" ; exit 1; }
