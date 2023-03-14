@@ -10,7 +10,7 @@ else
     export filedownload=$(pip install ${PYTORCH_PIP_PREFIX} torchtext --index-url ${PYTORCH_PIP_DOWNLOAD_URL} | grep Downloading.*torchtext.* | grep -Eio '\bhttps://.*whl\b')
     echo $filedownload
     curl -O ${filedownload}
-    unzip torchtext-0.15.*
+    unzip -o torchtext-0.15.*
     cd $(ls | grep -P "torchtext.*dist-info")
     export match=$(cat METADATA | grep "torch (==2.0.0)")
     echo $match
