@@ -11,7 +11,7 @@ else
     echo $filedownload
     curl -O ${filedownload}
     unzip -o torchtext-0.15.*
-    sleep 9
+    sleep 30
     export textdist=$(ls | grep -Ei "torchtext.*dist-info")
     export match=$(cat ./${textdist}/METADATA | grep "torch (==2.0.0)")
     echo $match
