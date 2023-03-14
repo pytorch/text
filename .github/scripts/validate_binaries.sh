@@ -11,9 +11,10 @@ else
     echo $filedownload
     curl -O ${filedownload}
     unzip -o torchtext-0.15.*
-    export textdist=$(ls | grep -P "torchtext.*dist-info")
+    export textdist=$(ls | grep -Ei "torchtext.*dist-info")
     export match=$(cat ./${textdist}/METADATA | grep "torch (==2.0.0)")
     echo $match
+    [[ -z "$match" ]] && { echo "Torch is not Pinned!!!" ; exit 1; }
     # [ -z "$match" ] && exit(1)
     #pip install ${PYTORCH_PIP_PREFIX} torchtext --index-url ${PYTORCH_PIP_DOWNLOAD_URL}
 fi
