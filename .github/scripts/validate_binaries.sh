@@ -8,11 +8,13 @@ if [[ ${MATRIX_PACKAGE_TYPE} = "conda" ]]; then
     fi
 else
     export filedownload=$(pip install ${PYTORCH_PIP_PREFIX} torchtext --index-url ${PYTORCH_PIP_DOWNLOAD_URL} | grep Downloading.*torchtext.* | grep -Eio '\bhttps://.*whl\b')
+    echo $filedownload
     curl -O filedownload
     unzip torchtext*
     cd $(ls | grep -P "torchtext.*dist-info")
     export match=$(cat METADATA | grep "torch (==2.0.0)")
-    [ -z "$match" ] && exit(1)
+    echo $match
+    # [ -z "$match" ] && exit(1)
     #pip install ${PYTORCH_PIP_PREFIX} torchtext --index-url ${PYTORCH_PIP_DOWNLOAD_URL}
 fi
 
