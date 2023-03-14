@@ -237,7 +237,9 @@ class PadTransform(Module):
     :param max_length: Maximum length to pad to
     :type max_length: int
     :param pad_value: Value to pad the tensor with
-    :type pad_value: bool
+    :type pad_value: int
+    :param right_pad: Whether to insert pad at right or left
+    :type pad_value: bool, defaults to True(right)
     """
 
     def __init__(self, max_length: int, pad_value: int, right_pad: bool=True) -> None:
