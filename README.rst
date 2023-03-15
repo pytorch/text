@@ -16,7 +16,7 @@ This repository consists of:
 
 * `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
 * `torchtext.data <https://github.com/pytorch/text/tree/main/torchtext/data>`_: Some basic NLP building blocks
-* `torchtext.transforms <https://github.com/pytorch/text/tree/main/torchtext/transforms>`_: Basic text-processing transformations
+* `torchtext.transforms <https://github.com/pytorch/text/tree/main/torchtext/transforms.py>`_: Basic text-processing transformations
 * `torchtext.models <https://github.com/pytorch/text/tree/main/torchtext/models>`_: Pre-trained models
 * `torchtext.vocab <https://github.com/pytorch/text/tree/main/torchtext/vocab>`_: Vocab and Vectors related classes and factory functions
 * `examples <https://github.com/pytorch/text/tree/main/examples>`_: Example NLP workflows with PyTorch and torchtext library.
@@ -132,6 +132,8 @@ The transforms module currently support following scriptable tokenizers:
 * `SentencePiece <https://github.com/google/sentencepiece>`_
 * `GPT-2 BPE <https://github.com/openai/gpt-2/blob/master/src/encoder.py>`_
 * `CLIP <https://github.com/openai/CLIP/blob/main/clip/simple_tokenizer.py>`_
+* `RE2 <https://github.com/google/re2>`_
+* `BERT <https://arxiv.org/pdf/1810.04805.pdf>`_
 
 Tutorials
 =========
