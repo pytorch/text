@@ -238,11 +238,11 @@ class PadTransform(Module):
     :type max_length: int
     :param pad_value: Value to pad the tensor with
     :type pad_value: int
-    :param begin: Whether to insert pad_value at start or end, defaults to True
+    :param begin: Whether to insert pad_value at start or end, defaults to False
     :type begin: bool
     """
 
-    def __init__(self, max_length: int, pad_value: int, begin: bool = True) -> None:
+    def __init__(self, max_length: int, pad_value: int, begin: bool = False) -> None:
         super().__init__()
         self.max_length = max_length
         self.pad_value = float(pad_value)

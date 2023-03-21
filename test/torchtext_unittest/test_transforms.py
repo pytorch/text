@@ -218,42 +218,74 @@ class TestTransforms(TorchtextTestCase):
 
         input_1d_tensor = torch.ones(5)
         input_2d_tensor = torch.ones((8, 5))
-        pad_long = transforms.PadTransform(max_length=7, pad_value=0)
+        pad_long_end = PadTransform(max_length=7, pad_value=0, begin=False)
+        pad_long_begin = PadTransform(max_length=7, pad_value=0, begin=True)
         if test_scripting:
-            pad_long = torch.jit.script(pad_long)
-        padded_1d_tensor_actual = pad_long(input_1d_tensor)
-        padded_1d_tensor_expected = torch.cat([torch.ones(5), torch.zeros(2)])
+            pad_long_end = torch.jit.script(pad_long_end)
+            pad_long_begin = torch.jit.script(pad_long_begin)
+        padded_1d_tensor_actual_end = pad_long_end(input_1d_tensor)
+        padded_1d_tensor_expected_end = torch.cat([torch.ones(5), torch.zeros(2)])
         torch.testing.assert_close(
-            padded_1d_tensor_actual,
-            padded_1d_tensor_expected,
-            msg=f"actual: {padded_1d_tensor_actual}, expected: {padded_1d_tensor_expected}",
+            padded_1d_tensor_actual_end,
+            padded_1d_tensor_expected_end,
+            msg=f"actual: {padded_1d_tensor_actual_end}, expected: {padded_1d_tensor_expected_end}",
+        )
+        padded_1d_tensor_actual_begin = pad_long_begin(input_1d_tensor)
+        padded_1d_tensor_expected_begin = torch.cat([torch.zeros(2), torch.ones(5)])
+        torch.testing.assert_close(
+            padded_1d_tensor_actual_begin,
+            padded_1d_tensor_expected_begin,
+            msg=f"actual: {padded_1d_tensor_actual_begin}, expected: {padded_1d_tensor_expected_begin}",
         )
 
-        padded_2d_tensor_actual = pad_long(input_2d_tensor)
-        padded_2d_tensor_expected = torch.cat([torch.ones(8, 5), torch.zeros(8, 2)], axis=-1)
+        padded_2d_tensor_actual_end = pad_long_end(input_2d_tensor)
+        padded_2d_tensor_expected_end = torch.cat([torch.ones(8, 5), torch.zeros(8, 2)], axis=-1)
         torch.testing.assert_close(
-            padded_2d_tensor_actual,
-            padded_2d_tensor_expected,
-            msg=f"actual: {padded_2d_tensor_actual}, expected: {padded_2d_tensor_expected}",
+            padded_2d_tensor_actual_end,
+            padded_2d_tensor_expected_end,
+            msg=f"actual: {padded_2d_tensor_actual_end}, expected: {padded_2d_tensor_expected_end}",
+        )
+        padded_2d_tensor_actual_begin = pad_long_begin(input_2d_tensor)
+        padded_2d_tensor_expected_begin = torch.cat([torch.zeros(8, 2), torch.ones(8, 5),], axis=-1)
+        torch.testing.assert_close(
+            padded_2d_tensor_actual_begin,
+            padded_2d_tensor_expected_begin,
+            msg=f"actual: {padded_2d_tensor_actual_begin}, expected: {padded_2d_tensor_expected_begin}",
         )
 
-        pad_short = transforms.PadTransform(max_length=3, pad_value=0)
+        pad_short_end = PadTransform(max_length=3, pad_value=0)
+        pad_short_begin = PadTransform(max_length=3, pad_value=0, begin=True)
         if test_scripting:
-            pad_short = torch.jit.script(pad_short)
-        padded_1d_tensor_actual = pad_short(input_1d_tensor)
-        padded_1d_tensor_expected = input_1d_tensor
+            pad_short_end = torch.jit.script(pad_short_end)
+            pad_short_begin = torch.jit.script(pad_short_begin)
+        padded_1d_tensor_actual_end = pad_short_end(input_1d_tensor)
+        padded_1d_tensor_expected_end = input_1d_tensor
         torch.testing.assert_close(
-            padded_1d_tensor_actual,
-            padded_1d_tensor_expected,
-            msg=f"actual: {padded_1d_tensor_actual}, expected: {padded_1d_tensor_expected}",
+            padded_1d_tensor_actual_end,
+            padded_1d_tensor_expected_end,
+            msg=f"actual: {padded_1d_tensor_actual_end}, expected: {padded_1d_tensor_expected_end}",
+        )
+        padded_1d_tensor_actual_begin = pad_short_begin(input_1d_tensor)
+        padded_1d_tensor_expected_begin = input_1d_tensor
+        torch.testing.assert_close(
+            padded_1d_tensor_actual_begin,
+            padded_1d_tensor_expected_begin,
+            msg=f"actual: {padded_1d_tensor_actual_begin}, expected: {padded_1d_tensor_expected_begin}",
         )
 
-        padded_2d_tensor_actual = pad_short(input_2d_tensor)
-        padded_2d_tensor_expected = input_2d_tensor
+        padded_2d_tensor_actual_end = pad_short_end(input_2d_tensor)
+        padded_2d_tensor_expected_end = input_2d_tensor
         torch.testing.assert_close(
-            padded_2d_tensor_actual,
-            padded_2d_tensor_expected,
-            msg=f"actual: {padded_2d_tensor_actual}, expected: {padded_2d_tensor_expected}",
+            padded_2d_tensor_actual_end,
+            padded_2d_tensor_expected_end,
+            msg=f"actual: {padded_2d_tensor_actual_end}, expected: {padded_2d_tensor_expected_end}",
+        )
+        padded_2d_tensor_actual_begin = pad_short_begin(input_2d_tensor)
+        padded_2d_tensor_expected_begin = input_2d_tensor
+        torch.testing.assert_close(
+            padded_2d_tensor_actual_begin,
+            padded_2d_tensor_expected_begin,
+            msg=f"actual: {padded_2d_tensor_actual_begin}, expected: {padded_2d_tensor_expected_begin}",
         )
 
     def test_pad_transform(self) -> None:
