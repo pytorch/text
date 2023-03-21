@@ -238,15 +238,15 @@ class PadTransform(Module):
     :type max_length: int
     :param pad_value: Value to pad the tensor with
     :type pad_value: int
-    :param right_pad: Whether to insert pad at right or left
-    :type pad_value: bool, defaults to True(right)
+    :param begin: Whether to insert pad_value at start or end, defaults to True
+    :type begin: bool
     """
 
-    def __init__(self, max_length: int, pad_value: int, right_pad: bool=True) -> None:
+    def __init__(self, max_length: int, pad_value: int, begin: bool = True) -> None:
         super().__init__()
         self.max_length = max_length
         self.pad_value = float(pad_value)
-        self.right_pad = right_pad
+        self.begin = begin
 
     def forward(self, x: Tensor) -> Tensor:
         """
@@ -258,10 +258,10 @@ class PadTransform(Module):
         max_encoded_length = x.size(-1)
         if max_encoded_length < self.max_length:
             pad_amount = self.max_length - max_encoded_length
-            if self.right_pad:
-                x = torch.nn.functional.pad(x, (0, pad_amount), value=self.pad_value)
-            else:
+            if self.begin:
                 x = torch.nn.functional.pad(x, (pad_amount, 0), value=self.pad_value)
+            else:
+                x = torch.nn.functional.pad(x, (0, pad_amount), value=self.pad_value)
         return x
 
 
