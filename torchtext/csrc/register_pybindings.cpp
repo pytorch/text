@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <torch/csrc/jit/python/module_python.h> // @manual
+#include <torch/csrc/jit/python/utf8_decoding_ignore.h>
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
 #include <torchtext/csrc/bert_tokenizer.h> // @manual
@@ -287,6 +288,9 @@ PYBIND11_MODULE(_torchtext, m) {
   m.def(
       "_build_vocab_from_text_file_using_python_tokenizer",
       &_build_vocab_from_text_file_using_python_tokenizer);
+  m.def(
+      "torchtext::set_utf8_decoding_ignore",
+      &torch::jit::setUTF8DecodingIgnore);
 }
 
 } // namespace torchtext
