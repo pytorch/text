@@ -1,6 +1,6 @@
 #!/bin/bash
 package_type="$PACKAGE_TYPE"
-channel="$CHANNEl"
+channel="$CHANNEL"
 if [ -z "$package_type" ]; then
   package_type="wheel"
 fi
@@ -15,7 +15,6 @@ fi
 if [ "$channel" != "nightly" ] && [ "$channel" != "test" ]; then
   exit 1
 fi
-
 
 if [ "$package_type" = "wheel" ]; then
   install_cmd="pip install"
