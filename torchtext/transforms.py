@@ -415,6 +415,7 @@ class GPT2BPETokenizer(Module):
             return tokenizer_copy
         return self
 
+    @torch.jit.export
     def decode(self, tokens: List[str]) -> str:
         """Return a decoded string given a list of string token ids.
 
