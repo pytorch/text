@@ -194,6 +194,17 @@ class T5Model(nn.Module):
         return reordered_decoder_past
 
     @torch.jit.export
+    def _shift_right(self, input_ids: Tensor) -> Tensor:
+        """Shift all input sequences to the right"""
+        shifted_input_ids = torch.zeros_like(input_ids)
+        shifted_input_ids[:, 1:] = input_ids[:, :-1].clone()
+
+        # T5 implemention uses padding idx to start sequence.
+        shifted_input_ids[:, 0] = self.padding_idx
+
+        return shifted_input_ids
+
+    @torch.jit.export
     def prepare_inputs_for_generation(
         self,
         input_ids: Tensor,
