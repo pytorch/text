@@ -21,10 +21,9 @@
 T5-Base Model for Summarization, Sentiment Classification, and Translation
 ==========================================================================
 
-**Author**: `Pendo Abbo <pabbo@fb.com>`__
-**Author**: `Joe Cummings <jrcummings@fb.com>`__
+**Author**: `Pendo Abbo <pabbo@fb.com>`__, `Joe Cummings <jrcummings@fb.com>`__
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-23
+.. GENERATED FROM PYTHON SOURCE LINES 10-22
 
 Overview
 --------
@@ -39,22 +38,7 @@ translation tasks. We will demonstrate how to use the torchtext library to:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-27
-
-Common imports
---------------
-
-.. GENERATED FROM PYTHON SOURCE LINES 27-32
-
-.. code-block:: default
-
-    import torch
-
-    DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 33-49
+.. GENERATED FROM PYTHON SOURCE LINES 24-40
 
 Data Transformation
 -------------------
@@ -69,11 +53,11 @@ in order to perform training and inference. The following transformations are re
 
 T5 uses a SentencePiece model for text tokenization. Below, we use a pre-trained SentencePiece model to build
 the text pre-processing pipeline using torchtext's T5Transform. Note that the transform supports both
-batched and non-batched text input (i.e. one can either pass a single sentence or a list of sentences), however
+batched and non-batched text input (for example, one can either pass a single sentence or a list of sentences), however
 the T5 model expects the input to be batched.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-64
+.. GENERATED FROM PYTHON SOURCE LINES 40-55
 
 .. code-block:: default
 
@@ -93,29 +77,28 @@ the T5 model expects the input to be batched.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-72
+.. GENERATED FROM PYTHON SOURCE LINES 56-63
 
 Alternatively, we can also use the transform shipped with the pre-trained models that does all of the above out-of-the-box
 
-::
+.. code-block::
 
   from torchtext.models import T5_BASE_GENERATION
   transform = T5_BASE_GENERATION.transform()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-84
+.. GENERATED FROM PYTHON SOURCE LINES 66-74
 
 Model Preparation
 -----------------
 
 torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
 we use the pre-trained T5 model with standard base configuration to perform text summarization, sentiment classification, and
-translation. For additional details on available pre-trained models, please refer to documentation at
-https://pytorch.org/text/main/models.html
+translation. For additional details on available pre-trained models, see `the torchtext documentation <https://pytorch.org/text/main/models.html>`__
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-94
+.. GENERATED FROM PYTHON SOURCE LINES 74-83
 
 .. code-block:: default
 
@@ -126,23 +109,22 @@ https://pytorch.org/text/main/models.html
     transform = t5_base.transform()
     model = t5_base.get_model()
     model.eval()
-    model.to(DEVICE)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-104
+.. GENERATED FROM PYTHON SOURCE LINES 84-93
 
 GenerationUtils
 ------------------
 
-We can use torchtext's `GenerationUtils` to produce an output sequence based on the input sequence provided. This calls on the
+We can use torchtext's ``GenerationUtils`` to produce an output sequence based on the input sequence provided. This calls on the
 model's encoder and decoder, and iteratively expands the decoded sequences until the end-of-sequence token is generated
-for all sequences in the batch. The `generate` method shown below uses greedy search to generate the sequences. Beam search and
+for all sequences in the batch. The ``generate`` method shown below uses greedy search to generate the sequences. Beam search and
 other decoding strategies are also supported.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-109
+.. GENERATED FROM PYTHON SOURCE LINES 93-98
 
 .. code-block:: default
 
@@ -152,7 +134,7 @@ other decoding strategies are also supported.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-129
+.. GENERATED FROM PYTHON SOURCE LINES 99-118
 
 Datasets
 --------
@@ -161,12 +143,12 @@ at https://pytorch.org/text/stable/datasets.html. These datasets are built using
 datapipes and hence support standard flow-control and mapping/transformation using user defined
 functions and transforms.
 
-Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
+Below we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
 model to indentify the task it is performing. The CNNDM dataset has a train, validation, and test
 split. Below we demo on the test split.
 
 The T5 model uses the prefix "summarize" for text summarization. For more information on task
-prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.10683.pdf
+prefixes, please visit Appendix D of the `T5 Paper <https://arxiv.org/pdf/1910.10683.pdf>`__
 
 .. note::
       Using datapipes is still currently subject to a few caveats. If you wish
@@ -174,7 +156,7 @@ prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.
       distributed learning, please see :ref:`this note <datapipes_warnings>`
       for further instructions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-149
+.. GENERATED FROM PYTHON SOURCE LINES 118-138
 
 .. code-block:: default
 
@@ -196,14 +178,14 @@ prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.
     cnndm_datapipe = cnndm_datapipe.map(partial(apply_prefix, task))
     cnndm_datapipe = cnndm_datapipe.batch(cnndm_batch_size)
     cnndm_datapipe = cnndm_datapipe.rows2columnar(["article", "abstract"])
-    cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
+    cnndm_dataloader = DataLoader(cnndm_datapipe, shuffle=True, batch_size=None)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-168
+.. GENERATED FROM PYTHON SOURCE LINES 139-157
 
-Alternately we can also use batched API (i.e apply the prefix on the whole batch)
+Alternately, we can also use batched API, for example, apply the prefix on the whole batch:
 
-::
+.. code-block::
 
   def batch_prefix(task, x):
    return {
@@ -220,7 +202,7 @@ Alternately we can also use batched API (i.e apply the prefix on the whole batch
   cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-176
+.. GENERATED FROM PYTHON SOURCE LINES 159-165
 
 We can also load the IMDB dataset, which will be used to demonstrate sentiment classification using the T5 model.
 This dataset has a train and test split. Below we demo on the test split.
@@ -229,7 +211,7 @@ The T5 model was trained on the SST2 dataset (also available in torchtext) for s
 prefix "sst2 sentence". Therefore, we will use this prefix to perform sentiment classification on the IMDB dataset.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-195
+.. GENERATED FROM PYTHON SOURCE LINES 165-184
 
 .. code-block:: default
 
@@ -239,11 +221,11 @@ prefix "sst2 sentence". Therefore, we will use this prefix to perform sentiment 
     imdb_batch_size = 3
     imdb_datapipe = IMDB(split="test")
     task = "sst2 sentence"
-    labels = {"neg": "negative", "pos": "positive"}
+    labels = {"1": "negative", "2": "positive"}
 
 
     def process_labels(labels, x):
-        return x[1], labels[x[0]]
+        return x[1], labels[str(x[0])]
 
 
     imdb_datapipe = imdb_datapipe.map(partial(process_labels, labels))
@@ -253,14 +235,14 @@ prefix "sst2 sentence". Therefore, we will use this prefix to perform sentiment 
     imdb_dataloader = DataLoader(imdb_datapipe, batch_size=None)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-200
+.. GENERATED FROM PYTHON SOURCE LINES 185-189
 
 Finally, we can also load the Multi30k dataset to demonstrate English to German translation using the T5 model.
 This dataset has a train, validation, and test split. Below we demo on the test split.
 
 The T5 model uses the prefix "translate English to German" for this task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-213
+.. GENERATED FROM PYTHON SOURCE LINES 189-202
 
 .. code-block:: default
 
@@ -278,7 +260,7 @@ The T5 model uses the prefix "translate English to German" for this task.
     multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-220
+.. GENERATED FROM PYTHON SOURCE LINES 203-209
 
 Generate Summaries
 ------------------
@@ -287,7 +269,7 @@ We can put all of the components together to generate summaries on the first bat
 using a beam size of 1.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-236
+.. GENERATED FROM PYTHON SOURCE LINES 209-225
 
 .. code-block:: default
 
@@ -298,7 +280,7 @@ using a beam size of 1.
     beam_size = 1
 
     model_input = transform(input_text)
-    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, beam_size=beam_size)
+    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
     output_text = transform.decode(model_output.tolist())
 
     for i in range(cnndm_batch_size):
@@ -308,23 +290,21 @@ using a beam size of 1.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-301
+.. GENERATED FROM PYTHON SOURCE LINES 226-288
 
-Summarization Output
---------------------
+Summarization Output (Might vary since we shuffle the dataloader)
+-----------------------------------------------------------------
 
-::
+.. code-block::
 
    Example 1:
 
-   prediction: the Palestinians become the 123rd member of the international criminal
-   court . the accession was marked by a ceremony at the Hague, where the court is based .
-   the ICC opened a preliminary examination into the situation in the occupied
-   Palestinian territory .
+   prediction: the 24-year-old has been tattooed for over a decade . he has landed in australia
+   to start work on a new campaign . he says he is 'taking it in your stride' to be honest .
 
-   target: Membership gives the ICC jurisdiction over alleged crimes committed in
-   Palestinian territories since last June . Israel and the United States opposed the
-   move, which could open the door to war crimes investigations against Israelis .
+   target: London-based model Stephen James Hendry famed for his full body tattoo . The supermodel
+   is in Sydney for a new modelling campaign . Australian fans understood to have already located
+   him at his hotel . The 24-year-old heartthrob is recently single .
 
 
    Example 2:
@@ -375,7 +355,7 @@ Summarization Output
    campus about 2 a.m.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 304-310
+.. GENERATED FROM PYTHON SOURCE LINES 291-297
 
 Generate Sentiment Classifications
 ----------------------------------
@@ -384,7 +364,7 @@ Similarly, we can use the model to generate sentiment classifications on the fir
 using a beam size of 1.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 310-327
+.. GENERATED FROM PYTHON SOURCE LINES 297-314
 
 .. code-block:: default
 
@@ -395,7 +375,7 @@ using a beam size of 1.
     beam_size = 1
 
     model_input = transform(input_text)
-    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, beam_size=beam_size)
+    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
     output_text = transform.decode(model_output.tolist())
 
     for i in range(imdb_batch_size):
@@ -406,7 +386,7 @@ using a beam size of 1.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 328-395
+.. GENERATED FROM PYTHON SOURCE LINES 315-382
 
 Sentiment Output
 ----------------
@@ -455,7 +435,7 @@ Sentiment Output
    really annoying was the constant cuts to VDs daughter during the last fight scene.<br /><br />
    Not bad. Not good. Passable 4.
 
-   prediction: negative
+   prediction: positive
 
    target: negative
 
@@ -476,16 +456,16 @@ Sentiment Output
    target: negative
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 398-404
+.. GENERATED FROM PYTHON SOURCE LINES 385-391
 
 Generate Translations
 ---------------------
 
 Finally, we can also use the model to generate English to German translations on the first batch of examples from the Multi30k
-test set using a beam size of 4.
+test set.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 404-421
+.. GENERATED FROM PYTHON SOURCE LINES 391-407
 
 .. code-block:: default
 
@@ -493,10 +473,9 @@ test set using a beam size of 4.
     batch = next(iter(multi_dataloader))
     input_text = batch["english"]
     target = batch["german"]
-    beam_size = 4
 
     model_input = transform(input_text)
-    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, beam_size=beam_size)
+    model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
     output_text = transform.decode(model_output.tolist())
 
     for i in range(multi_batch_size):
@@ -507,7 +486,7 @@ test set using a beam size of 4.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 422-471
+.. GENERATED FROM PYTHON SOURCE LINES 408-457
 
 Translation Output
 ------------------
