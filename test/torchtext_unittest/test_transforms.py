@@ -696,8 +696,8 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
 
     def _gpt_bpe_decoder_partial_utf8(self, tokenizer):
         sample_ids = [
-            ['47728', '245', '114'],
-            ['47728', '245', '114', '47728'],  # containing partial utf-8 encoding
+            ["47728", "245", "114"],
+            ["47728", "245", "114", "47728"],  # containing partial utf-8 encoding
         ]
         expected_texts = ["𝗶", "𝗶"]
 
@@ -721,8 +721,6 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         torch.ops.torchtext.set_utf8_decoding_ignore(False)
         with self.assertRaises(UnicodeDecodeError):
             self._gpt_bpe_decoder_partial_utf8(self._load_tokenizer(test_scripting=True, return_tokens=False))
-
-
 
     @nested_params([True, False])
     def test_gpt2_bpe_tokenizer_with_added_vocab(self, return_tokens):
