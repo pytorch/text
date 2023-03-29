@@ -694,6 +694,16 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         for idx, ids in enumerate(sample_ids):
             self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
 
+    def _gpt_bpe_decoder_partial_utf8(self, tokenizer):
+        sample_ids = [
+            ["47728", "245", "114"],
+            ["47728", "245", "114", "47728"],  # containing partial utf-8 encoding
+        ]
+        expected_texts = ["𝗶", "𝗶"]
+
+        for idx, ids in enumerate(sample_ids):
+            self.assertEqual(tokenizer.decode(ids), expected_texts[idx])
+
     @nested_params([True, False], [True, False])
     def test_gpt2_bpe_tokenizer(self, test_scripting, return_tokens):
         """test tokenization on single sentence input as well as batch on sentences"""
@@ -703,6 +713,14 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         """test string output returned by decoder given the token ids"""
         self._gpt2_bpe_decoder(self._load_tokenizer(test_scripting=False, return_tokens=False))
         self._gpt2_bpe_decoder_with_special_tokens(self._load_tokenizer(test_scripting=False, return_tokens=False))
+
+        torch.ops.torchtext.set_utf8_decoding_ignore(True)
+        self._gpt_bpe_decoder_partial_utf8(self._load_tokenizer(test_scripting=False, return_tokens=False))
+        self._gpt_bpe_decoder_partial_utf8(self._load_tokenizer(test_scripting=True, return_tokens=False))
+
+        torch.ops.torchtext.set_utf8_decoding_ignore(False)
+        with self.assertRaises(UnicodeDecodeError):
+            self._gpt_bpe_decoder_partial_utf8(self._load_tokenizer(test_scripting=True, return_tokens=False))
 
     @nested_params([True, False])
     def test_gpt2_bpe_tokenizer_with_added_vocab(self, return_tokens):
