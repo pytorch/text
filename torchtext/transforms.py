@@ -40,7 +40,7 @@ class SentencePieceTokenizer(Module):
     """
     Transform for Sentence Piece tokenizer from pre-trained sentencepiece model
 
-    Additiona details: https://github.com/google/sentencepiece
+    Additional details: https://github.com/google/sentencepiece
 
     :param sp_model_path: Path to pre-trained sentencepiece model
     :type sp_model_path: str
@@ -415,6 +415,7 @@ class GPT2BPETokenizer(Module):
             return tokenizer_copy
         return self
 
+    @torch.jit.export
     def decode(self, tokens: List[str]) -> str:
         """Return a decoded string given a list of string token ids.
 
