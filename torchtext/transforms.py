@@ -40,7 +40,7 @@ class SentencePieceTokenizer(Module):
     """
     Transform for Sentence Piece tokenizer from pre-trained sentencepiece model
 
-    Additiona details: https://github.com/google/sentencepiece
+    Additional details: https://github.com/google/sentencepiece
 
     :param sp_model_path: Path to pre-trained sentencepiece model
     :type sp_model_path: str
