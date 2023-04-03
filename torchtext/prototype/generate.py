@@ -48,7 +48,12 @@ class GenerationUtils:
             return torch.ones((batch_size, 1), dtype=torch.long, device=device) * pad_idx
 
     def greedy_search(
-        self, input_ids: torch.Tensor, max_length: int, eos_idx: int, pad_idx: int, **model_kwargs
+        self,
+        input_ids: torch.Tensor,
+        max_length: int,
+        eos_idx: int,
+        pad_idx: int,
+        **model_kwargs,
     ) -> torch.Tensor:
         """Greedy search decoding for text generation. Takes the most likely next token every time.
 
@@ -117,7 +122,6 @@ class GenerationUtils:
             max_length (int): Max length to generate responses.
             pad_idx (int): Padding index. Defaults to 0.
             eos_idx (int): End of sequence index. Defaults to 1.
-
         Returns:
             Tensor of Tensors containing output sequences as ids.
 
@@ -138,8 +142,70 @@ class GenerationUtils:
             max_length = DEFAULT_MAX_SEQ_LEN
 
         if num_beams == 1 or num_beams is None:
-            return self.greedy_search(inputs, max_length, eos_idx, pad_idx=pad_idx, **model_kwargs)
+            return self.greedy_search(
+                inputs,
+                max_length,
+                eos_idx,
+                pad_idx=pad_idx,
+                **model_kwargs,
+            )
         elif num_beams > 1:
             return self.beam_search(inputs, num_beams, max_length)
         else:
             raise ValueError("`num_beams` must be >= 1.")
+
+    def _get_top_k_restriction(self, scores: torch.Tensor, top_k: int) -> torch.Tensor:
+        """Returns a copy of `scores` restricted to its k highest values (meaning every other value is zeroed)
+
+        Args:
+            scores (Tensor): typically the output logits or probabilities for a language model's vocabulary.
+            top_k (int): the number of highest values to keep.
+
+        Returns:
+            A copy of `scores` restricted to its k highest values
+        """
+        top_k = min(top_k, scores.size(-1))
+        if top_k <= 0:
+            raise ValueError(f"`top_k` is {top_k} but should be an int greater than 0")
+        indices_to_remove = scores < torch.topk(scores, top_k)[0][:, -1, None]
+        return scores.masked_fill(indices_to_remove, 0)
+
+    def _get_top_p_restriction(self, probs: torch.Tensor, top_p: float, min_tokens_to_keep: int = 1) -> torch.Tensor:
+        """Returns a copy of `probs` restricted to the top indices whose values sum up to `top_p`
+        (meaning the value at any other index is zeroed)
+
+        Args:
+            probs (Tensor): output probabilities for a language model vocabulary.
+            top_p (float): the (cumulative) threshold for cutting off top-value indices; between 0 and 1.
+
+        Returns:
+            A copy of `probs` restricted to the top indices whose values sum up to `top_p`
+        """
+        if top_p < 0 or top_p > 1:
+            raise ValueError(f"`top_p` is {top_p} but should be a float between 0 and 1")
+        sorted_probs, sorted_indices = torch.sort(probs, descending=True, dim=-1)
+        cumulative_probs = sorted_probs.cumsum(dim=-1)
+
+        sorted_indices_to_keep = cumulative_probs <= top_p
+        sorted_indices_to_keep[:, :min_tokens_to_keep] = True
+        indices_to_remove = ~sorted_indices_to_keep.scatter(-1, sorted_indices, sorted_indices_to_keep)
+
+        return probs.masked_fill(indices_to_remove, 0)
+
+    def _apply_temperature(self, probs: torch.Tensor, temperature: float) -> torch.Tensor:
+        """Applies temperature scaling to `probs`
+        Args:
+            probs (Tensor): output probabilities for a language model vocabulary.
+            temperature (float): value of temperature applied to the distribution.
+        Returns:
+            A copy of `probs` with applied `temperature`
+        """
+        if not temperature > 0:
+            raise ValueError(f"`temperature` is {temperature} but should be positive")
+        return probs / temperature
+
+    def _remove_invalid_values(self, scores: torch.Tensor) -> torch.Tensor:
+        """Removes nan and inf values to prevent generation from failing when using sampling"""
+        scores[scores != scores] = 0.0
+        scores[scores == float("inf")] = torch.finfo(scores.dtype).max
+        return scores
