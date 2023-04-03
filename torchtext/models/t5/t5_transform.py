@@ -44,7 +44,7 @@ class T5Transform(nn.Module):
     ):
         super().__init__()
         self.sp_model = load_sp_model(
-            get_asset_local_path(sp_model_path, overwrite=True),
+            get_asset_local_path(sp_model_path),
         )
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
