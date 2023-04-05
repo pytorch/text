@@ -6,11 +6,10 @@ import tarfile
 import zipfile
 
 import torch
+from iopath.common.file_io import file_lock
 from torchtext import _CACHE_DIR
 
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
-
-from iopath.common.file_io import file_lock
 
 logger = logging.getLogger(__name__)
 
