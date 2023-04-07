@@ -31,13 +31,7 @@ PAST_KEY_VALUES_UNFILLED_TYPE = Tuple[Tensor, Tensor, Optional[Tensor], Optional
 
 # Define reusable types for encoder/decoder outputs
 SEQ_2_SEQ_OUTPUTS_TYPE = Dict[
-    str, 
-    Union[
-        Optional[Tensor],
-        List[Tensor],
-        List[Optional[Tensor]],
-        Optional[List[PAST_KEY_VALUES_UNFILLED_TYPE]]
-    ]
+    str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], Optional[List[PAST_KEY_VALUES_UNFILLED_TYPE]]]
 ]
 
 

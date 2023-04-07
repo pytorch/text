@@ -318,6 +318,7 @@ class T5Bundle:
 
 class GenerationUtilsForT5(GenerationUtils):
     """In order to make GenerationUtils torchscriptable, we provide the exact typing for the underlying model forward call."""
+
     def __init__(self, model: torch.nn.Module, **kwargs) -> None:
         super().__init__(model, **kwargs)
 
@@ -373,6 +374,7 @@ class GenerationUtilsForT5(GenerationUtils):
             past_key_values=past_key_values,
             return_past_key_values=return_past_key_values,
         )
+
 
 ENCODER_DOC = """
     T5_{}_ENCODER is an encoder-only model from a pre-trained T5 model with the {} configuration.
@@ -497,6 +499,7 @@ FLAN_GENERATION_DOC = """
 
     Please refer to :func:`torchtext.models.T5Bundle` for the usage.
 """
+
 
 def t5_transform() -> T5Transform:
     return T5Transform(

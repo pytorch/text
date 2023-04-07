@@ -21,7 +21,7 @@ class TestGenerationUtil(TorchtextTestCase):
         ]
         self.transformed_inputs = self.transform(self.inputs)
         torch.manual_seed(0)
-    
+
     def test_torchscriptable_t5_generate(self) -> None:
         generation_model = self.t5_base.get_model(with_generation_utils=True)
         assert isinstance(generation_model, GenerationUtils)
@@ -46,7 +46,6 @@ class TestGenerationUtil(TorchtextTestCase):
         generated_text_for_single_example = self.transform.decode(tokens_for_single_example.tolist())
 
         self.assertEqual(generated_text[0], generated_text_for_single_example[-1])
-
 
     def test_greedy_generate_with_t5(self) -> None:
         generation_model = GenerationUtils(self.model)
