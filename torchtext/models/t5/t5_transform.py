@@ -45,7 +45,7 @@ class T5Transform(nn.Module):
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
         self.padding_idx = padding_idx
-        self.pipeline = T.Sequential(T.Truncate(self.max_seq_len), T.AddToken(token=self.eos_idx, begin=False))
+        self.pipeline = T.Sequential(T.Truncate(self.max_seq_len - 1), T.AddToken(token=self.eos_idx, begin=False))
 
     def forward(self, input: Union[str, List[str]]) -> torch.Tensor:
         """
