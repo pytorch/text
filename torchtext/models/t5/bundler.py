@@ -89,9 +89,14 @@ class T5Bundle:
         r"""get_model(load_weights: bool = True, freeze_model: bool = False, *, dl_kwargs=None) -> torctext.prototype.models.T5Model
 
         Args:
+            with_generation_utils (bool): Indicates whether to wrap model w/ `GenerationUtils` wrapper. (Default: `False`)
             load_weights (bool): Indicates whether or not to load weights if available. (Default: `True`)
             freeze_model (bool): Indicates whether or not to freeze the model weights. (Default: `False`)
             dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
+            gen_kwargs (dictionary of kwargs): Passed to :func:`GenerationUtilsForT5`. (Default: `None`)
+
+        Returns:
+            Either a T5Model or a T5Model wrapped with GenerationUtils.
         """
 
         if load_weights:
@@ -322,7 +327,7 @@ class GenerationUtilsForT5(GenerationUtils):
     def __init__(self, model: torch.nn.Module, **kwargs) -> None:
         super().__init__(model, **kwargs)
 
-    def scriptable_model_forward_call(
+    def _scripted_model_forward_call(
         self,
         kwargs: Dict[
             str,

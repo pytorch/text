@@ -1,4 +1,5 @@
 import warnings
+from abc import abstractmethod
 from typing import Dict, Final, List, Optional, Tuple, Union
 
 import torch
@@ -63,23 +64,41 @@ class GenerationUtils(nn.Module):
         else:
             return torch.ones((batch_size, 1), dtype=torch.long, device=device) * pad_idx
 
-    def scriptable_model_forward_call(self, kwargs):
+    @abstractmethod
+    def _scripted_model_forward_call(self, kwargs):
+        """If utils are to be TorchScript-compatible, this function needs to be overwritten that calls the underlying model's forward method.
+
+        Example:
+        >>> class TorchScriptableT5GenUtils(GenerationUtils):
+                def __init__(self):
+                    super().__init__()
+
+                def _scripted_model_forward_call(kwargs):
+                    return self.model(
+                        encoder_tokens=kwargs.get("encoder_tokens"),
+                        decoder_tokens=kwargs.get("decoder_tokens")
+                    )
+
+        """
         warnings.warn("`scriptable_model_forward_call` has not been overriden and will not produce correct output.")
         pass
 
     @torch.jit.unused
-    def _call_to_encoder_with_kwargs(self, inputs, kwargs):
+    def _eager_encoder_forward_call(self, inputs, kwargs):
+        """Eager mode call to the encoder forward call."""
         if self.is_huggingface_model:
             kwargs["return_dict"] = True
         encoder = self.model.get_encoder()
         return encoder(inputs, **kwargs)
 
     @torch.jit.unused
-    def _call_to_prepare_inputs_for_generation_with_kwargs(self, inputs, kwargs):
+    def _eager_prepare_inputs_for_generation(self, inputs, kwargs):
+        """Eager mode call to prepare_inputs_for_generation."""
         return self.model.prepare_inputs_for_generation(inputs, **kwargs)
 
     @torch.jit.unused
-    def _call_to_model_forward_with_kwargs(self, model_inputs):
+    def _eager_model_forward_call(self, model_inputs):
+        """Eager mode call to model forward method."""
         return self.model(**model_inputs)
 
     def _prepare_encoder_decoder_kwargs_for_generation(
@@ -97,10 +116,10 @@ class GenerationUtils(nn.Module):
         # Forward pass
         if torch.jit.is_scripting():
             encoder_kwargs["encoder_tokens"] = input_ids
-            encoder_output = self.scriptable_model_forward_call(encoder_kwargs)
+            encoder_output = self._scripted_model_forward_call(encoder_kwargs)
             assert torch.jit.isinstance(encoder_output, SEQ_2_SEQ_OUTPUTS_TYPE)
             return encoder_output
-        return self._call_to_encoder_with_kwargs(input_ids, encoder_kwargs)
+        return self._eager_encoder_forward_call(input_ids, encoder_kwargs)
 
     def greedy_search(
         self, input_ids: torch.Tensor, max_length: int, eos_idx: int, pad_idx: int, model_kwargs: MODEL_KWARGS_TYPE
@@ -123,7 +142,7 @@ class GenerationUtils(nn.Module):
             model_inputs = (
                 self.model.prepare_inputs_for_generation(input_ids, model_kwargs=model_kwargs)
                 if torch.jit.is_scripting()
-                else self._call_to_prepare_inputs_for_generation_with_kwargs(input_ids, model_kwargs)
+                else self._eager_prepare_inputs_for_generation(input_ids, model_kwargs)
             )
 
             if self.is_huggingface_model:
@@ -132,10 +151,10 @@ class GenerationUtils(nn.Module):
 
             # Get model output
             if torch.jit.is_scripting():
-                outputs = self.scriptable_model_forward_call(model_inputs)
+                outputs = self._scripted_model_forward_call(model_inputs)
                 assert torch.jit.isinstance(outputs, SEQ_2_SEQ_OUTPUTS_TYPE)
             else:
-                outputs = self._call_to_model_forward_with_kwargs(model_inputs)
+                outputs = self._eager_model_forward_call(model_inputs)
             output_key = "logits" if self.is_huggingface_model else "decoder_output"
             logits = outputs.get(output_key)
 
@@ -188,9 +207,9 @@ class GenerationUtils(nn.Module):
         `Note`: If one beam is provided or no beams are specified, the generation method will default to greedy search.
         """
         model_kwargs = torch.jit.annotate(MODEL_KWARGS_TYPE, {})
-        encoder_model_kwargs = torch.jit.annotate(MODEL_KWARGS_TYPE, {})
 
         if self.is_encoder_decoder:
+            encoder_model_kwargs = torch.jit.annotate(MODEL_KWARGS_TYPE, {})
             encoder_model_kwargs["src_key_padding_mask"] = inputs.eq(pad_idx)
             encoder_outputs = self._prepare_encoder_decoder_kwargs_for_generation(inputs, encoder_model_kwargs)
             model_kwargs["encoder_outputs"] = encoder_outputs
