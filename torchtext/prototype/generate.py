@@ -1,16 +1,26 @@
-import logging
-from typing import Optional
+import warnings
+from abc import abstractmethod
+from typing import Dict, Final, List, Optional, Tuple, Union
 
 import torch
 import torch.nn.functional as F
 from torch import nn
-
-logger = logging.getLogger(__name__)
-
-DEFAULT_MAX_SEQ_LEN = 256
+from torchtext.models.t5.modules import SEQ_2_SEQ_OUTPUTS_TYPE
 
 
-class GenerationUtils:
+DEFAULT_MAX_SEQ_LEN: Final[int] = 256
+MODEL_KWARGS_TYPE = Dict[
+    str,
+    Union[
+        bool,
+        torch.Tensor,
+        Optional[List[Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]]],
+        SEQ_2_SEQ_OUTPUTS_TYPE,
+    ],
+]
+
+
+class GenerationUtils(nn.Module):
     """Wrapper to provide generation utils for encoder/decoder models and decoder models.
 
     Example:
@@ -35,34 +45,93 @@ class GenerationUtils:
     """
 
     def __init__(self, model: nn.Module, **kwargs) -> None:
+        super().__init__()
         self.model = model
         self.is_encoder_decoder = kwargs.pop("is_encoder_decoder", True)
         self.is_huggingface_model = kwargs.pop("is_huggingface_model", False)
 
     def _prepare_decoder_ids_for_generation(
-        self, batch_size: int, pad_idx: int = 0, device: Optional[torch.device] = None, **model_kwargs
+        self,
+        batch_size: int,
+        pad_idx: int = 0,
+        device: Optional[torch.device] = None,
+        model_kwargs: Optional[MODEL_KWARGS_TYPE] = None,
     ):
         if model_kwargs is not None and "decoder_input_ids" in model_kwargs:
-            return model_kwargs.pop("decoder_input_ids")
+            decoder_input_ids = model_kwargs.pop("decoder_input_ids")
+            assert torch.jit.isinstance(decoder_input_ids, torch.Tensor)
+            return decoder_input_ids
         else:
             return torch.ones((batch_size, 1), dtype=torch.long, device=device) * pad_idx
 
+    @abstractmethod
+    def _scripted_model_forward_call(self, kwargs):
+        """If utils are to be TorchScript-compatible, this function needs to be overwritten that calls the underlying model's forward method.
+
+        Example:
+        >>> class TorchScriptableT5GenUtils(GenerationUtils):
+                def __init__(self):
+                    super().__init__()
+
+                def _scripted_model_forward_call(kwargs):
+                    return self.model(
+                        encoder_tokens=kwargs.get("encoder_tokens"),
+                        decoder_tokens=kwargs.get("decoder_tokens")
+                    )
+
+        """
+        warnings.warn("`scriptable_model_forward_call` has not been overriden and will not produce correct output.")
+        pass
+
+    @torch.jit.unused
+    def _eager_encoder_forward_call(self, inputs, kwargs):
+        """Eager mode call to the encoder forward call."""
+        if self.is_huggingface_model:
+            kwargs["return_dict"] = True
+        encoder = self.model.get_encoder()
+        return encoder(inputs, **kwargs)
+
+    @torch.jit.unused
+    def _eager_prepare_inputs_for_generation(self, inputs, kwargs):
+        """Eager mode call to prepare_inputs_for_generation."""
+        return self.model.prepare_inputs_for_generation(inputs, **kwargs)
+
+    @torch.jit.unused
+    def _eager_model_forward_call(self, model_inputs):
+        """Eager mode call to model forward method."""
+        return self.model(**model_inputs)
+
+    def _prepare_encoder_decoder_kwargs_for_generation(
+        self, input_ids: torch.Tensor, encoder_kwargs: MODEL_KWARGS_TYPE
+    ):
+        """Runs encoder and adds to model_kwargs for decoding. Modified from https://github.com/huggingface/transformers/blob/67d074874d285e616393c65a0e670088e1b6b74a/src/transformers/generation/utils.py#L592.
+
+        Args:
+            inputs: (Tensor): Tokenized startings sequence(s).
+            model_kwargs (Dict[str, Any]): Model keyword arguments to be modified for decoding.
+
+        Returns:
+            Modified model_kwargs with addition of encoded input sequence(s).
+        """
+        # Forward pass
+        if torch.jit.is_scripting():
+            encoder_kwargs["encoder_tokens"] = input_ids
+            encoder_output = self._scripted_model_forward_call(encoder_kwargs)
+            assert torch.jit.isinstance(encoder_output, SEQ_2_SEQ_OUTPUTS_TYPE)
+            return encoder_output
+        return self._eager_encoder_forward_call(input_ids, encoder_kwargs)
+
     def greedy_search(
-        self,
-        input_ids: torch.Tensor,
-        max_length: int,
-        eos_idx: int,
-        pad_idx: int,
-        **model_kwargs,
+        self, input_ids: torch.Tensor, max_length: int, eos_idx: int, pad_idx: int, model_kwargs: MODEL_KWARGS_TYPE
     ) -> torch.Tensor:
         """Greedy search decoding for text generation. Takes the most likely next token every time.
 
-        Inputs:
+        Args:
             input_ids (Tensor): Text prompt(s) for greedy generation.
             max_length (int): Max length to generate responses.
             eos_idx (int): End of sequence index.
             pad_idx (int): Padding index.
-            **model_kwargs
+            model_kwargs
 
         Returns:
             Batch of sequences decoded by greedy search.
@@ -70,19 +139,28 @@ class GenerationUtils:
         unfinished_sequences = torch.ones((input_ids.shape[0]), device=input_ids.device, dtype=torch.long)
 
         while True:
-            model_inputs = self.model.prepare_inputs_for_generation(input_ids, **model_kwargs)
+            model_inputs = (
+                self.model.prepare_inputs_for_generation(input_ids, model_kwargs=model_kwargs)
+                if torch.jit.is_scripting()
+                else self._eager_prepare_inputs_for_generation(input_ids, model_kwargs)
+            )
 
             if self.is_huggingface_model:
                 model_inputs["return_dict"] = True
                 model_inputs["output_hidden_states"] = True
 
             # Get model output
-            outputs = self.model(**model_inputs)
+            if torch.jit.is_scripting():
+                outputs = self._scripted_model_forward_call(model_inputs)
+                assert torch.jit.isinstance(outputs, SEQ_2_SEQ_OUTPUTS_TYPE)
+            else:
+                outputs = self._eager_model_forward_call(model_inputs)
             output_key = "logits" if self.is_huggingface_model else "decoder_output"
-            decoder_output = outputs[output_key]
+            logits = outputs.get(output_key)
 
+            assert torch.jit.isinstance(logits, torch.Tensor)
             # Calculate probabilities and take the most likely next token
-            probs = F.log_softmax(decoder_output[:, -1], dim=-1)
+            probs = F.log_softmax(logits[:, -1], dim=-1)
             next_tokens = torch.argmax(probs, dim=-1)
 
             # For any finished sequences, padding idx should be the last token
@@ -103,11 +181,12 @@ class GenerationUtils:
     def beam_search(self, input_ids: torch.Tensor, num_beams: int, max_length: Optional[int]) -> torch.Tensor:
         raise NotImplementedError()
 
+    @torch.jit.export
     def generate(
         self,
-        inputs: Optional[torch.Tensor] = None,
+        inputs: torch.Tensor,
         num_beams: Optional[int] = None,
-        max_length: Optional[int] = None,
+        max_length: int = DEFAULT_MAX_SEQ_LEN,
         pad_idx: int = 0,
         eos_idx: int = 1,
     ) -> torch.Tensor:
@@ -127,28 +206,19 @@ class GenerationUtils:
 
         `Note`: If one beam is provided or no beams are specified, the generation method will default to greedy search.
         """
-        model_kwargs = {}
+        model_kwargs = torch.jit.annotate(MODEL_KWARGS_TYPE, {})
 
         if self.is_encoder_decoder:
-            encoder = self.model.get_encoder()
-            encoder_model_kwargs = {"src_key_padding_mask": inputs.eq(pad_idx)}
-            model_kwargs["encoder_outputs"] = encoder(inputs, **encoder_model_kwargs)
-            inputs = self._prepare_decoder_ids_for_generation(len(inputs), device=inputs.device, **model_kwargs)
+            encoder_model_kwargs = torch.jit.annotate(MODEL_KWARGS_TYPE, {})
+            encoder_model_kwargs["src_key_padding_mask"] = inputs.eq(pad_idx)
+            encoder_outputs = self._prepare_encoder_decoder_kwargs_for_generation(inputs, encoder_model_kwargs)
+            model_kwargs["encoder_outputs"] = encoder_outputs
             model_kwargs["encoder_padding_mask"] = encoder_model_kwargs.pop("src_key_padding_mask")
 
-        if max_length is None:
-            # Too hard to try to figure out the exact max_seq_length for each model
-            logger.warning(f"`max_length` was not specified. Defaulting to {DEFAULT_MAX_SEQ_LEN} tokens.")
-            max_length = DEFAULT_MAX_SEQ_LEN
+        inputs = self._prepare_decoder_ids_for_generation(len(inputs), device=inputs.device)
 
-        if num_beams == 1 or num_beams is None:
-            return self.greedy_search(
-                inputs,
-                max_length,
-                eos_idx,
-                pad_idx=pad_idx,
-                **model_kwargs,
-            )
+        if num_beams is None or num_beams == 1:
+            return self.greedy_search(inputs, max_length, eos_idx, pad_idx=pad_idx, model_kwargs=model_kwargs)
         elif num_beams > 1:
             return self.beam_search(inputs, num_beams, max_length)
         else:

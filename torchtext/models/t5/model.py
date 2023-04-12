@@ -16,7 +16,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import DECODER_OUTPUTS_TYPE, ENCODER_OUTPUTS_TYPE, PAST_KEY_VALUES_TYPE, T5Decoder, T5Encoder
+from .modules import SEQ_2_SEQ_OUTPUTS_TYPE, PAST_KEY_VALUES_TYPE, T5Decoder, T5Encoder
 
 
 @dataclass
@@ -208,22 +208,39 @@ class T5Model(nn.Module):
     def prepare_inputs_for_generation(
         self,
         input_ids: Tensor,
-        encoder_outputs: ENCODER_OUTPUTS_TYPE,
+        encoder_outputs: Optional[SEQ_2_SEQ_OUTPUTS_TYPE] = None,
         encoder_padding_mask: Optional[Tensor] = None,
         past: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = True,
-    ) -> Dict[str, Union[Tensor, ENCODER_OUTPUTS_TYPE, Optional[List[PAST_KEY_VALUES_TYPE]], bool]]:
+        model_kwargs: Optional[
+            Dict[str, Union[SEQ_2_SEQ_OUTPUTS_TYPE, Optional[Tensor], Optional[List[PAST_KEY_VALUES_TYPE]], bool]]
+        ] = None,
+    ) -> Dict[str, Union[Tensor, SEQ_2_SEQ_OUTPUTS_TYPE, Optional[List[PAST_KEY_VALUES_TYPE]], bool]]:
+        """Prepare inputs for generation from model_kwargs.
+
+        Args:
+            input_ids (Tensor): Seed tokens for generation.
+            model_kwargs (Dict): Other specifications for generation
+
+        Returns:
+            Dictionary bundling all model inputs for generation.
+        """
+        if model_kwargs is None:
+            assert encoder_outputs is not None
+            model_kwargs = {
+                "encoder_outputs": encoder_outputs,
+                "encoder_padding_mask": encoder_padding_mask,
+                "past_key_values": past,
+                "return_past_key_values": return_past_key_values,
+            }
+
         # Incremental decoding if past key values are provided
+        past = model_kwargs.get("past", None)
         if past is not None:
             input_ids = input_ids[:, -1:]
 
-        return {
-            "decoder_tokens": input_ids,
-            "encoder_outputs": encoder_outputs,
-            "past_key_values": past,
-            "encoder_padding_mask": encoder_padding_mask,
-            "return_past_key_values": return_past_key_values,
-        }
+        model_kwargs["decoder_tokens"] = input_ids
+        return model_kwargs
 
     def get_encoder(self) -> T5Encoder:
         return self.encoder
@@ -241,10 +258,10 @@ class T5Model(nn.Module):
         decoder_mask: Optional[Tensor] = None,
         encoder_padding_mask: Optional[Tensor] = None,
         decoder_padding_mask: Optional[Tensor] = None,
-        encoder_outputs: Optional[ENCODER_OUTPUTS_TYPE] = None,
+        encoder_outputs: Optional[SEQ_2_SEQ_OUTPUTS_TYPE] = None,
         past_key_values: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = False,
-    ) -> Union[DECODER_OUTPUTS_TYPE, ENCODER_OUTPUTS_TYPE]:
+    ) -> SEQ_2_SEQ_OUTPUTS_TYPE:
         r"""Pass the inputs (and mask) through the T5Encoder/T5Decoder in turn.
 
         Args:
@@ -279,6 +296,18 @@ class T5Model(nn.Module):
             encoder_ca_scores: Tuple of cross-attention scores computed at each layer of the decoder
             past_key_values: List of Tuples of key values calculated during this run, or None.
         """
+        seq2seq_model_output: SEQ_2_SEQ_OUTPUTS_TYPE = {
+            "encoder_output": None,
+            "encoder_hidden_states": None,
+            "encoder_sa_scores": None,
+            "encoder_ca_scores": None,
+            "decoder_output": None,
+            "decoder_hidden_states": None,
+            "decoder_sa_scores": None,
+            "decoder_ca_scores": None,
+            "past_key_values": None,
+        }
+
         if encoder_outputs is None:
             assert encoder_tokens is not None, "If `encoder_outputs` is not specified, must provide `encoder_tokens`"
 
@@ -288,6 +317,8 @@ class T5Model(nn.Module):
             encoder_outputs = self.encoder(
                 src=encoder_tokens, mask=encoder_mask, src_key_padding_mask=encoder_padding_mask
             )
+
+            seq2seq_model_output.update(encoder_outputs)
 
         if not self.encoder_only:
             assert self.decoder is not None
@@ -334,13 +365,6 @@ class T5Model(nn.Module):
                 decoder_output = self.lm_head(decoder_output)
                 decoder_outputs["decoder_output"] = decoder_output
 
-            # Make TorchScript pick up the correct types
-            encoder_decoder_outputs: DECODER_OUTPUTS_TYPE = {}
-            for key, val in encoder_outputs.items():
-                encoder_decoder_outputs[key] = val
-            for key, val in decoder_outputs.items():
-                encoder_decoder_outputs[key] = val
+            seq2seq_model_output.update(decoder_outputs)
 
-            return encoder_decoder_outputs
-
-        return encoder_outputs
+        return seq2seq_model_output
