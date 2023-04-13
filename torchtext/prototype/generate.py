@@ -185,10 +185,13 @@ class GenerationUtils(nn.Module):
     def generate(
         self,
         inputs: torch.Tensor,
-        num_beams: Optional[int] = None,
         max_length: int = DEFAULT_MAX_SEQ_LEN,
         pad_idx: int = 0,
         eos_idx: int = 1,
+        num_beams: Optional[int] = None,
+        beam_threshold: int = 100,
+        eos_score: float = 0.0,
+        vocab_size: Optional[int] = None,
     ) -> torch.Tensor:
         """Generation method.
 
