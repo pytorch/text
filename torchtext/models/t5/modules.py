@@ -30,8 +30,9 @@ PAST_KEY_VALUE_TYPE = Tuple[Tensor, Tensor]
 PAST_KEY_VALUES_UNFILLED_TYPE = Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]
 
 # Define reusable types for encoder/decoder outputs
-SEQ_2_SEQ_OUTPUTS_TYPE = Dict[
-    str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], Optional[List[PAST_KEY_VALUES_UNFILLED_TYPE]]]
+ENCODER_OUTPUTS_TYPE = Dict[str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]]]]
+DECODER_OUTPUTS_TYPE = Dict[
+    str, Union[Optional[Tensor], List[Tensor], List[Optional[Tensor]], List[PAST_KEY_VALUES_UNFILLED_TYPE]]
 ]
 
 
@@ -960,7 +961,7 @@ class T5Encoder(nn.Module):
         mask: Optional[Tensor] = None,
         src_key_padding_mask: Optional[Tensor] = None,
         embedded_src: Optional[Tensor] = None,
-    ) -> SEQ_2_SEQ_OUTPUTS_TYPE:
+    ) -> ENCODER_OUTPUTS_TYPE:
         r"""Pass the input (and masks) through the stack of encoder layers.
 
         Args:
@@ -1097,7 +1098,7 @@ class T5Decoder(nn.Module):
         memory_key_padding_mask: Optional[Tensor] = None,
         past_key_values: Optional[List[PAST_KEY_VALUES_TYPE]] = None,
         return_past_key_values: bool = False,
-    ) -> SEQ_2_SEQ_OUTPUTS_TYPE:
+    ) -> DECODER_OUTPUTS_TYPE:
         r"""Pass the inputs (and masks) through the stack of decoder layers.
 
         Args:

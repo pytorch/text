@@ -11,4 +11,8 @@ export SOURCE_ROOT_DIR="$PWD"
 setup_conda_pytorch_constraint
 setup_visual_studio_constraint
 
+if [[ "$PYTHON_VERSION" == "3.11" ]]; then
+  export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c malfet"
+fi
+
 conda build $CONDA_CHANNEL_FLAGS --no-anaconda-upload --python "$PYTHON_VERSION" packaging/torchtext

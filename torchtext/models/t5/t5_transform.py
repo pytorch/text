@@ -39,13 +39,19 @@ class T5Transform(nn.Module):
         >>> transform(["hello world", "attention is all you need!"])
     """
 
-    def __init__(self, sp_model_path: str, max_seq_len: int, eos_idx: int, padding_idx: int):
+    def __init__(
+        self, sp_model_path: str, max_seq_len: int, eos_idx: int, padding_idx: int
+    ):
         super().__init__()
-        self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
+        self.sp_model = load_sp_model(
+            get_asset_local_path(sp_model_path),
+        )
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
         self.padding_idx = padding_idx
-        self.pipeline = T.Sequential(T.Truncate(self.max_seq_len - 1), T.AddToken(token=self.eos_idx, begin=False))
+        self.pipeline = T.Sequential(
+            T.Truncate(self.max_seq_len - 1), T.AddToken(token=self.eos_idx, begin=False)
+        )
 
     def forward(self, input: Union[str, List[str]]) -> torch.Tensor:
         """
