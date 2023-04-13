@@ -42,7 +42,7 @@ jobs:
         # Create Conda Env
         conda create -y --name ci_env python="${PYTHON_VERSION}"
         conda activate ci_env
-        python3 -m pip --quiet install cmake>=3.18.0 ninja
+        python -m pip --quiet install cmake>=3.18.0 ninja
         conda env update --file ".circleci/unittest/windows/scripts/environment.yml" --prune
 
         # TorchText-specific Setup
@@ -58,17 +58,17 @@ jobs:
           pytorch \
           cpuonly
         printf "Installing torchdata nightly\n"
-        python3 -m pip install "portalocker>=2.0.0"
-        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+        python -m pip install "portalocker>=2.0.0"
+        python -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 
         printf "* Installing pywin32_postinstall script\n"
         curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
         python pywin32_postinstall.py -install
 
-        "packaging/vc_env_helper.bat" python3 setup.py develop
-        python3 -m pip install parameterized
+        "packaging/vc_env_helper.bat" python setup.py develop
+        python -m pip install parameterized
 
         # Run Tests
-        python3 -m torch.utils.collect_env
+        python -m torch.utils.collect_env
         cd test
-        python3 -m pytest --cov=torchtext --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest
+        python -m pytest --cov=torchtext --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest
