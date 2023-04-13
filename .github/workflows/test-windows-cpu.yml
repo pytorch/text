@@ -40,8 +40,8 @@ jobs:
         fi
 
         # Create Conda Env
-        conda create -yp ci_env python="${PYTHON_VERSION}"
-        conda activate /work/ci_env
+        conda create -y --name ci_env python="${PYTHON_VERSION}"
+        conda activate ci_env
         python3 -m pip --quiet install cmake>=3.18.0 ninja
         conda env update --file ".circleci/unittest/windows/scripts/environment.yml" --prune
 
