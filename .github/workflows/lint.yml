@@ -30,7 +30,6 @@ jobs:
         
         echo '::group::Lint Python source and configs'
         set +e
-        pre-commit install-hooks
         pre-commit run --all-files
         
         if [ $? -ne 0 ]; then
