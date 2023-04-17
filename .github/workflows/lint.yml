@@ -25,7 +25,7 @@ jobs:
         echo '::endgroup::'
         
         echo '::group::Install lint tools'
-        pip install --user --progress-bar=off pre-commit
+        pip install --progress-bar=off pre-commit
         echo '::endgroup::'
         
         echo '::group::Lint Python source and configs'
@@ -61,7 +61,10 @@ jobs:
 
         echo '::group::Lint C source'
         set +e
-        ./.circleci/unittest/linux/scripts/run-clang-format.py -r torchtext/csrc --clang-format-executable ./clang-format
+        python run-clang-format.py \
+            --recursive \
+            --clang-format-executable=./clang-format \
+            torchtext/csrc
         
         if [ $? -ne 0 ]; then
           git --no-pager diff
