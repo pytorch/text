@@ -6,7 +6,7 @@ import requests
 from torch.hub import load_state_dict_from_url  # noqa
 from torchdata.datapipes.iter import HttpReader, GDriveReader  # noqa F401
 from tqdm import tqdm
-
+import fcntl
 
 def _stream_response(r, chunk_size=16 * 1024):
     total_size = int(r.headers.get("Content-length", 0))
@@ -47,7 +47,7 @@ def _get_response_from_google_drive(url):
 
 
 class DownloadManager:
-    def get_local_path(self, url, destination):
+    def get_local_path(self, url, destination, has_lock):
         if "drive.google.com" not in url:
             response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, stream=True)
         else:
@@ -56,6 +56,9 @@ class DownloadManager:
         with open(destination, "wb") as f:
             for chunk in _stream_response(response):
                 f.write(chunk)
+            if has_lock:
+                # Unlock the file before we close the stream
+                fcntl.flock(destination, fcntl.LOCK_UN)
 
 
 _DATASET_DOWNLOAD_MANAGER = DownloadManager()
