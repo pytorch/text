@@ -5,11 +5,6 @@ import os
 import tarfile
 import zipfile
 
-try:
-    import fcntl
-except ImportError:
-    fcntl = None
-
 import torch
 from torchtext import _CACHE_DIR
 
@@ -101,13 +96,6 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
         path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
-    # make root dir if does not exist
-    if not os.path.exists(root):
-        try:
-            os.makedirs(root)
-        except OSError as e:
-            raise OSError("Can't create the download directory {}.".format(root)) from e
-
     # skip download if path exists and overwrite is not True
     if os.path.exists(path):
         logger.info("File %s already exists." % path)
@@ -116,19 +104,15 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
                 _check_hash(path, hash_value, hash_type)
             return path
 
-    # open file for writing (necessary to add lock)
-    open_mode = os.O_RDWR | os.O_CREAT | os.O_TRUNC
-    dest_file = os.open(path, open_mode)
-
-    # lock file so avoid issues during multithreaded execution
-    if fcntl is not None:
-        fcntl.flock(dest_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        has_lock = True
-    else:
-        has_lock = False
+    # make root dir if does not exist
+    if not os.path.exists(root):
+        try:
+            os.makedirs(root)
+        except OSError:
+            raise OSError("Can't create the download directory {}.".format(root))
 
     # download data and move to path
-    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=dest_file, has_lock=has_lock)
+    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
     logger.info("File {} downloaded.".format(path))
 
