@@ -365,9 +365,6 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            if [[ "${PYTHON_VERSION}" == "3.11" ]]; then
-              export CONDA_CHANNEL_FLAGS=" -c malfet"
-            fi
             conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" pytorch
             conda install -v -y ${CONDA_CHANNEL_FLAGS} -c ~/workspace/conda-bld torchtext
       - run:
