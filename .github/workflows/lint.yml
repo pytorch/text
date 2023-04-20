@@ -30,6 +30,8 @@ jobs:
         
         echo '::group::Lint Python source and configs'
         set +e
+        echo $LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
         pre-commit run --all-files
         
         if [ $? -ne 0 ]; then
