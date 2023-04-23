@@ -1,3 +1,4 @@
+#include <re2/re2.h>
 #include <torchtext/csrc/regex_tokenizer.h> // @manual
 #include <sstream>
 
