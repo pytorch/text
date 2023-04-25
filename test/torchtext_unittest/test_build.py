@@ -5,7 +5,7 @@ import os
 import torch
 import torchtext.data
 
-from .common.torchtext_test_case import TorchtextTestCase
+from .common.torchtext_test_case import TorchtextTestCase, third_party_download
 
 
 class TestDataUtils(TorchtextTestCase):
@@ -64,6 +64,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(token_one_vec.shape[0], vec.dim)
         self.assertEqual(vec[tokens[0].lower()], token_one_vec)
 
+    @third_party_download
     def test_download_charngram_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):

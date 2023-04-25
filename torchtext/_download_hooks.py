@@ -59,3 +59,4 @@ class DownloadManager:
 
 
 _DATASET_DOWNLOAD_MANAGER = DownloadManager()
+_TEST_DOWNLOAD_MANAGER = DownloadManager()

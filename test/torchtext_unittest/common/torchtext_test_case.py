@@ -5,11 +5,22 @@ import os
 import shutil
 import subprocess
 import tempfile
+from urllib.error import HTTPError
 
 import torch  # noqa: F401
 from torch.testing._internal.common_utils import TestCase
 
 logger = logging.getLogger(__name__)
+
+
+def third_party_download(test_func):
+    def inner(*args, **kwargs):
+        try:
+            return test_func(*args, **kwargs)
+        except HTTPError as e:
+            logger.warning(f"Cannot access URL in {test_func.__name__}. Error message {e}")
+
+    return inner
 
 
 class TorchtextTestCase(TestCase):

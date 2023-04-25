@@ -184,3 +184,25 @@ class T5BaseTestModels(TestBaseMixin):
 
         _train(model)
         self.assertNotEqual(model.state_dict(), current_state_dict)
+
+    def test_shift_right(self) -> None:
+        from torchtext.models import T5Conf, T5Model
+
+        dummy_encoder_conf = T5Conf()
+        dummy_t5_encoder = T5Model(dummy_encoder_conf)
+        padding_idx = dummy_t5_encoder.padding_idx
+
+        valid_cases_input = [[[1, 2], [3, 4]], [[1]]]
+        valid_cases_expected = [[[padding_idx, 1], [padding_idx, 3]], [[padding_idx]]]
+
+        invalid_cases_input = [[0], [], [[]]]
+
+        for input_ids, expected in zip(valid_cases_input, valid_cases_expected):
+            input_ids = torch.Tensor(input_ids)
+            expected = torch.Tensor(expected)
+            self.assertEqual(dummy_t5_encoder._shift_right(input_ids), expected)
+
+        for input_ids in invalid_cases_input:
+            input_ids = torch.Tensor(input_ids)
+            with self.assertRaises(IndexError):
+                dummy_t5_encoder._shift_right(input_ids)

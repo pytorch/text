@@ -16,7 +16,7 @@ This repository consists of:
 
 * `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
 * `torchtext.data <https://github.com/pytorch/text/tree/main/torchtext/data>`_: Some basic NLP building blocks
-* `torchtext.transforms <https://github.com/pytorch/text/tree/main/torchtext/transforms>`_: Basic text-processing transformations
+* `torchtext.transforms <https://github.com/pytorch/text/tree/main/torchtext/transforms.py>`_: Basic text-processing transformations
 * `torchtext.models <https://github.com/pytorch/text/tree/main/torchtext/models>`_: Pre-trained models
 * `torchtext.vocab <https://github.com/pytorch/text/tree/main/torchtext/vocab>`_: Vocab and Vectors related classes and factory functions
 * `examples <https://github.com/pytorch/text/tree/main/examples>`_: Example NLP workflows with PyTorch and torchtext library.
@@ -32,6 +32,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :widths: 10, 10, 10
 
    nightly build, main, ">=3.8, <=3.11"
+   1.14.0, 0.15.0, ">=3.8, <=3.11"
    1.13.0, 0.14.0, ">=3.7, <=3.10"
    1.12.0, 0.13.0, ">=3.7, <=3.10"
    1.11.0, 0.12.0, ">=3.6, <=3.9"
@@ -122,7 +123,7 @@ The library currently consist of following pre-trained models:
 * `DistilRoBERTa <https://github.com/huggingface/transformers/blob/main/examples/research_projects/distillation/README.md>`_
 * XLM-RoBERTa: `Base and Large Architure <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`_
 * T5: `Small, Base, Large, 3B, and 11B Architecture <https://github.com/google-research/text-to-text-transfer-transformer>`_
-* Flan-T5: `Small, Base, Large, XL, and XXL Architecture <https://github.com/google-research/t5x>`_
+* Flan-T5: `Base, Large, XL, and XXL Architecture <https://github.com/google-research/t5x>`_
 
 Tokenizers
 ==========
@@ -132,6 +133,8 @@ The transforms module currently support following scriptable tokenizers:
 * `SentencePiece <https://github.com/google/sentencepiece>`_
 * `GPT-2 BPE <https://github.com/openai/gpt-2/blob/master/src/encoder.py>`_
 * `CLIP <https://github.com/openai/CLIP/blob/main/clip/simple_tokenizer.py>`_
+* `RE2 <https://github.com/google/re2>`_
+* `BERT <https://arxiv.org/pdf/1810.04805.pdf>`_
 
 Tutorials
 =========

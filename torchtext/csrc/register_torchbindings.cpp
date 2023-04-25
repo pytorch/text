@@ -1,3 +1,4 @@
+#include <torch/csrc/jit/python/utf8_decoding_ignore.h>
 #include <torch/script.h>
 #include <torchtext/csrc/bert_tokenizer.h> // @manual
 #include <torchtext/csrc/clip_tokenizer.h> // @manual
@@ -210,6 +211,9 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
   m.def("torchtext::load_sp_model", &load_sp_model);
   m.def("torchtext::load_sp_model_string", &load_sp_model_string);
   m.def("torchtext::gpt2_bpe_pre_tokenizer", &gpt2_bpe_pre_tokenizer);
+  m.def(
+      "torchtext::set_utf8_decoding_ignore",
+      &torch::jit::setUTF8DecodingIgnore);
 }
 
 } // namespace torchtext

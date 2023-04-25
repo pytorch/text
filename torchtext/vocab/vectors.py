@@ -64,6 +64,9 @@ class Vectors(object):
         else:
             return self.unk_init(torch.Tensor(self.dim))
 
+    def __contains__(self, token):
+        return token in self.stoi
+
     def cache(self, name, cache, url=None, max_vectors=None):
         import ssl
 

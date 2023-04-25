@@ -12,12 +12,14 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import torch
 from torchtext import _TEXT_BUCKET
 from torchtext._download_hooks import load_state_dict_from_url
+from torchtext.models.t5.model import PAST_KEY_VALUES_TYPE, SEQ_2_SEQ_OUTPUTS_TYPE
+from torchtext.prototype.generate import GenerationUtils
 
 from .model import T5Conf, T5Model
 from .t5_transform import T5Transform
@@ -78,16 +80,23 @@ class T5Bundle:
     def get_model(
         self,
         *,
+        with_generation_utils: bool = False,
         load_weights: bool = True,
         freeze_model: bool = False,
         dl_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> T5Model:
+        gen_kwargs: Optional[Dict[str, Any]] = None,
+    ) -> Union[T5Model, GenerationUtils]:
         r"""get_model(load_weights: bool = True, freeze_model: bool = False, *, dl_kwargs=None) -> torctext.prototype.models.T5Model
 
         Args:
+            with_generation_utils (bool): Indicates whether to wrap model w/ `GenerationUtils` wrapper. (Default: `False`)
             load_weights (bool): Indicates whether or not to load weights if available. (Default: `True`)
             freeze_model (bool): Indicates whether or not to freeze the model weights. (Default: `False`)
             dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: `None`)
+            gen_kwargs (dictionary of kwargs): Passed to :func:`GenerationUtilsForT5`. (Default: `None`)
+
+        Returns:
+            Either a T5Model or a T5Model wrapped with GenerationUtils.
         """
 
         if load_weights:
@@ -101,13 +110,20 @@ class T5Bundle:
                     "The model is not loaded with pre-trained weights. Setting freeze_model to True will hinder model from learning appropriate weights."
                 )
 
-        return T5Bundle.build_model(
+        model = T5Bundle.build_model(
             config=self._config,
             freeze_model=freeze_model,
             checkpoint=self._path if load_weights else None,
             strict=True,
             dl_kwargs=dl_kwargs,
         )
+
+        if with_generation_utils:
+            if not load_weights:
+                logger.warning("Model is not loaded with pre-trained weights. Generations will be random.")
+            gen_kwargs = {} if gen_kwargs is None else gen_kwargs
+            return GenerationUtilsForT5(model, **gen_kwargs)
+        return model
 
     @classmethod
     def build_model(
@@ -155,6 +171,7 @@ class T5Bundle:
         """Build T5Model model from a HuggingFace checkpoint.
 
         Note: Only works with Huggingface models saved in the PyTorch format. Will not work with TensorFlow or JAX.
+        This also requires a fully saved model, sharded checkpoints are not supported.
 
         Args:
             ckpt_path (str, Path): Path to the HF checkpoint file. Assumes that the file is local.
@@ -180,6 +197,7 @@ class T5Bundle:
             num_decoder_layers=config_json["num_decoder_layers"],
             ffn_dimension=config_json["d_ff"],
             feed_forward_proj=config_json.get("feed_forward_proj"),
+            vocab_size=config_json["vocab_size"],
         )
 
         t5_model = T5Model(config, freeze_model)
@@ -238,12 +256,12 @@ class T5Bundle:
 
             for i in range(config.num_decoder_layers):
                 if config.is_gated_act:
-                    t5_model_state_dict[f"encoder.layers.{i}.linear1_0.weight"] = hf_weights[
-                        f"decoder.block.{i}.layer.1.DenseReluDense.wi_0.weight"
+                    t5_model_state_dict[f"decoder.layers.{i}.linear1_0.weight"] = hf_weights[
+                        f"decoder.block.{i}.layer.2.DenseReluDense.wi_0.weight"
                     ]
 
-                    t5_model_state_dict[f"encoder.layers.{i}.linear1_1.weight"] = hf_weights[
-                        f"decoder.block.{i}.layer.1.DenseReluDense.wi_1.weight"
+                    t5_model_state_dict[f"decoder.layers.{i}.linear1_1.weight"] = hf_weights[
+                        f"decoder.block.{i}.layer.2.DenseReluDense.wi_1.weight"
                     ]
                 else:
                     t5_model_state_dict[f"decoder.layers.{i}.linear1.weight"] = hf_weights[
@@ -301,6 +319,66 @@ class T5Bundle:
     @property
     def config(self) -> T5Conf:
         return self._config
+
+
+class GenerationUtilsForT5(GenerationUtils):
+    """In order to make GenerationUtils torchscriptable, we provide the exact typing for the underlying model forward call."""
+
+    def __init__(self, model: torch.nn.Module, **kwargs) -> None:
+        super().__init__(model, **kwargs)
+
+    def _scripted_model_forward_call(
+        self,
+        kwargs: Dict[
+            str,
+            Union[
+                bool,
+                torch.Tensor,
+                Optional[List[PAST_KEY_VALUES_TYPE]],
+                SEQ_2_SEQ_OUTPUTS_TYPE,
+            ],
+        ],
+    ):
+        encoder_tokens = kwargs.get("encoder_tokens", None)
+        assert torch.jit.isinstance(encoder_tokens, Optional[torch.Tensor])
+
+        decoder_tokens = kwargs.get("decoder_tokens", None)
+        assert torch.jit.isinstance(decoder_tokens, Optional[torch.Tensor])
+
+        encoder_mask = kwargs.get("encoder_mask", None)
+        assert torch.jit.isinstance(encoder_mask, Optional[torch.Tensor])
+
+        decoder_mask = kwargs.get("decoder_mask", None)
+        assert torch.jit.isinstance(decoder_mask, Optional[torch.Tensor])
+
+        encoder_padding_mask = kwargs.get("encoder_padding_mask", None)
+        assert torch.jit.isinstance(encoder_padding_mask, Optional[torch.Tensor])
+
+        decoder_padding_mask = kwargs.get("decoder_padding_mask", None)
+        assert torch.jit.isinstance(decoder_padding_mask, Optional[torch.Tensor])
+
+        encoder_outputs = kwargs.get("encoder_outputs", None)
+        assert torch.jit.isinstance(encoder_outputs, Optional[SEQ_2_SEQ_OUTPUTS_TYPE])
+
+        past_key_values = kwargs.get("past_key_values", None)
+        assert torch.jit.isinstance(past_key_values, Optional[List[PAST_KEY_VALUES_TYPE]])
+
+        return_past_key_values = kwargs.get("return_past_key_values", False)
+        assert torch.jit.isinstance(return_past_key_values, Optional[bool])
+
+        assert return_past_key_values is not None
+
+        return self.model(
+            encoder_tokens=encoder_tokens,
+            decoder_tokens=decoder_tokens,
+            encoder_mask=encoder_mask,
+            decoder_mask=decoder_mask,
+            encoder_padding_mask=encoder_padding_mask,
+            decoder_padding_mask=decoder_padding_mask,
+            encoder_outputs=encoder_outputs,
+            past_key_values=past_key_values,
+            return_past_key_values=return_past_key_values,
+        )
 
 
 ENCODER_DOC = """
@@ -650,56 +728,6 @@ T5_11B_GENERATION = T5Bundle(
 
 T5_11B_GENERATION.__doc__ = GENERATION_DOC.format("11B", "11B")
 
-
-FLAN_T5_SMALL_ENCODER = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.encoder.pt"),
-    _config=T5Conf(
-        encoder_only=True,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL_ENCODER.__doc__ = FLAN_ENCODER_DOC.format("SMALL", "SMALL")
-
-FLAN_T5_SMALL = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.pt"),
-    _config=T5Conf(
-        encoder_only=False,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL.__doc__ = FLAN_DOC.format("SMALL", "SMALL")
-
-FLAN_T5_SMALL_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.small.generation.pt"),
-    _config=T5Conf(
-        encoder_only=False,
-        linear_head=True,
-        embedding_dim=512,
-        num_attention_heads=6,
-        num_encoder_layers=8,
-        num_decoder_layers=8,
-        ffn_dimension=1024,
-        feed_forward_proj="gated-gelu",
-    ),
-    transform=t5_transform,
-)
-
-FLAN_T5_SMALL_GENERATION.__doc__ = FLAN_GENERATION_DOC.format("SMALL", "SMALL")
-
 FLAN_T5_BASE_ENCODER = T5Bundle(
     _path=urljoin(_TEXT_BUCKET, "t5.flan.base.encoder.pt"),
     _config=T5Conf(encoder_only=True, ffn_dimension=2048, feed_forward_proj="gated-gelu"),
@@ -762,7 +790,7 @@ FLAN_T5_BASE.__doc__ = FLAN_DOC.format("LARGE", "LARGE")
 
 
 FLAN_T5_LARGE_GENERATION = T5Bundle(
-    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "t5.flan.large.generation.pt"),
     _config=T5Conf(
         encoder_only=False,
         linear_head=True,

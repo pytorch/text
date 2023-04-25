@@ -2,7 +2,7 @@
 T5-Base Model for Summarization, Sentiment Classification, and Translation
 ==========================================================================
 
-**Author**: `Pendo Abbo <pabbo@fb.com>`__
+**Author**: `Pendo Abbo <pabbo@fb.com>`__, `Joe Cummings <jrcummings@fb.com>`__
 
 """
 
@@ -20,15 +20,6 @@ T5-Base Model for Summarization, Sentiment Classification, and Translation
 #
 #
 
-######################################################################
-# Common imports
-# --------------
-import torch
-import torch.nn.functional as F
-
-DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-
 #######################################################################
 # Data Transformation
 # -------------------
@@ -43,11 +34,11 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 #
 # T5 uses a SentencePiece model for text tokenization. Below, we use a pre-trained SentencePiece model to build
 # the text pre-processing pipeline using torchtext's T5Transform. Note that the transform supports both
-# batched and non-batched text input (i.e. one can either pass a single sentence or a list of sentences), however
+# batched and non-batched text input (for example, one can either pass a single sentence or a list of sentences), however
 # the T5 model expects the input to be batched.
 #
 
-from torchtext.prototype.models import T5Transform
+from torchtext.models import T5Transform
 
 padding_idx = 0
 eos_idx = 1
@@ -64,9 +55,9 @@ transform = T5Transform(
 #######################################################################
 # Alternatively, we can also use the transform shipped with the pre-trained models that does all of the above out-of-the-box
 #
-# ::
+# .. code-block::
 #
-#   from torchtext.prototype.models import T5_BASE_GENERATION
+#   from torchtext.models import T5_BASE_GENERATION
 #   transform = T5_BASE_GENERATION.transform()
 #
 
@@ -77,161 +68,31 @@ transform = T5Transform(
 #
 # torchtext provides SOTA pre-trained models that can be used directly for NLP tasks or fine-tuned on downstream tasks. Below
 # we use the pre-trained T5 model with standard base configuration to perform text summarization, sentiment classification, and
-# translation. For additional details on available pre-trained models, please refer to documentation at
-# https://pytorch.org/text/main/models.html
+# translation. For additional details on available pre-trained models, see `the torchtext documentation <https://pytorch.org/text/main/models.html>`__
 #
 #
-from torchtext.prototype.models import T5_BASE_GENERATION
+from torchtext.models import T5_BASE_GENERATION
 
 
 t5_base = T5_BASE_GENERATION
 transform = t5_base.transform()
 model = t5_base.get_model()
 model.eval()
-model.to(DEVICE)
 
 
 #######################################################################
-# Sequence Generator
+# GenerationUtils
 # ------------------
 #
-# We can define a sequence generator to produce an output sequence based on the input sequence provided. This calls on the
+# We can use torchtext's ``GenerationUtils`` to produce an output sequence based on the input sequence provided. This calls on the
 # model's encoder and decoder, and iteratively expands the decoded sequences until the end-of-sequence token is generated
-# for all sequences in the batch. The `generate` method shown below uses a beam search to generate the sequences. Larger
-# beam sizes can result in better generation at the cost of computational complexity, and a beam size of 1 is equivalent to
-# a greedy decoder.
+# for all sequences in the batch. The ``generate`` method shown below uses greedy search to generate the sequences. Beam search and
+# other decoding strategies are also supported.
 #
+#
+from torchtext.prototype.generate import GenerationUtils
 
-from torch import Tensor
-from torchtext.prototype.models import T5Model
-
-
-def beam_search(
-    beam_size: int,
-    step: int,
-    bsz: int,
-    decoder_output: Tensor,
-    decoder_tokens: Tensor,
-    scores: Tensor,
-    incomplete_sentences: Tensor,
-):
-    probs = F.log_softmax(decoder_output[:, -1], dim=-1)
-    top = torch.topk(probs, beam_size)
-
-    # N is number of sequences in decoder_tokens, L is length of sequences, B is beam_size
-    # decoder_tokens has shape (N,L) -> (N,B,L)
-    # top.indices has shape (N,B) - > (N,B,1)
-    # x has shape (N,B,L+1)
-    # note that when step == 1, N = batch_size, and when step > 1, N = batch_size * beam_size
-    x = torch.cat([decoder_tokens.unsqueeze(1).repeat(1, beam_size, 1), top.indices.unsqueeze(-1)], dim=-1)
-
-    # beams are first created for a given sequence
-    if step == 1:
-        # x has shape (batch_size, B, L+1) -> (batch_size * B, L+1)
-        # new_scores has shape (batch_size,B)
-        # incomplete_sentences has shape (batch_size * B) = (N)
-        new_decoder_tokens = x.view(-1, step + 1)
-        new_scores = top.values
-        new_incomplete_sentences = incomplete_sentences
-
-    # beams already exist, want to expand each beam into possible new tokens to add
-    # and for all expanded beams beloning to the same sequences, choose the top k
-    else:
-        # scores has shape (batch_size,B) -> (N,1) -> (N,B)
-        # top.values has shape (N,B)
-        # new_scores has shape (N,B) -> (batch_size, B^2)
-        new_scores = (scores.view(-1, 1).repeat(1, beam_size) + top.values).view(bsz, -1)
-
-        # v, i have shapes (batch_size, B)
-        v, i = torch.topk(new_scores, beam_size)
-
-        # x has shape (N,B,L+1) -> (batch_size, B, L+1)
-        # i has shape (batch_size, B) -> (batch_size, B, L+1)
-        # new_decoder_tokens has shape (batch_size, B, L+1) -> (N, L)
-        x = x.view(bsz, -1, step + 1)
-        new_decoder_tokens = x.gather(index=i.unsqueeze(-1).repeat(1, 1, step + 1), dim=1).view(-1, step + 1)
-
-        # need to update incomplete sentences in case one of the beams was kicked out
-        # y has shape (N) -> (N, 1) -> (N, B) -> (batch_size, B^2)
-        y = incomplete_sentences.unsqueeze(-1).repeat(1, beam_size).view(bsz, -1)
-
-        # now can use i to extract those beams that were selected
-        # new_incomplete_sentences has shape (batch_size, B^2) -> (batch_size, B) -> (N, 1) -> N
-        new_incomplete_sentences = y.gather(index=i, dim=1).view(bsz * beam_size, 1).squeeze(-1)
-
-        # new_scores has shape (batch_size, B)
-        new_scores = v
-
-    return new_decoder_tokens, new_scores, new_incomplete_sentences
-
-
-def generate(encoder_tokens: Tensor, eos_idx: int, model: T5Model, beam_size: int) -> Tensor:
-
-    # pass tokens through encoder
-    bsz = encoder_tokens.size(0)
-    encoder_padding_mask = encoder_tokens.eq(model.padding_idx)
-    encoder_embeddings = model.dropout1(model.token_embeddings(encoder_tokens))
-    encoder_output = model.encoder(encoder_embeddings, tgt_key_padding_mask=encoder_padding_mask)[0]
-
-    encoder_output = model.norm1(encoder_output)
-    encoder_output = model.dropout2(encoder_output)
-
-    # initialize decoder input sequence; T5 uses padding index as starter index to decoder sequence
-    decoder_tokens = torch.ones((bsz, 1), dtype=torch.long) * model.padding_idx
-    scores = torch.zeros((bsz, beam_size))
-
-    # mask to keep track of sequences for which the decoder has not produced an end-of-sequence token yet
-    incomplete_sentences = torch.ones(bsz * beam_size, dtype=torch.long)
-
-    # iteratively generate output sequence until all sequences in the batch have generated the end-of-sequence token
-    for step in range(model.config.max_seq_len):
-
-        if step == 1:
-            # duplicate and order encoder output so that each beam is treated as its own independent sequence
-            new_order = torch.arange(bsz).view(-1, 1).repeat(1, beam_size).view(-1)
-            new_order = new_order.to(encoder_tokens.device).long()
-            encoder_output = encoder_output.index_select(0, new_order)
-            encoder_padding_mask = encoder_padding_mask.index_select(0, new_order)
-
-        # causal mask and padding mask for decoder sequence
-        tgt_len = decoder_tokens.shape[1]
-        decoder_mask = torch.triu(torch.ones((tgt_len, tgt_len), dtype=torch.float64), diagonal=1).bool()
-        decoder_padding_mask = decoder_tokens.eq(model.padding_idx)
-
-        # T5 implemention uses padding idx to start sequence. Want to ignore this when masking
-        decoder_padding_mask[:, 0] = False
-
-        # pass decoder sequence through decoder
-        decoder_embeddings = model.dropout3(model.token_embeddings(decoder_tokens))
-        decoder_output = model.decoder(
-            decoder_embeddings,
-            memory=encoder_output,
-            tgt_mask=decoder_mask,
-            tgt_key_padding_mask=decoder_padding_mask,
-            memory_key_padding_mask=encoder_padding_mask,
-        )[0]
-
-        decoder_output = model.norm2(decoder_output)
-        decoder_output = model.dropout4(decoder_output)
-        decoder_output = decoder_output * (model.config.embedding_dim ** -0.5)
-        decoder_output = model.lm_head(decoder_output)
-
-        decoder_tokens, scores, incomplete_sentences = beam_search(
-            beam_size, step + 1, bsz, decoder_output, decoder_tokens, scores, incomplete_sentences
-        )
-        # ignore newest tokens for sentences that are already complete
-        decoder_tokens[:, -1] *= incomplete_sentences
-
-        # update incomplete_sentences to remove those that were just ended
-        incomplete_sentences = incomplete_sentences - (decoder_tokens[:, -1] == eos_idx).long()
-
-        # early stop if all sentences have been ended
-        if (incomplete_sentences == 0).all():
-            break
-
-    # take most likely sequence
-    decoder_tokens = decoder_tokens.view(bsz, beam_size, -1)[:, 0, :]
-    return decoder_tokens
+sequence_generator = GenerationUtils(model)
 
 
 #######################################################################
@@ -242,12 +103,12 @@ def generate(encoder_tokens: Tensor, eos_idx: int, model: T5Model, beam_size: in
 # datapipes and hence support standard flow-control and mapping/transformation using user defined
 # functions and transforms.
 #
-# Below, we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
+# Below we demonstrate how to pre-process the CNNDM dataset to include the prefix necessary for the
 # model to indentify the task it is performing. The CNNDM dataset has a train, validation, and test
 # split. Below we demo on the test split.
 #
 # The T5 model uses the prefix "summarize" for text summarization. For more information on task
-# prefixes, please visit Appendix D of the T5 Paper at https://arxiv.org/pdf/1910.10683.pdf
+# prefixes, please visit Appendix D of the `T5 Paper <https://arxiv.org/pdf/1910.10683.pdf>`__
 #
 # .. note::
 #       Using datapipes is still currently subject to a few caveats. If you wish
@@ -272,12 +133,12 @@ def apply_prefix(task, x):
 cnndm_datapipe = cnndm_datapipe.map(partial(apply_prefix, task))
 cnndm_datapipe = cnndm_datapipe.batch(cnndm_batch_size)
 cnndm_datapipe = cnndm_datapipe.rows2columnar(["article", "abstract"])
-cnndm_dataloader = DataLoader(cnndm_datapipe, batch_size=None)
+cnndm_dataloader = DataLoader(cnndm_datapipe, shuffle=True, batch_size=None)
 
 #######################################################################
-# Alternately we can also use batched API (i.e apply the prefix on the whole batch)
+# Alternately, we can also use batched API, for example, apply the prefix on the whole batch:
 #
-# ::
+# .. code-block::
 #
 #   def batch_prefix(task, x):
 #    return {
@@ -307,11 +168,11 @@ from torchtext.datasets import IMDB
 imdb_batch_size = 3
 imdb_datapipe = IMDB(split="test")
 task = "sst2 sentence"
-labels = {"neg": "negative", "pos": "positive"}
+labels = {"1": "negative", "2": "positive"}
 
 
 def process_labels(labels, x):
-    return x[1], labels[x[0]]
+    return x[1], labels[str(x[0])]
 
 
 imdb_datapipe = imdb_datapipe.map(partial(process_labels, labels))
@@ -343,16 +204,16 @@ multi_dataloader = DataLoader(multi_datapipe, batch_size=None)
 # ------------------
 #
 # We can put all of the components together to generate summaries on the first batch of articles in the CNNDM test set
-# using a beam size of 3.
+# using a beam size of 1.
 #
 
 batch = next(iter(cnndm_dataloader))
 input_text = batch["article"]
 target = batch["abstract"]
-beam_size = 3
+beam_size = 1
 
 model_input = transform(input_text)
-model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(cnndm_batch_size):
@@ -362,21 +223,19 @@ for i in range(cnndm_batch_size):
 
 
 #######################################################################
-# Summarization Output
-# --------------------
+# Summarization Output (Might vary since we shuffle the dataloader)
+# -----------------------------------------------------------------
 #
-# ::
+# .. code-block::
 #
 #    Example 1:
 #
-#    prediction: the Palestinians become the 123rd member of the international criminal
-#    court . the accession was marked by a ceremony at the Hague, where the court is based .
-#    the ICC opened a preliminary examination into the situation in the occupied
-#    Palestinian territory .
+#    prediction: the 24-year-old has been tattooed for over a decade . he has landed in australia
+#    to start work on a new campaign . he says he is 'taking it in your stride' to be honest .
 #
-#    target: Membership gives the ICC jurisdiction over alleged crimes committed in
-#    Palestinian territories since last June . Israel and the United States opposed the
-#    move, which could open the door to war crimes investigations against Israelis .
+#    target: London-based model Stephen James Hendry famed for his full body tattoo . The supermodel
+#    is in Sydney for a new modelling campaign . Australian fans understood to have already located
+#    him at his hotel . The 24-year-old heartthrob is recently single .
 #
 #
 #    Example 2:
@@ -442,7 +301,7 @@ target = batch["label"]
 beam_size = 1
 
 model_input = transform(input_text)
-model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(imdb_batch_size):
@@ -500,7 +359,7 @@ for i in range(imdb_batch_size):
 #    really annoying was the constant cuts to VDs daughter during the last fight scene.<br /><br />
 #    Not bad. Not good. Passable 4.
 #
-#    prediction: negative
+#    prediction: positive
 #
 #    target: negative
 #
@@ -527,16 +386,15 @@ for i in range(imdb_batch_size):
 # ---------------------
 #
 # Finally, we can also use the model to generate English to German translations on the first batch of examples from the Multi30k
-# test set using a beam size of 4.
+# test set.
 #
 
 batch = next(iter(multi_dataloader))
 input_text = batch["english"]
 target = batch["german"]
-beam_size = 4
 
 model_input = transform(input_text)
-model_output = generate(model=model, encoder_tokens=model_input, eos_idx=eos_idx, beam_size=beam_size)
+model_output = sequence_generator.generate(model_input, eos_idx=eos_idx, num_beams=beam_size)
 output_text = transform.decode(model_output.tolist())
 
 for i in range(multi_batch_size):
