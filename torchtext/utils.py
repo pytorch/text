@@ -11,12 +11,21 @@ except ImportError:
     fcntl = None
 
 import torch
+from filelock import FileLock
 from torchtext import _CACHE_DIR
 
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
-
 logger = logging.getLogger(__name__)
+
+LOCK_TIMEOUT = 600
+
+
+def get_lock_dir():
+    lock_dir = os.path.join(_CACHE_DIR, "locks")
+    if not os.path.exists(lock_dir):
+        os.makedirs(lock_dir, exist_ok=True)
+    return lock_dir
 
 
 def reporthook(t):
@@ -59,7 +68,7 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
     while True:
         # Read by chunk to avoid filling memory
-        chunk = file_obj.read(1024 ** 2)
+        chunk = file_obj.read(1024**2)
         if not chunk:
             break
         hash_func.update(chunk)
@@ -71,11 +80,15 @@ def _check_hash(path, hash_value, hash_type):
     with open(path, "rb") as file_obj:
         if not validate_file(file_obj, hash_value, hash_type):
             raise RuntimeError(
-                "The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path))
+                "The hash of {} does not match. Delete the file manually and retry.".format(
+                    os.path.abspath(path)
+                )
             )
 
 
-def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"):
+def download_from_url(
+    url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"
+):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
     Args:
@@ -101,43 +114,37 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
         path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
-    # make root dir if does not exist
-    if not os.path.exists(root):
-        try:
-            os.makedirs(root)
-        except OSError as e:
-            raise OSError("Can't create the download directory {}.".format(root)) from e
+    # In a concurrent setting, adding a file lock ensures the first thread to acquire will actually download the model
+    # and the other ones will just use the existing path (which will not contain a partially downloaded model).
+    lock_dir = get_lock_dir()
+    lock = FileLock(os.path.join(lock_dir, filename + ".lock"), timeout=LOCK_TIMEOUT)
+    with lock:
+        # skip download if path exists and overwrite is not True
+        if os.path.exists(path):
+            logger.info("File %s already exists." % path)
+            if not overwrite:
+                if hash_value:
+                    _check_hash(path, hash_value, hash_type)
+                return path
 
-    # skip download if path exists and overwrite is not True
-    if os.path.exists(path):
-        logger.info("File %s already exists." % path)
-        if not overwrite:
-            if hash_value:
-                _check_hash(path, hash_value, hash_type)
-            return path
+        # make root dir if does not exist
+        if not os.path.exists(root):
+            try:
+                os.makedirs(root)
+            except OSError:
+                raise OSError("Can't create the download directory {}.".format(root))
 
-    # open file for writing (necessary to add lock)
-    open_mode = os.O_RDWR | os.O_CREAT | os.O_TRUNC
-    dest_file = os.open(path, open_mode)
+        # download data and move to path
+        _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    # lock file so avoid issues during multithreaded execution
-    if fcntl is not None:
-        fcntl.flock(dest_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        has_lock = True
-    else:
-        has_lock = False
+        logger.info("File {} downloaded.".format(path))
 
-    # download data and move to path
-    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=dest_file, has_lock=has_lock)
+        # validate
+        if hash_value:
+            _check_hash(path, hash_value, hash_type)
 
-    logger.info("File {} downloaded.".format(path))
-
-    # validate
-    if hash_value:
-        _check_hash(path, hash_value, hash_type)
-
-    # all good
-    return path
+        # all good
+        return path
 
 
 def extract_archive(from_path, to_path=None, overwrite=False):
@@ -213,7 +220,9 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         return files
 
     else:
-        raise NotImplementedError("We currently only support tar.gz, .tgz, .gz and zip achives.")
+        raise NotImplementedError(
+            "We currently only support tar.gz, .tgz, .gz and zip achives."
+        )
 
 
 def _log_class_usage(klass):
@@ -240,5 +249,7 @@ def get_asset_local_path(asset_path: str, overwrite=False) -> str:
     if os.path.exists(asset_path):
         local_path = asset_path
     else:
-        local_path = download_from_url(url=asset_path, root=_CACHE_DIR, overwrite=overwrite)
+        local_path = download_from_url(
+            url=asset_path, root=_CACHE_DIR, overwrite=overwrite
+        )
     return local_path
