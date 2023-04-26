@@ -6,12 +6,21 @@ import tarfile
 import zipfile
 
 import torch
+from filelock import FileLock
 from torchtext import _CACHE_DIR
 
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
-
 logger = logging.getLogger(__name__)
+
+LOCK_TIMEOUT = 600
+
+
+def get_lock_dir():
+    lock_dir = os.path.join(_CACHE_DIR, "locks")
+    if not os.path.exists(lock_dir):
+        os.makedirs(lock_dir, exist_ok=True)
+    return lock_dir
 
 
 def reporthook(t):
@@ -96,32 +105,37 @@ def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=
         path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
-    # skip download if path exists and overwrite is not True
-    if os.path.exists(path):
-        logger.info("File %s already exists." % path)
-        if not overwrite:
-            if hash_value:
-                _check_hash(path, hash_value, hash_type)
-            return path
+    # In a concurrent setting, adding a file lock ensures the first thread to acquire will actually download the model
+    # and the other ones will just use the existing path (which will not contain a partially downloaded model).
+    lock_dir = get_lock_dir()
+    lock = FileLock(os.path.join(lock_dir, filename + ".lock"), timeout=LOCK_TIMEOUT)
+    with lock:
+        # skip download if path exists and overwrite is not True
+        if os.path.exists(path):
+            logger.info("File %s already exists." % path)
+            if not overwrite:
+                if hash_value:
+                    _check_hash(path, hash_value, hash_type)
+                return path
 
-    # make root dir if does not exist
-    if not os.path.exists(root):
-        try:
-            os.makedirs(root)
-        except OSError:
-            raise OSError("Can't create the download directory {}.".format(root))
+        # make root dir if does not exist
+        if not os.path.exists(root):
+            try:
+                os.makedirs(root)
+            except OSError:
+                raise OSError("Can't create the download directory {}.".format(root))
 
-    # download data and move to path
-    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
+        # download data and move to path
+        _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    logger.info("File {} downloaded.".format(path))
+        logger.info("File {} downloaded.".format(path))
 
-    # validate
-    if hash_value:
-        _check_hash(path, hash_value, hash_type)
+        # validate
+        if hash_value:
+            _check_hash(path, hash_value, hash_type)
 
-    # all good
-    return path
+        # all good
+        return path
 
 
 def extract_archive(from_path, to_path=None, overwrite=False):
