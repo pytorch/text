@@ -204,7 +204,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.16.0.dev20230426) &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>Nightly Build (0.16.0.dev20230427) &#x25BC</a>
     </div>
     
 
@@ -341,12 +341,21 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">filelock</span> <span class="kn">import</span> <span class="n">FileLock</span>
 <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">_CACHE_DIR</span>
 
 <span class="kn">from</span> <span class="nn">._download_hooks</span> <span class="kn">import</span> <span class="n">_DATASET_DOWNLOAD_MANAGER</span>
 
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">LOCK_TIMEOUT</span> <span class="o">=</span> <span class="mi">600</span>
+
+
+<span class="k">def</span> <span class="nf">get_lock_dir</span><span class="p">():</span>
+    <span class="n">lock_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CACHE_DIR</span><span class="p">,</span> <span class="s2">&quot;locks&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lock_dir</span>
 
 
 <div class="viewcode-block" id="reporthook"><a class="viewcode-back" href="../../utils.html#torchtext.utils.reporthook">[docs]</a><span class="k">def</span> <span class="nf">reporthook</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
@@ -431,32 +440,37 @@
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">root</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
-    <span class="c1"># skip download if path exists and overwrite is not True</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2"> already exists.&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
-                <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">path</span>
+    <span class="c1"># In a concurrent setting, adding a file lock ensures the first thread to acquire will actually download the model</span>
+    <span class="c1"># and the other ones will just use the existing path (which will not contain a partially downloaded model).</span>
+    <span class="n">lock_dir</span> <span class="o">=</span> <span class="n">get_lock_dir</span><span class="p">()</span>
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">FileLock</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.lock&quot;</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">LOCK_TIMEOUT</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="c1"># skip download if path exists and overwrite is not True</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2"> already exists.&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
+                    <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">path</span>
 
-    <span class="c1"># make root dir if does not exist</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t create the download directory </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="c1"># make root dir if does not exist</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t create the download directory </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
 
-    <span class="c1"># download data and move to path</span>
-    <span class="n">_DATASET_DOWNLOAD_MANAGER</span><span class="o">.</span><span class="n">get_local_path</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># download data and move to path</span>
+        <span class="n">_DATASET_DOWNLOAD_MANAGER</span><span class="o">.</span><span class="n">get_local_path</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> downloaded.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> downloaded.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
-    <span class="c1"># validate</span>
-    <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
-        <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">)</span>
+        <span class="c1"># validate</span>
+        <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
+            <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">)</span>
 
-    <span class="c1"># all good</span>
-    <span class="k">return</span> <span class="n">path</span></div>
+        <span class="c1"># all good</span>
+        <span class="k">return</span> <span class="n">path</span></div>
 
 
 <div class="viewcode-block" id="extract_archive"><a class="viewcode-back" href="../../utils.html#torchtext.utils.extract_archive">[docs]</a><span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
