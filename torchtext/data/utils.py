@@ -96,7 +96,7 @@ def get_tokenizer(tokenizer, language="en"):
                 # Model shortcuts no longer work in spaCy 3.0+, try using fullnames
                 # List is from https://github.com/explosion/spaCy/blob/b903de3fcb56df2f7247e5b6cfa6b66f4ff02b62/spacy/errors.py#L789
                 OLD_MODEL_SHORTCUTS = (
-                    spacy.errors.OLD_MODEL_SHORTCUTS if hasattr(spacy.errors, "OLD_MODEL_SHORTCUTS") else {}
+                    getattr(spacy.errors, "OLD_MODEL_SHORTCUTS", {})
                 )
                 if language not in OLD_MODEL_SHORTCUTS:
                     raise
