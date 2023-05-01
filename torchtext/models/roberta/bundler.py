@@ -72,7 +72,7 @@ class RobertaBundle:
         freeze_encoder: bool = False,
         dl_kwargs: Dict[str, Any] = None,
     ) -> RobertaModel:
-        r"""get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> torctext.models.RobertaModel
+        r"""get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> torchtext.models.RobertaModel
 
         Args:
             head (nn.Module): A module to be attached to the encoder to perform specific task. If provided, it will replace the default member head (Default: ``None``)

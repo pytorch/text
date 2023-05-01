@@ -5,11 +5,6 @@ import os
 import tarfile
 import zipfile
 
-try:
-    import fcntl
-except ImportError:
-    fcntl = None
-
 import torch
 from filelock import FileLock
 from torchtext import _CACHE_DIR
@@ -68,7 +63,7 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
     while True:
         # Read by chunk to avoid filling memory
-        chunk = file_obj.read(1024**2)
+        chunk = file_obj.read(1024 ** 2)
         if not chunk:
             break
         hash_func.update(chunk)
@@ -80,15 +75,11 @@ def _check_hash(path, hash_value, hash_type):
     with open(path, "rb") as file_obj:
         if not validate_file(file_obj, hash_value, hash_type):
             raise RuntimeError(
-                "The hash of {} does not match. Delete the file manually and retry.".format(
-                    os.path.abspath(path)
-                )
+                "The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path))
             )
 
 
-def download_from_url(
-    url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"
-):
+def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
     Args:
@@ -220,9 +211,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         return files
 
     else:
-        raise NotImplementedError(
-            "We currently only support tar.gz, .tgz, .gz and zip achives."
-        )
+        raise NotImplementedError("We currently only support tar.gz, .tgz, .gz and zip achives.")
 
 
 def _log_class_usage(klass):
@@ -249,7 +238,5 @@ def get_asset_local_path(asset_path: str, overwrite=False) -> str:
     if os.path.exists(asset_path):
         local_path = asset_path
     else:
-        local_path = download_from_url(
-            url=asset_path, root=_CACHE_DIR, overwrite=overwrite
-        )
+        local_path = download_from_url(url=asset_path, root=_CACHE_DIR, overwrite=overwrite)
     return local_path
