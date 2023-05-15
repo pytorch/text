@@ -609,9 +609,39 @@ workflows:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
+  build:
+    jobs:
+      - binary_linux_wheel:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: binary_linux_wheel_py3.8
+          python_version: '3.8'
+      - build_docs:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: build_docs
+          python_version: '3.8'
+          requires:
+          - binary_linux_wheel_py3.8
+      - upload_docs:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: upload_docs
+          python_version: '3.8'
+          requires:
+          - build_docs
   unittest:
     jobs:
-      - circleci_consistency
       - unittest_windows:
           name: unittest_windows_py3.8
           python_version: '3.8'
@@ -621,6 +651,20 @@ workflows:
       - unittest_windows:
           name: unittest_windows_py3.10
           python_version: '3.10'
+  nightly:
+    jobs:
+      - circleci_consistency:
+          filters:
+            branches:
+              only: nightly
+      - binary_linux_wheel:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.8
+          python_version: '3.8'
   docker_build:
     triggers:
       - schedule:
