@@ -26,51 +26,6 @@ PYTHON_VERSIONS = ["3.8", "3.9", "3.10", "3.11"]
 DOC_VERSION = ("linux", "3.8")
 
 
-def build_workflows(prefix="", upload=False, filter_branch=None, indentation=6):
-    w = []
-    for btype in ["wheel", "conda"]:
-        for os_type in ["linux", "macos", "windows"]:
-            for python_version in PYTHON_VERSIONS:
-                fb = filter_branch
-                if not fb and (os_type == "linux" and btype == "wheel" and python_version == "3.8"):
-                    # the fields must match the build_docs "requires" dependency
-                    fb = "/.*/"
-                # We'll stop building Linux Wheels from CircleCI. Keeping
-                # around the Python3.8 build just for docs builds until those
-                # are also migrated.
-                if os_type == "linux" and btype == "wheel" and python_version != "3.8":
-                    continue
-                if os_type == "linux" and btype == "conda":
-                    continue
-                if os_type == "macos":
-                    continue
-
-                w += build_workflow_pair(btype, os_type, python_version, fb, prefix, upload)
-
-    if not filter_branch:
-        # Build on every pull request, but upload only on nightly and tags
-        w += build_doc_job("/.*/")
-        w += upload_doc_job("nightly")
-
-    return indent(indentation, w)
-
-
-def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix="", upload=False):
-    w = []
-    base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
-    w.append(generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype))
-
-    if os_type == "linux" and btype == "wheel" and python_version == "3.8":
-        upload = False
-
-    if upload:
-        w.append(generate_upload_workflow(base_workflow_name, filter_branch, btype))
-        if filter_branch == "nightly" and os_type in ["linux", "windows"]:
-            pydistro = "pip" if btype == "wheel" else "conda"
-            w.append(generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, python_version, os_type))
-    return w
-
-
 def build_doc_job(filter_branch):
     job = {
         "name": "build_docs",
@@ -189,7 +144,6 @@ if __name__ == "__main__":
     with open(os.path.join(d, "config.yml"), "w") as f:
         f.write(
             env.get_template("config.yml.in").render(
-                build_workflows=build_workflows,
                 unittest_workflows=unittest_workflows,
             )
         )

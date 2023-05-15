@@ -609,19 +609,10 @@ workflows:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
-  build:
-    jobs:
-      {{ build_workflows() }}
   unittest:
     jobs:
+      - circleci_consistency
       {{ unittest_workflows() }}
-  nightly:
-    jobs:
-      - circleci_consistency:
-          filters:
-            branches:
-              only: nightly
-      {{ build_workflows(prefix="nightly_", filter_branch="nightly", upload=True) }}
   docker_build:
     triggers:
       - schedule:
