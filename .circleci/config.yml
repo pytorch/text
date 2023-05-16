@@ -64,11 +64,6 @@ binary_common: &binary_common
     CU_VERSION: cpu
     MACOSX_DEPLOYMENT_TARGET: 10.9
 
-smoke_test_common: &smoke_test_common
-  <<: *binary_common
-  docker:
-    - image: pytorch/torchtext_smoke_base:smoke_test-20220427
-
 jobs:
   circleci_consistency:
     docker:
@@ -174,9 +169,6 @@ workflows:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
-  unittest:
-    jobs:
-      - circleci_consistency
   docker_build:
     triggers:
       - schedule:

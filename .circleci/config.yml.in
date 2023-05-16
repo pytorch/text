@@ -169,9 +169,6 @@ workflows:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
-  unittest:
-    jobs:
-      - circleci_consistency
   docker_build:
     triggers:
       - schedule:
