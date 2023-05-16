@@ -21,7 +21,6 @@ import yaml
 from jinja2 import select_autoescape
 
 
-
 if __name__ == "__main__":
     d = os.path.dirname(__file__)
     env = jinja2.Environment(
@@ -31,7 +30,5 @@ if __name__ == "__main__":
     )
 
     with open(os.path.join(d, "config.yml"), "w") as f:
-        f.write(
-            env.get_template("config.yml.in").render()
-        )
+        f.write(env.get_template("config.yml.in").render())
         f.write("\n")
