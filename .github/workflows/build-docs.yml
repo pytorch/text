@@ -64,7 +64,7 @@ jobs:
 
         # Install build tools
         conda install --quiet -y -c conda-forge pandoc doxygen pysoundfile
-        pip install --quiet -r docs/requirements.txt -r docs/requirements-tutorials.txt
+        pip install --quiet -r docs/requirements.txt
 
         # Build docs
         export BUILD_GALLERY=true
