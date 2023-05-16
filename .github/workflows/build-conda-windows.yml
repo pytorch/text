@@ -30,7 +30,7 @@ jobs:
         include:
           - repository: pytorch/text
             pre-script: packaging/install_torchdata.sh
-            post-script: ''
+            post-script: ""
             conda-package-directory: packaging/torchtext
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
@@ -39,7 +39,7 @@ jobs:
     with:
       conda-package-directory: ${{ matrix.conda-package-directory }}
       repository: ${{ matrix.repository }}
-      ref: ''
+      ref: ""
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       build-matrix: ${{ needs.generate-matrix.outputs.matrix }}
