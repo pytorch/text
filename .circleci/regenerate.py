@@ -158,26 +158,6 @@ def indent(indentation, data_list):
     return ("\n" + " " * indentation).join(yaml.dump(data_list).splitlines())
 
 
-def unittest_workflows(indentation=6):
-    w = []
-    for os_type in ["windows"]:
-        for python_version in PYTHON_VERSIONS:
-            # Turn off unit tests for 3.11, unit test are not setup properly in circleci
-            if python_version == "3.11":
-                continue
-
-            w.append(
-                {
-                    f"unittest_{os_type}": {
-                        "name": f"unittest_{os_type}_py{python_version}",
-                        "python_version": python_version,
-                    }
-                }
-            )
-
-    return indent(indentation, w)
-
-
 if __name__ == "__main__":
     d = os.path.dirname(__file__)
     env = jinja2.Environment(
@@ -190,7 +170,6 @@ if __name__ == "__main__":
         f.write(
             env.get_template("config.yml.in").render(
                 build_workflows=build_workflows,
-                unittest_workflows=unittest_workflows,
             )
         )
         f.write("\n")

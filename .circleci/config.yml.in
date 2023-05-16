@@ -149,23 +149,6 @@ jobs:
           paths:
             - "*"
 
-  binary_linux_conda:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/conda-cuda"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run: packaging/build_conda.sh
-      - store_artifacts:
-          path: /opt/conda/conda-bld/linux-64
-      - persist_to_workspace:
-          root: /opt/conda
-          paths:
-            - "conda-bld/*"
-
   binary_windows_wheel:
     <<: *binary_common
     executor:
@@ -209,54 +192,6 @@ jobs:
           paths:
             - "conda-bld/*"
 
-  binary_macos_wheel:
-    <<: *binary_common
-    macos:
-      xcode: "14.0"
-    steps:
-      - checkout
-      - designate_upload_channel
-      - run:
-          # Installing cmake with `brew install cmake` takes 30 mins, so we use binary distribution.
-          command: |
-            curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2-Darwin-x86_64.tar.gz
-            tar -xzf cmake.tar.gz
-            cp cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/bin/* /usr/local/bin/
-            cp -r cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/share/* /usr/local/share/
-            export PATH="${PATH}:/usr/local/bin"
-            curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            sh conda.sh -b
-            source $HOME/miniconda3/bin/activate
-            packaging/build_wheel.sh
-      - store_artifacts:
-          path: dist
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - "*"
-
-  binary_macos_conda:
-    <<: *binary_common
-    macos:
-      xcode: "14.0"
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          command: |
-            curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            sh conda.sh -b
-            source $HOME/miniconda3/bin/activate
-            conda install -yq conda-build
-            packaging/build_conda.sh
-      - store_artifacts:
-          path: /Users/distiller/miniconda3/conda-bld/osx-64
-      - persist_to_workspace:
-          root: /Users/distiller/miniconda3
-          paths:
-            - "conda-bld/*"
-
   # Requires org-member context
   binary_conda_upload:
     docker:
@@ -293,44 +228,6 @@ jobs:
             for pkg in ~/workspace/*.whl; do
               aws s3 cp "$pkg" "s3://pytorch/whl/${UPLOAD_CHANNEL}/" --acl public-read
             done
-
-  smoke_test_linux_conda:
-    <<: *smoke_test_common
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: install binaries
-          command: |
-            set -x
-            source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-${UPLOAD_CHANNEL} pytorch
-            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c file://$HOME/workspace/conda-bld torchtext
-      - run:
-          name: smoke test
-          command: |
-            source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            python -c "import torchtext"
-
-  smoke_test_linux_pip:
-    <<: *smoke_test_common
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - run:
-          name: install binaries
-          command: |
-            set -x
-            source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
-      - run:
-          name: smoke test
-          command: |
-            source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            python -c "import torchtext"
 
   smoke_test_docker_image_build:
     machine:
@@ -401,132 +298,6 @@ jobs:
             eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
-
-  unittest_linux:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
-      - run:
-          name: Setup
-          command: .circleci/unittest/linux/scripts/setup_env.sh
-      - run:
-          name: Install torchtext
-          command: .circleci/unittest/linux/scripts/install.sh
-      - restore_cache:
-          keys:
-          {% raw %}
-            - data-linux-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-      - run:
-          name: Run tests
-          # Downloading embedding vector takes long time.
-          no_output_timeout: 30m
-          command: .circleci/unittest/linux/scripts/run_test.sh
-      - save_cache:
-          {% raw %}
-          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-          paths:
-            - .vector_cache
-      - run:
-          name: Post process
-          command: .circleci/unittest/linux/scripts/post_process.sh
-      - store_test_results:
-          path: test-results
-
-  unittest_macos:
-    <<: *binary_common
-    macos:
-      xcode: "14.0"
-    resource_class: large
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
-      - run:
-          name: Setup
-          command: .circleci/unittest/linux/scripts/setup_env.sh
-      - run:
-          name: Install torchtext
-          command: .circleci/unittest/linux/scripts/install.sh
-      - restore_cache:
-          keys:
-          {% raw %}
-            - data-macos-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-
-      - run:
-          name: Run tests
-          # Downloading embedding vector takes long time.
-          no_output_timeout: 30m
-          command: .circleci/unittest/linux/scripts/run_test.sh
-      - save_cache:
-          keys:
-          {% raw %}
-          key: data-macos-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-
-          paths:
-            - .vector_cache
-      - run:
-          name: Post process
-          command: .circleci/unittest/linux/scripts/post_process.sh
-      - store_test_results:
-          path: test-results
-
-  unittest_windows:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
-      - run:
-          name: Setup
-          command: .circleci/unittest/windows/scripts/setup_env.sh
-      - run:
-          name: Install torchtext
-          command: .circleci/unittest/windows/scripts/install.sh
-      - restore_cache:
-          keys:
-          {% raw %}
-            - data-windows-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-
-      - run:
-          name: Run tests
-          # Downloading embedding vector takes long time.
-          no_output_timeout: 30m
-          command: .circleci/unittest/windows/scripts/run_test.sh
-      - save_cache:
-          {% raw %}
-          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
-          {% endraw %}
-          paths:
-            - .vector_cache
-      - run:
-          name: Post process
-          command: .circleci/unittest/windows/scripts/post_process.sh
-      - store_test_results:
-          path: test-results
 
   stylecheck:
     <<: *binary_common
@@ -612,9 +383,6 @@ workflows:
   build:
     jobs:
       {{ build_workflows() }}
-  unittest:
-    jobs:
-      {{ unittest_workflows() }}
   nightly:
     jobs:
       - circleci_consistency:
