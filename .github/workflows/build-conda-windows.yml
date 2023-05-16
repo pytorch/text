@@ -8,9 +8,9 @@ on:
       - main
       - release/*
     tags:
-        # NOTE: Binary build pipelines should only get triggered on release candidate builds
-        # Release candidate tags look like: v1.11.0-rc1
-        - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+      # NOTE: Binary build pipelines should only get triggered on release candidate builds
+      # Release candidate tags look like: v1.11.0-rc1
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
   workflow_dispatch:
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         include:
           - repository: pytorch/text
             pre-script: packaging/install_torchdata.sh
-            post-script: ""
+            post-script: ''
             conda-package-directory: packaging/torchtext
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
@@ -39,7 +39,7 @@ jobs:
     with:
       conda-package-directory: ${{ matrix.conda-package-directory }}
       repository: ${{ matrix.repository }}
-      ref: ""
+      ref: ''
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       build-matrix: ${{ needs.generate-matrix.outputs.matrix }}
