@@ -56,10 +56,16 @@ jobs:
 
         pip --quiet install cmake>=3.18.0 ninja
 
+        cd packaging
+        . ./pkg_helpers.bash
+        setup_build_version
+        cd ../
 
         # Install build tools
         conda install --quiet -y -c conda-forge pandoc doxygen pysoundfile
         pip install --quiet -r docs/requirements.txt
+
+
 
         # Build docs
         export BUILD_GALLERY=true
