@@ -68,7 +68,8 @@ jobs:
         mv docs/build/html /artifacts/
 
   commit:
-    if: ${{ (github.repository == 'pytorch/text') && ((github.event_name == 'push') && (github.ref_name == 'nightly')) }}
+    if:
+      ${{ (github.repository == 'pytorch/text') && ((github.event_name == 'push') && (github.ref_name == 'nightly')) }}
     permissions:
       # Required for `git push`
       # Note:
@@ -79,23 +80,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: gh-pages
-    - uses: actions/download-artifact@v3
-      with:
-        name: docs
-    - name: Update nightly doc
-      run: |
-        set -x
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+      - name: Update nightly doc
+        run: |
+          set -x
 
-        # TODO: add tag-based process (need to handle the main directory name)
-        rm -rf main
-        mv html main
+          # TODO: add tag-based process (need to handle the main directory name)
+          rm -rf main
+          mv html main
 
-        # Update the main doc
-        git add --all main || true
-        git config user.name "pytorchbot"
-        git config user.email "soumith+bot@pytorch.org"
-        git commit -m "auto-generating sphinx docs" || true
-        git push
+          # Update the main doc
+          git add --all main || true
+          git config user.name "pytorchbot"
+          git config user.email "soumith+bot@pytorch.org"
+          git commit -m "auto-generating sphinx docs" || true
+          git push

@@ -31,14 +31,14 @@ jobs:
           - repository: pytorch/text
             pre-script: packaging/install_torchdata.sh
             env-script: packaging/vc_env_helper.bat
-            post-script: ''
+            post-script: ""
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
     name: ${{ matrix.repository }}
     uses: pytorch/test-infra/.github/workflows/build_wheels_windows.yml@main
     with:
       repository: ${{ matrix.repository }}
-      ref: ''
+      ref: ""
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       build-matrix: ${{ needs.generate-matrix.outputs.matrix }}
