@@ -64,11 +64,6 @@ binary_common: &binary_common
     CU_VERSION: cpu
     MACOSX_DEPLOYMENT_TARGET: 10.9
 
-smoke_test_common: &smoke_test_common
-  <<: *binary_common
-  docker:
-    - image: pytorch/torchtext_smoke_base:smoke_test-20220427
-
 jobs:
   circleci_consistency:
     docker:
@@ -133,102 +128,6 @@ jobs:
           name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
           command: exit 1
 
-  binary_linux_wheel:
-    <<: *binary_common
-    docker:
-      - image: "pytorch/manylinux-cuda102"
-    resource_class: 2xlarge+
-    steps:
-      - checkout
-      - designate_upload_channel
-      - run: packaging/build_wheel.sh
-      - store_artifacts:
-          path: dist
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - "*"
-
-  binary_windows_wheel:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - checkout
-      - designate_upload_channel
-      - run:
-          name: build
-          command: |
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda activate base
-            bash packaging/build_wheel.sh
-      - store_artifacts:
-          path: dist
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - "*"
-
-  binary_windows_conda:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - checkout
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: build
-          command: |
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda activate base
-            conda install ${CONDA_CHANNEL_FLAGS} -yq conda-build "conda-package-handling!=1.5.0"
-            bash packaging/build_conda.sh
-            rm /C/tools/miniconda3/conda-bld/win-64/vs2019*.tar.bz2
-      - store_artifacts:
-          path: C:/tools/miniconda3/conda-bld/win-64
-      - persist_to_workspace:
-          root: C:/tools/miniconda3
-          paths:
-            - "conda-bld/*"
-
-  # Requires org-member context
-  binary_conda_upload:
-    docker:
-      - image: continuumio/miniconda
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - run:
-          command: |
-            # Prevent credential from leaking
-            conda install -yq anaconda-client
-            set -x
-            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u "pytorch-${UPLOAD_CHANNEL}" --label main --no-progress --force
-
-  # Requires org-member context
-  binary_wheel_upload:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - checkout
-      - designate_upload_channel
-      - run:
-          command: |
-            pip install --user awscli
-            export PATH="$HOME/.local/bin:$PATH"
-            # Prevent credential from leaking
-            set +x
-            export AWS_ACCESS_KEY_ID="${PYTORCH_BINARY_AWS_ACCESS_KEY_ID}"
-            export AWS_SECRET_ACCESS_KEY="${PYTORCH_BINARY_AWS_SECRET_ACCESS_KEY}"
-            set -x
-            for pkg in ~/workspace/*.whl; do
-              aws s3 cp "$pkg" "s3://pytorch/whl/${UPLOAD_CHANNEL}/" --acl public-read
-            done
-
   smoke_test_docker_image_build:
     machine:
       image: ubuntu-1604:201903-01
@@ -249,55 +148,6 @@ jobs:
             docker push ${image_name}:${CIRCLE_WORKFLOW_ID}
             docker push ${image_name}:latest
 
-  smoke_test_windows_conda:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - load_conda_channel_flags
-      - run:
-          name: install binaries
-          command: |
-            set -x
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda env remove -n python${PYTHON_VERSION} || true
-            conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
-            conda activate python${PYTHON_VERSION}
-            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" pytorch
-            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c ~/workspace/conda-bld torchtext
-      - run:
-          name: smoke test
-          command: |
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda activate python${PYTHON_VERSION}
-            python -c "import torchtext"
-
-  smoke_test_windows_pip:
-    <<: *binary_common
-    executor:
-      name: windows-cpu
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - run:
-          name: install binaries
-          command: |
-            set -x
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda env remove -n python${PYTHON_VERSION} || true
-            conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
-            conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
-      - run:
-          name: smoke test
-          command: |
-            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
-            conda activate python${PYTHON_VERSION}
-            python -c "import torchtext"
 
   stylecheck:
     <<: *binary_common
@@ -313,118 +163,12 @@ jobs:
       - run:
           name: Run style check
           command: .circleci/unittest/linux/scripts/run_style_checks.sh
-  build_docs:
-    <<: *binary_common
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - designate_upload_channel
-      - checkout
-      - run:
-          name: install binaries
-          command: |
-            set -x
-            conda install -y make python=${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
-      - run:
-          name: Build docs
-          command: |
-            set -x
-            pushd docs
-            pip install -r requirements.txt
-            BUILD_GALLERY=1 make 'SPHINXOPTS=-W' html
-            popd
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - "*"
-      - store_artifacts:
-          path: ./docs/build/html
-          destination: docs
-
-  upload_docs:
-    <<: *binary_common
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium
-    steps:
-      - attach_workspace:
-          at: ~/workspace
-      - run:
-          name: Generate netrc
-          command: |
-            # set credentials for https pushing
-            # requires the org-member context
-            cat > ~/.netrc \<<DONE
-              machine github.com
-              login pytorchbot
-              password ${GITHUB_PYTORCHBOT_TOKEN}
-            DONE
-      - run:
-          name: Upload docs
-          command: |
-            # Don't use "checkout" step since it uses ssh, which cannot git push
-            # https://circleci.com/docs/2.0/configuration-reference/#checkout
-            set -ex
-            # turn v1.12.0rc3 into 1.12.0
-            tag=$(echo $CIRCLE_TAG | sed -e 's/v*\([0-9.]*\).*/\1/')
-            target=${tag:-main}
-            ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
-
 workflows:
   lint:
     jobs:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
-  build:
-    jobs:
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: binary_linux_wheel_py3.8
-          python_version: '3.8'
-      - build_docs:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: build_docs
-          python_version: '3.8'
-          requires:
-          - binary_linux_wheel_py3.8
-      - upload_docs:
-          context: org-member
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: upload_docs
-          python_version: '3.8'
-          requires:
-          - build_docs
-  nightly:
-    jobs:
-      - circleci_consistency:
-          filters:
-            branches:
-              only: nightly
-      - binary_linux_wheel:
-          filters:
-            branches:
-              only: nightly
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
-          name: nightly_binary_linux_wheel_py3.8
-          python_version: '3.8'
   docker_build:
     triggers:
       - schedule:
