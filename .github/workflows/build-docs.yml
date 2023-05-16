@@ -14,10 +14,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        python_version: ["3.8"]
-      fail-fast: false
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
       job-name: Build doc
@@ -26,13 +22,12 @@ jobs:
       gpu-arch-type: cpu
       timeout: 120
       upload-artifact: docs
-
       script: |
         # Mark Build Directory Safe
         git config --global --add safe.directory /__w/text/text
 
         # Set up Environment Variables
-        export PYTHON_VERSION="${{ matrix.python_version }}"
+        export PYTHON_VERSION="3.8"
 
         # Set CHANNEL
         if [[(${GITHUB_EVENT_NAME} = 'pull_request' && (${GITHUB_BASE_REF} = 'release'*)) || (${GITHUB_REF} = 'refs/heads/release'*) ]]; then
@@ -64,8 +59,6 @@ jobs:
         # Install build tools
         conda install --quiet -y -c conda-forge pandoc doxygen pysoundfile
         pip install --quiet -r docs/requirements.txt
-
-
 
         # Build docs
         export BUILD_GALLERY=true
