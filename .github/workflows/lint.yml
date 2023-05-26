@@ -28,7 +28,8 @@ jobs:
         pip install --progress-bar=off pre-commit
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
         chmod +x ~/.nvm/nvm.sh
-        source ~/.bashrc
+        cat ~/.bashrc
+        # source ~/.bashrc
         nvm install 16
         echo '::endgroup::'
         
