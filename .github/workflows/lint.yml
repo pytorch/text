@@ -26,11 +26,11 @@ jobs:
         
         echo '::group::Install lint tools'
         pip install --progress-bar=off pre-commit
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-        chmod +x ~/.nvm/nvm.sh
-        cat ~/.bashrc
+        # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+        # chmod +x ~/.nvm/nvm.sh
+        # cat ~/.bashrc
         # source ~/.bashrc
-        nvm install 16
+        # nvm install 16
         echo '::endgroup::'
         
         echo '::group::Lint Python source and configs'
