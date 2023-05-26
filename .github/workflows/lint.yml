@@ -23,22 +23,17 @@ jobs:
         conda create --name ci --quiet --yes python=3.8 pip
         conda activate ci
         echo '::endgroup::'
-        
+
         echo '::group::Install lint tools'
         pip install --progress-bar=off pre-commit
-        # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-        # chmod +x ~/.nvm/nvm.sh
-        # cat ~/.bashrc
-        # source ~/.bashrc
-        # nvm install 16
         echo '::endgroup::'
-        
+
         echo '::group::Lint Python source and configs'
         set +e
         echo $LD_LIBRARY_PATH
         export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
         pre-commit run --all-files
-        
+
         if [ $? -ne 0 ]; then
           git --no-pager diff
           exit 1
@@ -51,7 +46,7 @@ jobs:
       repository: pytorch/text
       script: |
         set -euo pipefail
-        
+
         echo '::group::Setup environment'
         CONDA_PATH=$(which conda)
         eval "$(${CONDA_PATH} shell.bash hook)"
@@ -59,7 +54,7 @@ jobs:
         conda activate ci
         export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
         echo '::endgroup::'
-        
+
         echo '::group::Install lint tools'
         curl https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64 -o ./clang-format
         chmod +x ./clang-format
@@ -71,7 +66,7 @@ jobs:
             --recursive \
             --clang-format-executable=./clang-format \
             torchtext/csrc
-        
+
         if [ $? -ne 0 ]; then
           git --no-pager diff
           exit 1
