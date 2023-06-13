@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests that requires external resources (Network access to fetch dataset)"""
 import os
+import platform
+import unittest
 
 import torch
 import torchtext.data
@@ -64,6 +66,8 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(token_one_vec.shape[0], vec.dim)
         self.assertEqual(vec[tokens[0].lower()], token_one_vec)
 
+    # TODO(Nayef211): remove decorator once https://github.com/pytorch/text/issues/1900 is closed
+    @unittest.skipIf("CI" in os.environ and platform.system() == "Linux", "Test is known to fail on Linux.")
     @third_party_download
     def test_download_charngram_vectors(self) -> None:
         # Build a vocab and get vectors twice to test caching.

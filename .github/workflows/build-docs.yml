@@ -1,0 +1,102 @@
+name: Build documentation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - nightly
+      - main
+      - release/*
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
+    with:
+      job-name: Build doc
+      runner: linux.2xlarge
+      repository: pytorch/text
+      gpu-arch-type: cpu
+      timeout: 120
+      upload-artifact: docs
+      script: |
+        # Mark Build Directory Safe
+        git config --global --add safe.directory /__w/text/text
+
+        # Set up Environment Variables
+        export PYTHON_VERSION="3.8"
+
+        # Set CHANNEL
+        if [[(${GITHUB_EVENT_NAME} = 'pull_request' && (${GITHUB_BASE_REF} = 'release'*)) || (${GITHUB_REF} = 'refs/heads/release'*) ]]; then
+          export CHANNEL=test
+        else
+          export CHANNEL=nightly
+        fi
+
+        # Create Conda Env
+        conda create --quiet -y --prefix ci_env python="${PYTHON_VERSION}"
+        conda activate ./ci_env
+
+        # Install PyTorch
+        set -ex
+        set +u  # don't know why
+        conda install \
+          --yes \
+          --quiet \
+          pytorch torchtext cpuonly \
+          -c "pytorch-${CHANNEL}"
+
+        pip --quiet install cmake>=3.18.0 ninja
+
+        cd packaging
+        . ./pkg_helpers.bash
+        setup_build_version
+        cd ../
+
+        # Install build tools
+        conda install --quiet -y -c conda-forge pandoc doxygen pysoundfile
+        pip install --quiet -r docs/requirements.txt
+
+        # Build docs
+        export BUILD_GALLERY=true
+        (cd docs && make 'SPHINXOPTS=-W' html)
+
+        cp -rf docs/build/html/* "${RUNNER_DOCS_DIR}"
+        mv docs/build/html /artifacts/
+
+  commit:
+    if:
+      ${{ (github.repository == 'pytorch/text') && ((github.event_name == 'push') && (github.ref_name == 'nightly')) }}
+    permissions:
+      # Required for `git push`
+      # Note:
+      #   This is not effective from fork.
+      #   When you debug this, make sure to make a branch on pytorch and
+      #   make PR from there.
+      contents: write
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+      - name: Update nightly doc
+        run: |
+          set -x
+
+          # TODO: add tag-based process (need to handle the main directory name)
+          rm -rf main
+          mv html main
+
+          # Update the main doc
+          git add --all main || true
+          git config user.name "pytorchbot"
+          git config user.email "soumith+bot@pytorch.org"
+          git commit -m "auto-generating sphinx docs" || true
+          git push

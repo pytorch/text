@@ -1,5 +1,5 @@
 import torch
-from torch.testing import assert_allclose
+from torch.testing import assert_close
 from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -26,5 +26,5 @@ class TestJIT(TorchtextTestCase):
 
         ts_MHA = torch.jit.script(MHA)
         ts_mha_output, ts_attn_weights = ts_MHA(query, key, value, attn_mask=attn_mask)
-        assert_allclose(mha_output, ts_mha_output)
-        assert_allclose(attn_weights, ts_attn_weights)
+        assert_close(mha_output, ts_mha_output)
+        assert_close(attn_weights, ts_attn_weights)

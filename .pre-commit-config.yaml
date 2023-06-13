@@ -1,3 +1,6 @@
+default_language_version:
+  node: 16.14.2
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
@@ -31,5 +34,6 @@ repos:
       - id: flake8
         additional_dependencies:
           - flake8-docstrings == 1.6.0
+          - torchfix == 0.0.1
         args:
           - --config=.flake8
