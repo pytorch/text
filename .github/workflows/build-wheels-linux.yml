@@ -15,13 +15,14 @@ on:
 
 jobs:
   generate-matrix:
-    uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@main
+    uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@release/2.1
     with:
       package-type: wheel
       os: linux
       test-infra-repository: pytorch/test-infra
       test-infra-ref: main
       with-cuda: disable
+      with-rocm: disable
   build:
     needs: generate-matrix
     strategy:
@@ -34,7 +35,7 @@ jobs:
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
     name: ${{ matrix.repository }}
-    uses: pytorch/test-infra/.github/workflows/build_wheels_linux.yml@main
+    uses: pytorch/test-infra/.github/workflows/build_wheels_linux.yml@release/2.1
     with:
       repository: ${{ matrix.repository }}
       ref: ""

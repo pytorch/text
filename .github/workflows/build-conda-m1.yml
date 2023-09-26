@@ -15,7 +15,7 @@ on:
 
 jobs:
   generate-matrix:
-    uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@main
+    uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@release/2.1
     with:
       package-type: conda
       os: macos-arm64
@@ -34,7 +34,7 @@ jobs:
             smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
     name: ${{ matrix.repository }}
-    uses: pytorch/test-infra/.github/workflows/build_conda_macos.yml@main
+    uses: pytorch/test-infra/.github/workflows/build_conda_macos.yml@release/2.1
     with:
       conda-package-directory: ${{ matrix.conda-package-directory }}
       repository: ${{ matrix.repository }}
@@ -52,3 +52,4 @@ jobs:
       trigger-event: ${{ github.event_name }}
     secrets:
       CONDA_PYTORCHBOT_TOKEN: ${{ secrets.CONDA_PYTORCHBOT_TOKEN }}
+      CONDA_PYTORCHBOT_TOKEN_TEST: ${{ secrets.CONDA_PYTORCHBOT_TOKEN_TEST }}

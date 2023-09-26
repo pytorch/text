@@ -16,7 +16,6 @@ if [ "$channel" != "nightly" ] && [ "$channel" != "test" ]; then
   exit 1
 fi
 
-
 if [ "$package_type" = "wheel" ]; then
   install_cmd="pip install"
   if [ "$channel" = "nightly" ]; then
