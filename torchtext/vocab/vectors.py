@@ -31,7 +31,7 @@ def _infer_shape(f):
     return num_lines, vector_dim
 
 
-class Vectors(object):
+class Vectors:
     def __init__(self, name, cache=None, url=None, unk_init=None, max_vectors=None) -> None:
         """
         Args:

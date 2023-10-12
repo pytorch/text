@@ -67,6 +67,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           },
           // __setstate__
           [](torch::Tensor state) -> c10::intrusive_ptr<SentencePiece> {
+            state = state.to(at::kCPU);
             auto* data = static_cast<char*>(state.data_ptr());
             auto numel = state.size(0);
             return c10::make_intrusive<SentencePiece>(std::string(data, numel));
