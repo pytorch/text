@@ -8,6 +8,6 @@ select =
     # Missing argument descriptions in the docstring
     D417,
     # TorchFix
-    TOR
+    TOR0,TOR1,TOR2
 max-line-length = 120
 exclude = docs/source,third_party
