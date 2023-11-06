@@ -156,4 +156,4 @@ c10::intrusive_ptr<CLIPEncoder> _deserialize_clip_encoder_torchbind(
       std::get<4>(states));
 }
 
-} // namespace torchtext
+}; // namespace torchtext
