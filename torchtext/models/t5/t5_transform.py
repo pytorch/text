@@ -13,7 +13,6 @@ from typing import List, Union
 import torch
 import torch.nn as nn
 import torchtext.transforms as T
-from torchtext.data.functional import load_sp_model
 from torchtext.functional import to_tensor
 from torchtext.utils import get_asset_local_path
 
@@ -41,7 +40,9 @@ class T5Transform(nn.Module):
 
     def __init__(self, sp_model_path: str, max_seq_len: int, eos_idx: int, padding_idx: int):
         super().__init__()
-        self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
+        with open(get_asset_local_path(sp_model_path), "rb") as f:
+            self.spm_model_content = f.read()
+        self.sp_model = torch.ops.torchtext.load_sp_model_string(self.spm_model_content)
         self.max_seq_len = max_seq_len
         self.eos_idx = eos_idx
         self.padding_idx = padding_idx
@@ -93,3 +94,15 @@ class T5Transform(nn.Module):
             return self.sp_model.DecodeIds(input)
         else:
             raise TypeError("Input type not supported")
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Currently the C++ SentencePiece class from torchtext cannot
+        # be deserialized when using multithreading. We reconstruct the
+        # C++ class when deserializing a SpmTokenizerTransform object
+        del state["sp_model"]
+        return state
+
+    def __setstate__(self, state):
+        super().__setstate__(state)
+        self.sp_model = torch.ops.torchtext.load_sp_model_string(self.spm_model_content)
