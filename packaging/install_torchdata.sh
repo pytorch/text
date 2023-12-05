@@ -22,7 +22,7 @@ if [ "$package_type" = "wheel" ]; then
   if [ "$channel" = "nightly" ]; then
     install_cmd="${install_cmd} --pre"
   fi
-  install_channel="--extra-index-url https://download.pytorch.org/whl/${channel}/cpu"
+  install_channel="--index-url https://download.pytorch.org/whl/${channel}/cpu"
 else
   install_cmd="conda install"
   install_channel="-c pytorch-${channel}"
