@@ -47,7 +47,7 @@ jobs:
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
         printf "Installing torchdata nightly\n"
-        python3 -m pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+        python3 -m pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu
         python3 setup.py develop
         # Install integration test dependencies
         python3 -m pip --quiet install parameterized

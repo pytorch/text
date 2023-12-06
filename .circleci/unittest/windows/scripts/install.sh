@@ -21,7 +21,7 @@ conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch c
 
 printf "* Installing torchdata nightly with portalocker\n"
 pip install "portalocker>=2.0.0"
-pip install --pre torchdata --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu
 
 printf "* Installing pywin32_postinstall script\n"
 curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
