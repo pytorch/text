@@ -45,7 +45,7 @@ on:
         type: string
 jobs:
   validate-binaries:
-    uses: pytorch/test-infra/.github/workflows/validate-domain-library.yml@main
+    uses: pytorch/test-infra/.github/workflows/validate-domain-library.yml@release/2.2
     with:
       package_type: "conda,wheel"
       os: ${{ inputs.os }}
