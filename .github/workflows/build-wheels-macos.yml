@@ -1,4 +1,4 @@
-name: Build Linux Conda
+name: Build Macos Wheels
 
 on:
   pull_request:
@@ -17,11 +17,10 @@ jobs:
   generate-matrix:
     uses: pytorch/test-infra/.github/workflows/generate_binary_build_matrix.yml@release/2.2
     with:
-      package-type: conda
-      os: linux
+      package-type: wheel
+      os: macos
       test-infra-repository: pytorch/test-infra
       test-infra-ref: release/2.2
-      with-cuda: disable
   build:
     needs: generate-matrix
     strategy:
@@ -31,13 +30,11 @@ jobs:
           - repository: pytorch/text
             pre-script: packaging/install_torchdata.sh
             post-script: ""
-            conda-package-directory: packaging/torchtext
-            smoke-test-script: test/smoke_tests/smoke_tests.py
             package-name: torchtext
+            smoke-test-script: test/smoke_tests/smoke_tests.py
     name: ${{ matrix.repository }}
-    uses: pytorch/test-infra/.github/workflows/build_conda_linux.yml@release/2.2
+    uses: pytorch/test-infra/.github/workflows/build_wheels_macos.yml@release/2.2
     with:
-      conda-package-directory: ${{ matrix.conda-package-directory }}
       repository: ${{ matrix.repository }}
       ref: ""
       test-infra-repository: pytorch/test-infra
@@ -47,8 +44,10 @@ jobs:
       post-script: ${{ matrix.post-script }}
       package-name: ${{ matrix.package-name }}
       smoke-test-script: ${{ matrix.smoke-test-script }}
+      runner-type: macos-12
       # Using "development" as trigger event so these binaries are not uploaded
       # to official channels yet
       trigger-event: ${{ github.event_name }}
     secrets:
-      CONDA_PYTORCHBOT_TOKEN: ${{ secrets.CONDA_PYTORCHBOT_TOKEN }}
+      AWS_PYTORCH_UPLOADER_ACCESS_KEY_ID: ${{ secrets.AWS_PYTORCH_UPLOADER_ACCESS_KEY_ID }}
+      AWS_PYTORCH_UPLOADER_SECRET_ACCESS_KEY: ${{ secrets.AWS_PYTORCH_UPLOADER_SECRET_ACCESS_KEY }}
