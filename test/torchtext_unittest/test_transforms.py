@@ -709,7 +709,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         """test tokenization on single sentence input as well as batch on sentences"""
         self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=test_scripting, return_tokens=return_tokens))
 
-    def test_gpt2_bpe_decoder(self):
+    def test_gpt2_bpe_decoder(self) -> None:
         """test string output returned by decoder given the token ids"""
         self._gpt2_bpe_decoder(self._load_tokenizer(test_scripting=False, return_tokens=False))
         self._gpt2_bpe_decoder_with_special_tokens(self._load_tokenizer(test_scripting=False, return_tokens=False))
