@@ -1,4 +1,4 @@
-import sys, os
+import os, sys
 
 import torcharrow as ta
 import torcharrow.pytorch as tap
@@ -8,8 +8,13 @@ from torcharrow import functional as ta_F
 from torchtext._download_hooks import load_state_dict_from_url
 from torchtext.datasets import SST2
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../examples"))
-from data_pipeline.roberta_dataframe import init_ta_gpt2bpe_encoder, init_ta_gpt2bpe_vocab
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "../examples")
+)
+from data_pipeline.roberta_dataframe import (
+    init_ta_gpt2bpe_encoder,
+    init_ta_gpt2bpe_vocab,
+)
 
 
 def run_torchtext_ops():
@@ -82,6 +87,10 @@ def run_torcharrow_ops():
         data_frame.to_tensor({"token_ids": tap.PadSequence(padding_value=1)})
 
 
-if __name__ == "__main__":
+def main() -> None:
     run_torchtext_ops()
     run_torcharrow_ops()
+
+
+if __name__ == "__main__":
+    main()  # pragma: no cover
