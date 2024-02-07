@@ -12,6 +12,8 @@
 torchtext
 +++++++++
 
+CAUTION: This repository is no longer actively maintained by PyTorch. Use at your own risk. 
+
 This repository consists of:
 
 * `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
