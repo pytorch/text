@@ -11,7 +11,7 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
 )
 
-URL = "https://drive.google.com/u/0/uc?id=12ycYSzLIG253AFN35Y6qoyf9wtkOjakp"
+URL = "https://fbk.sharepoint.com/sites/MTUnit/_layouts/15/download.aspx?SourceUrl=%2Fsites%2FMTUnit%2FShared%20Documents%2Fwebsites%2FWIT3%2Dlibrary%2F2017%2D01%2Dtrnmted%2Etgz"
 _PATH = "2017-01-trnmted.tgz"
 MD5 = "aca701032b1c4411afc4d9fa367796ba"
 
