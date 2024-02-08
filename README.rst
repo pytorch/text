@@ -12,6 +12,9 @@
 torchtext
 +++++++++
 
+CAUTION: As of September 2023 we have paused active development of TorchText because our focus has shifted away from building out this library offering. 
+We will continue to release new versions but do not anticipate any new feature development as we figure out future investments in this space.
+
 This repository consists of:
 
 * `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
