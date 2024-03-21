@@ -43,11 +43,17 @@ on:
         default: ""
         required: false
         type: string
+      pytorch_version:
+        description: 'PyTorch version to validate (ie. 2.0, 2.2.2, etc.) - optional'
+        default: ""
+        required: false
+        type: string
 jobs:
   validate-binaries:
     uses: pytorch/test-infra/.github/workflows/validate-domain-library.yml@main
     with:
       package_type: "conda,wheel"
+      version: ${{ inputs.version }}
       os: ${{ inputs.os }}
       channel: ${{ inputs.channel }}
       repository: "pytorch/text"
