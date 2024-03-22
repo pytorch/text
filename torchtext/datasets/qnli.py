@@ -3,8 +3,6 @@ import csv
 import os
 from functools import partial
 
-
-
 # we import HttpReader from _download_hooks so we can swap out public URLs
 # with interal URLs when the dataset is used within Facebook
 

@@ -2,8 +2,6 @@ import csv
 import os
 from functools import partial
 
-
-
 # we import HttpReader from _download_hooks so we can swap out public URLs
 # with interal URLs when the dataset is used within Facebook
 
@@ -83,7 +81,6 @@ def STSB(root, split):
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
     from torchdata.datapipes.iter import FileOpener, GDriveReader, HttpReader, IterableWrapper  # noqa
-
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(

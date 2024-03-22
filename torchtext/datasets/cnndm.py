@@ -135,7 +135,7 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
-    from torchdata.datapipes.iter import (
+    from torchdata.datapipes.iter import (  # noqa
         FileOpener,
         IterableWrapper,
         OnlineReader,

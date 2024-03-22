@@ -2,8 +2,6 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-
-
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
@@ -72,7 +70,6 @@ def WikiText103(root: str, split: Union[Tuple[str], str]):
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
     from torchdata.datapipes.iter import FileOpener, GDriveReader, HttpReader, IterableWrapper  # noqa
-
 
     url_dp = IterableWrapper([URL])
     # cache data on-disk

@@ -2,8 +2,7 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-
-  # noqa
+# noqa
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
