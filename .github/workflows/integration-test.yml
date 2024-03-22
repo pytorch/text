@@ -39,15 +39,13 @@ jobs:
         python -m spacy download en_core_web_sm
         printf "* Downloading SpaCy German models\n"
         python -m spacy download de_core_news_sm
-        # Install PyTorch, Torchvision, and TorchData
+        # Install PyTorch, Torchvision
         set -ex
         conda install \
           --yes \
           -c "pytorch-${CHANNEL}" \
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
-        printf "Installing torchdata nightly\n"
-        python3 -m pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu
         python3 setup.py develop
         # Install integration test dependencies
         python3 -m pip --quiet install parameterized
