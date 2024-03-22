@@ -2,7 +2,7 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+
 from torchtext._download_hooks import GDriveReader  # noqa
 from torchtext._download_hooks import HttpReader
 from torchtext._internal.module_utils import is_module_available

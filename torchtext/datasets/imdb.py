@@ -3,7 +3,7 @@ from functools import partial
 from pathlib import Path
 from typing import Tuple, Union
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+
 from torchtext._download_hooks import HttpReader
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory
