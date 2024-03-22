@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 unset PYTORCH_VERSION
-unset TORCHDATA_VERSION
 # For unittest, nightly PyTorch is used as the following section,
 # so no need to set PYTORCH_VERSION.
 # In fact, keeping PYTORCH_VERSION forces us to hardcode PyTorch version in config.
@@ -29,10 +28,6 @@ printf "* Installing PyTorch\n"
     conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} ${MKL_CONSTRAINT} pytorch cpuonly
 )
 
-
-printf "Installing torchdata nightly with portalocker\n"
-pip install "portalocker>=2.0.0"
-pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu
 
 printf "* Installing torchtext\n"
 python setup.py develop

@@ -51,15 +51,12 @@ jobs:
         printf "* Downloading SpaCy German models\n"
         python -m spacy download de_core_news_sm
 
-        # Install PyTorch, Torchvision, and TorchData
+        # Install PyTorch, Torchvision
         conda install \
           --yes \
           -c "pytorch-${CHANNEL}" \
           pytorch \
           cpuonly
-        printf "Installing torchdata nightly\n"
-        python -m pip install "portalocker>=2.0.0"
-        python -m pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu
 
         printf "* Installing pywin32_postinstall script\n"
         curl --output pywin32_postinstall.py https://raw.githubusercontent.com/mhammond/pywin32/main/pywin32_postinstall.py
