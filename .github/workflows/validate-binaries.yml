@@ -44,7 +44,7 @@ on:
         required: false
         type: string
       pytorch_version:
-        description: 'PyTorch version to validate (ie. 2.0, 2.2.2, etc.) - optional'
+        description: "PyTorch version to validate (ie. 2.0, 2.2.2, etc.) - optional"
         default: ""
         required: false
         type: string
