@@ -54,7 +54,7 @@ jobs:
         printf "* Downloading SpaCy German models\n"
         python -m spacy download de_core_news_sm
 
-        # Install PyTorch and TorchData
+        # Install PyTorch 
         set -ex
         conda install \
           --yes \
@@ -62,9 +62,6 @@ jobs:
           -c "pytorch-${CHANNEL}" \
           -c nvidia "pytorch-${CHANNEL}"::pytorch[build="*${VERSION}*"] \
           "${CUDATOOLKIT}"
-        printf "Installing torchdata nightly\n"
-        python3 -m pip install "portalocker>=2.0.0"
-        python3 -m pip install --pre torchdata --index-url https://download.pytorch.org/whl/nightly/cpu --quiet
         python3 setup.py develop
         python3 -m pip install parameterized --quiet
 
