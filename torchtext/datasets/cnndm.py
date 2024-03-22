@@ -3,12 +3,6 @@ import os
 from functools import partial
 from typing import Union, Set, Tuple
 
-from torchdata.datapipes.iter import (
-    FileOpener,
-    IterableWrapper,
-    OnlineReader,
-    GDriveReader,
-)
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
@@ -141,6 +135,12 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
+    from torchdata.datapipes.iter import (  # noqa
+        FileOpener,
+        IterableWrapper,
+        OnlineReader,
+        GDriveReader,
+    )
 
     cnn_dp = _load_stories(root, "cnn", split)
     dailymail_dp = _load_stories(root, "dailymail", split)
