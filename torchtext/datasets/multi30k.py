@@ -3,8 +3,8 @@ from functools import partial
 from typing import Union, Tuple
 
 
-from torchtext._download_hooks import GDriveReader  # noqa
-from torchtext._download_hooks import HttpReader
+  # noqa
+
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
@@ -89,6 +89,7 @@ def Multi30k(root: str, split: Union[Tuple[str], str], language_pair: Tuple[str]
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, HttpReader, IterableWrapper  # noqa
 
     url_dp = IterableWrapper([URL[split]])
 

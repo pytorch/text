@@ -2,7 +2,7 @@ import os
 from functools import partial
 
 
-from torchtext._download_hooks import HttpReader
+
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory
 
@@ -48,6 +48,7 @@ def QQP(root: str):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
         )
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, HttpReader, IterableWrapper  # noqa
 
     url_dp = IterableWrapper([URL])
     cache_dp = url_dp.on_disk_cache(

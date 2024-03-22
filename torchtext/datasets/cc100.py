@@ -2,7 +2,8 @@ import os.path
 from functools import partial
 
 
-from torchtext._download_hooks import HttpReader
+
+from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _create_dataset_directory,
 )
@@ -167,6 +168,11 @@ def CC100(root: str, language_code: str = "en"):
     """
     if language_code not in VALID_CODES:
         raise ValueError(f"Invalid language code {language_code}")
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError(
+            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
+        )
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, HttpReader, IterableWrapper  # noqa
 
     url = URL % language_code
     url_dp = IterableWrapper([url])
