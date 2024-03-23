@@ -32,7 +32,7 @@ jobs:
       matrix:
         include:
           - repository: pytorch/text
-            pre-script: packaging/install_torchdata.sh
+            pre-script: ""
             post-script: ""
             package-name: torchtext
             smoke-test-script: test/smoke_tests/smoke_tests.py
