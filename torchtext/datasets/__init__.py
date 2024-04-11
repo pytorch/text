@@ -1,3 +1,9 @@
+import warnings
+import torchtext
+if torchtext._WARN:
+    warnings.warn(torchtext._TORCHTEXT_DEPRECATION_MSG)
+
+
 import importlib
 
 from .ag_news import AG_NEWS
