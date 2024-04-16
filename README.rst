@@ -12,8 +12,7 @@
 torchtext
 +++++++++
 
-CAUTION: As of September 2023 we have paused active development of TorchText because our focus has shifted away from building out this library offering.
-We will continue to release new versions but do not anticipate any new feature development as we figure out future investments in this space.
+**WARNING**: TorchText developement is stopped and the `0.18` release (April 2024) will be the last stable release of the library.
 
 This repository consists of:
 

@@ -2,6 +2,11 @@ torchtext
 =========
 .. image:: _static/img/torchtext_logo.png
 
+.. warning::
+
+    TorchText developement is stopped and the ``0.18`` release (April 2024) will
+    be the last stable release of the library.
+
 This library is part of the `PyTorch
 <http://pytorch.org/>`_ project. PyTorch is an open source
 machine learning framework.
