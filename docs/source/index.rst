@@ -4,7 +4,7 @@ torchtext
 
 .. warning::
 
-    TorchText developement is stopped and the ``0.18`` release (April 2024) will
+    TorchText development is stopped and the ``0.18`` release (April 2024) will
     be the last stable release of the library.
 
 This library is part of the `PyTorch
