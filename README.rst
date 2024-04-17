@@ -12,7 +12,7 @@
 torchtext
 +++++++++
 
-**WARNING**: TorchText developement is stopped and the `0.18` release (April 2024) will be the last stable release of the library.
+**WARNING**: TorchText development is stopped and the `0.18` release (April 2024) will be the last stable release of the library.
 
 This repository consists of:
 
