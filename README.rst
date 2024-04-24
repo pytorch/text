@@ -34,6 +34,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :widths: 10, 10, 10
 
    nightly build, main, ">=3.8, <=3.11"
+   2.3.0, 0.18.0, ">=3.8, <=3.11"
    2.2.0, 0.17.0, ">=3.8, <=3.11"
    2.1.0, 0.16.0, ">=3.8, <=3.11"
    2.0.0, 0.15.0, ">=3.8, <=3.11"
