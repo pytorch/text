@@ -5,14 +5,14 @@ import torcharrow.pytorch as tap
 import torchtext.transforms as T
 from benchmark.utils import Timer
 from torcharrow import functional as ta_F
-from torchtext._download_hooks import load_state_dict_from_url
+from torchtext._download_hooks import load_state_dict_from_url # @manual=fbcode//pytorch/text:_download_hooks
 from torchtext.datasets import SST2
 
 sys.path.append(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../examples")
 )
-from data_pipeline.roberta_dataframe import (
-    init_ta_gpt2bpe_encoder,
+from data_pipeline.roberta_dataframe import ( # @manual
+init_ta_gpt2bpe_encoder,
     init_ta_gpt2bpe_vocab,
 )
 
