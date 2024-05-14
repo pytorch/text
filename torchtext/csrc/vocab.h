@@ -36,7 +36,7 @@ struct Vocab : torch::CustomClassHolder {
   std::vector<int32_t> stoi_;
   const std::string version_str_ = "0.0.2";
   StringList itos_;
-  c10::optional<int64_t> default_index_ = {};
+  std::optional<int64_t> default_index_ = {};
 
   // TODO: [can we remove this?] we need to keep this constructor, otherwise
   // torch binding gets compilation error: no matching constructor for
@@ -44,12 +44,12 @@ struct Vocab : torch::CustomClassHolder {
   TORCHTEXT_API explicit Vocab(StringList tokens);
   TORCHTEXT_API explicit Vocab(
       StringList tokens,
-      const c10::optional<int64_t>& default_index);
+      const std::optional<int64_t>& default_index);
   TORCHTEXT_API int64_t __len__() const;
   TORCHTEXT_API int64_t __getitem__(const c10::string_view& token) const;
   TORCHTEXT_API bool __contains__(const c10::string_view& token) const;
-  TORCHTEXT_API void set_default_index(c10::optional<int64_t> index);
-  TORCHTEXT_API c10::optional<int64_t> get_default_index() const;
+  TORCHTEXT_API void set_default_index(std::optional<int64_t> index);
+  TORCHTEXT_API std::optional<int64_t> get_default_index() const;
   TORCHTEXT_API void insert_token(std::string token, const int64_t& index);
   TORCHTEXT_API void append_token(std::string token);
   TORCHTEXT_API std::string lookup_token(const int64_t& index);

@@ -13,7 +13,7 @@ typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
 // vocabulary)
 typedef std::tuple<
     bool,
-    c10::optional<bool>,
+    std::optional<bool>,
     std::vector<std::string>,
     std::vector<std::string>>
     BERTEncoderStates;
@@ -22,12 +22,12 @@ struct BERTEncoder : torch::CustomClassHolder {
   TORCHTEXT_API BERTEncoder(
       const std::string& vocab_file,
       bool do_lower_case,
-      c10::optional<bool> strip_accents,
+      std::optional<bool> strip_accents,
       std::vector<std::string> never_split);
   BERTEncoder(
       Vocab vocab,
       bool do_lower_case,
-      c10::optional<bool> strip_accents,
+      std::optional<bool> strip_accents,
       std::vector<std::string> never_split);
   TORCHTEXT_API std::vector<std::string> Tokenize(std::string text);
   TORCHTEXT_API std::vector<int64_t> Encode(std::string text);
@@ -38,7 +38,7 @@ struct BERTEncoder : torch::CustomClassHolder {
 
   Vocab vocab_;
   bool do_lower_case_;
-  c10::optional<bool> strip_accents_ = {};
+  std::optional<bool> strip_accents_ = {};
   std::vector<std::string> never_split_;
   std::set<std::string> never_split_set_;
 

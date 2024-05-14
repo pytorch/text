@@ -116,7 +116,7 @@ PYBIND11_MODULE(_torchtext, m) {
           }));
 
   py::class_<Vocab, c10::intrusive_ptr<Vocab>>(m, "Vocab")
-      .def(py::init<StringList, c10::optional<int64_t>>())
+      .def(py::init<StringList, std::optional<int64_t>>())
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("default_index_", &Vocab::default_index_)
       .def(
@@ -242,7 +242,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::init<
            const std::string,
            bool,
-           c10::optional<bool>,
+           std::optional<bool>,
            std::vector<std::string>>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)

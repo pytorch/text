@@ -8,7 +8,7 @@
 #include <string>
 namespace torchtext {
 
-Vocab::Vocab(StringList tokens, const c10::optional<int64_t>& default_index)
+Vocab::Vocab(StringList tokens, const std::optional<int64_t>& default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (auto& token : tokens) {
     // throw error if duplicate token is found
@@ -49,11 +49,11 @@ int64_t Vocab::__getitem__(const c10::string_view& token) const {
   return default_index_.value();
 }
 
-void Vocab::set_default_index(c10::optional<int64_t> index) {
+void Vocab::set_default_index(std::optional<int64_t> index) {
   default_index_ = index;
 }
 
-c10::optional<int64_t> Vocab::get_default_index() const {
+std::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
 }
 
@@ -173,7 +173,7 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
       version_str.compare("0.0.2") >= 0,
       "Found unexpected version for serialized Vocab: " + version_str);
 
-  c10::optional<int64_t> default_index = {};
+  std::optional<int64_t> default_index = {};
   if (integers.size() > 0) {
     default_index = integers[0];
   }

@@ -94,7 +94,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           });
 
   m.class_<Vocab>("Vocab")
-      .def(torch::init<StringList, c10::optional<int64_t>>())
+      .def(torch::init<StringList, std::optional<int64_t>>())
       .def(
           "__contains__",
           [](const c10::intrusive_ptr<Vocab>& self, const std::string& item)
@@ -181,7 +181,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
       .def(torch::init<
            const std::string,
            bool,
-           c10::optional<bool>,
+           std::optional<bool>,
            std::vector<std::string>>())
       .def("encode", &BERTEncoder::Encode)
       .def("tokenize", &BERTEncoder::Tokenize)

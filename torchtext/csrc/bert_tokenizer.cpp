@@ -141,7 +141,7 @@ static void to_lower(UString& token) {
 BERTEncoder::BERTEncoder(
     const std::string& vocab_file,
     bool do_lower_case,
-    c10::optional<bool> strip_accents,
+    std::optional<bool> strip_accents,
     std::vector<std::string> never_split)
     : vocab_{_read_vocab(vocab_file)},
       do_lower_case_{do_lower_case},
@@ -153,7 +153,7 @@ BERTEncoder::BERTEncoder(
 BERTEncoder::BERTEncoder(
     Vocab vocab,
     bool do_lower_case,
-    c10::optional<bool> strip_accents,
+    std::optional<bool> strip_accents,
     std::vector<std::string> never_split)
     : vocab_{vocab},
       do_lower_case_{do_lower_case},
