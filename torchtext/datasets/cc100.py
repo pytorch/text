@@ -138,7 +138,7 @@ def _filepath_fn(root, url, _=None):
 
 
 def _decompressed_filepath_fn(root, x):
-    return os.path.join(root, os.path.basename(x).rstrip(".xz"))
+    return os.path.join(root, os.path.basename(x).removesuffix(".xz"))
 
 
 def _modify_res(language_code, x):
