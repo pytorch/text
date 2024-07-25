@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
-      runner: linux.12xlarge
+      runner: amz2023.linux.12xlarge
       repository: pytorch/text
       script: |
         # Mark Build Directory Safe
