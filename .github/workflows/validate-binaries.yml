@@ -1,0 +1,61 @@
+name: Validate binaries
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        description: "Channel to use (nightly, test, release, all)"
+        required: false
+        type: string
+        default: release
+      os:
+        description: "Operating system to generate for (linux, windows, macos, macos-arm64)"
+        required: true
+        type: string
+      ref:
+        description: "Reference to checkout, defaults to empty"
+        default: ""
+        required: false
+        type: string
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Channel to use (nightly, test, release, all)"
+        required: true
+        type: choice
+        options:
+          - release
+          - nightly
+          - test
+          - all
+      os:
+        description: "Operating system to generate for (linux, windows, macos)"
+        required: true
+        type: choice
+        default: all
+        options:
+          - windows
+          - linux
+          - macos
+          - all
+      ref:
+        description: "Reference to checkout, defaults to empty"
+        default: ""
+        required: false
+        type: string
+      pytorch_version:
+        description: "PyTorch version to validate (ie. 2.0, 2.2.2, etc.) - optional"
+        default: ""
+        required: false
+        type: string
+jobs:
+  validate-binaries:
+    uses: pytorch/test-infra/.github/workflows/validate-domain-library.yml@main
+    with:
+      package_type: "conda,wheel"
+      version: ${{ inputs.version }}
+      os: ${{ inputs.os }}
+      channel: ${{ inputs.channel }}
+      repository: "pytorch/text"
+      smoke_test: "source ./.github/scripts/validate_binaries.sh"
+      install_torch: true

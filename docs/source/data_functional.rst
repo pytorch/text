@@ -31,11 +31,11 @@ torchtext.data.functional
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: custom_replace
- 
+
 :hidden:`simple_space_split`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: simple_space_split 
+.. autofunction:: simple_space_split
 
 :hidden:`numericalize_tokens_from_iterator`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

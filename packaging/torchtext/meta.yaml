@@ -15,12 +15,13 @@ requirements:
     - python
     - setuptools
     - cpuonly
-    {{ environ.get('CONDA_PYTORCH_BUILD_CONSTRAINT') }}
+    {{ environ.get('CONDA_PYTORCH_BUILD_CONSTRAINT', 'pytorch') }}
+    {{ environ.get('CONDA_EXTRA_BUILD_CONSTRAINT', '') }}
+
 
   run:
     - python
     - requests
-    - iopath
     - tqdm
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
 
@@ -28,13 +29,14 @@ build:
   string: py{{py}}
   script_env:
     - BUILD_VERSION
+    - MACOSX_DEPLOYMENT_TARGET
 
 test:
   imports:
     - torchtext
     - torchtext.datasets
     - torchtext.data
-    - torchtext.experimental
+    - torchtext.prototype
 
   source_files:
     - test

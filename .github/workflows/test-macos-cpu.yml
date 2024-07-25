@@ -1,0 +1,73 @@
+name: Unit-tests on Macos CPU
+
+on:
+  pull_request:
+  push:
+    branches:
+      - nightly
+      - main
+      - release/*
+  workflow_dispatch:
+
+env:
+  CHANNEL: "nightly"
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        python_version: ["3.8", "3.9", "3.10"]
+      fail-fast: false
+    uses: pytorch/test-infra/.github/workflows/macos_job.yml@main
+    with:
+      runner: macos-12
+      repository: pytorch/text
+      timeout: 60
+      script: |
+        # Mark Build Directory Safe
+        git config --global --add safe.directory /__w/text/text
+
+        # Set up Environment Variables
+        export PYTHON_VERSION="${{ matrix.python_version }}"
+        export VERSION="cpu"
+        export CUDATOOLKIT="cpuonly"
+
+        # Set CHANNEL
+        if [[ (${GITHUB_EVENT_NAME} = 'pull_request' && (${GITHUB_BASE_REF} = 'release'*)) || (${GITHUB_REF} = 'refs/heads/release'*) ]]; then
+          export CHANNEL=test
+        else
+          export CHANNEL=nightly
+        fi
+
+        # TODO: this can be removed as soon as linking issue could be resolved
+        # see https://github.com/pytorch/pytorch/issues/62424 from details
+        export MKL_CONSTRAINT='mkl==2021.2.0'
+
+        # Create Conda Env
+        conda create -yp ./ci_env python="${PYTHON_VERSION}"
+        conda activate ./ci_env
+        python3 -m pip --quiet install cmake>=3.18.0 ninja
+        conda env update --file ".circleci/unittest/linux/scripts/environment.yml" --prune
+
+        # TorchText-specific Setup
+        printf "* Downloading SpaCy English models\n"
+        python -m spacy download en_core_web_sm
+        printf "* Downloading SpaCy German models\n"
+        python -m spacy download de_core_news_sm
+
+        # Install PyTorch, Torchvision
+        set -ex
+        conda install \
+          --yes \
+          -c "pytorch-${CHANNEL}" \
+          -c nvidia \
+          "${MKL_CONSTRAINT}" \
+          pytorch \
+          "${CUDATOOLKIT}"
+        python3 setup.py develop
+        python3 -m pip install parameterized
+
+        # Run Tests
+        python3 -m torch.utils.collect_env
+        cd test
+        python3 -m pytest --cov=torchtext --junitxml=test-results/junit.xml -v --durations 20 torchtext_unittest

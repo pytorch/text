@@ -31,7 +31,7 @@ torchtext.experimental.transforms
 :hidden:`load_sp_model`
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: load_sp_model 
+.. autofunction:: load_sp_model
 
 :hidden:`sentencepiece_tokenizer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

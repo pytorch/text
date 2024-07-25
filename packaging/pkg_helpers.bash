@@ -85,28 +85,48 @@ setup_cuda() {
 #   BUILD_VERSION (e.g., 0.2.0.dev20190807+cpu)
 #
 # Fill BUILD_VERSION if it doesn't exist already with a nightly string
-# Usage: setup_build_version 0.2.0
+# Usage: setup_build_version
 setup_build_version() {
   if [[ -z "$BUILD_VERSION" ]]; then
-    export BUILD_VERSION="$1.dev$(date "+%Y%m%d")$VERSION_SUFFIX"
+    if [[ -z "$1" ]]; then
+      setup_base_build_version
+    else
+      BUILD_VERSION="$1"
+    fi
+    BUILD_VERSION="$BUILD_VERSION.dev$(date "+%Y%m%d")$VERSION_SUFFIX"
   else
-    export BUILD_VERSION="$BUILD_VERSION$VERSION_SUFFIX"
+    BUILD_VERSION="$BUILD_VERSION$VERSION_SUFFIX"
   fi
+
+  # Set build version based on tag if on tag
+  if [[ -n "${CIRCLE_TAG}" ]]; then
+    # Strip tag
+    BUILD_VERSION="$(echo "${CIRCLE_TAG}" | sed -e 's/^v//' -e 's/-.*$//')${VERSION_SUFFIX}"
+  fi
+
+  export BUILD_VERSION
 }
 
+setup_base_build_version() {
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  # version.txt for some reason has `a` character after major.minor.rev
+  # command below yields 0.10.0 from version.txt containing 0.10.0a0
+  BUILD_VERSION=$( cut -f 1 -d a "$SCRIPT_DIR/../version.txt" )
+  export BUILD_VERSION
+}
 # Set some useful variables for OS X, if applicable
 setup_macos() {
   if [[ "$(uname)" == Darwin ]]; then
-    export MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++
+    export CC=clang CXX=clang++
   fi
 }
 
 # Top-level entry point for things every package will need to do
 #
-# Usage: setup_env 0.2.0
+# Usage: setup_env
 setup_env() {
   setup_cuda
-  setup_build_version "$1"
+  setup_build_version
   setup_macos
 }
 
@@ -116,7 +136,7 @@ retry () {
 }
 
 # Inputs:
-#   PYTHON_VERSION (2.7, 3.5, 3.6, 3.7)
+#   PYTHON_VERSION (2.7, 3.8, 3.9, 3.10)
 #   UNICODE_ABI (bool)
 #
 # Outputs:
@@ -138,11 +158,9 @@ setup_wheel_python() {
           python_abi=cp27-cp27m
         fi
         ;;
-      3.5) python_abi=cp35-cp35m ;;
-      3.6) python_abi=cp36-cp36m ;;
-      3.7) python_abi=cp37-cp37m ;;
       3.8) python_abi=cp38-cp38 ;;
       3.9) python_abi=cp39-cp39 ;;
+      3.10) python_abi=cp310-cp310 ;;
       *)
         echo "Unrecognized PYTHON_VERSION=$PYTHON_VERSION"
         exit 1
@@ -180,10 +198,14 @@ setup_pip_pytorch_version() {
 # You MUST have populated PYTORCH_VERSION_SUFFIX before hand.
 setup_conda_pytorch_constraint() {
   CONDA_CHANNEL_FLAGS=${CONDA_CHANNEL_FLAGS:-}
-  CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c iopath"
   if [[ -z "$PYTORCH_VERSION" ]]; then
     export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch-nightly"
-    export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-nightly]' | python -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
+   PYTHON="python"
+    # Check if we have python 3 instead and prefer that
+    if python3 --version >/dev/null 2>/dev/null; then
+      PYTHON="python3"
+    fi
+    export PYTORCH_VERSION="$(conda search --json 'pytorch[channel=pytorch-nightly]' | ${PYTHON} -c "import sys, json, re; print(re.sub(r'\\+.*$', '', json.load(sys.stdin)['pytorch'][-1]['version']))")"
   else
     export CONDA_CHANNEL_FLAGS="${CONDA_CHANNEL_FLAGS} -c pytorch -c pytorch-${UPLOAD_CHANNEL}"
   fi
@@ -193,6 +215,14 @@ setup_conda_pytorch_constraint() {
   else
     export CONDA_PYTORCH_BUILD_CONSTRAINT="- pytorch==${PYTORCH_VERSION}${PYTORCH_VERSION_SUFFIX}"
     export CONDA_PYTORCH_CONSTRAINT="- pytorch==${PYTORCH_VERSION}${PYTORCH_VERSION_SUFFIX}"
+  fi
+  # TODO: Remove me later, see https://github.com/pytorch/pytorch/issues/62424 for more details
+  if [[ "$(uname)" == Darwin ]]; then
+    arch_name="$(uname -m)"
+    if [[ "${arch_name}" != "arm64" && "${PYTHON_VERSION}" != "3.11" ]]; then
+      # Use less than equal to avoid version conflict in python=3.6 environment
+      export CONDA_EXTRA_BUILD_CONSTRAINT="- mkl<=2021.2.0"
+    fi
   fi
 }
 

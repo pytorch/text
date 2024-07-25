@@ -1,5 +1,11 @@
 torchtext
 =========
+.. image:: _static/img/torchtext_logo.png
+
+.. warning::
+
+    TorchText development is stopped and the ``0.18`` release (April 2024) will
+    be the last stable release of the library.
 
 This library is part of the `PyTorch
 <http://pytorch.org/>`_ project. PyTorch is an open source
@@ -28,10 +34,17 @@ The :mod:`torchtext` package consists of data processing utilities and
 popular datasets for natural language.
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Torchtext Documentation
+   :hidden:
+
+   Index <self>
+   logo
+
+.. toctree::
    :maxdepth: 2
    :caption:  Package Reference
 
-   self
    nn_modules
    data_functional
    data_metrics
@@ -39,11 +52,20 @@ popular datasets for natural language.
    datasets
    torchtext.vocab <vocab>
    torchtext.utils <utils>
-   experimental_datasets_raw
-   experimental_transforms
-   experimental_vectors
-   experimental_vocab
-   models_utils
+   transforms
+   functional
+   models
+
+Getting Started
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
+
+   tutorials/sst2_classification_non_distributed
+   tutorials/t5_demo
+
 
 .. automodule:: torchtext
    :members:
@@ -59,10 +81,3 @@ popular datasets for natural language.
    TorchElastic <https://pytorch.org/elastic/>
    TorchServe <https://pytorch.org/serve>
    PyTorch on XLA Devices <http://pytorch.org/xla/>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

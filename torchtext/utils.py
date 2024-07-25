@@ -1,13 +1,31 @@
-import torch
-import csv
+import warnings
+import torchtext
+if torchtext._WARN:
+    warnings.warn(torchtext._TORCHTEXT_DEPRECATION_MSG)
+
+import gzip
 import hashlib
+import logging
 import os
 import tarfile
-import logging
-import sys
 import zipfile
-import gzip
+
+import torch
+from filelock import FileLock
+from torchtext import _CACHE_DIR
+
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
+
+logger = logging.getLogger(__name__)
+
+LOCK_TIMEOUT = 600
+
+
+def get_lock_dir():
+    lock_dir = os.path.join(_CACHE_DIR, "locks")
+    if not os.path.exists(lock_dir):
+        os.makedirs(lock_dir, exist_ok=True)
+    return lock_dir
 
 
 def reporthook(t):
@@ -29,25 +47,22 @@ def reporthook(t):
             t.total = tsize
         t.update((b - last_b[0]) * bsize)
         last_b[0] = b
+
     return inner
 
 
 def validate_file(file_obj, hash_value, hash_type="sha256"):
     """Validate a given file object with its hash.
-
     Args:
         file_obj: File object to read from.
         hash_value (str): Hash for url.
         hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
     Returns:
         bool: return True if its a valid file, else False.
-
     """
 
-    if hash_type == "sha256":
-        hash_func = hashlib.sha256()
-    elif hash_type == "md5":
-        hash_func = hashlib.md5()
+    if hash_type in ("sha256", "md5"):
+        hash_func = hashlib.new(hash_type, usedforsecurity=False)
     else:
         raise ValueError
 
@@ -61,17 +76,17 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
 
 def _check_hash(path, hash_value, hash_type):
-    logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
+    logger.info("Validating hash {} matches hash of {}".format(hash_value, path))
     with open(path, "rb") as file_obj:
         if not validate_file(file_obj, hash_value, hash_type):
-            raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
+            raise RuntimeError(
+                "The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path))
+            )
 
 
-def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
-                      hash_type="sha256"):
+def download_from_url(url, path=None, root=".data", overwrite=False, hash_value=None, hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
-
     Args:
         url: the url of the file from URL header. (None)
         path: path where file will be saved
@@ -79,14 +94,12 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         overwrite: overwrite existing files (False)
         hash_value (str, optional): hash for url (Default: ``None``).
         hash_type (str, optional): hash type, among "sha256" and "md5" (Default: ``"sha256"``).
-
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> '.data/validation.tar.gz'
-
     """
     # figure out filename and root
     if path is None:
@@ -97,82 +110,47 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
-    # skip download if path exists and overwrite is not True
-    if os.path.exists(path):
-        logging.info('File %s already exists.' % path)
-        if not overwrite:
-            if hash_value:
-                _check_hash(path, hash_value, hash_type)
-            return path
+    # In a concurrent setting, adding a file lock ensures the first thread to acquire will actually download the model
+    # and the other ones will just use the existing path (which will not contain a partially downloaded model).
+    lock_dir = get_lock_dir()
+    lock = FileLock(os.path.join(lock_dir, filename + ".lock"), timeout=LOCK_TIMEOUT)
+    with lock:
+        # skip download if path exists and overwrite is not True
+        if os.path.exists(path):
+            logger.info("File %s already exists." % path)
+            if not overwrite:
+                if hash_value:
+                    _check_hash(path, hash_value, hash_type)
+                return path
 
-    # make root dir if does not exist
-    if not os.path.exists(root):
-        try:
-            os.makedirs(root)
-        except OSError:
-            raise OSError("Can't create the download directory {}.".format(root))
+        # make root dir if does not exist
+        if not os.path.exists(root):
+            try:
+                os.makedirs(root)
+            except OSError:
+                raise OSError("Can't create the download directory {}.".format(root))
 
-    # download data and move to path
-    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
+        # download data and move to path
+        _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    logging.info('File {} downloaded.'.format(path))
+        logger.info("File {} downloaded.".format(path))
 
-    # validate
-    if hash_value:
-        _check_hash(path, hash_value, hash_type)
+        # validate
+        if hash_value:
+            _check_hash(path, hash_value, hash_type)
 
-    # all good
-    return path
-
-
-def unicode_csv_reader(unicode_csv_data, **kwargs):
-    r"""Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
-    Borrowed and slightly modified from the Python docs:
-    https://docs.python.org/2/library/csv.html#csv-examples
-
-    Args:
-        unicode_csv_data: unicode csv data (see example below)
-
-    Examples:
-        >>> from torchtext.utils import unicode_csv_reader
-        >>> import io
-        >>> with io.open(data_path, encoding="utf8") as f:
-        >>>     reader = unicode_csv_reader(f)
-
-    """
-
-    # Fix field larger than field limit error
-    maxInt = sys.maxsize
-    while True:
-        # decrease the maxInt value by factor 10
-        # as long as the OverflowError occurs.
-        try:
-            csv.field_size_limit(maxInt)
-            break
-        except OverflowError:
-            maxInt = int(maxInt / 10)
-    csv.field_size_limit(maxInt)
-
-    for line in csv.reader(unicode_csv_data, **kwargs):
-        yield line
-
-
-def utf_8_encoder(unicode_csv_data):
-    for line in unicode_csv_data:
-        yield line.encode('utf-8')
+        # all good
+        return path
 
 
 def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract archive.
-
     Args:
         from_path: the path of the archive.
         to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)
-
     Returns:
         List of paths to extracted files even if not overwritten.
-
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> from_path = './validation.tar.gz'
@@ -183,52 +161,50 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
         >>> ['.data/val.de', '.data/val.en']
-
     """
 
     if to_path is None:
         to_path = os.path.dirname(from_path)
 
-    if from_path.endswith(('.tar.gz', '.tgz')):
-        logging.info('Opening tar file {}.'.format(from_path))
-        with tarfile.open(from_path, 'r') as tar:
+    if from_path.endswith((".tar.gz", ".tgz")):
+        logger.info("Opening tar file {}.".format(from_path))
+        with tarfile.open(from_path, "r") as tar:
             files = []
             for file_ in tar:
                 file_path = os.path.join(to_path, file_.name)
                 if file_.isfile():
                     files.append(file_path)
                     if os.path.exists(file_path):
-                        logging.info('{} already extracted.'.format(file_path))
+                        logger.info("{} already extracted.".format(file_path))
                         if not overwrite:
                             continue
                 tar.extract(file_, to_path)
-            logging.info('Finished extracting tar file {}.'.format(from_path))
+            logger.info("Finished extracting tar file {}.".format(from_path))
             return files
 
-    elif from_path.endswith('.zip'):
+    elif from_path.endswith(".zip"):
         assert zipfile.is_zipfile(from_path), from_path
-        logging.info('Opening zip file {}.'.format(from_path))
-        with zipfile.ZipFile(from_path, 'r') as zfile:
+        logger.info("Opening zip file {}.".format(from_path))
+        with zipfile.ZipFile(from_path, "r") as zfile:
             files = []
             for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
                 files.append(file_path)
                 if os.path.exists(file_path):
-                    logging.info('{} already extracted.'.format(file_path))
+                    logger.info("{} already extracted.".format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
         files = [f for f in files if os.path.isfile(f)]
-        logging.info('Finished extracting zip file {}.'.format(from_path))
+        logger.info("Finished extracting zip file {}.".format(from_path))
         return files
 
-    elif from_path.endswith('.gz'):
-        logging.info('Opening gz file {}.'.format(from_path))
+    elif from_path.endswith(".gz"):
+        logger.info("Opening gz file {}.".format(from_path))
         default_block_size = 65536
         filename = from_path[:-3]
         files = [filename]
-        with gzip.open(from_path, 'rb') as gzfile, \
-                open(filename, 'wb') as d_file:
+        with gzip.open(from_path, "rb") as gzfile, open(filename, "wb") as d_file:
             while True:
                 block = gzfile.read(default_block_size)
                 if not block:
@@ -236,12 +212,11 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                 else:
                     d_file.write(block)
             d_file.write(block)
-        logging.info('Finished extracting gz file {}.'.format(from_path))
+        logger.info("Finished extracting gz file {}.".format(from_path))
         return files
 
     else:
-        raise NotImplementedError(
-            "We currently only support tar.gz, .tgz, .gz and zip achives.")
+        raise NotImplementedError("We currently only support tar.gz, .tgz, .gz and zip achives.")
 
 
 def _log_class_usage(klass):
@@ -249,3 +224,24 @@ def _log_class_usage(klass):
     if klass and hasattr(klass, "__name__"):
         identifier += f".{klass.__name__}"
     torch._C._log_api_usage_once(identifier)
+
+
+def get_asset_local_path(asset_path: str, overwrite=False) -> str:
+    """Get local path for assets. Download if path does not exist locally
+    Args:
+        asset_path: Local path to asset or remote URL
+        overwrite: Indicate whether to overwrite the file when downloading from URL (default: False)
+    Returns:
+        bool: local path of the asset after downloading or reading from cache
+    Examples:
+        >>> url = 'http://<HOST>/file.txt'
+        >>> torchtext.utils.get_asset_local_path(url)
+        >>> '.data/file.txt'
+        >>> torchtext.utils.get_asset_local_path('/home/user/file.txt')
+        >>> '/home/user/file.txt'
+    """
+    if os.path.exists(asset_path):
+        local_path = asset_path
+    else:
+        local_path = download_from_url(url=asset_path, root=_CACHE_DIR, overwrite=overwrite)
+    return local_path

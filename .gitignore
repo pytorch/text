@@ -77,6 +77,9 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/src/
+docs/source/tutorials
+docs/source/gen_modules
 
 # PyBuilder
 target/
@@ -131,3 +134,6 @@ torchtext/version.py
 
 # Thirdparty directories
 third_party/*/
+
+# Mac OS .DS_Store files
+.DS_Store

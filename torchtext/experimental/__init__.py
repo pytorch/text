@@ -1,5 +1,4 @@
-from . import datasets
-from . import transforms
-from . import models
-
-__all__ = ['datasets', 'transforms', 'models']
+import warnings
+import torchtext
+if torchtext._WARN:
+    warnings.warn(torchtext._TORCHTEXT_DEPRECATION_MSG)

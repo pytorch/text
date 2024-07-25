@@ -1,47 +1,40 @@
-from . import data
-from . import nn
-from . import datasets
-from . import utils
-from . import vocab
-from . import experimental
-from . import legacy
+import os
 
+from torch.hub import _get_torch_home
+
+_WARN = True
+_TORCHTEXT_DEPRECATION_MSG = (
+    "\n/!\ IMPORTANT WARNING ABOUT TORCHTEXT STATUS /!\ \n"
+    "Torchtext is deprecated and the last released version will be 0.18 (this one). "
+    "You can silence this warning by calling the following at the beginnign of your scripts: "
+    "`import torchtext; torchtext.disable_torchtext_deprecation_warning()`"
+)
+
+def disable_torchtext_deprecation_warning():
+    global _WARN
+    _WARN = False
+
+# the following import has to happen first in order to load the torchtext C++ library
+from torchtext import _extension  # noqa: F401
+
+_TEXT_BUCKET = "https://download.pytorch.org/models/text/"
+
+_CACHE_DIR = os.path.expanduser(os.path.join(_get_torch_home(), "text"))
 
 try:
     from .version import __version__, git_version  # noqa: F401
 except ImportError:
     pass
 
-__all__ = ['data',
-           'nn',
-           'datasets',
-           'utils',
-           'vocab',
-           'experimental',
-           'legacy']
-
-
-def _init_extension():
-    import os
-    import importlib
-    import torch
-
-    # load the custom_op_library and register the custom ops
-    lib_dir = os.path.dirname(__file__)
-    loader_details = (
-        importlib.machinery.ExtensionFileLoader,
-        importlib.machinery.EXTENSION_SUFFIXES
-    )
-
-    extfinder = importlib.machinery.FileFinder(lib_dir, loader_details)
-    ext_specs = extfinder.find_spec("_torchtext")
-    if ext_specs is None:
-        raise ImportError("torchtext C++ Extension is not found.")
-    torch.ops.load_library(ext_specs.origin)
-    torch.classes.load_library(ext_specs.origin)
-
-
-_init_extension()
-
-
-del _init_extension
+__all__ = [
+    "data",
+    "nn",
+    "datasets",
+    "utils",
+    "vocab",
+    "transforms",
+    "functional",
+    "models",
+    "prototype",
+    "experimental",
+]

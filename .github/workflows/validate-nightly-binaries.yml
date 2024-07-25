@@ -1,0 +1,27 @@
+# Scheduled validation of the nightly binaries
+name: cron
+
+on:
+  schedule:
+    # At 5:30 pm UTC (7:30 am PDT)
+    - cron: "30 17 * * *"
+  # Have the ability to trigger this job manually through the API
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/validate-nightly-binaries.yml
+      - .github/workflows/validate-binaries.yml
+      - .github/scripts/validate_binaries.sh
+  pull_request:
+    paths:
+      - .github/workflows/validate-nightly-binaries.yml
+      - .github/workflows/validate-binaries.yml
+      - .github/scripts/validate_binaries.sh
+jobs:
+  nightly:
+    uses: ./.github/workflows/validate-binaries.yml
+    with:
+      channel: nightly
+      os: all

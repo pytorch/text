@@ -1,0 +1,5 @@
+# For smooth build process, this `lib` directory has to exist.
+# git won't allow to have empty directory, so adding .gitignore
+# https://stackoverflow.com/a/932982
+*
+!.gitignore
