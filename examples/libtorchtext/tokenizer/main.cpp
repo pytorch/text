@@ -11,7 +11,7 @@ int main(int argc, const char* argv[]) {
   torch::jit::script::Module module;
   try {
     module = torch::jit::load(argv[1]);
-  } catch (const c10::Error& e) {
+  } catch (const c10::Error&) {
     return -1;
   }
 
