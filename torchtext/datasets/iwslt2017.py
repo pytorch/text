@@ -1,9 +1,9 @@
 import os
 from functools import partial
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
 from torchtext._download_hooks import GDriveReader
-from torchtext._internal.module_utils import is_module_available
+from torchtext.compat import check_for_torchdata
 from torchtext.data.datasets_utils import (
     _clean_files,
     _create_dataset_directory,
@@ -180,10 +180,7 @@ def IWSLT2017(root=".data", split=("train", "valid", "test"), language_pair=("de
         >>> src_sentence, tgt_sentence = next(iter(train_iter))
 
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     valid_set = "dev2010"
     test_set = "tst2010"

@@ -3,8 +3,8 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
-from torchtext._internal.module_utils import is_module_available
+from torchtext.compat.datapipes.iter import FileOpener, HttpReader, IterableWrapper
+from torchtext.compat import check_for_torchdata
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _create_dataset_directory,
@@ -63,10 +63,7 @@ def MRPC(root: str, split: Union[Tuple[str], str]):
     :returns: DataPipe that yields data points from MRPC dataset which consist of label, sentence1, sentence2
     :rtype: (int, str, str)
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     url_dp = IterableWrapper([URL[split]])
     # cache data on-disk with sanity check

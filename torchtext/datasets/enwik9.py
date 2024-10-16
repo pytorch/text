@@ -1,9 +1,9 @@
 import os
 from functools import partial
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
 from torchtext._download_hooks import HttpReader
-from torchtext._internal.module_utils import is_module_available
+from torchtext.compat import check_for_torchdata
 from torchtext.data.datasets_utils import _create_dataset_directory
 
 URL = "http://mattmahoney.net/dc/enwik9.zip"
@@ -46,10 +46,7 @@ def EnWik9(root: str):
     :returns: DataPipe that yields raw text rows from WnWik9 dataset
     :rtype: str
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(

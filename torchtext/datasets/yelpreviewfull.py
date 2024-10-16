@@ -2,7 +2,8 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat import check_for_torchdata
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
 from torchtext._download_hooks import GDriveReader
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -70,10 +71,7 @@ def YelpReviewFull(root: str, split: Union[Tuple[str], str]):
     :returns: DataPipe that yields tuple of label (1 to 5) and text containing the review
     :rtype: (int, str)
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     url_dp = IterableWrapper([URL])
 

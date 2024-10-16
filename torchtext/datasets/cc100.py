@@ -1,7 +1,7 @@
 import os.path
 from functools import partial
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
 from torchtext._download_hooks import HttpReader
 from torchtext.data.datasets_utils import (
     _create_dataset_directory,

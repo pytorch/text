@@ -2,7 +2,8 @@
 import os
 from functools import partial
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat import check_for_torchdata
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
 
 # we import HttpReader from _download_hooks so we can swap out public URLs
 # with interal URLs when the dataset is used within Facebook
@@ -82,10 +83,7 @@ def SST2(root, split):
     :rtype: Union[(int, str), (str,)]
     """
     # TODO Remove this after removing conditional dependency
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(

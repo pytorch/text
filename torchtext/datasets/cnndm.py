@@ -3,13 +3,14 @@ import os
 from functools import partial
 from typing import Union, Set, Tuple
 
-from torchdata.datapipes.iter import (
+from torchtext.compat import check_for_torchdata
+
+from torchtext.compat.datapipes.iter import (
     FileOpener,
+    GDriveReader,
     IterableWrapper,
     OnlineReader,
-    GDriveReader,
 )
-from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _create_dataset_directory,
@@ -137,10 +138,7 @@ def CNNDM(root: str, split: Union[Tuple[str], str]):
     :returns: DataPipe that yields a tuple of texts containing an article and its abstract (i.e. (article, abstract))
     :rtype: (str, str)
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     cnn_dp = _load_stories(root, "cnn", split)
     dailymail_dp = _load_stories(root, "dailymail", split)

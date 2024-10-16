@@ -3,9 +3,9 @@ import os
 from functools import partial
 from typing import Union, Tuple
 
-from torchdata.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat.datapipes.iter import FileOpener, IterableWrapper
+from torchtext.compat import check_for_torchdata
 from torchtext._download_hooks import HttpReader
-from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import _create_dataset_directory, _wrap_split_argument
 
 URL = "https://nyu-mll.github.io/CoLA/cola_public_1.1.zip"
@@ -72,10 +72,7 @@ def CoLA(root: str, split: Union[Tuple[str], str]):
     :returns: DataPipe that yields rows from CoLA dataset (source (str), label (int), sentence (str))
     :rtype: (str, int, str)
     """
-    if not is_module_available("torchdata"):
-        raise ModuleNotFoundError(
-            "Package `torchdata` not found. Please install following instructions at https://github.com/pytorch/data"
-        )
+    check_for_torchdata()
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
