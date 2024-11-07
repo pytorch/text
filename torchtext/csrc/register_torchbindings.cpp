@@ -98,11 +98,11 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
       .def(
           "__contains__",
           [](const c10::intrusive_ptr<Vocab>& self, const std::string& item)
-              -> bool { return self->__contains__(c10::string_view{item}); })
+              -> bool { return self->__contains__(std::string_view{item}); })
       .def(
           "__getitem__",
           [](const c10::intrusive_ptr<Vocab>& self, const std::string& item)
-              -> int64_t { return self->__getitem__(c10::string_view{item}); })
+              -> int64_t { return self->__getitem__(std::string_view{item}); })
       .def("insert_token", &Vocab::insert_token)
       .def("__len__", &Vocab::__len__)
       .def("set_default_index", &Vocab::set_default_index)
@@ -117,7 +117,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
             std::vector<int64_t> indices(items.size());
             int64_t counter = 0;
             for (const auto& item : items) {
-              indices[counter++] = self->__getitem__(c10::string_view{item});
+              indices[counter++] = self->__getitem__(std::string_view{item});
             }
             return indices;
           })
