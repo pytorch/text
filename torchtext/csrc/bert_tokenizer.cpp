@@ -333,7 +333,7 @@ std::vector<int64_t> BERTEncoder::Encode(std::string text) {
   std::vector<std::string> tokens = Tokenize(text);
   std::vector<int64_t> indices(tokens.size());
   for (size_t i = 0; i < tokens.size(); i++) {
-    indices[i] = vocab_.__getitem__(c10::string_view{tokens[i]});
+    indices[i] = vocab_.__getitem__(std::string_view{tokens[i]});
   }
   return indices;
 }
