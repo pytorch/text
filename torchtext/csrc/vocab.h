@@ -46,8 +46,8 @@ struct Vocab : torch::CustomClassHolder {
       StringList tokens,
       const std::optional<int64_t>& default_index);
   TORCHTEXT_API int64_t __len__() const;
-  TORCHTEXT_API int64_t __getitem__(const c10::string_view& token) const;
-  TORCHTEXT_API bool __contains__(const c10::string_view& token) const;
+  TORCHTEXT_API int64_t __getitem__(const std::string_view& token) const;
+  TORCHTEXT_API bool __contains__(const std::string_view& token) const;
   TORCHTEXT_API void set_default_index(std::optional<int64_t> index);
   TORCHTEXT_API std::optional<int64_t> get_default_index() const;
   TORCHTEXT_API void insert_token(std::string token, const int64_t& index);
@@ -56,12 +56,12 @@ struct Vocab : torch::CustomClassHolder {
   TORCHTEXT_API std::vector<std::string> lookup_tokens(
       const std::vector<int64_t>& indices);
   std::vector<int64_t> lookup_indices(
-      const std::vector<c10::string_view>& tokens);
+      const std::vector<std::string_view>& tokens);
   TORCHTEXT_API std::unordered_map<std::string, int64_t> get_stoi() const;
   TORCHTEXT_API std::vector<std::string> get_itos() const;
 
  protected:
-  uint32_t _hash(const c10::string_view& str) const {
+  uint32_t _hash(const std::string_view& str) const {
     uint32_t h = 2166136261;
     for (size_t i = 0; i < str.size(); i++) {
       h = h ^ uint32_t(uint8_t(str[i]));
@@ -70,7 +70,7 @@ struct Vocab : torch::CustomClassHolder {
     return h;
   }
 
-  uint32_t _find(const c10::string_view& w) const {
+  uint32_t _find(const std::string_view& w) const {
     uint32_t stoi_size = stoi_.size();
     uint32_t id = _hash(w) % stoi_size;
     while (stoi_[id] != -1 && itos_[stoi_[id]] != w) {
@@ -80,7 +80,7 @@ struct Vocab : torch::CustomClassHolder {
   }
 
   void _add(std::string w) {
-    uint32_t h = _find(c10::string_view{w.data(), w.size()});
+    uint32_t h = _find(std::string_view{w.data(), w.size()});
     if (stoi_[h] == -1) {
       itos_.emplace_back(std::move(w));
       stoi_[h] = itos_.size() - 1;

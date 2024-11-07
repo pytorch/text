@@ -12,7 +12,7 @@ Vocab::Vocab(StringList tokens, const std::optional<int64_t>& default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (auto& token : tokens) {
     // throw error if duplicate token is found
-    auto id = _find(c10::string_view{token});
+    auto id = _find(std::string_view{token});
     TORCH_CHECK(
         stoi_[id] == -1, "Duplicate token found in tokens list: " + token);
 
@@ -26,7 +26,7 @@ int64_t Vocab::__len__() const {
   return itos_.size();
 }
 
-bool Vocab::__contains__(const c10::string_view& token) const {
+bool Vocab::__contains__(const std::string_view& token) const {
   int64_t id = _find(token);
   if (stoi_[id] != -1) {
     return true;
@@ -34,7 +34,7 @@ bool Vocab::__contains__(const c10::string_view& token) const {
   return false;
 }
 
-int64_t Vocab::__getitem__(const c10::string_view& token) const {
+int64_t Vocab::__getitem__(const std::string_view& token) const {
   int64_t id = _find(token);
   if (stoi_[id] != -1)
     return stoi_[id];
@@ -59,7 +59,7 @@ std::optional<int64_t> Vocab::get_default_index() const {
 
 void Vocab::append_token(std::string token) {
   // throw error if token already exist in vocab
-  auto id = _find(c10::string_view{token});
+  auto id = _find(std::string_view{token});
   TORCH_CHECK(
       stoi_[id] == -1,
       "Token " + token + " already exists in the Vocab with index: " +
@@ -80,10 +80,10 @@ void Vocab::insert_token(std::string token, const int64_t& index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < __len__(); i++) {
-    stoi_[_find(c10::string_view{itos_[i]})] = i + 1;
+    stoi_[_find(std::string_view{itos_[i]})] = i + 1;
   }
 
-  stoi_[_find(c10::string_view{token})] = index;
+  stoi_[_find(std::string_view{token})] = index;
   itos_.insert(itos_.begin() + index, std::move(token));
 }
 
@@ -115,7 +115,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t>& indices) {
 }
 
 std::vector<int64_t> Vocab::lookup_indices(
-    const std::vector<c10::string_view>& tokens) {
+    const std::vector<std::string_view>& tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (size_t i = 0; i < tokens.size(); i++) {
     indices[i] = __getitem__(tokens[i]);
@@ -127,7 +127,7 @@ std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
   std::unordered_map<std::string, int64_t> stoi;
   // construct tokens and index list
   for (const auto& item : itos_) {
-    stoi[item] = __getitem__(c10::string_view{item});
+    stoi[item] = __getitem__(std::string_view{item});
   }
   return stoi;
 }
