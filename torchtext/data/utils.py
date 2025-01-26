@@ -126,7 +126,7 @@ def get_tokenizer(tokenizer, language="en"):
         except ImportError:
             print(
                 "Please install SacreMoses. "
-                "See the docs at https://github.com/alvations/sacremoses "
+                "See the docs at https://github.com/hplt-project/sacremoses "
                 "for more information."
             )
             raise
