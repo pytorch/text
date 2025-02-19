@@ -6,7 +6,6 @@
 #include <torchtext/csrc/vocab_factory.h> // @manual
 
 #include <fstream>
-#include <stdexcept>
 #include <string>
 
 namespace torchtext {

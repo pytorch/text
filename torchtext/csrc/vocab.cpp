@@ -4,7 +4,6 @@
 #include <torchtext/csrc/vocab.h> // @manual
 
 #include <iostream>
-#include <stdexcept>
 #include <string>
 namespace torchtext {
 
