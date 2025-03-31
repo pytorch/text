@@ -236,7 +236,7 @@ class FastText(Vectors):
 class CharNGram(Vectors):
 
     name = "charNgram.txt"
-    url = "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/" "jmt_pre-trained_embeddings.tar.gz"
+    url = "https://github.com/hassyGo/charNgram2vec/releases/download/v1.0.0-alpha/" "jmt_pre-trained_embeddings.tar.gz"
 
     def __init__(self, **kwargs) -> None:
         super(CharNGram, self).__init__(self.name, url=self.url, **kwargs)
