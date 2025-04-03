@@ -39,7 +39,6 @@ class RobertaBundle:
 
     Example - Pretrained large xlmr encoder attached to un-initialized classification head
         >>> import torch, torchtext
-        >>> from torchtext.models import RobertaClassificationHead
         >>> from torchtext.functional import to_tensor
         >>> xlmr_large = torchtext.models.XLMR_LARGE_ENCODER
         >>> classifier_head = torchtext.models.RobertaClassificationHead(num_classes=2, input_dim = 1024)
@@ -49,7 +48,7 @@ class RobertaBundle:
         >>> model_input = to_tensor(transform(input_batch), padding_value=1)
         >>> output = model(model_input)
         >>> output.shape
-        torch.Size([1, 2])
+        torch.Size([2, 2])
 
     Example - User-specified configuration and checkpoint
         >>> from torchtext.models import RobertaEncoderConf, RobertaBundle, RobertaClassificationHead
