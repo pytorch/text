@@ -91,7 +91,7 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   */
 
   if (bpe_never_split_set_.size() > 0) {
-    std::string pattern = "";
+    std::string pattern;
     // Escape regex characters for matching special tokens. This is done to
     // ensure that characters like '|' in certain special tokens such as
     // <|endoftext|> don't get special regex treatment.
@@ -209,7 +209,7 @@ int list_str_index(
 }
 
 std::string concatenate_strings(const std::vector<std::string>& list) {
-  std::string ret = "";
+  std::string ret;
   for (auto s : list)
     ret += s;
   return ret;
