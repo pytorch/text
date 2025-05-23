@@ -12,7 +12,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import torch
@@ -75,7 +75,7 @@ class T5Bundle:
 
     _config: T5Conf
     _path: Optional[str] = None
-    transform: Optional[Callable] = None
+    transform: Optional[T5Transform] = None
 
     def get_model(
         self,
