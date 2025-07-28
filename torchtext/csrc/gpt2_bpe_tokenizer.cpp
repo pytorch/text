@@ -26,16 +26,18 @@ bool is_whitespace(const std::string& input) {
 template <class Key_, class Value_>
 c10::Dict<Key_, Value_> _map_to_c10_dict(std::unordered_map<Key_, Value_> m) {
   c10::Dict<Key_, Value_> d;
-  for (const auto& item : m)
+  for (const auto& item : m) {
     d.insert(item.first, item.second);
+  }
   return d;
 }
 
 template <class Key_, class Value_>
 std::unordered_map<Key_, Value_> _c10_dict_to_map(c10::Dict<Key_, Value_> d) {
   std::unordered_map<Key_, Value_> m;
-  for (const auto& item : d)
+  for (const auto& item : d) {
     m[item.key()] = item.value();
+  }
   return m;
 }
 
@@ -210,8 +212,9 @@ int list_str_index(
 
 std::string concatenate_strings(const std::vector<std::string>& list) {
   std::string ret;
-  for (auto s : list)
+  for (auto s : list) {
     ret += s;
+  }
   return ret;
 }
 
@@ -223,8 +226,9 @@ std::vector<std::string> get_pairs(
   std::unordered_set<std::string> pairs;
   std::vector<std::string> pairs_vec;
 
-  if (token_list.empty())
+  if (token_list.empty()) {
     return pairs_vec;
+  }
 
   std::string prev_token = token_list[0];
   for (std::size_t i = 1; i < token_list.size(); ++i) {
@@ -327,8 +331,9 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
   }
   while (true) {
     auto bigram = FindBestPair_(pairs);
-    if (!bpe_merge_ranks_.contains(bigram))
+    if (!bpe_merge_ranks_.contains(bigram)) {
       break;
+    }
 
     // Finding all indexes that token_list[i] == first and token_list[i+1] ==
     // second. After the loop, new token list will be
@@ -345,12 +350,14 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
     while (i < tok_list.size()) {
       auto j = list_str_index(tok_list, parts.first, i);
       if (j != -1) {
-        for (int k = i; k < j; k++)
+        for (int k = i; k < j; k++) {
           new_token_list.push_back(tok_list[k]);
+        }
         i = j;
       } else {
-        for (std::size_t k = i; k < tok_list.size(); k++)
+        for (std::size_t k = i; k < tok_list.size(); k++) {
           new_token_list.push_back(tok_list[k]);
+        }
         break;
       }
 
@@ -372,8 +379,9 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
     }
   }
 
-  if (caching_enabled_)
+  if (caching_enabled_) {
     cache_.insert(concatenated, tok_list);
+  }
   return tok_list;
 }
 
@@ -505,8 +513,9 @@ int64_t GPT2BPEEncoder::AddSpecialTokens(
 
   // Loop for any additional tokens
   for (auto const& token : additional_special_tokens) {
-    if (added_tokens_encoder_.contains(token))
+    if (added_tokens_encoder_.contains(token)) {
       continue;
+    }
     bpe_never_split_set_.insert(token);
     if (!bpe_encoder_.contains(token)) {
       added_tokens_encoder_.insert(

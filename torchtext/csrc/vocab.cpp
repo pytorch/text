@@ -35,8 +35,9 @@ bool Vocab::__contains__(const std::string_view& token) const {
 
 int64_t Vocab::__getitem__(const std::string_view& token) const {
   int64_t id = _find(token);
-  if (stoi_[id] != -1)
+  if (stoi_[id] != -1) {
     return stoi_[id];
+  }
 
   // throw error if default_index_ is not set
   TORCH_CHECK(

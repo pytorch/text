@@ -44,8 +44,9 @@ std::vector<std::string> CLIPEncoder::BPE_(
   }
   while (true) {
     auto bigram = FindBestPair_(pairs);
-    if (!bpe_merge_ranks_.contains(bigram))
+    if (!bpe_merge_ranks_.contains(bigram)) {
       break;
+    }
 
     // Finding all indexes that token_list[i] == first and token_list[i+1] ==
     // second. After the loop, new token list will be
@@ -62,12 +63,14 @@ std::vector<std::string> CLIPEncoder::BPE_(
     while (i < tok_list.size()) {
       auto j = list_str_index(tok_list, parts.first, i);
       if (j != -1) {
-        for (int k = i; k < j; k++)
+        for (int k = i; k < j; k++) {
           new_token_list.push_back(tok_list[k]);
+        }
         i = j;
       } else {
-        for (std::size_t k = i; k < tok_list.size(); k++)
+        for (std::size_t k = i; k < tok_list.size(); k++) {
           new_token_list.push_back(tok_list[k]);
+        }
         break;
       }
 
@@ -89,8 +92,9 @@ std::vector<std::string> CLIPEncoder::BPE_(
     }
   }
 
-  if (caching_enabled_)
+  if (caching_enabled_) {
     cache_.insert(concatenated, tok_list);
+  }
   return tok_list;
 }
 

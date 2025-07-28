@@ -70,8 +70,9 @@ static bool _is_control(uint32_t c) {
   // unicodedata return 'Cn' whereas utf8proc return 'Lo' for following unicode
   // point Explicitly checking for this unicode point to avoid above
   // discrepency.
-  if (c == 3332)
+  if (c == 3332) {
     return true;
+  }
   // Fixed: HF referece: All categories starting with 'C'
   return (
       cat == UTF8PROC_CATEGORY_CC || cat == UTF8PROC_CATEGORY_CF ||
@@ -112,8 +113,9 @@ static UString _convert_to_unicode(const std::string& text) {
         (utf8proc_uint8_t*)&text[i],
         text.size() - i,
         (utf8proc_int32_t*)&codepoint);
-    if (forward < 0)
+    if (forward < 0) {
       return UString();
+    }
     ret.append(1, codepoint);
     i += forward;
   }
@@ -125,8 +127,9 @@ static std::string _convert_from_unicode(const UString& text) {
   std::string ret;
   for (auto ch : text) {
     utf8proc_ssize_t num = utf8proc_encode_char(ch, (utf8proc_uint8_t*)dst);
-    if (num <= 0)
+    if (num <= 0) {
       return "";
+    }
     ret += std::string(dst, dst + num);
   }
   return ret;
@@ -311,8 +314,9 @@ std::vector<std::string> BERTEncoder::Tokenize(std::string text) {
     unicodes = _basic_tokenize(unicodes, is_never_split_token);
 
     // Convert token to lower-case
-    if (do_lower_case_ && !is_never_split_token)
+    if (do_lower_case_ && !is_never_split_token) {
       to_lower(unicodes);
+    }
 
     // Convert back to string from code-points
     split_(_convert_from_unicode(unicodes), interim_results);
