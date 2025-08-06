@@ -4,8 +4,8 @@
 
 namespace torchtext {
 
-typedef std::tuple<std::vector<std::string>, std::vector<std::string>, bool>
-    RegexTokenizerStates;
+using RegexTokenizerStates =
+    std::tuple<std::vector<std::string>, std::vector<std::string>, bool>;
 
 struct RegexTokenizer : torch::CustomClassHolder {
  private:
