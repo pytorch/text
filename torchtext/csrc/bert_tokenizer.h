@@ -5,7 +5,7 @@
 
 namespace torchtext {
 
-typedef std::basic_string<uint32_t> UString;
+typedef std::u32string UString;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
 
