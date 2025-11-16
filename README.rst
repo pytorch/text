@@ -69,7 +69,7 @@ If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need 
     pip install spacy
     python -m spacy download en_core_web_sm
 
-Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
+Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/hplt-project/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
     pip install sacremoses
 
